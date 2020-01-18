@@ -1,4 +1,4 @@
-module 1pkg/goopt
+module 1pkg/goopti
 
 go 1.13
 
