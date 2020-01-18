@@ -3,9 +3,7 @@ package main
 import (
 	"fmt"
 	"go/ast"
-	"go/parser"
 	"go/token"
-	"os"
 	"regexp"
 )
 
@@ -14,19 +12,6 @@ import (
 type Pkgw struct {
 	fset *token.FileSet
 	pkg  *ast.Package
-}
-
-// Pkgp is package parser func abstraction for package parsing process
-type Pkgp func(string) (map[string]*ast.Package, *token.FileSet, error)
-
-// DefaultPkgp implements Pkgp abstraction and
-// executes parser.ParseDir to collect pakages, fileset and err
-var DefaultPkgp = func(pkg string) (pkgs map[string]*ast.Package, fset *token.FileSet, err error) {
-	fset = token.NewFileSet()
-	var all = func(os.FileInfo) bool { return true }
-	var mode = parser.Mode(0)
-	pkgs, err = parser.ParseDir(fset, pkg, all, mode)
-	return
 }
 
 // NewPackageWalker creates instance of Pkgw
@@ -39,7 +24,7 @@ func NewPackageWalker(fpkg string, pkgp Pkgp) (*Pkgw, error) {
 	// check if pakages list has desired package
 	pkg, ok := pkgs[fpkg]
 	if !ok {
-		return nil, fmt.Errorf("package %s wasn't found", fpkg)
+		return nil, fmt.Errorf("package `%s` wasn't found", fpkg)
 	}
 	return &Pkgw{fset: fset, pkg: pkg}, nil
 }
