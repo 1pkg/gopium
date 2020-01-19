@@ -7,8 +7,14 @@ import (
 	"regexp"
 )
 
+// Walker is interface that describes hierarchical walker that
+// applies some strategy on ast.StructType
+type Walker interface {
+	Visit(reg *regexp.Regexp, strg Strategy)
+}
+
 // Pkgw defines package walker struct that is capable of
-// walking through all package's structs and apply action on them
+// walking through all package's structs and apply strategy on them
 type Pkgw struct {
 	fset *token.FileSet
 	pkg  *ast.Package
@@ -31,8 +37,8 @@ func NewPackageWalker(fpkg string, pkgp Pkgp) (*Pkgw, error) {
 
 // Visit is Pkgw implementation of Walker Visit
 // it goes through all struct decls inside the package
-// and applies action if struct name matches regexp
-func (pkgw Pkgw) Visit(reg *regexp.Regexp, apply Apply) {
+// and applies strategy if struct name matches regexp
+func (pkgw Pkgw) Visit(reg *regexp.Regexp, sg Strategy) {
 	// go through all files inside the package
 	for _, file := range pkgw.pkg.Files {
 		// go through all declarations inside a file
@@ -55,9 +61,9 @@ func (pkgw Pkgw) Visit(reg *regexp.Regexp, apply Apply) {
 					continue
 				}
 				// check if struct name matches regexp
-				// in case it does then apply action
+				// in case it does then apply strategy
 				if reg.MatchString(tspec.Name.Name) {
-					apply(st)
+					sg(st)
 				}
 			}
 		}

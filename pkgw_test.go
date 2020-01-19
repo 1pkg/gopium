@@ -80,3 +80,5 @@ func TestNewPackageWalker(t *testing.T) {
 		}
 	})
 }
+
+// TODO add pkgw visit tests
