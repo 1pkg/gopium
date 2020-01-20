@@ -21,35 +21,35 @@ func TestNewPackageWalker(t *testing.T) {
 		{
 			name: "package parser returns error, new package walker should just pass it",
 			fpkg: "foobar",
-			pkgp: ErrorPkgp("error package test error").Parse,
+			pkgp: PkgpErr("error package test error").Parse,
 			pkgw: nil,
 			err:  errors.New("error package test error"),
 		},
 		{
 			name: "package name wasn't found, new package walker should return error",
 			fpkg: "foobar",
-			pkgp: NotFoundPkgp{}.Parse,
+			pkgp: PkgpNF{}.Parse,
 			pkgw: nil,
 			err:  errors.New("package `foobar` wasn't found"),
 		},
 		{
 			name: "package parser returns nil type package, new package walker should return error",
 			fpkg: "foobar",
-			pkgp: MockPkgp{fset: token.NewFileSet()}.Parse,
+			pkgp: PkgpMock{fset: token.NewFileSet()}.Parse,
 			pkgw: nil,
 			err:  errors.New("package `foobar` wasn't found"),
 		},
 		{
 			name: "package parser returns nil fset, new package walker should return error",
 			fpkg: "foobar",
-			pkgp: MockPkgp{pkg: types.NewPackage("/", "foobar")}.Parse,
+			pkgp: PkgpMock{pkg: types.NewPackage("/", "foobar")}.Parse,
 			pkgw: nil,
 			err:  errors.New("package `foobar` wasn't found"),
 		},
 		{
 			name: "package was found, new package walker should return correct package walker",
 			fpkg: "foobar",
-			pkgp: MockPkgp{
+			pkgp: PkgpMock{
 				pkg:  types.NewPackage("/", "foobar"),
 				fset: token.NewFileSet(),
 			}.Parse,

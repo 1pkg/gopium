@@ -15,7 +15,7 @@ type Walker interface {
 	VisitRec(context.Context, *regexp.Regexp, Strategy) // all levels of the tree
 }
 
-// Pkgw defines package walker struct implementation
+// Pkgw defines package walker implementation
 // that is capable of walking through all package's structs
 // and apply specified strategy to them
 type Pkgw struct {
