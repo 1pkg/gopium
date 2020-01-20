@@ -13,9 +13,9 @@ type TypeInfo struct {
 // to fetch type info from the provided type
 type TiExt func(types.Type) TypeInfo
 
-// GetTypeInfo implements TiExt
-// using types sizes impl
-func GetTypeInfo(t types.Type) TypeInfo {
+// GetTi implements TiExt
+// uses types sizes implentation
+func GetTi(t types.Type) TypeInfo {
 	// TODO implement it
 	return TypeInfo{}
 }

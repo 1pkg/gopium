@@ -9,20 +9,20 @@ import (
 	"golang.org/x/tools/go/packages"
 )
 
-// Pkgp is package parser func abstraction for package parsing process
+// Pkgp defines abstraction for package parsing processor
 type Pkgp func(context.Context, string) (*types.Package, *token.FileSet, error)
 
-// DefaultPkgp implements Pkgp abstraction and
-// executes packages.Load with cfg to collect typs, fileset and err
-type DefaultPkgp struct {
+// PkgpDef defines package parser default implementation
+// that uses packages load with cfg to collect types, fileset and err
+type PkgpDef struct {
 	AbsDir     string
 	LoadMode   packages.LoadMode
 	BuildEnv   []string
 	BuildFlags []string
 }
 
-// Parse DefaultPkgp implementation
-func (pkgp DefaultPkgp) Parse(ctx context.Context, spkg string) (*types.Package, *token.FileSet, error) {
+// Parse package parser default implementation
+func (pkgp PkgpDef) Parse(ctx context.Context, spkg string) (*types.Package, *token.FileSet, error) {
 	fset := token.NewFileSet()
 	cfg := &packages.Config{
 		Fset:       fset,
@@ -45,29 +45,29 @@ func (pkgp DefaultPkgp) Parse(ctx context.Context, spkg string) (*types.Package,
 	return nil, nil, nil
 }
 
-// MockPkgp is mock impl of Pkgp abstraction
-type MockPkgp struct {
+// PkgpMock defines mock implementation of pkgp abstraction
+type PkgpMock struct {
 	pkg  *types.Package
 	fset *token.FileSet
 }
 
-// Parse MockPkgp implementation
-func (pkgp MockPkgp) Parse(context.Context, string) (*types.Package, *token.FileSet, error) {
+// Parse package parser mock implementation
+func (pkgp PkgpMock) Parse(context.Context, string) (*types.Package, *token.FileSet, error) {
 	return pkgp.pkg, pkgp.fset, nil
 }
 
-// NotFoundPkgp is not found impl of Pkgp abstraction
-type NotFoundPkgp struct{}
+// PkgpNF defines package parser not found implementation of pkgp abstraction
+type PkgpNF struct{}
 
-// Parse ErrorPkgp implementation
-func (NotFoundPkgp) Parse(context.Context, string) (*types.Package, *token.FileSet, error) {
+// Parse package parser not found implementation
+func (PkgpNF) Parse(context.Context, string) (*types.Package, *token.FileSet, error) {
 	return nil, nil, nil
 }
 
-// ErrorPkgp is error impl of Pkgp abstraction
-type ErrorPkgp string
+// PkgpErr defines package parser error implementation of pkgp abstraction
+type PkgpErr string
 
-// Parse ErrorPkgp implementation
-func (pkgp ErrorPkgp) Parse(context.Context, string) (*types.Package, *token.FileSet, error) {
+// Parse package parser error implementation
+func (pkgp PkgpErr) Parse(context.Context, string) (*types.Package, *token.FileSet, error) {
 	return nil, nil, errors.New(string(pkgp))
 }
