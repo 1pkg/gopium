@@ -9,16 +9,9 @@ import (
 // Strategy is custom callback type that applies some strategy on types.Struct
 type Strategy func(context.Context, *types.Struct, *token.FileSet)
 
-// TypeInfo represents specific type information extracted from types.Type
-type TypeInfo struct {
-	Name string
-	Size uint
-}
-
-// GetTypeInfo extracts TypeInfo struct from provided types.Type
-func GetTypeInfo(t types.Type) TypeInfo {
-	// TODO implement it
-	return TypeInfo{}
+// SgBuilder is strategy builder interface that helps to create strategy by name
+type SgBuilder interface {
+	Build(string) (Strategy, error)
 }
 
 // PkgsSizeMap goes thorught structure calculates size for each field and put it to map
