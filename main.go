@@ -14,14 +14,12 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+	r, _ := regexp.Compile(`.*`)
 	p := PkgpDef{
+		Patterns: []string{"1pkg/goopti"},
 		LoadMode: packages.LoadAllSyntax,
 	}.Parse
-	w, err := NewPackageWalker(context.Background(), "regexp", p)
-	if err != nil {
-		panic(err)
-	}
-	r, err := regexp.Compile(`.*`)
+	w, err := NewPackageWalker(context.Background(), r, p)
 	if err != nil {
 		panic(err)
 	}
