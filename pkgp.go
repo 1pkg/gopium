@@ -5,16 +5,18 @@ import (
 	"errors"
 	"go/token"
 	"go/types"
+	"regexp"
 
 	"golang.org/x/tools/go/packages"
 )
 
 // Pkgp defines abstraction for package parsing processor
-type Pkgp func(context.Context, string) (*types.Package, *token.FileSet, error)
+type Pkgp func(context.Context, *regexp.Regexp) ([]*types.Package, *token.FileSet, error)
 
 // PkgpDef defines package parser default implementation
 // that uses packages load with cfg to collect types, fileset and err
 type PkgpDef struct {
+	Patterns   []string
 	AbsDir     string
 	LoadMode   packages.LoadMode
 	BuildEnv   []string
@@ -22,7 +24,7 @@ type PkgpDef struct {
 }
 
 // Parse package parser default implementation
-func (pkgp PkgpDef) Parse(ctx context.Context, pkgnm string) (*types.Package, *token.FileSet, error) {
+func (pkgp PkgpDef) Parse(ctx context.Context, pkgreg *regexp.Regexp) ([]*types.Package, *token.FileSet, error) {
 	fset := token.NewFileSet()
 	cfg := &packages.Config{
 		Fset:       fset,
@@ -33,34 +35,35 @@ func (pkgp PkgpDef) Parse(ctx context.Context, pkgnm string) (*types.Package, *t
 		BuildFlags: pkgp.BuildFlags,
 		Tests:      true,
 	}
-	pkgs, err := packages.Load(cfg, pkgnm)
+	pkgs, err := packages.Load(cfg, pkgp.Patterns...)
 	if err != nil {
 		return nil, nil, err
 	}
+	tpkgs := []*types.Package{}
 	for _, pkg := range pkgs {
-		if pkg.Name == pkgnm {
-			return pkg.Types, fset, nil
+		if pkgreg.MatchString(pkg.Name) {
+			tpkgs = append(tpkgs, pkg.Types)
 		}
 	}
-	return nil, nil, nil
+	return tpkgs, fset, nil
 }
 
 // PkgpMock defines mock implementation of pkgp abstraction
 type PkgpMock struct {
-	pkg  *types.Package
+	pkgs []*types.Package
 	fset *token.FileSet
 }
 
 // Parse package parser mock implementation
-func (pkgp PkgpMock) Parse(context.Context, string) (*types.Package, *token.FileSet, error) {
-	return pkgp.pkg, pkgp.fset, nil
+func (pkgp PkgpMock) Parse(context.Context, *regexp.Regexp) ([]*types.Package, *token.FileSet, error) {
+	return pkgp.pkgs, pkgp.fset, nil
 }
 
 // PkgpNF defines package parser not found implementation of pkgp abstraction
 type PkgpNF struct{}
 
 // Parse package parser not found implementation
-func (PkgpNF) Parse(context.Context, string) (*types.Package, *token.FileSet, error) {
+func (PkgpNF) Parse(context.Context, *regexp.Regexp) ([]*types.Package, *token.FileSet, error) {
 	return nil, nil, nil
 }
 
@@ -68,6 +71,6 @@ func (PkgpNF) Parse(context.Context, string) (*types.Package, *token.FileSet, er
 type PkgpErr string
 
 // Parse package parser error implementation
-func (pkgp PkgpErr) Parse(context.Context, string) (*types.Package, *token.FileSet, error) {
+func (pkgp PkgpErr) Parse(context.Context, *regexp.Regexp) ([]*types.Package, *token.FileSet, error) {
 	return nil, nil, errors.New(string(pkgp))
 }

@@ -19,29 +19,31 @@ type Walker interface {
 // that is capable of walking through all package's structs
 // and apply specified strategy to them
 type Pkgw struct {
-	pkg  *types.Package
+	pkgs []*types.Package
 	fset *token.FileSet
 }
 
 // NewPackageWalker creates instance of Pkgw
-func NewPackageWalker(ctx context.Context, pkgnm string, pkgp Pkgp) (*Pkgw, error) {
+func NewPackageWalker(ctx context.Context, pkgreg *regexp.Regexp, pkgp Pkgp) (*Pkgw, error) {
 	// use package parser to collect types, fileset and err
-	pkg, fset, err := pkgp(ctx, pkgnm)
+	pkgs, fset, err := pkgp(ctx, pkgreg)
 	if err != nil {
 		return nil, err
 	}
-	if pkg == nil || fset == nil {
-		return nil, fmt.Errorf("package %q wasn't found", pkgnm)
+	if len(pkgs) == 0 || fset == nil {
+		return nil, fmt.Errorf("packages %q wasn't found", pkgreg)
 	}
-	return &Pkgw{fset: fset, pkg: pkg}, nil
+	return &Pkgw{fset: fset, pkgs: pkgs}, nil
 }
 
 // VisitTop implements Pkgw Walker VisitTop method
 // it goes through all top level struct decls inside the package
 // and applies strategy if struct name matches regexp
 func (pkgw Pkgw) VisitTop(ctx context.Context, reg *regexp.Regexp, stg Strategy) {
-	scope := pkgw.pkg.Scope()
-	pkgw.visit(ctx, reg, scope, stg)
+	for _, pkg := range pkgw.pkgs {
+		sc := pkg.Scope()
+		pkgw.visit(ctx, reg, sc, stg)
+	}
 }
 
 // VisitRec implements Pkgw Walker VisitRec method
@@ -58,8 +60,9 @@ func (pkgw Pkgw) VisitRec(ctx context.Context, reg *regexp.Regexp, stg Strategy)
 			rec(chs)
 		}
 	}
-	scope := pkgw.pkg.Scope()
-	rec(scope)
+	for _, pkg := range pkgw.pkgs {
+		rec(pkg.Scope())
+	}
 }
 
 // visit helps to implement Pkgw Walker VisitTop and VisitRec methods
