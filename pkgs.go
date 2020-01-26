@@ -10,25 +10,29 @@ import (
 
 // Strategy defines action abstraction
 // that applies some strategy on types struct
-type Strategy func(context.Context, *types.Struct, *token.FileSet) error
+type Strategy func(context.Context, string, *types.Struct, *token.FileSet) error
 
 // PkgsTiMap defines strategy implementation
 // that goes through structure fields
 // extracts type info for each field and put it to the map
-type PkgsTiMap map[string]TypeInfo
+type PkgsTiMap map[string]interface{}
 
 // Execute package type info map implementation
 func (tim PkgsTiMap) Execute(
 	ctx context.Context,
+	nm string,
 	st *types.Struct,
 	fset *token.FileSet,
 	tie TiExt,
 ) error {
+	tim["Name"] = nm
+	fields := make(map[string]TypeInfo)
 	for i := 0; i < st.NumFields(); i++ {
 		field := st.Field(i)
 		ti := tie(field.Type())
-		tim[field.Name()] = ti
+		fields[field.Name()] = ti
 	}
+	tim["Fields"] = fields
 	return nil
 }
 
@@ -44,6 +48,7 @@ type PkgsTiOut struct {
 // Execute package type info out implementation
 func (tio PkgsTiOut) Execute(
 	ctx context.Context,
+	nm string,
 	st *types.Struct,
 	fset *token.FileSet,
 	tie TiExt,
@@ -51,7 +56,7 @@ func (tio PkgsTiOut) Execute(
 	if tio.f == nil {
 		return errors.New("strategy type info out formatter method wasn't defined")
 	}
-	err := tio.tim.Execute(ctx, st, fset, tie)
+	err := tio.tim.Execute(ctx, nm, st, fset, tie)
 	if err != nil {
 		return err
 	}
