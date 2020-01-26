@@ -5,8 +5,8 @@ import "go/types"
 // TypeInfo defines DO type
 // that describes some basic type information
 type TypeInfo struct {
-	Name string
-	Size uint
+	Type string
+	Size int64
 }
 
 // TiExt defines type info extractor abstraction
@@ -16,6 +16,7 @@ type TiExt func(types.Type) TypeInfo
 // GetTi implements TiExt
 // uses types sizes implentation
 func GetTi(t types.Type) TypeInfo {
-	// TODO implement it
-	return TypeInfo{}
+	sizes := types.SizesFor("gc", "amd64")
+	s := sizes.Sizeof(t)
+	return TypeInfo{Type: t.String(), Size: s}
 }

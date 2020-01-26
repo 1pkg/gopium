@@ -22,7 +22,7 @@ type PkgpDef struct {
 }
 
 // Parse package parser default implementation
-func (pkgp PkgpDef) Parse(ctx context.Context, spkg string) (*types.Package, *token.FileSet, error) {
+func (pkgp PkgpDef) Parse(ctx context.Context, pkgnm string) (*types.Package, *token.FileSet, error) {
 	fset := token.NewFileSet()
 	cfg := &packages.Config{
 		Fset:       fset,
@@ -33,12 +33,12 @@ func (pkgp PkgpDef) Parse(ctx context.Context, spkg string) (*types.Package, *to
 		BuildFlags: pkgp.BuildFlags,
 		Tests:      true,
 	}
-	pkgs, err := packages.Load(cfg, spkg)
+	pkgs, err := packages.Load(cfg, pkgnm)
 	if err != nil {
 		return nil, nil, err
 	}
 	for _, pkg := range pkgs {
-		if pkg.Name == spkg {
+		if pkg.Name == pkgnm {
 			return pkg.Types, fset, nil
 		}
 	}

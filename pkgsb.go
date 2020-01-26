@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
@@ -9,17 +10,17 @@ import (
 	"os"
 )
 
-// SgName defines registred strategy name abstraction
-type SgName string
+// StgName defines registred strategy name abstraction
+type StgName string
 
 var (
-	TypeInfoJsonStdOut SgName = "PkgsTiOut-JsonStd"
+	TypeInfoJsonStdOut StgName = "PkgsTiOut-JsonStd"
 )
 
-// SgBuilder defines builder abstraction
+// StgBuilder defines builder abstraction
 // that helps to create strategy by name
-type SgBuilder interface {
-	Build(string) (Strategy, error)
+type StgBuilder interface {
+	Build(StgName) (Strategy, error)
 }
 
 // Pkgsb defines package strategy builder implementation
@@ -27,20 +28,32 @@ type SgBuilder interface {
 type Pkgsb TiExt
 
 // Build package strategy builder implementation
-func (sb Pkgsb) Build(sgn SgName) (Strategy, error) {
-	var exec func(context.Context, *types.Struct, *token.FileSet, TiExt) error
-	switch sgn {
+func (sb Pkgsb) Build(stgnm StgName) (Strategy, error) {
+	var exec func(context.Context, string, *types.Struct, *token.FileSet, TiExt) error
+	switch stgnm {
 	case TypeInfoJsonStdOut:
+		f := func(i interface{}) ([]byte, error) {
+			r, err := json.Marshal(i)
+			if err != nil {
+				return nil, err
+			}
+			var buf bytes.Buffer
+			err = json.Indent(&buf, r, "", "\t")
+			if err != nil {
+				return nil, err
+			}
+			return buf.Bytes(), nil
+		}
 		exec = PkgsTiOut{
 			tim: make(PkgsTiMap),
 			w:   os.Stdout,
-			f:   json.Marshal,
+			f:   f,
 		}.Execute
 	default:
-		return nil, fmt.Errorf("strategy `%s` wasn't found", sgn)
+		return nil, fmt.Errorf("strategy %q wasn't found", stgnm)
 	}
 
-	return func(ctx context.Context, st *types.Struct, fset *token.FileSet) error {
-		return exec(ctx, st, fset, TiExt(sb))
+	return func(ctx context.Context, nm string, st *types.Struct, fset *token.FileSet) error {
+		return exec(ctx, nm, st, fset, TiExt(sb))
 	}, nil
 }
