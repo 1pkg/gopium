@@ -1,4 +1,4 @@
-package main
+package pkgs
 
 import (
 	"context"
@@ -14,43 +14,41 @@ import (
 func TestNewPackageWalker(t *testing.T) {
 	table := []struct {
 		name string
-		pkgp Pkgp
-		pkgw *Pkgw
+		p    Parser
+		w    *Walker
 		err  error
 	}{
 		{
 			name: "package parser returns error, new package walker should just pass it",
-			pkgp: PkgpErr("error package test error").Parse,
-			pkgw: nil,
+			p:    ParserErr("error package test error").Parse,
+			w:    nil,
 			err:  errors.New("error package test error"),
 		},
 		{
 			name: "package name wasn't found, new package walker should return error",
-			pkgp: PkgpNF{}.Parse,
-			pkgw: nil,
+			p:    ParserNil{}.Parse,
+			w:    nil,
 			err:  errors.New(`packages "^foobar$" wasn't found`),
 		},
 		{
 			name: "package parser returns nil type package, new package walker should return error",
-			pkgp: PkgpMock{fset: token.NewFileSet()}.Parse,
-			pkgw: nil,
+			p:    ParserMock{fset: token.NewFileSet()}.Parse,
+			w:    nil,
 			err:  errors.New(`packages "^foobar$" wasn't found`),
 		},
 		{
 			name: "package parser returns nil fset, new package walker should return error",
-			pkgp: PkgpMock{
-				pkgs: []*types.Package{types.NewPackage("/", "foobar")},
-			}.Parse,
-			pkgw: nil,
+			p:    ParserMock{pkgs: []*types.Package{types.NewPackage("/", "foobar")}}.Parse,
+			w:    nil,
 			err:  errors.New(`packages "^foobar$" wasn't found`),
 		},
 		{
 			name: "package was found, new package walker should return correct package walker",
-			pkgp: PkgpMock{
+			p: ParserMock{
 				pkgs: []*types.Package{types.NewPackage("/", "foobar")},
 				fset: token.NewFileSet(),
 			}.Parse,
-			pkgw: &Pkgw{
+			w: &Walker{
 				pkgs: []*types.Package{types.NewPackage("/", "foobar")},
 				fset: token.NewFileSet(),
 			},
@@ -62,12 +60,12 @@ func TestNewPackageWalker(t *testing.T) {
 		for _, tcase := range table {
 			t.Run(tcase.name, func(t *testing.T) {
 				ctx := context.Background()
-				pkgw, err := NewPackageWalker(ctx, r, tcase.pkgp)
-				assert.Equal(t, tcase.pkgw, pkgw)
+				w, err := NewWalker(ctx, r, tcase.p)
+				assert.Equal(t, tcase.w, w)
 				assert.Equal(t, tcase.err, err)
 			})
 		}
 	})
 }
 
-// TODO add pkgw visit tests
+// TODO add walker visits tests
