@@ -4,22 +4,25 @@ import (
 	"context"
 	"regexp"
 
+	"1pkg/gopium"
+	"1pkg/gopium/pkgs"
+
 	"golang.org/x/tools/go/packages"
 )
 
 func main() {
 	// small pkg `regexp` example
-	b := Pkgsb(GetTi)
-	sg, err := b.Build(TypeInfoJsonStdOut)
+	b := gopium.Pkgsb(gopium.GetTi)
+	sg, err := b.Build(gopium.TypeInfoJsonStdOut)
 	if err != nil {
 		panic(err)
 	}
 	r, _ := regexp.Compile(`.*`)
-	p := PkgpDef{
+	p := pkgs.ParserXTool{
 		Patterns: []string{"1pkg/gopium"},
 		LoadMode: packages.LoadAllSyntax,
 	}.Parse
-	w, err := NewPackageWalker(context.Background(), r, p)
+	w, err := pkgs.NewWalker(context.Background(), r, p)
 	if err != nil {
 		panic(err)
 	}
