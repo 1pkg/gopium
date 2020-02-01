@@ -16,7 +16,7 @@ func main() {
 	}
 	r, _ := regexp.Compile(`.*`)
 	p := PkgpDef{
-		Patterns: []string{"1pkg/goopti"},
+		Patterns: []string{"1pkg/gopium"},
 		LoadMode: packages.LoadAllSyntax,
 	}.Parse
 	w, err := NewPackageWalker(context.Background(), r, p)
