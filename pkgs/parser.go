@@ -10,11 +10,11 @@ import (
 	"golang.org/x/tools/go/packages"
 )
 
-// Parser defines abstraction for package parsing processor
+// Parser defines abstraction for packages parsing processor
 type Parser func(context.Context, *regexp.Regexp) ([]*types.Package, *token.FileSet, error)
 
-// ParserXTool defines package parser default go "golang.org/x/tools/go/packages" implementation
-// that uses packages load with cfg to collect types, fileset and err
+// ParserXTool defines packages parser default "golang.org/x/tools/go/packages" implementation
+// that uses packages.Load with cfg to collect types and fileset
 type ParserXTool struct {
 	Patterns   []string
 	AbsDir     string
@@ -23,7 +23,7 @@ type ParserXTool struct {
 	BuildFlags []string
 }
 
-// Parse package parser default implementation
+// Parse packages parser default "golang.org/x/tools/go/packages" implementation
 func (p ParserXTool) Parse(ctx context.Context, pkgreg *regexp.Regexp) ([]*types.Package, *token.FileSet, error) {
 	fset := token.NewFileSet()
 	cfg := &packages.Config{
@@ -48,18 +48,18 @@ func (p ParserXTool) Parse(ctx context.Context, pkgreg *regexp.Regexp) ([]*types
 	return tpkgs, fset, nil
 }
 
-// ParserMock defines mock implementation of package parser abstraction
+// ParserMock defines packages parser mock implementation
 type ParserMock struct {
 	pkgs []*types.Package
 	fset *token.FileSet
 }
 
-// Parse package parser mock implementation
+// Parse packages parser mock implementation
 func (p ParserMock) Parse(context.Context, *regexp.Regexp) ([]*types.Package, *token.FileSet, error) {
 	return p.pkgs, p.fset, nil
 }
 
-// ParserNil defines package parser nil implementation of parser abstraction
+// ParserNil defines packages parser nil implementation
 type ParserNil struct{}
 
 // Parse package parser nil implementation
@@ -67,7 +67,7 @@ func (ParserNil) Parse(context.Context, *regexp.Regexp) ([]*types.Package, *toke
 	return nil, nil, nil
 }
 
-// ParserErr defines package parser error implementation of parser abstraction
+// ParserErr defines packages parser error implementation
 type ParserErr string
 
 // Parse package parser error implementation
