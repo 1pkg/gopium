@@ -4,27 +4,33 @@ import (
 	"context"
 	"regexp"
 
-	"1pkg/gopium"
 	"1pkg/gopium/pkgs"
+	"1pkg/gopium/typeinfo"
+	"1pkg/gopium/typeinfo/strategy"
 
 	"golang.org/x/tools/go/packages"
 )
 
+// small gopium self example
 func main() {
-	// small pkg `regexp` example
-	b := gopium.Pkgsb(gopium.GetTi)
-	sg, err := b.Build(gopium.TypeInfoJsonStdOut)
+	// compile regex
+	regex, _ := regexp.Compile(`.*`)
+	// set up strategy builder
+	e := typeinfo.NewExtractorTypesSizes("gc", "amd64")
+	b := strategy.NewBuilder(e)
+	stg, err := b.Build(strategy.TypeInfoOutPrettyJsonStd)
 	if err != nil {
 		panic(err)
 	}
-	r, _ := regexp.Compile(`.*`)
+	// create pkgs Walker
 	p := pkgs.ParserXTool{
-		Patterns: []string{"1pkg/gopium"},
+		Patterns: []string{"1pkg/gopium/pkgs"},
 		LoadMode: packages.LoadAllSyntax,
 	}.Parse
-	w, err := pkgs.NewWalker(context.Background(), r, p)
+	w, err := pkgs.NewWalker(context.Background(), regex, p)
 	if err != nil {
 		panic(err)
 	}
-	w.VisitTop(context.Background(), r, sg)
+	// run VisitTop for Strategy with regex
+	w.VisitTop(context.Background(), regex, stg)
 }

@@ -67,5 +67,3 @@ func TestNewPackageWalker(t *testing.T) {
 		}
 	})
 }
-
-// TODO add walker visits tests
