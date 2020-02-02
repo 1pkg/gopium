@@ -4,6 +4,7 @@ import (
 	"context"
 	"regexp"
 
+	"1pkg/gopium/fmts"
 	"1pkg/gopium/pkgs"
 	"1pkg/gopium/typeinfo"
 	"1pkg/gopium/typeinfo/strategy"
@@ -27,7 +28,7 @@ func main() {
 		Patterns: []string{"1pkg/gopium/pkgs"},
 		LoadMode: packages.LoadAllSyntax,
 	}.Parse
-	w, err := pkgs.NewWalker(context.Background(), regex, p)
+	w, err := pkgs.NewWalker(context.Background(), fmts.FullName, regex, p)
 	if err != nil {
 		panic(err)
 	}

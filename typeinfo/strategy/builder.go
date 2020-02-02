@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"1pkg/gopium"
+	"1pkg/gopium/fmts"
 	"1pkg/gopium/typeinfo"
 )
 
@@ -31,7 +32,7 @@ func (b Builder) Build(name gopium.StrategyName) (gopium.Strategy, error) {
 	case TypeInfoOutPrettyJsonStd:
 		return (&typeOut{
 			typeMap: typeMap{e: b.e},
-			f:       gopium.PrettyJson,
+			f:       fmts.PrettyJson,
 			w:       os.Stdout,
 		}).Execute, nil
 	default:
