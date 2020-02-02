@@ -2,6 +2,7 @@ package gopium
 
 import (
 	"context"
+	"errors"
 	"go/token"
 	"go/types"
 )
@@ -17,4 +18,21 @@ type StrategyName string
 // that helps to create Strategy by name
 type StrategyBuilder interface {
 	Build(StrategyName) (Strategy, error)
+}
+
+// StrategyMock defines Strategy mock implementation
+type StrategyMock map[string]*types.Struct
+
+// Execute Strategy mock implementation
+func (stg StrategyMock) Execute(ctx context.Context, nm string, st *types.Struct, fset *token.FileSet) error {
+	stg[nm] = st
+	return nil
+}
+
+// StrategyMock defines Strategy error implementation
+type StrategyError string
+
+// Execute Strategy error implementation
+func (stg StrategyError) Execute(ctx context.Context, nm string, st *types.Struct, fset *token.FileSet) error {
+	return errors.New(string(stg))
 }
