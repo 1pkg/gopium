@@ -28,7 +28,7 @@ func main() {
 		Patterns: []string{"1pkg/gopium/pkgs"},
 		LoadMode: packages.LoadAllSyntax,
 	}.Parse
-	w, err := pkgs.NewWalker(context.Background(), fmts.FullName, regex, p)
+	w, err := pkgs.NewWalker(context.Background(), fmts.Root("").FullName, regex, p)
 	if err != nil {
 		panic(err)
 	}

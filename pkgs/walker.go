@@ -79,22 +79,21 @@ func (w Walker) visit(ctx context.Context, reg *regexp.Regexp, scope *types.Scop
 		if !reg.MatchString(name) {
 			continue
 		}
-		// in case it does and onbject is
-		// a type name for struct
+		// in case it does and object is
+		// a type name and it's not an alias for struct
 		// then apply strategy to it
-		tn := scope.Lookup(name)
-		if _, ok := tn.(*types.TypeName); !ok {
-			continue
-		}
-		if st, ok := tn.Type().Underlying().(*types.Struct); ok {
-			// build hierarchy name here
-			hn := w.hn(name, fset, tn.Pos())
-			// error should be aways handled by top level strategy
-			// so theoretically we will never have error here
-			err := stg(ctx, hn, st, fset)
-			if err != nil {
-				// theoretically imposible case
-				panic(err)
+		if tn, ok := scope.Lookup(name).(*types.TypeName); ok && !tn.IsAlias() {
+			// if underlying type is struct
+			if st, ok := tn.Type().Underlying().(*types.Struct); ok {
+				// build hierarchy name here
+				hn := w.hn(name, fset, tn.Pos())
+				// error should be aways handled by top level strategy
+				// so theoretically we will never have error here
+				err := stg(ctx, hn, st, fset)
+				if err != nil {
+					// theoretically imposible case
+					panic(err)
+				}
 			}
 		}
 	}
