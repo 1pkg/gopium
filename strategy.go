@@ -21,11 +21,11 @@ type StrategyBuilder interface {
 }
 
 // StrategyMock defines Strategy mock implementation
-type StrategyMock map[string]*types.Struct
+type StrategyMock map[string]string
 
 // Execute Strategy mock implementation
 func (stg StrategyMock) Execute(ctx context.Context, nm string, st *types.Struct, fset *token.FileSet) error {
-	stg[nm] = st
+	stg[nm] = st.String()
 	return nil
 }
 
