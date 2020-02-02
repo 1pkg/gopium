@@ -1,15 +1,15 @@
-package gopium
+package fmts
 
 import (
 	"bytes"
 	"encoding/json"
 )
 
-// Formatter defines abstraction for
+// TypeFormat defines abstraction for
 // formatting generic type to byte slice
-type Formatter func(interface{}) ([]byte, error)
+type TypeFormat func(interface{}) ([]byte, error)
 
-// PrettyJson defines json marshal with tab indent Formatter implementation
+// PrettyJson defines json.Marshal with json.Indent TypeFormat implementation
 func PrettyJson(i interface{}) ([]byte, error) {
 	r, err := json.Marshal(i)
 	if err != nil {

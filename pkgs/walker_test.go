@@ -8,59 +8,98 @@ import (
 	"regexp"
 	"testing"
 
+	"1pkg/gopium/fmts"
+
 	"github.com/stretchr/testify/assert"
 )
 
-func TestNewPackageWalker(t *testing.T) {
+// global default test regex
+var regex *regexp.Regexp
+
+func init() {
+	// init default test regex
+	regex, _ = regexp.Compile(`^foobar$`)
+}
+
+func TestNewWalker(t *testing.T) {
 	table := []struct {
-		name string
-		p    Parser
-		w    *Walker
-		err  error
+		name  string
+		ctx   context.Context
+		hn    fmts.HierarchyName
+		regex *regexp.Regexp
+		p     Parser
+		w     Walker
+		err   error
 	}{
 		{
-			name: "package parser returns error, new package walker should just pass it",
-			p:    ParserErr("error package test error").Parse,
-			w:    nil,
-			err:  errors.New("error package test error"),
-		},
-		{
-			name: "package name wasn't found, new package walker should return error",
-			p:    ParserNil{}.Parse,
-			w:    nil,
-			err:  errors.New(`packages "^foobar$" wasn't found`),
-		},
-		{
-			name: "package parser returns nil type package, new package walker should return error",
-			p:    ParserMock{fset: token.NewFileSet()}.Parse,
-			w:    nil,
-			err:  errors.New(`packages "^foobar$" wasn't found`),
-		},
-		{
-			name: "package parser returns nil fset, new package walker should return error",
-			p:    ParserMock{pkgs: []*types.Package{types.NewPackage("/", "foobar")}}.Parse,
-			w:    nil,
-			err:  errors.New(`packages "^foobar$" wasn't found`),
-		},
-		{
-			name: "package was found, new package walker should return correct package walker",
+			name:  "nil fmts.HierarchyName, NewWalker should return error",
+			ctx:   context.Background(),
+			hn:    nil,
+			regex: regex,
 			p: ParserMock{
 				pkgs: []*types.Package{types.NewPackage("/", "foobar")},
 				fset: token.NewFileSet(),
 			}.Parse,
-			w: &Walker{
+			w:   Walker{},
+			err: errors.New("hierarchy name wasn't defined"),
+		},
+		{
+			name:  "packages Parser returns error, NewWalker should just pass it",
+			ctx:   context.Background(),
+			hn:    fmts.FlatName,
+			regex: regex,
+			p:     ParserError("error package test error").Parse,
+			w:     Walker{},
+			err:   errors.New("error package test error"),
+		},
+		{
+			name:  "package name wasn't found, NewWalker should return error",
+			ctx:   context.Background(),
+			hn:    fmts.FlatName,
+			regex: regex,
+			p:     ParserNil{}.Parse,
+			w:     Walker{},
+			err:   errors.New(`packages "^foobar$" wasn't found`),
+		},
+		{
+			name:  "packages Parser returns nil type package, NewWalker should return error",
+			ctx:   context.Background(),
+			hn:    fmts.FlatName,
+			regex: regex,
+			p:     ParserMock{fset: token.NewFileSet()}.Parse,
+			w:     Walker{},
+			err:   errors.New(`packages "^foobar$" wasn't found`),
+		},
+		{
+			name:  "packages Parser returns nil fset, NewWalker should return error",
+			ctx:   context.Background(),
+			hn:    fmts.FlatName,
+			regex: regex,
+			p:     ParserMock{pkgs: []*types.Package{types.NewPackage("/", "foobar")}}.Parse,
+			w:     Walker{},
+			err:   errors.New(`packages "^foobar$" wasn't found`),
+		},
+		{
+			name:  "package was found, NewWalker should return correct package walker",
+			ctx:   context.Background(),
+			hn:    fmts.FlatName,
+			regex: regex,
+			p: ParserMock{
+				pkgs: []*types.Package{types.NewPackage("/", "foobar")},
+				fset: token.NewFileSet(),
+			}.Parse,
+			w: Walker{
+				hn:   fmts.FlatName,
 				pkgs: []*types.Package{types.NewPackage("/", "foobar")},
 				fset: token.NewFileSet(),
 			},
 			err: nil,
 		},
 	}
-	t.Run("new package walker should return correct results for all cases", func(t *testing.T) {
-		r, _ := regexp.Compile(`^foobar$`)
+	t.Run("NewWalker should return correct results for all cases", func(t *testing.T) {
 		for _, tcase := range table {
 			t.Run(tcase.name, func(t *testing.T) {
-				ctx := context.Background()
-				w, err := NewWalker(ctx, r, tcase.p)
+				w, err := NewWalker(tcase.ctx, tcase.hn, tcase.regex, tcase.p)
 				assert.Equal(t, tcase.w, w)
 				assert.Equal(t, tcase.err, err)
 			})

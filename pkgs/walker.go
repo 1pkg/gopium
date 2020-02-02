@@ -2,34 +2,41 @@ package pkgs
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"go/token"
 	"go/types"
 	"regexp"
 
 	"1pkg/gopium"
+	"1pkg/gopium/fmts"
 )
 
 // Walker defines packages Walker implementation
 // that is capable of walking through all package's structs
 // and apply specified strategy to them
 type Walker struct {
+	hn   fmts.HierarchyName
 	pkgs []*types.Package
 	fset *token.FileSet
 }
 
 // NewWalker creates instance of packages Walker
 // and requires regex and packages Parser instance to gather all packages
-func NewWalker(ctx context.Context, pkgreg *regexp.Regexp, parser Parser) (*Walker, error) {
+func NewWalker(ctx context.Context, hn fmts.HierarchyName, regex *regexp.Regexp, parser Parser) (Walker, error) {
+	if hn == nil {
+		return Walker{}, errors.New("hierarchy name wasn't defined")
+	}
 	// use packages Parser to collect types and fileset
-	pkgs, fset, err := parser(ctx, pkgreg)
+	pkgs, fset, err := parser(ctx, regex)
 	if err != nil {
-		return nil, err
+		return Walker{}, err
 	}
+	// check parse results
 	if len(pkgs) == 0 || fset == nil {
-		return nil, fmt.Errorf("packages %q wasn't found", pkgreg)
+		return Walker{}, fmt.Errorf("packages %q wasn't found", regex)
 	}
-	return &Walker{fset: fset, pkgs: pkgs}, nil
+	return Walker{hn: hn, fset: fset, pkgs: pkgs}, nil
 }
 
 // VisitTop implements packages Walker VisitTop method
@@ -72,12 +79,23 @@ func (w Walker) visit(ctx context.Context, reg *regexp.Regexp, scope *types.Scop
 		if !reg.MatchString(name) {
 			continue
 		}
-		// in case it does and onject is a struct
+		// in case it does and onbject is
+		// a type name for struct
 		// then apply strategy to it
-		t := scope.Lookup(name).Type()
-		if st, ok := t.Underlying().(*types.Struct); ok {
-			// TODO hadle this error
-			_ = stg(ctx, name, st, fset)
+		tn := scope.Lookup(name)
+		if _, ok := tn.(*types.TypeName); !ok {
+			continue
+		}
+		if st, ok := tn.Type().Underlying().(*types.Struct); ok {
+			// build hierarchy name here
+			hn := w.hn(name, fset, tn.Pos())
+			// error should be aways handled by top level strategy
+			// so theoretically we will never have error here
+			err := stg(ctx, hn, st, fset)
+			if err != nil {
+				// theoretically imposible case
+				panic(err)
+			}
 		}
 	}
 }

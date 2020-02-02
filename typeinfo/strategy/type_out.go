@@ -7,7 +7,7 @@ import (
 	"go/types"
 	"io"
 
-	"1pkg/gopium"
+	"1pkg/gopium/fmts"
 )
 
 // typeOut defines strategy type out implementation
@@ -16,7 +16,7 @@ import (
 // and finaly outputs it to io.Writer
 type typeOut struct {
 	typeMap
-	f gopium.Formatter
+	f fmts.TypeFormat
 	w io.Writer
 }
 
