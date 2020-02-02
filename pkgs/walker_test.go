@@ -8,20 +8,27 @@ import (
 	"regexp"
 	"testing"
 
+	"1pkg/gopium"
 	"1pkg/gopium/fmts"
 
 	"github.com/stretchr/testify/assert"
+	"golang.org/x/tools/go/packages"
 )
 
-// global default test regex
-var regex *regexp.Regexp
-
-func init() {
-	// init default test regex
-	regex, _ = regexp.Compile(`^foobar$`)
+// LoadWalkerTestCase helps to load
+// pkgs tests data directly from source code package
+// using only test case name
+func LoadWalkerTestCase(tcase string) (gopium.Walker, error) {
+	regex, _ := regexp.Compile(`.*`)
+	p := ParserXTool{
+		Patterns: []string{"1pkg/gopium/pkgs/pkgs_test_data/" + tcase},
+		LoadMode: packages.LoadAllSyntax,
+	}.Parse
+	return NewWalker(context.Background(), fmts.FullName, regex, p)
 }
 
 func TestNewWalker(t *testing.T) {
+	regex, _ := regexp.Compile(`^foobar$`)
 	table := []struct {
 		name  string
 		ctx   context.Context
@@ -100,9 +107,32 @@ func TestNewWalker(t *testing.T) {
 		for _, tcase := range table {
 			t.Run(tcase.name, func(t *testing.T) {
 				w, err := NewWalker(tcase.ctx, tcase.hn, tcase.regex, tcase.p)
+				// "github.com/stretchr/testify/assert" can't be used for function equality.
+				// `Function equality cannot be determined and will always fail.`
+				w.hn, tcase.w.hn = nil, nil
 				assert.Equal(t, tcase.w, w)
 				assert.Equal(t, tcase.err, err)
 			})
 		}
+	})
+}
+
+func TestWalkerVisitTopErrorExplode(t *testing.T) {
+	regex, _ := regexp.Compile(`^Foo`)
+	w, err := LoadWalkerTestCase("walker_visit_top_error_explode")
+	assert.NoError(t, err)
+	stg := gopium.StrategyError("this should never happen")
+	assert.Panics(t, func() {
+		w.VisitTop(context.Background(), regex, stg.Execute)
+	})
+}
+
+func TestWalkerVisitDeepErrorExplode(t *testing.T) {
+	regex, _ := regexp.Compile(`Bar$`)
+	w, err := LoadWalkerTestCase("walker_visit_deep_error_explode")
+	assert.NoError(t, err)
+	stg := gopium.StrategyError("this should never happen")
+	assert.Panics(t, func() {
+		w.VisitTop(context.Background(), regex, stg.Execute)
 	})
 }
