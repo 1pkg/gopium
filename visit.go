@@ -62,13 +62,13 @@ func Visit(regex *regexp.Regexp, stg Strategy, ch chan<- StructError, deep bool)
 						wg.Add(1)
 						// concurently visit the structure
 						// and apply strategy to it
-						go func() {
+						go func(name string, st *types.Struct) {
 							// apply strategy
 							// and push result to the chan
 							ch <- stg.Apply(ctx, name, st)
 							// decrement wait group visits counter
 							wg.Done()
-						}()
+						}(name, st)
 					case <-ctx.Done():
 						break loop
 					}

@@ -43,7 +43,7 @@ func (p ParserXToolPackages) Parse(ctx context.Context) (*types.Package, *ast.Pa
 		return nil, nil, err
 	}
 	// check parse results
-	if len(pkgs) != 1 || pkgs[0].Name != p.Pattern {
+	if len(pkgs) != 1 || pkgs[0].String() != p.Pattern {
 		return nil, nil, fmt.Errorf("packages %q wasn't found", p.Pattern)
 	}
 	return pkgs[0].Types, nil, nil
