@@ -2,6 +2,7 @@ package gopium
 
 import (
 	"context"
+	"fmt"
 	"go/types"
 	"regexp"
 	"sync"
@@ -40,6 +41,9 @@ func Visit(regex *regexp.Regexp, stg Strategy, ch chan<- StructError, deep bool)
 				close(ch)
 			}
 		}()
+		// visited holds visited structure
+		// hierarchy names list
+		visited := make(map[string]struct{})
 	loop:
 		// go through all names inside the package scope
 		for _, name := range scope.Names() {
@@ -53,6 +57,15 @@ func Visit(regex *regexp.Regexp, stg Strategy, ch chan<- StructError, deep bool)
 			if tn, ok := scope.Lookup(name).(*types.TypeName); ok && !tn.IsAlias() {
 				// if underlying type is struct
 				if st, ok := tn.Type().Underlying().(*types.Struct); ok {
+					// build full hierarchy name of structure
+					name = fmt.Sprintf("%s/%s", name, st)
+					// in case hierarchy name of structure
+					// has been already visited
+					if _, ok := visited[name]; ok {
+						continue
+					}
+					// mark hierarchy name of structure to visited
+					visited[name] = struct{}{}
 					// manage context actions
 					// in case of cancelation break from
 					// futher traverse
