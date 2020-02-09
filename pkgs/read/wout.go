@@ -47,7 +47,7 @@ func (w wout) visit(ctx context.Context, regex *regexp.Regexp, stg gopium.Strate
 		return errors.New("writter wasn't set")
 	}
 	// use parser to parse types pkg data
-	tpkg, err := w.parser.ParseTypes(ctx)
+	pkg, err := w.parser.ParseTypes(ctx)
 	if err != nil {
 		return err
 	}
@@ -59,19 +59,28 @@ func (w wout) visit(ctx context.Context, regex *regexp.Regexp, stg gopium.Strate
 	// create separate cancelation context for visiting
 	nctx, cancel := context.WithCancel(ctx)
 	// run visiting in separate goroutine
-	go visit(nctx, tpkg.Scope())
+	go visit(nctx, pkg.Scope())
 	// go through results from visit func
 	// we can use concurent writitng too
 	// but it's probably redundant
 	// as it requires additional level of sync
 	// and error handling
 	for sterr := range ch {
-		err := w.write(ctx, sterr)
-		// in case any error happened in writting
-		// cancel context and return error
-		if err != nil {
+		// manage context actions
+		// in case of cancelation break from
+		// writting action
+		select {
+		default:
+			err := w.write(ctx, sterr)
+			// in case any error happened in writting
+			// cancel context and return error
+			if err != nil {
+				cancel()
+				return err
+			}
+		case <-ctx.Done():
 			cancel()
-			return err
+			return nil
 		}
 	}
 	// we can safely cancel context here
