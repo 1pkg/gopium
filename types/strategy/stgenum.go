@@ -13,12 +13,12 @@ import (
 // that goes through all structure fields and uses gtypes.Extractor
 // to extract gopium.Field DTO for each field
 // and put it back to resulted gopium.Struct object
-type enumerate struct {
-	e gtypes.Extractor
+type stgenum struct {
+	extractor gtypes.Extractor
 }
 
 // Apply enumerate implementation
-func (e enumerate) Apply(ctx context.Context, name string, st *types.Struct) (r gopium.StructError) {
+func (stg stgenum) Apply(ctx context.Context, name string, st *types.Struct) (r gopium.StructError) {
 	// build full hierarchical name of the structure
 	r.Struct.Name = fmt.Sprintf("%s/%s", name, st)
 	// get number of struct fields
@@ -31,7 +31,7 @@ func (e enumerate) Apply(ctx context.Context, name string, st *types.Struct) (r 
 		// get tag
 		tag := st.Tag(i)
 		// get typeinfo
-		tname, tsize := e.e.Extract(f.Type())
+		tname, tsize := stg.extractor.Extract(f.Type())
 		// fill field structure
 		r.Struct.Fields = append(r.Struct.Fields, gopium.Field{
 			Name:     f.Name(),
