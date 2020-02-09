@@ -2,7 +2,6 @@ package strategy
 
 import (
 	"context"
-	"fmt"
 	"go/types"
 
 	"1pkg/gopium"
@@ -20,7 +19,7 @@ type stgenum struct {
 // Apply enumerate implementation
 func (stg stgenum) Apply(ctx context.Context, name string, st *types.Struct) (r gopium.StructError) {
 	// build full hierarchical name of the structure
-	r.Struct.Name = fmt.Sprintf("%s/%s", name, st)
+	r.Struct.Name = name
 	// get number of struct fields
 	nf := st.NumFields()
 	// prefill Fields

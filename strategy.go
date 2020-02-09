@@ -2,7 +2,6 @@ package gopium
 
 import (
 	"context"
-	"fmt"
 	"go/types"
 )
 
@@ -29,7 +28,7 @@ type StrategyMock struct{}
 // Apply StrategyMock implementation
 func (stg StrategyMock) Apply(ctx context.Context, name string, st *types.Struct) (r StructError) {
 	// build full hierarchical name of the structure
-	r.Struct.Name = fmt.Sprintf("%s/%s", name, st)
+	r.Struct.Name = name
 	// get number of struct fields
 	nf := st.NumFields()
 	// prefill Fields
