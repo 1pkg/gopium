@@ -4,68 +4,101 @@ import (
 	"context"
 	"fmt"
 	"go/ast"
+	"go/parser"
 	"go/token"
 	"go/types"
 
 	"golang.org/x/tools/go/packages"
 )
 
-// Parser defines abstraction for packages parsing processor
-type Parser interface {
-	Parse(context.Context) (*types.Package, *ast.Package, error)
+// Parser defines abstraction for
+// types packages parsing processor
+type TypeParser interface {
+	ParseTypes(context.Context) (*types.Package, error)
 }
 
-// ParserXTool defines packages Parser default "golang.org/x/tools/go/packages" implementation
-// that uses packages.Load with cfg to collect package types
-type ParserXToolPackages struct {
+// Parser defines abstraction for
+// ast packages parsing processor
+type ASTParser interface {
+	ParseAST(context.Context) (*ast.Package, error)
+}
+
+// Parser defines abstraction for packages parsing processor
+type Parser interface {
+	TypeParser
+	ASTParser
+}
+
+// ParserXToolPackagesAST defines packages Parser default implementation
+// that uses "golang.org/x/tools/go/packages" packages.Load with cfg to collect package types
+// and uses "go/parser" parser.ParseDir to collect ast package
+type ParserXToolPackagesAST struct {
 	Pattern    string
 	AbsDir     string
-	LoadMode   packages.LoadMode
+	ModeTypes  packages.LoadMode
+	ModeAST    parser.Mode
 	BuildEnv   []string
 	BuildFlags []string
 }
 
-// Parse packages Parser default "golang.org/x/tools/go/packages" implementation
-func (p ParserXToolPackages) Parse(ctx context.Context) (*types.Package, *ast.Package, error) {
+// ParseTypes ParserXToolPackagesAST implementation
+func (p ParserXToolPackagesAST) ParseTypes(ctx context.Context) (*types.Package, error) {
 	// create packages.Config obj
 	cfg := &packages.Config{
 		Fset:       token.NewFileSet(),
 		Context:    ctx,
 		Dir:        p.AbsDir,
-		Mode:       p.LoadMode,
+		Mode:       p.ModeTypes,
 		Env:        p.BuildEnv,
 		BuildFlags: p.BuildFlags,
 		Tests:      true,
 	}
-	// use load packages
+	// use packages.Load
 	pkgs, err := packages.Load(cfg, p.Pattern)
 	if err != nil {
-		return nil, nil, err
+		return nil, err
 	}
 	// check parse results
 	if len(pkgs) != 1 || pkgs[0].String() != p.Pattern {
-		return nil, nil, fmt.Errorf("packages %q wasn't found", p.Pattern)
+		return nil, fmt.Errorf("package %q wasn't found", p.Pattern)
 	}
-	return pkgs[0].Types, nil, nil
+	return pkgs[0].Types, nil
+}
+
+// ParseAST ParserXToolPackagesAST implementation
+func (p ParserXToolPackagesAST) ParseAST(ctx context.Context) (*ast.Package, error) {
+	// use parser.ParseDir
+	pkgs, err := parser.ParseDir(
+		token.NewFileSet(),
+		p.Pattern,
+		nil,
+		p.ModeAST,
+	)
+	if err != nil {
+		return nil, err
+	}
+	// check parse results
+	pkg, ok := pkgs[p.Pattern]
+	if !ok {
+		return nil, fmt.Errorf("package %q wasn't found", p.Pattern)
+	}
+	return pkg, nil
 }
 
 // ParserMock defines packages Parser mock implementation
 type ParserMock struct {
-	tpkg *types.Package
-	apkg *ast.Package
+	typePkg *types.Package
+	astPkg  *ast.Package
 }
 
-// Parse ParserMock implementation
-func (p ParserMock) Parse(context.Context) (*types.Package, *ast.Package, error) {
-	return p.tpkg, p.apkg, nil
+// ParseTypes ParserMock implementation
+func (p ParserMock) ParseTypes(context.Context) (*types.Package, error) {
+	return p.typePkg, nil
 }
 
-// ParserNil defines packages Parser nil implementation
-type ParserNil struct{}
-
-// Parse ParserNil implementation
-func (ParserNil) Parse(context.Context) (*types.Package, *ast.Package, error) {
-	return nil, nil, nil
+// ParseAST ParserMock implementation
+func (p ParserMock) ParseAST(context.Context) (*ast.Package, error) {
+	return p.astPkg, nil
 }
 
 // ParserError defines packages Parser error implementation
@@ -73,7 +106,12 @@ type ParserError struct {
 	err error
 }
 
-// Parse ParserError implementation
-func (p ParserError) Parse(context.Context) (*types.Package, *ast.Package, error) {
-	return nil, nil, p.err
+// ParseTypes ParserError implementation
+func (p ParserError) ParseTypes(context.Context) (*types.Package, error) {
+	return nil, p.err
+}
+
+// ParseAST ParserError implementation
+func (p ParserError) ParseAST(context.Context) (*ast.Package, error) {
+	return nil, p.err
 }

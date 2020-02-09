@@ -12,11 +12,11 @@ import (
 )
 
 // wout defines packages Walker out implementation
-// that uses pkgs.Parser to parse packages data
+// that uses pkgs.TypeParser to parse packages types data
 // fmts.TypeFormat to format strategy result
 // and io.Writer to write output
 type wout struct {
-	parser pkgs.Parser
+	parser pkgs.TypeParser
 	fmt    fmts.TypeFormat
 	writer io.Writer
 }
@@ -47,8 +47,7 @@ func (w wout) visit(ctx context.Context, regex *regexp.Regexp, stg gopium.Strate
 		return errors.New("writter wasn't set")
 	}
 	// use parser to parse types pkg data
-	// and skip ast pkg data
-	tpkg, _, err := w.parser.Parse(ctx)
+	tpkg, err := w.parser.ParseTypes(ctx)
 	if err != nil {
 		return err
 	}

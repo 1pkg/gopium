@@ -25,9 +25,9 @@ func main() {
 		panic(err)
 	}
 	// set up WalkerBuilder
-	p := pkgs.ParserXToolPackages{
-		Pattern:  "1pkg/gopium/pkgs",
-		LoadMode: packages.LoadAllSyntax,
+	p := pkgs.ParserXToolPackagesAST{
+		Pattern:   "1pkg/gopium/pkgs",
+		ModeTypes: packages.LoadAllSyntax,
 	}
 	bw := read.NewBuilder(p)
 	// build Walker
