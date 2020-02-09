@@ -13,11 +13,11 @@ type Strategy interface {
 	Apply(ctx context.Context, name string, st *types.Struct) StructError
 }
 
-// StrategyName defines registred strategy name abstraction
+// StrategyName defines registred Strategy name abstraction
 // used by StrategyBuilder to build registred strategies
 type StrategyName string
 
-// StrategyBuilder defines strategy builder abstraction
+// StrategyBuilder defines Strategy builder abstraction
 // that helps to create Strategy by StrategyName
 type StrategyBuilder interface {
 	Build(StrategyName) (Strategy, error)

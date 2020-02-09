@@ -14,3 +14,13 @@ type Walker interface {
 	// VisitDeep visits all levels of the tree
 	VisitDeep(context.Context, *regexp.Regexp, Strategy) error
 }
+
+// WalkerName defines registred Walker name abstraction
+// used by WalkerBuilder to build registred walkers
+type WalkerName string
+
+// WalkerBuilder defines Walker builder abstraction
+// that helps to create Walker by WalkerName
+type WalkerBuilder interface {
+	Build(StrategyName) (Walker, error)
+}
