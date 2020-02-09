@@ -2,37 +2,64 @@ package gopium
 
 import (
 	"context"
-	"errors"
-	"go/token"
+	"fmt"
 	"go/types"
 )
 
-// Strategy defines action abstraction
-// that applies some strategy on types.Struct
-type Strategy func(context.Context, string, *types.Struct, *token.FileSet) error
+// Strategy defines "pure func" action abstraction
+// that applies some strategy payload on types.Struct an it's name
+// and returns resulted Struct object or error
+type Strategy interface {
+	Apply(ctx context.Context, name string, st *types.Struct) StructError
+}
 
-// StrategyName defines known strategy name type
+// StrategyName defines registred strategy name abstraction
+// used by StrategyBuilder to build registred strategies
 type StrategyName string
 
 // StrategyBuilder defines strategy builder abstraction
-// that helps to create Strategy by name
+// that helps to create Strategy by StrategyName
 type StrategyBuilder interface {
 	Build(StrategyName) (Strategy, error)
 }
 
 // StrategyMock defines Strategy mock implementation
-type StrategyMock map[string]string
+type StrategyMock struct{}
 
-// Execute Strategy mock implementation
-func (stg StrategyMock) Execute(ctx context.Context, nm string, st *types.Struct, fset *token.FileSet) error {
-	stg[nm] = st.String()
-	return nil
+// Apply StrategyMock implementation
+func (stg StrategyMock) Apply(ctx context.Context, name string, st *types.Struct) (r StructError) {
+	// build full hierarchical name of the structure
+	r.Struct.Name = fmt.Sprintf("%s/%s", name, st)
+	// get number of struct fields
+	nf := st.NumFields()
+	// prefill Fields
+	r.Struct.Fields = make([]Field, 0, nf)
+	for i := 0; i < nf; i++ {
+		// get field
+		f := st.Field(i)
+		// get tag
+		tag := st.Tag(i)
+		// fill field structure
+		r.Struct.Fields = append(r.Struct.Fields, Field{
+			Name:     f.Name(),
+			Type:     f.Type().String(),
+			Size:     0,
+			Tag:      tag,
+			Exported: f.Exported(),
+			Embedded: f.Embedded(),
+		})
+	}
+	return
 }
 
-// StrategyMock defines Strategy error implementation
-type StrategyError string
+// StrategyError defines Strategy error implementation
+type StrategyError struct {
+	err error
+}
 
-// Execute Strategy error implementation
-func (stg StrategyError) Execute(ctx context.Context, nm string, st *types.Struct, fset *token.FileSet) error {
-	return errors.New(string(stg))
+// Apply StrategyError implementation
+func (stg StrategyError) Apply(ctx context.Context, name string, st *types.Struct) (r StructError) {
+	// just set error
+	r.Error = stg.err
+	return
 }
