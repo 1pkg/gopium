@@ -10,7 +10,9 @@ import (
 
 // List of registred types gopium.StrategyName
 var (
-	StrategyEnumerate gopium.StrategyName = "StrategyEnumerate"
+	StrategyEnumerate  gopium.StrategyName = "StrategyEnumerate"
+	StrategyNameSort   gopium.StrategyName = "StrategyNameSort"
+	StrategyMemorySort gopium.StrategyName = "StrategyMemorySort"
 )
 
 // Builder defines types gopium.StrategyBuilder implementation
@@ -30,6 +32,10 @@ func (b Builder) Build(name gopium.StrategyName) (gopium.Strategy, error) {
 	switch name {
 	case StrategyEnumerate:
 		return stgenum(b), nil
+	case StrategyNameSort:
+		return stgnamesort(b), nil
+	case StrategyMemorySort:
+		return stgmemsort(b), nil
 	default:
 		return nil, fmt.Errorf("strategy %q wasn't found", name)
 	}
