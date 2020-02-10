@@ -15,13 +15,13 @@ import (
 // Parser defines abstraction for
 // types packages parsing processor
 type TypeParser interface {
-	ParseTypes(context.Context) (*types.Package, error)
+	ParseTypes(context.Context) (*types.Package, *token.FileSet, error)
 }
 
 // Parser defines abstraction for
 // ast packages parsing processor
 type ASTParser interface {
-	ParseAST(context.Context) (*ast.Package, error)
+	ParseAST(context.Context) (*ast.Package, *token.FileSet, error)
 }
 
 // Parser defines abstraction for packages parsing processor
@@ -43,10 +43,11 @@ type ParserXToolPackagesAST struct {
 }
 
 // ParseTypes ParserXToolPackagesAST implementation
-func (p ParserXToolPackagesAST) ParseTypes(ctx context.Context) (*types.Package, error) {
+func (p ParserXToolPackagesAST) ParseTypes(ctx context.Context) (*types.Package, *token.FileSet, error) {
 	// create packages.Config obj
+	fset := token.NewFileSet()
 	cfg := &packages.Config{
-		Fset:       token.NewFileSet(),
+		Fset:       fset,
 		Context:    ctx,
 		Dir:        p.AbsDir,
 		Mode:       p.ModeTypes,
@@ -57,33 +58,36 @@ func (p ParserXToolPackagesAST) ParseTypes(ctx context.Context) (*types.Package,
 	// use packages.Load
 	pkgs, err := packages.Load(cfg, p.Pattern)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 	// check parse results
 	if len(pkgs) != 1 || pkgs[0].String() != p.Pattern {
-		return nil, fmt.Errorf("package %q wasn't found", p.Pattern)
+		return nil, nil, fmt.Errorf("package %q wasn't found", p.Pattern)
 	}
-	return pkgs[0].Types, nil
+	return pkgs[0].Types, fset, nil
 }
 
 // ParseAST ParserXToolPackagesAST implementation
-func (p ParserXToolPackagesAST) ParseAST(ctx context.Context) (*ast.Package, error) {
+func (p ParserXToolPackagesAST) ParseAST(ctx context.Context) (*ast.Package, *token.FileSet, error) {
 	// use parser.ParseDir
+	fset := token.NewFileSet()
+	dir := path.Join(p.AbsDir, p.Pattern)
 	pkgs, err := parser.ParseDir(
-		token.NewFileSet(),
-		path.Join(p.AbsDir, p.Pattern),
+		fset,
+		dir,
 		nil,
 		p.ModeAST,
 	)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 	// check parse results
-	pkg, ok := pkgs[path.Base(p.Pattern)]
+	bpkg := path.Base(p.Pattern)
+	pkg, ok := pkgs[bpkg]
 	if !ok {
-		return nil, fmt.Errorf("package %q wasn't found", p.Pattern)
+		return nil, nil, fmt.Errorf("package %q wasn't found", p.Pattern)
 	}
-	return pkg, nil
+	return pkg, fset, nil
 }
 
 // ParserMock defines packages Parser mock implementation
@@ -93,13 +97,13 @@ type ParserMock struct {
 }
 
 // ParseTypes ParserMock implementation
-func (p ParserMock) ParseTypes(context.Context) (*types.Package, error) {
-	return p.typePkg, nil
+func (p ParserMock) ParseTypes(context.Context) (*types.Package, *token.FileSet, error) {
+	return p.typePkg, token.NewFileSet(), nil
 }
 
 // ParseAST ParserMock implementation
-func (p ParserMock) ParseAST(context.Context) (*ast.Package, error) {
-	return p.astPkg, nil
+func (p ParserMock) ParseAST(context.Context) (*ast.Package, *token.FileSet, error) {
+	return p.astPkg, token.NewFileSet(), nil
 }
 
 // ParserError defines packages Parser error implementation
@@ -108,11 +112,11 @@ type ParserError struct {
 }
 
 // ParseTypes ParserError implementation
-func (p ParserError) ParseTypes(context.Context) (*types.Package, error) {
-	return nil, p.err
+func (p ParserError) ParseTypes(context.Context) (*types.Package, *token.FileSet, error) {
+	return nil, nil, p.err
 }
 
 // ParseAST ParserError implementation
-func (p ParserError) ParseAST(context.Context) (*ast.Package, error) {
-	return nil, p.err
+func (p ParserError) ParseAST(context.Context) (*ast.Package, *token.FileSet, error) {
+	return nil, nil, p.err
 }
