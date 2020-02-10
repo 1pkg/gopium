@@ -17,7 +17,7 @@ import (
 // and io.Writer to write output
 type wout struct {
 	parser pkgs.TypeParser
-	fmt    fmts.TypeFormat
+	fmt    fmts.StructFormat
 	writer io.Writer
 }
 
