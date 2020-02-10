@@ -47,7 +47,8 @@ func (w wout) visit(ctx context.Context, regex *regexp.Regexp, stg gopium.Strate
 		return errors.New("writter wasn't set")
 	}
 	// use parser to parse types pkg data
-	pkg, err := w.parser.ParseTypes(ctx)
+	// we don't care about fset
+	pkg, _, err := w.parser.ParseTypes(ctx)
 	if err != nil {
 		return err
 	}

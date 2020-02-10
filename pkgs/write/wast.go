@@ -41,7 +41,8 @@ func (w wast) VisitDeep(ctx context.Context, regex *regexp.Regexp, stg gopium.St
 // builded from strategy results
 func (w wast) visit(ctx context.Context, regex *regexp.Regexp, stg gopium.Strategy, deep bool) error {
 	// use parser to parse types pkg data
-	pkg, err := w.parser.ParseTypes(ctx)
+	// we don't care about fset
+	pkg, _, err := w.parser.ParseTypes(ctx)
 	if err != nil {
 		return err
 	}
@@ -93,7 +94,7 @@ func (w wast) visit(ctx context.Context, regex *regexp.Regexp, stg gopium.Strate
 // updating os.File list ASTs
 func (w wast) write(ctx context.Context, sterrs []gopium.StructError) error {
 	// use parser to parse ast pkg data
-	pkg, err := w.parser.ParseAST(ctx)
+	pkg, fset, err := w.parser.ParseAST(ctx)
 	if err != nil {
 		return err
 	}
@@ -120,7 +121,7 @@ func (w wast) write(ctx context.Context, sterrs []gopium.StructError) error {
 		}
 	}
 	// run async writeAST helper
-	return w.writeAST(ctx, pkg)
+	return w.writeAST(ctx, pkg, fset)
 }
 
 // updateAST helps to update ast.Package
@@ -147,8 +148,9 @@ func (w wast) updateAST(ctx context.Context, pkg *ast.Package, sterr gopium.Stru
 // writeAST helps to update os.File list
 // accordingly to updated ast.Package
 // concurently or return error otherwise
-func (w wast) writeAST(ctx context.Context, pkg *ast.Package) error {
+func (w wast) writeAST(ctx context.Context, pkg *ast.Package, fset *token.FileSet) error {
 	// create separate cancelation context for writting
+	//nolint
 	nctx, cancel := context.WithCancel(ctx)
 	// wait group writing counter
 	var wg sync.WaitGroup
@@ -176,11 +178,12 @@ func (w wast) writeAST(ctx context.Context, pkg *ast.Package) error {
 					return
 				}
 				// write updated ast.File to related os.File
+				// use original toke.FileSet to keep format
 				// in case of any error put it to errch
 				// and cancel context
 				err = printer.Fprint(
 					file,
-					token.NewFileSet(),
+					fset,
 					node,
 				)
 				if err != nil {
