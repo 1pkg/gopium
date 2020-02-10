@@ -136,7 +136,19 @@ func (w wast) updateAST(ctx context.Context, pkg *ast.Package, sterr gopium.Stru
 	// apply astutil.Apply to parsed ast.Package
 	// and update structure in AST
 	unode := astutil.Apply(pkg, func(c *astutil.Cursor) bool {
+		node := c.Node()
+		if gendecl, ok := node.(*ast.GenDecl); ok {
+			for _, spec := range gendecl.Specs {
+				if ts, ok := spec.(*ast.TypeSpec); ok {
+					if _, ok := ts.Type.(*ast.StructType); ok {
+						// TODO use fmts.StructAST to generate AST for gopium.Struct
+						return true
+					}
+				}
+			}
+		}
 		return true
+
 	}, nil)
 	if upkg, ok := unode.(*ast.Package); ok {
 		return upkg, nil
