@@ -7,6 +7,7 @@ import (
 	"go/parser"
 	"go/token"
 	"go/types"
+	"path"
 
 	"golang.org/x/tools/go/packages"
 )
@@ -70,7 +71,7 @@ func (p ParserXToolPackagesAST) ParseAST(ctx context.Context) (*ast.Package, err
 	// use parser.ParseDir
 	pkgs, err := parser.ParseDir(
 		token.NewFileSet(),
-		p.Pattern,
+		path.Join(p.AbsDir, p.Pattern),
 		nil,
 		p.ModeAST,
 	)
@@ -78,7 +79,7 @@ func (p ParserXToolPackagesAST) ParseAST(ctx context.Context) (*ast.Package, err
 		return nil, err
 	}
 	// check parse results
-	pkg, ok := pkgs[p.Pattern]
+	pkg, ok := pkgs[path.Base(p.Pattern)]
 	if !ok {
 		return nil, fmt.Errorf("package %q wasn't found", p.Pattern)
 	}

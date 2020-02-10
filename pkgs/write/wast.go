@@ -153,7 +153,7 @@ func (w wast) writeAST(ctx context.Context, pkg *ast.Package) error {
 	// wait group writing counter
 	var wg sync.WaitGroup
 	// channel that keeps writting errors
-	var errch chan error
+	errch := make(chan error)
 	for name, file := range pkg.Files {
 		// increment wait group writing counter anyway
 		wg.Add(1)
