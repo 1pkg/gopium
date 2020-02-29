@@ -69,7 +69,7 @@ func NewCliApp(
 }
 
 // Run CliApp implementation
-func (cli CliApp) Run() error {
+func (cli CliApp) Run(ctx context.Context) error {
 	// set up maven
 	m := pkgs_types.NewMavenGoTypes(cli.compiler, cli.arch, cli.cpucaches...)
 	// set up parser
@@ -106,11 +106,11 @@ func (cli CliApp) Run() error {
 	}
 	// run visit function for strategy with regex
 	if cli.deep {
-		if err = w.VisitDeep(context.Background(), cli.regex, stg); err != nil {
+		if err = w.VisitDeep(ctx, cli.regex, stg); err != nil {
 			return fmt.Errorf("strategy error happened %v", err)
 		}
 	} else {
-		if err = w.VisitTop(context.Background(), cli.regex, stg); err != nil {
+		if err = w.VisitTop(ctx, cli.regex, stg); err != nil {
 			return fmt.Errorf("strategy error happened %v", err)
 		}
 	}
