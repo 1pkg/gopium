@@ -1,6 +1,7 @@
 package gopium
 
 import (
+	"context"
 	"fmt"
 	"strings"
 )
@@ -27,5 +28,5 @@ func Stamped(s string) bool {
 // Runner defines abstraction for
 // simple root gopium runner
 type Runner interface {
-	Run() error
+	Run(context.Context) error
 }
