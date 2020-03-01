@@ -1,4 +1,4 @@
-package write
+package walker
 
 import (
 	"context"
