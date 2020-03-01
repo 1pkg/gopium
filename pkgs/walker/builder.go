@@ -2,38 +2,43 @@ package walker
 
 import (
 	"fmt"
+	"os"
 
 	"1pkg/gopium"
+	"1pkg/gopium/fmts"
 	"1pkg/gopium/pkgs"
-	"1pkg/gopium/pkgs/read"
-	"1pkg/gopium/pkgs/write"
+)
+
+// List of registred types gopium.WalkerName
+var (
+	WalkerOutPrettyJsonStd gopium.WalkerName = "WalkerOut-PrettyJsonStd"
+	WalkerAST              gopium.WalkerName = "WalkerAST"
 )
 
 // Builder defines types gopium.WalkerBuilder implementation
-// that uses pkgs.Parser as an parser and other builder
+// that uses pkgs.Parser as an parser and related walkers
 type Builder struct {
-	rb read.Builder
-	wb write.Builder
+	parser pkgs.Parser
 }
 
 // NewBuilder creates instance of Builder
-// and requires pkgs.Parser to pass it to other builde
+// and requires pkgs.Parser to pass it to related walkers
 func NewBuilder(parser pkgs.Parser) Builder {
-	return Builder{
-		rb: read.NewBuilder(parser),
-		wb: write.NewBuilder(parser),
-	}
+	return Builder{parser: parser}
 }
 
 // Build Builder implementation
 func (b Builder) Build(name gopium.WalkerName) (gopium.Walker, error) {
-	w, err := b.rb.Build(name)
-	if err == nil {
-		return w, nil
+	switch name {
+	case WalkerOutPrettyJsonStd:
+		return wout{
+			parser: b.parser,
+			fmt:    fmts.PrettyJson,
+			writer: os.Stdout,
+		}, nil
+	case WalkerAST:
+		return wast(b), nil
+	default:
+		return nil, fmt.Errorf("walker %q wasn't found", name)
 	}
-	w, err = b.wb.Build(name)
-	if err == nil {
-		return w, nil
-	}
-	return nil, fmt.Errorf("walker %q wasn't found", name)
 }
