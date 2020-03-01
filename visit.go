@@ -26,6 +26,10 @@ func Visit(regex *regexp.Regexp, stg Strategy, ch chan<- StructError, deep bool)
 	// with names that match regex and applies strategy to them
 	//nolint
 	var govisit VisitFunc
+	// visited holds visited structure
+	// hierarchy names list
+	// should be shared between govisit funcs
+	visited := sync.Map{}
 	govisit = func(ctx context.Context, scope *types.Scope) {
 		// after visiting is done
 		// wait until all visits finished
@@ -41,9 +45,6 @@ func Visit(regex *regexp.Regexp, stg Strategy, ch chan<- StructError, deep bool)
 				close(ch)
 			}
 		}()
-		// visited holds visited structure
-		// hierarchy names list
-		visited := make(map[string]struct{})
 	loop:
 		// go through all names inside the package scope
 		for _, name := range scope.Names() {
@@ -61,11 +62,11 @@ func Visit(regex *regexp.Regexp, stg Strategy, ch chan<- StructError, deep bool)
 					name = fmt.Sprintf("%s/%s", name, st)
 					// in case hierarchy name of structure
 					// has been already visited
-					if _, ok := visited[name]; ok {
+					if _, ok := visited.Load(name); ok {
 						continue
 					}
 					// mark hierarchy name of structure to visited
-					visited[name] = struct{}{}
+					visited.Store(name, struct{}{})
 					// manage context actions
 					// in case of cancelation break from
 					// futher traverse
@@ -112,6 +113,7 @@ func Visit(regex *regexp.Regexp, stg Strategy, ch chan<- StructError, deep bool)
 				dwg.Wait()
 				cancel()
 				// should be called only once
+				// from top level godeep
 				donce.Do(func() {
 					close(ch)
 				})
@@ -124,12 +126,12 @@ func Visit(regex *regexp.Regexp, stg Strategy, ch chan<- StructError, deep bool)
 				// increment deep wait group visits counter
 				dwg.Add(1)
 				// concurently visit top scope
-				go func() {
+				go func(ctx context.Context, scope *types.Scope) {
 					// govisit visit scope
 					govisit(ctx, scope)
 					// decrement deep wait group visits counter
 					dwg.Done()
-				}()
+				}(ctx, scope)
 			case <-ctx.Done():
 				return
 			}
@@ -137,7 +139,7 @@ func Visit(regex *regexp.Regexp, stg Strategy, ch chan<- StructError, deep bool)
 			for i := 0; i < scope.NumChildren(); i++ {
 				// visit them iteratively
 				// using child context and scope
-				godeep(chctx, scope.Child(i))
+				go godeep(chctx, scope.Child(i))
 			}
 		}
 		// assign result func
