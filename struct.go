@@ -9,18 +9,15 @@ type Field struct {
 	Tag      string
 	Exported bool
 	Embedded bool
+	Doc      []string
+	Comment  []string
 }
 
 // Struct defines single structure
 // data transfer object abstraction
 type Struct struct {
-	Name   string
-	Fields []Field
-}
-
-// StructError encapsulates Strategy results
-// Struct and error
-type StructError struct {
-	Struct Struct
-	Error  error
+	Name    string
+	Doc     []string
+	Comment []string
+	Fields  []Field
 }

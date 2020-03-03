@@ -17,13 +17,13 @@ type stgenum struct {
 }
 
 // Apply stgenum implementation
-func (stg stgenum) Apply(ctx context.Context, name string, st *types.Struct) (r gopium.StructError) {
+func (stg stgenum) Apply(ctx context.Context, name string, st *types.Struct) (o gopium.Struct, r gopium.Struct, err error) {
 	// build full hierarchical name of the structure
-	r.Struct.Name = name
+	r.Name = name
 	// get number of struct fields
 	nf := st.NumFields()
 	// prefill Fields
-	r.Struct.Fields = make([]gopium.Field, 0, nf)
+	r.Fields = make([]gopium.Field, 0, nf)
 	for i := 0; i < nf; i++ {
 		// get field
 		f := st.Field(i)
@@ -32,7 +32,7 @@ func (stg stgenum) Apply(ctx context.Context, name string, st *types.Struct) (r 
 		// get typeinfo
 		tname, tsize := stg.extractor.Extract(f.Type())
 		// fill field structure
-		r.Struct.Fields = append(r.Struct.Fields, gopium.Field{
+		r.Fields = append(r.Fields, gopium.Field{
 			Name:     f.Name(),
 			Type:     tname,
 			Size:     tsize,
@@ -41,5 +41,6 @@ func (stg stgenum) Apply(ctx context.Context, name string, st *types.Struct) (r 
 			Embedded: f.Embedded(),
 		})
 	}
+	o = r
 	return
 }

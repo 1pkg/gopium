@@ -49,50 +49,37 @@ func (w wast) visit(ctx context.Context, regex *regexp.Regexp, stg gopium.Strate
 	// create gopium.VisitFunc
 	// from gopium.Visit helper
 	// and run it on pkg scope
-	ch := make(chan gopium.StructError)
+	ch := make(gopium.VisitedStructCh)
 	visit := gopium.Visit(regex, stg, ch, deep)
 	// create separate cancelation context for visiting
 	nctx, cancel := context.WithCancel(ctx)
+	defer cancel()
 	// run visiting in separate goroutine
 	go visit(nctx, pkg.Scope())
 	// go through results from visit func
 	// we can use concurent writitng too
 	// but it's probably redundant
 	// as it requires additional level of sync
-	// and error handling
-	var sterrs []gopium.StructError
+	// and intense error handling
+	var sts []gopium.Struct
 	for sterr := range ch {
-		// manage context actions
-		// in case of cancelation break from
-		// collecting action
-		select {
-		default:
-			// in case any error happened
-			// cancel context and return error
-			if sterr.Error != nil {
-				cancel()
-				return sterr.Error
-			}
-			// collect result
-			sterrs = append(sterrs, sterr)
-		case <-ctx.Done():
-			cancel()
-			return nil
+		// in case any error happened just return error
+		// it will cancel context automatically
+		if sterr.Error != nil {
+			return sterr.Error
 		}
+		// otherwise collect result
+		sts = append(sts, sterr.Result)
 	}
-	// we can safely cancel context here
-	// as walk is already done successfully
-	// and returned nil error
-	cancel()
 	// run sync write
 	// with collected strategies results
-	return w.write(ctx, sterrs)
+	return w.write(nctx, sts)
 }
 
 // write wast helps apply
 // updateAST/writeAST to format strategy results
 // updating os.File list ASTs
-func (w wast) write(ctx context.Context, sterrs []gopium.StructError) error {
+func (w wast) write(ctx context.Context, sts []gopium.Struct) error {
 	// use parser to parse ast pkg data
 	pkg, fset, err := w.parser.ParseAST(ctx)
 	if err != nil {
@@ -102,22 +89,22 @@ func (w wast) write(ctx context.Context, sterrs []gopium.StructError) error {
 	// we can use concurent updating too
 	// but it's probably redundant
 	// as it requires additional level of sync
-	// and error handling
-	for _, sterr := range sterrs {
+	// and intense error handling
+	for _, st := range sts {
 		// manage context actions
-		// in case of cancelation break from
-		// writting action
+		// in case of cancelation
+		// stop execution
 		select {
-		default:
-			// run updateAST with strategy result
-			// on the parsed AST pkg
-			// in case any error happened just return error
-			pkg, err = w.updateAST(ctx, pkg, sterr)
-			if err != nil {
-				return err
-			}
 		case <-ctx.Done():
 			return nil
+		default:
+		}
+		// run updateAST with strategy result
+		// on the parsed ast.Package
+		// in case any error happened just return error
+		pkg, err = w.updateAST(ctx, pkg, st)
+		if err != nil {
+			return err
 		}
 	}
 	// run async writeAST helper
@@ -125,14 +112,9 @@ func (w wast) write(ctx context.Context, sterrs []gopium.StructError) error {
 }
 
 // updateAST helps to update ast.Package
-// accordingly to Strategy gopium.StructError result
+// accordingly to Strategy gopium.Struct result
 // synchronously or return error otherwise
-func (w wast) updateAST(ctx context.Context, pkg *ast.Package, sterr gopium.StructError) (*ast.Package, error) {
-	// in case strategy has any error
-	// just return error
-	if sterr.Error != nil {
-		return nil, sterr.Error
-	}
+func (w wast) updateAST(ctx context.Context, pkg *ast.Package, st gopium.Struct) (*ast.Package, error) {
 	// apply astutil.Apply to parsed ast.Package
 	// and update structure in AST
 	unode := astutil.Apply(pkg, func(c *astutil.Cursor) bool {
@@ -150,80 +132,72 @@ func (w wast) updateAST(ctx context.Context, pkg *ast.Package, sterr gopium.Stru
 		return true
 
 	}, nil)
+	// check that updated type is correct
 	if upkg, ok := unode.(*ast.Package); ok {
 		return upkg, nil
 	}
 	// in case updated type isn't expected
-	return nil, fmt.Errorf("can't update AST for structure %+v", sterr.Struct)
+	return nil, fmt.Errorf("can't update AST for structure %+v", st)
 }
 
 // writeAST helps to update os.File list
 // accordingly to updated ast.Package
 // concurently or return error otherwise
 func (w wast) writeAST(ctx context.Context, pkg *ast.Package, fset *token.FileSet) error {
-	// create separate cancelation context for writting
-	//nolint
+	// create separate cancelation context for writing
+	// and defer cancelation func
 	nctx, cancel := context.WithCancel(ctx)
-	// wait group writing counter
+	defer cancel()
+	// we also need to have separate
+	// wait group and error chan
+	// to sync concurent writes
 	var wg sync.WaitGroup
-	// channel that keeps writting errors
-	errch := make(chan error)
+	wch := make(chan error)
 	for name, file := range pkg.Files {
-		// increment wait group writing counter anyway
+		// manage context actions
+		// in case of cancelation
+		// stop execution
+		// it will cancel context automatically
+		select {
+		case <-nctx.Done():
+			return nil
+		default:
+		}
+		// increment writers counter
 		wg.Add(1)
 		// concurently update each ast.File to os.File
-		go func(ctx context.Context, fname string, node *ast.File) {
-			// decrement wait group writing counter anyway
+		go func(fname string, node *ast.File) {
+			// decrement writers counter
 			defer wg.Done()
-			// manage context actions
-			// in case of cancelation break from
-			// writting action
-			select {
-			default:
-				// open os.File for related ast.File
-				// in case of any error put it to errch
-				// and cancel context
-				file, err := os.Create(fname)
-				if err != nil {
-					errch <- err
-					cancel()
-					return
-				}
-				// write updated ast.File to related os.File
-				// use original toke.FileSet to keep format
-				// in case of any error put it to errch
-				// and cancel context
-				err = printer.Fprint(
-					file,
-					fset,
-					node,
-				)
-				if err != nil {
-					errch <- err
-					cancel()
-					return
-				}
-			case <-ctx.Done():
-				cancel()
+			// open os.File for related ast.File
+			file, err := os.Create(fname)
+			// in case any error happened put error to chan
+			// it will cancel context automatically
+			if err != nil {
+				wch <- err
 				return
 			}
-		}(nctx, name, file)
+			// write updated ast.File to related os.File
+			// use original toke.FileSet to keep format
+			err = printer.Fprint(
+				file,
+				fset,
+				node,
+			)
+			// in case any error happened put error to chan
+			// it will cancel context automatically
+			if err != nil {
+				wch <- err
+				return
+			}
+		}(name, file)
 	}
-	// wait until all writtings are done
-	// and close writting errors channel
-	wg.Wait()
-	// get last error from the channel
-	var err error
-	select {
-	case err = <-errch:
-	default:
-		// we can safely cancel context here
-		// as write is already done successfully
-		// and returned nil error
-		cancel()
-	}
-	// close error channel and return last error
-	close(errch)
-	//nolint
-	return err
+	// will wait until all writers
+	// resolve their jobs and
+	// close error wait ch after
+	go func() {
+		wg.Wait()
+		close(wch)
+	}()
+	return <-wch
 }

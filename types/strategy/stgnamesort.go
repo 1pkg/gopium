@@ -20,11 +20,11 @@ type stgnamesort struct {
 }
 
 // Apply stgnamesort implementation
-func (stg stgnamesort) Apply(ctx context.Context, name string, st *types.Struct) (r gopium.StructError) {
+func (stg stgnamesort) Apply(ctx context.Context, name string, st *types.Struct) (o gopium.Struct, r gopium.Struct, err error) {
 	enum := stgenum(stg)
-	r = enum.Apply(ctx, name, st)
-	sort.SliceStable(r.Struct.Fields, func(i, j int) bool {
-		return r.Struct.Fields[i].Name < r.Struct.Fields[j].Name
+	o, r, err = enum.Apply(ctx, name, st)
+	sort.SliceStable(r.Fields, func(i, j int) bool {
+		return r.Fields[i].Name < r.Fields[j].Name
 	})
 	return
 }
