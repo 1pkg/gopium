@@ -27,7 +27,7 @@ type StrategyMock struct{}
 
 // Apply StrategyMock implementation
 func (stg StrategyMock) Apply(ctx context.Context, name string, st *types.Struct) (o Struct, r Struct, err error) {
-	// build full hierarchical name of the structure
+	// set structure name
 	r.Name = name
 	// get number of struct fields
 	nf := st.NumFields()

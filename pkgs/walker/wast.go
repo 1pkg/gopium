@@ -50,7 +50,8 @@ func (w wast) visit(ctx context.Context, regex *regexp.Regexp, stg gopium.Strate
 	// from gopium.Visit helper
 	// and run it on pkg scope
 	ch := make(gopium.VisitedStructCh)
-	visit := gopium.Visit(regex, stg, ch, deep)
+	// TODO use real gopium.IDFunc impl
+	visit := gopium.Visit(regex, stg, nil, ch, deep)
 	// create separate cancelation context for visiting
 	nctx, cancel := context.WithCancel(ctx)
 	defer cancel()
@@ -61,25 +62,25 @@ func (w wast) visit(ctx context.Context, regex *regexp.Regexp, stg gopium.Strate
 	// but it's probably redundant
 	// as it requires additional level of sync
 	// and intense error handling
-	var sts []gopium.Struct
-	for sterr := range ch {
+	var structs []gopium.Struct
+	for applied := range ch {
 		// in case any error happened just return error
 		// it will cancel context automatically
-		if sterr.Error != nil {
-			return sterr.Error
+		if applied.Error != nil {
+			return applied.Error
 		}
 		// otherwise collect result
-		sts = append(sts, sterr.Result)
+		structs = append(structs, applied.Result)
 	}
 	// run sync write
 	// with collected strategies results
-	return w.write(nctx, sts)
+	return w.write(nctx, structs)
 }
 
 // write wast helps apply
 // updateAST/writeAST to format strategy results
 // updating os.File list ASTs
-func (w wast) write(ctx context.Context, sts []gopium.Struct) error {
+func (w wast) write(ctx context.Context, structs []gopium.Struct) error {
 	// use parser to parse ast pkg data
 	pkg, fset, err := w.parser.ParseAST(ctx)
 	if err != nil {
@@ -90,7 +91,7 @@ func (w wast) write(ctx context.Context, sts []gopium.Struct) error {
 	// but it's probably redundant
 	// as it requires additional level of sync
 	// and intense error handling
-	for _, st := range sts {
+	for _, st := range structs {
 		// manage context actions
 		// in case of cancelation
 		// stop execution

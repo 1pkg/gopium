@@ -2,18 +2,25 @@ package gopium
 
 import (
 	"context"
-	"fmt"
 	"go/types"
 	"regexp"
 	"sync"
 )
 
-// VisitedStructCh encapsulates visited by strategy
-// structs results: origin, result structs and error
-type VisitedStructCh chan struct {
+// applied encapsulates visited by strategy
+// structs results: id, origin, result structs and error
+type applied struct {
+	ID             string
 	Origin, Result Struct
 	Error          error
 }
+
+// VisitedStructCh keeps applied stream
+type VisitedStructCh chan applied
+
+// IDFunc defines abstraction that helpes
+// create unique identifier
+type IDFunc func(types.Object) string
 
 // VisitFunc defines abstraction that helpes
 // visit filtered structures in the scope
@@ -24,8 +31,8 @@ type VisitFunc func(context.Context, *types.Scope)
 // it creates VisitFunc instance that
 // goes through all struct decls inside the scope
 // and applies the strategy if struct name matches regex
-// then it push result of the strategy to the StructError chan
-func Visit(regex *regexp.Regexp, stg Strategy, ch VisitedStructCh, deep bool) (f VisitFunc) {
+// then it push result of the strategy to the chan
+func Visit(regex *regexp.Regexp, stg Strategy, idfunc IDFunc, ch VisitedStructCh, deep bool) (f VisitFunc) {
 	// wait group visits counter
 	var wg sync.WaitGroup
 	// govisit defines shallow function
@@ -65,15 +72,15 @@ func Visit(regex *regexp.Regexp, stg Strategy, ch VisitedStructCh, deep bool) (f
 			if tn, ok := scope.Lookup(name).(*types.TypeName); ok && !tn.IsAlias() {
 				// if underlying type is struct
 				if st, ok := tn.Type().Underlying().(*types.Struct); ok {
-					// build full hierarchy name of structure
-					name = fmt.Sprintf("%s/%s", name, st)
-					// in case hierarchy name of structure
+					// build id for structure
+					id := idfunc(tn)
+					// in case id of structure
 					// has been already visited
-					if _, ok := visited.Load(name); ok {
+					if _, ok := visited.Load(id); ok {
 						continue
 					}
 					// mark hierarchy name of structure to visited
-					visited.Store(name, struct{}{})
+					visited.Store(id, struct{}{})
 					// manage context actions
 					// in case of cancelation break from
 					// futher traverse
@@ -86,21 +93,19 @@ func Visit(regex *regexp.Regexp, stg Strategy, ch VisitedStructCh, deep bool) (f
 					wg.Add(1)
 					// concurently visit the structure
 					// and apply strategy to it
-					go func(name string, st *types.Struct) {
+					go func(id, name string, st *types.Struct) {
 						// decrement wait group visits counter
 						defer wg.Done()
 						// apply provided strategy
 						o, r, err := stg.Apply(ctx, name, st)
 						// and push results to the chan
-						ch <- struct {
-							Origin, Result Struct
-							Error          error
-						}{
+						ch <- applied{
+							ID:     id,
 							Origin: o,
 							Result: r,
 							Error:  err,
 						}
-					}(name, st)
+					}(id, name, st)
 				}
 			}
 		}
