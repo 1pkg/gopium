@@ -45,7 +45,7 @@ func main() {
 		panic(err)
 	}
 	// run VisitTop for Strategy with regex
-	err = w.VisitTop(context.Background(), regex, stg)
+	err = w.VisitDeep(context.Background(), regex, stg)
 	if err != nil {
 		panic(err)
 	}

@@ -16,7 +16,7 @@ type VisitedStructCh chan struct {
 }
 
 // VisitFunc defines abstraction that helpes
-// visit filtered structures on the scope
+// visit filtered structures in the scope
 type VisitFunc func(context.Context, *types.Scope)
 
 // Visit helps to implement Walker VisitTop and VisitDeep methods
@@ -26,7 +26,7 @@ type VisitFunc func(context.Context, *types.Scope)
 // and applies the strategy if struct name matches regex
 // then it push result of the strategy to the StructError chan
 func Visit(regex *regexp.Regexp, stg Strategy, ch VisitedStructCh, deep bool) (f VisitFunc) {
-	// deep wait group visits counter
+	// wait group visits counter
 	var wg sync.WaitGroup
 	// govisit defines shallow function
 	// that goes through structures on the scope
@@ -78,36 +78,36 @@ func Visit(regex *regexp.Regexp, stg Strategy, ch VisitedStructCh, deep bool) (f
 					// in case of cancelation break from
 					// futher traverse
 					select {
-					default:
-						// increment wait group visits counter
-						wg.Add(1)
-						// concurently visit the structure
-						// and apply strategy to it
-						go func(name string, st *types.Struct) {
-							// apply provided strategy
-							o, r, err := stg.Apply(ctx, name, st)
-							// and push results to the chan
-							ch <- struct {
-								Origin, Result Struct
-								Error          error
-							}{
-								Origin: o,
-								Result: r,
-								Error:  err,
-							}
-							// decrement wait group visits counter
-							wg.Done()
-						}(name, st)
 					case <-ctx.Done():
 						break loop
+					default:
 					}
+					// increment wait group visits counter
+					wg.Add(1)
+					// concurently visit the structure
+					// and apply strategy to it
+					go func(name string, st *types.Struct) {
+						// decrement wait group visits counter
+						defer wg.Done()
+						// apply provided strategy
+						o, r, err := stg.Apply(ctx, name, st)
+						// and push results to the chan
+						ch <- struct {
+							Origin, Result Struct
+							Error          error
+						}{
+							Origin: o,
+							Result: r,
+							Error:  err,
+						}
+					}(name, st)
 				}
 			}
 		}
 	}
 	// assign result func
 	f = govisit
-
+	// in case of deep visit
 	if deep {
 		// deep wait group visits counter
 		var dwg sync.WaitGroup
@@ -126,33 +126,35 @@ func Visit(regex *regexp.Regexp, stg Strategy, ch VisitedStructCh, deep bool) (f
 			// even in case of context cancelation
 			defer func() {
 				dwg.Wait()
-				cancel()
 				// should be called only once
 				// from top level godeep
 				donce.Do(func() {
+					cancel()
 					close(ch)
 				})
 			}()
 			// manage parent context actions
-			// in case of cancelation break from
-			// futher traverse
+			// in case of cancelation
+			// break from futher traverse
 			select {
-			default:
-				// increment deep wait group visits counter
-				dwg.Add(1)
-				// concurently visit top scope
-				go func(ctx context.Context, scope *types.Scope) {
-					// govisit visit scope
-					govisit(ctx, scope)
-					// decrement deep wait group visits counter
-					dwg.Done()
-				}(ctx, scope)
 			case <-ctx.Done():
 				return
+			default:
 			}
+			// increment deep wait group visits counter
+			dwg.Add(1)
+			// concurently visit current scope
+			go func() {
+				// decrement deep wait group visits counter
+				defer dwg.Done()
+				// run govisit on current scope
+				govisit(ctx, scope)
+				// wait until scope wait group is resolved
+				wg.Wait()
+			}()
 			// traverse children scopes
 			for i := 0; i < scope.NumChildren(); i++ {
-				// visit them iteratively
+				// visit children scopes iteratively
 				// using child context and scope
 				go godeep(chctx, scope.Child(i))
 			}
@@ -160,6 +162,5 @@ func Visit(regex *regexp.Regexp, stg Strategy, ch VisitedStructCh, deep bool) (f
 		// assign result func
 		f = godeep
 	}
-
 	return
 }
