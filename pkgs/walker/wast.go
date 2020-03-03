@@ -153,14 +153,16 @@ func (w wast) writeAST(ctx context.Context, pkg *ast.Package, fset *token.FileSe
 	// to sync concurent writes
 	var wg sync.WaitGroup
 	wch := make(chan error)
+loop:
+	// go through all files in package
+	// and update them to concurently
 	for name, file := range pkg.Files {
 		// manage context actions
 		// in case of cancelation
 		// stop execution
-		// it will cancel context automatically
 		select {
 		case <-nctx.Done():
-			return nil
+			break loop
 		default:
 		}
 		// increment writers counter
@@ -172,9 +174,10 @@ func (w wast) writeAST(ctx context.Context, pkg *ast.Package, fset *token.FileSe
 			// open os.File for related ast.File
 			file, err := os.Create(fname)
 			// in case any error happened put error to chan
-			// it will cancel context automatically
+			// and cancel context immediately
 			if err != nil {
 				wch <- err
+				cancel()
 				return
 			}
 			// write updated ast.File to related os.File
@@ -185,9 +188,10 @@ func (w wast) writeAST(ctx context.Context, pkg *ast.Package, fset *token.FileSe
 				node,
 			)
 			// in case any error happened put error to chan
-			// it will cancel context automatically
+			// and cancel context immediately
 			if err != nil {
 				wch <- err
+				cancel()
 				return
 			}
 		}(name, file)
