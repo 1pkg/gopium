@@ -69,6 +69,7 @@ func (w wout) visit(ctx context.Context, regex *regexp.Regexp, stg gopium.Strate
 	wch := make(chan error)
 	// run visiting in separate goroutine
 	go visit(nctx, pkg.Scope())
+loop:
 	// go through results from visit func
 	// and write them to buf concurently
 	for sterr := range ch {
@@ -80,10 +81,9 @@ func (w wout) visit(ctx context.Context, regex *regexp.Regexp, stg gopium.Strate
 		// manage context actions
 		// in case of cancelation
 		// stop execution
-		// it will cancel context automatically
 		select {
 		case <-nctx.Done():
-			return nil
+			break loop
 		default:
 		}
 		// increment writers counter
@@ -94,9 +94,10 @@ func (w wout) visit(ctx context.Context, regex *regexp.Regexp, stg gopium.Strate
 			// execute write subaction
 			err := w.write(st)
 			// in case any error happened put error to chan
-			// it will cancel context automatically
+			// and cancel context immediately
 			if err != nil {
 				wch <- err
+				cancel()
 				return
 			}
 		}(sterr.Result)
