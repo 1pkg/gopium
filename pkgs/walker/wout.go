@@ -57,7 +57,8 @@ func (w wout) visit(ctx context.Context, regex *regexp.Regexp, stg gopium.Strate
 	// from gopium.Visit helper
 	// and run it on pkg scope
 	ch := make(gopium.VisitedStructCh)
-	visit := gopium.Visit(regex, stg, ch, deep)
+	// TODO use real gopium.IDFunc impl
+	visit := gopium.Visit(regex, stg, nil, ch, deep)
 	// create separate cancelation context for visiting
 	// and defer cancelation func
 	nctx, cancel := context.WithCancel(ctx)
@@ -72,11 +73,11 @@ func (w wout) visit(ctx context.Context, regex *regexp.Regexp, stg gopium.Strate
 loop:
 	// go through results from visit func
 	// and write them to buf concurently
-	for sterr := range ch {
+	for applied := range ch {
 		// in case any error happened just return error
 		// it will cancel context automatically
-		if sterr.Error != nil {
-			return sterr.Error
+		if applied.Error != nil {
+			return applied.Error
 		}
 		// manage context actions
 		// in case of cancelation
@@ -100,7 +101,7 @@ loop:
 				cancel()
 				return
 			}
-		}(sterr.Result)
+		}(applied.Result)
 	}
 	// will wait until all writers
 	// resolve their jobs and

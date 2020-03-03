@@ -18,7 +18,7 @@ type stgenum struct {
 
 // Apply stgenum implementation
 func (stg stgenum) Apply(ctx context.Context, name string, st *types.Struct) (o gopium.Struct, r gopium.Struct, err error) {
-	// build full hierarchical name of the structure
+	// set structure name
 	r.Name = name
 	// get number of struct fields
 	nf := st.NumFields()
