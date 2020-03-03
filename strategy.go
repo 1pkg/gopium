@@ -9,7 +9,7 @@ import (
 // that applies some strategy payload on types.Struct an it's name
 // and returns resulted Struct object or error
 type Strategy interface {
-	Apply(ctx context.Context, name string, st *types.Struct) StructError
+	Apply(ctx context.Context, name string, st *types.Struct) (o Struct, r Struct, err error)
 }
 
 // StrategyName defines registred Strategy name abstraction
@@ -26,28 +26,28 @@ type StrategyBuilder interface {
 type StrategyMock struct{}
 
 // Apply StrategyMock implementation
-func (stg StrategyMock) Apply(ctx context.Context, name string, st *types.Struct) (r StructError) {
+func (stg StrategyMock) Apply(ctx context.Context, name string, st *types.Struct) (o Struct, r Struct, err error) {
 	// build full hierarchical name of the structure
-	r.Struct.Name = name
+	r.Name = name
 	// get number of struct fields
 	nf := st.NumFields()
 	// prefill Fields
-	r.Struct.Fields = make([]Field, 0, nf)
+	r.Fields = make([]Field, 0, nf)
 	for i := 0; i < nf; i++ {
 		// get field
 		f := st.Field(i)
 		// get tag
 		tag := st.Tag(i)
 		// fill field structure
-		r.Struct.Fields = append(r.Struct.Fields, Field{
+		r.Fields = append(r.Fields, Field{
 			Name:     f.Name(),
 			Type:     f.Type().String(),
-			Size:     0,
 			Tag:      tag,
 			Exported: f.Exported(),
 			Embedded: f.Embedded(),
 		})
 	}
+	o = r
 	return
 }
 
@@ -57,8 +57,8 @@ type StrategyError struct {
 }
 
 // Apply StrategyError implementation
-func (stg StrategyError) Apply(ctx context.Context, name string, st *types.Struct) (r StructError) {
+func (stg StrategyError) Apply(ctx context.Context, name string, st *types.Struct) (o Struct, r Struct, err error) {
 	// just set error
-	r.Error = stg.err
+	err = stg.err
 	return
 }

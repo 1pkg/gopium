@@ -20,11 +20,11 @@ type stgmemsort struct {
 }
 
 // Apply stgmemsort implementation
-func (stg stgmemsort) Apply(ctx context.Context, name string, st *types.Struct) (r gopium.StructError) {
+func (stg stgmemsort) Apply(ctx context.Context, name string, st *types.Struct) (o gopium.Struct, r gopium.Struct, err error) {
 	enum := stgenum(stg)
-	r = enum.Apply(ctx, name, st)
-	sort.SliceStable(r.Struct.Fields, func(i, j int) bool {
-		return r.Struct.Fields[j].Size < r.Struct.Fields[i].Size
+	o, r, err = enum.Apply(ctx, name, st)
+	sort.SliceStable(r.Fields, func(i, j int) bool {
+		return r.Fields[j].Size < r.Fields[i].Size
 	})
 	return
 }

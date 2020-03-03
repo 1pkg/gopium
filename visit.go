@@ -8,6 +8,13 @@ import (
 	"sync"
 )
 
+// VisitedStructCh encapsulates visited by strategy
+// structs results: origin, result structs and error
+type VisitedStructCh chan struct {
+	Origin, Result Struct
+	Error          error
+}
+
 // VisitFunc defines abstraction that helpes
 // visit filtered structures on the scope
 type VisitFunc func(context.Context, *types.Scope)
@@ -18,7 +25,7 @@ type VisitFunc func(context.Context, *types.Scope)
 // goes through all struct decls inside the scope
 // and applies the strategy if struct name matches regex
 // then it push result of the strategy to the StructError chan
-func Visit(regex *regexp.Regexp, stg Strategy, ch chan<- StructError, deep bool) (f VisitFunc) {
+func Visit(regex *regexp.Regexp, stg Strategy, ch VisitedStructCh, deep bool) (f VisitFunc) {
 	// deep wait group visits counter
 	var wg sync.WaitGroup
 	// govisit defines shallow function
@@ -77,9 +84,17 @@ func Visit(regex *regexp.Regexp, stg Strategy, ch chan<- StructError, deep bool)
 						// concurently visit the structure
 						// and apply strategy to it
 						go func(name string, st *types.Struct) {
-							// apply strategy
-							// and push result to the chan
-							ch <- stg.Apply(ctx, name, st)
+							// apply provided strategy
+							o, r, err := stg.Apply(ctx, name, st)
+							// and push results to the chan
+							ch <- struct {
+								Origin, Result Struct
+								Error          error
+							}{
+								Origin: o,
+								Result: r,
+								Error:  err,
+							}
 							// decrement wait group visits counter
 							wg.Done()
 						}(name, st)

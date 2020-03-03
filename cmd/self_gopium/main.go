@@ -8,7 +8,6 @@ import (
 
 	"1pkg/gopium/pkgs"
 	"1pkg/gopium/pkgs/walker"
-	"1pkg/gopium/pkgs/write"
 	"1pkg/gopium/types"
 	"1pkg/gopium/types/strategy"
 
@@ -41,7 +40,7 @@ func main() {
 	}
 	bw := walker.NewBuilder(p)
 	// build Walker
-	w, err := bw.Build(write.WalkerAST)
+	w, err := bw.Build(walker.WalkerOutPrettyJsonStd)
 	if err != nil {
 		panic(err)
 	}

@@ -5,6 +5,7 @@ import (
 	"errors"
 	"io"
 	"regexp"
+	"sync"
 
 	"1pkg/gopium"
 	"1pkg/gopium/fmts"
@@ -55,54 +56,68 @@ func (w wout) visit(ctx context.Context, regex *regexp.Regexp, stg gopium.Strate
 	// create gopium.VisitFunc
 	// from gopium.Visit helper
 	// and run it on pkg scope
-	ch := make(chan gopium.StructError)
+	ch := make(gopium.VisitedStructCh)
 	visit := gopium.Visit(regex, stg, ch, deep)
 	// create separate cancelation context for visiting
+	// and defer cancelation func
 	nctx, cancel := context.WithCancel(ctx)
+	defer cancel()
+	// we also need to have separate
+	// wait group and error chan
+	// to sync concurent writes
+	var wg sync.WaitGroup
+	wch := make(chan error)
 	// run visiting in separate goroutine
 	go visit(nctx, pkg.Scope())
 	// go through results from visit func
-	// we can use concurent writitng too
-	// but it's probably redundant
-	// as it requires additional level of sync
-	// and error handling
+	// and write them to buf concurently
 	for sterr := range ch {
-		// manage context actions
-		// in case of cancelation break from
-		// writting action
-		select {
-		default:
-			err := w.write(ctx, sterr)
-			// in case any error happened in writting
-			// cancel context and return error
-			if err != nil {
-				cancel()
-				return err
-			}
-		case <-ctx.Done():
-			cancel()
-			return nil
+		// in case any error happened just return error
+		// it will cancel context automatically
+		if sterr.Error != nil {
+			return sterr.Error
 		}
+		// manage context actions
+		// in case of cancelation
+		// stop execution
+		// it will cancel context automatically
+		select {
+		case <-nctx.Done():
+			return nil
+		default:
+		}
+		// increment writers counter
+		wg.Add(1)
+		go func(st gopium.Struct) {
+			// decrement writers counter
+			defer wg.Done()
+			// execute write subaction
+			err := w.write(st)
+			// in case any error happened put error to chan
+			// it will cancel context automatically
+			if err != nil {
+				wch <- err
+				return
+			}
+		}(sterr.Result)
 	}
-	// we can safely cancel context here
-	// as walk is already done successfully
-	// and returned nil error
-	cancel()
-	return nil
+	// will wait until all writers
+	// resolve their jobs and
+	// close error wait ch after
+	go func() {
+		wg.Wait()
+		close(wch)
+	}()
+	return <-wch
 }
 
 // visit wout helps apply
 // fmts.TypeFormat to format strategy result
 // and use io.Writer to write result to output
 // or return error in any other case
-func (w wout) write(ctx context.Context, sterr gopium.StructError) error {
-	// in case any error happened
-	// in strategy return error
-	if sterr.Error != nil {
-		return sterr.Error
-	}
+func (w wout) write(st gopium.Struct) error {
 	// apply formatter
-	buf, err := w.fmt(sterr.Struct)
+	buf, err := w.fmt(st)
 	// in case any error happened
 	// in formatter and return error
 	if err != nil {
