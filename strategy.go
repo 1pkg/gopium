@@ -5,24 +5,24 @@ import (
 	"go/types"
 )
 
-// Strategy defines "pure func" action abstraction
-// that applies some strategy payload on types.Struct an it's name
-// and returns resulted Struct object or error
+// Strategy defines action abstraction
+// that applies some strategy payload on types.Struct
+// and returns origin, resulted struct objects or error
 type Strategy interface {
 	Apply(ctx context.Context, name string, st *types.Struct) (o Struct, r Struct, err error)
 }
 
-// StrategyName defines registred Strategy name abstraction
-// used by StrategyBuilder to build registred strategies
+// StrategyName defines registered strategy name abstraction
+// used by StrategyBuilder to build registered strategies
 type StrategyName string
 
-// StrategyBuilder defines Strategy builder abstraction
-// that helps to create Strategy by StrategyName
+// StrategyBuilder defines strategy builder abstraction
+// that helps to create strategy by strategy name
 type StrategyBuilder interface {
 	Build(StrategyName) (Strategy, error)
 }
 
-// StrategyMock defines Strategy mock implementation
+// StrategyMock defines strategy mock implementation
 type StrategyMock struct{}
 
 // Apply StrategyMock implementation
@@ -51,7 +51,7 @@ func (stg StrategyMock) Apply(ctx context.Context, name string, st *types.Struct
 	return
 }
 
-// StrategyError defines Strategy error implementation
+// StrategyError defines strategy error implementation
 type StrategyError struct {
 	err error
 }

@@ -15,12 +15,12 @@ type Walker interface {
 	VisitDeep(context.Context, *regexp.Regexp, Strategy) error
 }
 
-// WalkerName defines registred Walker name abstraction
-// used by WalkerBuilder to build registred walkers
+// WalkerName defines registered walker name abstraction
+// used by walker builder to build registered walkers
 type WalkerName string
 
-// WalkerBuilder defines Walker builder abstraction
-// that helps to create Walker by WalkerName
+// WalkerBuilder defines walker builder abstraction
+// that helps to create walker by walker name
 type WalkerBuilder interface {
 	Build(StrategyName) (Walker, error)
 }

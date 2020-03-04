@@ -8,7 +8,7 @@ import (
 	gtypes "1pkg/gopium/types"
 )
 
-// List of registred types gopium.StrategyName
+// List of registered types gopium.StrategyName
 var (
 	StrategyEnumerate  gopium.StrategyName = "StrategyEnumerate"
 	StrategyNameSort   gopium.StrategyName = "StrategyNameSort"

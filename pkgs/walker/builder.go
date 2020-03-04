@@ -9,7 +9,7 @@ import (
 	"1pkg/gopium/pkgs"
 )
 
-// List of registred types gopium.WalkerName
+// List of registered types gopium.WalkerName
 var (
 	WalkerOutPrettyJsonStd gopium.WalkerName = "WalkerOut-PrettyJsonStd"
 	WalkerUpdateAst        gopium.WalkerName = "WalkerUpdateAst"
@@ -37,7 +37,10 @@ func (b Builder) Build(name gopium.WalkerName) (gopium.Walker, error) {
 			writer: os.Stdout,
 		}, nil
 	case WalkerUpdateAst:
-		return wuast(b), nil
+		return wuast{
+			parser: b.parser,
+			fmt:    nil,
+		}, nil
 	default:
 		return nil, fmt.Errorf("walker %q wasn't found", name)
 	}

@@ -20,30 +20,30 @@ type TypeParser interface {
 
 // Parser defines abstraction for
 // ast packages parsing processor
-type ASTParser interface {
-	ParseAST(context.Context) (*ast.Package, *Locator, error)
+type AstParser interface {
+	ParseAst(context.Context) (*ast.Package, *Locator, error)
 }
 
 // Parser defines abstraction for packages parsing processor
 type Parser interface {
 	TypeParser
-	ASTParser
+	AstParser
 }
 
-// ParserXToolPackagesAST defines packages Parser default implementation
+// ParserXToolPackagesAst defines packages Parser default implementation
 // that uses "golang.org/x/tools/go/packages" packages.Load with cfg to collect package types
 // and uses "go/parser" parser.ParseDir to collect ast package
-type ParserXToolPackagesAST struct {
+type ParserXToolPackagesAst struct {
 	Pattern    string
 	AbsDir     string
 	ModeTypes  packages.LoadMode
-	ModeAST    parser.Mode
+	ModeAst    parser.Mode
 	BuildEnv   []string
 	BuildFlags []string
 }
 
-// ParseTypes ParserXToolPackagesAST implementation
-func (p ParserXToolPackagesAST) ParseTypes(ctx context.Context) (*types.Package, *Locator, error) {
+// ParseTypes ParserXToolPackagesAst implementation
+func (p ParserXToolPackagesAst) ParseTypes(ctx context.Context) (*types.Package, *Locator, error) {
 	// create packages.Config obj
 	fset := token.NewFileSet()
 	cfg := &packages.Config{
@@ -67,8 +67,8 @@ func (p ParserXToolPackagesAST) ParseTypes(ctx context.Context) (*types.Package,
 	return pkgs[0].Types, (*Locator)(fset), nil
 }
 
-// ParseAST ParserXToolPackagesAST implementation
-func (p ParserXToolPackagesAST) ParseAST(ctx context.Context) (*ast.Package, *Locator, error) {
+// ParseAst ParserXToolPackagesAst implementation
+func (p ParserXToolPackagesAst) ParseAst(ctx context.Context) (*ast.Package, *Locator, error) {
 	// use parser.ParseDir
 	fset := token.NewFileSet()
 	dir := path.Join(p.AbsDir, p.Pattern)
@@ -76,7 +76,7 @@ func (p ParserXToolPackagesAST) ParseAST(ctx context.Context) (*ast.Package, *Lo
 		fset,
 		dir,
 		nil,
-		p.ModeAST,
+		p.ModeAst,
 	)
 	if err != nil {
 		return nil, nil, err
@@ -101,8 +101,8 @@ func (p ParserMock) ParseTypes(context.Context) (*types.Package, *Locator, error
 	return p.typePkg, NewLocator(), nil
 }
 
-// ParseAST ParserMock implementation
-func (p ParserMock) ParseAST(context.Context) (*ast.Package, *Locator, error) {
+// ParseAst ParserMock implementation
+func (p ParserMock) ParseAst(context.Context) (*ast.Package, *Locator, error) {
 	return p.astPkg, NewLocator(), nil
 }
 
@@ -116,7 +116,7 @@ func (p ParserError) ParseTypes(context.Context) (*types.Package, *token.FileSet
 	return nil, nil, p.err
 }
 
-// ParseAST ParserError implementation
-func (p ParserError) ParseAST(context.Context) (*ast.Package, *token.FileSet, error) {
+// ParseAst ParserError implementation
+func (p ParserError) ParseAst(context.Context) (*ast.Package, *token.FileSet, error) {
 	return nil, nil, p.err
 }

@@ -16,7 +16,8 @@ type applied struct {
 	Error          error
 }
 
-// VisitedStructCh keeps applied stream
+// VisitedStructCh defines abstraction that helpes
+// keep applied stream results
 type VisitedStructCh chan applied
 
 // IDFunc defines abstraction that helpes
