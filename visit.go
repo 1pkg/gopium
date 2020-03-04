@@ -2,6 +2,7 @@ package gopium
 
 import (
 	"context"
+	"go/token"
 	"go/types"
 	"regexp"
 	"sync"
@@ -19,8 +20,8 @@ type applied struct {
 type VisitedStructCh chan applied
 
 // IDFunc defines abstraction that helpes
-// create unique identifier
-type IDFunc func(types.Object) string
+// create unique identifier by token.Pos
+type IDFunc func(token.Pos) string
 
 // VisitFunc defines abstraction that helpes
 // visit filtered structures in the scope
@@ -73,7 +74,7 @@ func Visit(regex *regexp.Regexp, stg Strategy, idfunc IDFunc, ch VisitedStructCh
 				// if underlying type is struct
 				if st, ok := tn.Type().Underlying().(*types.Struct); ok {
 					// build id for structure
-					id := idfunc(tn)
+					id := idfunc(tn.Pos())
 					// in case id of structure
 					// has been already visited
 					if _, ok := visited.Load(id); ok {
@@ -116,53 +117,63 @@ func Visit(regex *regexp.Regexp, stg Strategy, idfunc IDFunc, ch VisitedStructCh
 	if deep {
 		// deep wait group visits counter
 		var dwg sync.WaitGroup
-		// deep once channel close helper
-		var donce sync.Once
 		// godeep defines recursive function
 		// that goes through all nested scopes with govisit
+		//nolint
 		var godeep VisitFunc
 		godeep = func(ctx context.Context, scope *types.Scope) {
-			// create child context here
-			chctx, cancel := context.WithCancel(ctx)
 			// after deep visiting is done
 			// wait until all visits finished
 			// and then close the channel
 			// still will close channel gracefully
 			// even in case of context cancelation
 			defer func() {
+				// wait for deep wait group
+				// and close chan
 				dwg.Wait()
-				// should be called only once
-				// from top level godeep
-				donce.Do(func() {
+				close(ch)
+			}()
+			var ingodeep VisitFunc
+			ingodeep = func(ctx context.Context, scope *types.Scope) {
+				// create child context here
+				nctx, cancel := context.WithCancel(ctx)
+				// after deep visiting is done
+				// wait until all visits finished
+				// and then cancel child context
+				defer func() {
+					// wait for deep wait group
+					// and cancel child context
+					dwg.Wait()
 					cancel()
-					close(ch)
-				})
-			}()
-			// manage parent context actions
-			// in case of cancelation
-			// break from futher traverse
-			select {
-			case <-ctx.Done():
-				return
-			default:
+				}()
+				// manage parent context actions
+				// in case of cancelation
+				// break from futher traverse
+				select {
+				case <-ctx.Done():
+					return
+				default:
+				}
+				// increment deep wait group visits counter
+				dwg.Add(1)
+				// concurently visit current scope
+				go func() {
+					// decrement deep wait group visits counter
+					defer dwg.Done()
+					// run govisit on current scope
+					govisit(ctx, scope)
+					// wait until scope wait group is resolved
+					wg.Wait()
+				}()
+				// traverse children scopes
+				for i := 0; i < scope.NumChildren(); i++ {
+					// visit children scopes iteratively
+					// using child context and scope
+					go ingodeep(nctx, scope.Child(i))
+				}
 			}
-			// increment deep wait group visits counter
-			dwg.Add(1)
-			// concurently visit current scope
-			go func() {
-				// decrement deep wait group visits counter
-				defer dwg.Done()
-				// run govisit on current scope
-				govisit(ctx, scope)
-				// wait until scope wait group is resolved
-				wg.Wait()
-			}()
-			// traverse children scopes
-			for i := 0; i < scope.NumChildren(); i++ {
-				// visit children scopes iteratively
-				// using child context and scope
-				go godeep(chctx, scope.Child(i))
-			}
+			// run ingodeep chain
+			ingodeep(ctx, scope)
 		}
 		// assign result func
 		f = godeep
