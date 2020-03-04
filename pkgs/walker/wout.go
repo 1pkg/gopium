@@ -49,7 +49,7 @@ func (w wout) visit(ctx context.Context, regex *regexp.Regexp, stg gopium.Strate
 	}
 	// use parser to parse types pkg data
 	// we don't care about fset
-	pkg, _, err := w.parser.ParseTypes(ctx)
+	pkg, loc, err := w.parser.ParseTypes(ctx)
 	if err != nil {
 		return err
 	}
@@ -57,8 +57,7 @@ func (w wout) visit(ctx context.Context, regex *regexp.Regexp, stg gopium.Strate
 	// from gopium.Visit helper
 	// and run it on pkg scope
 	ch := make(gopium.VisitedStructCh)
-	// TODO use real gopium.IDFunc impl
-	visit := gopium.Visit(regex, stg, nil, ch, deep)
+	visit := gopium.Visit(regex, stg, loc.Sum, ch, deep)
 	// create separate cancelation context for visiting
 	// and defer cancelation func
 	nctx, cancel := context.WithCancel(ctx)

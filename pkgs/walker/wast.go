@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"go/ast"
 	"go/printer"
-	"go/token"
 	"os"
 	"regexp"
 	"sync"
@@ -42,7 +41,7 @@ func (w wast) VisitDeep(ctx context.Context, regex *regexp.Regexp, stg gopium.St
 func (w wast) visit(ctx context.Context, regex *regexp.Regexp, stg gopium.Strategy, deep bool) error {
 	// use parser to parse types pkg data
 	// we don't care about fset
-	pkg, _, err := w.parser.ParseTypes(ctx)
+	pkg, loc, err := w.parser.ParseTypes(ctx)
 	if err != nil {
 		return err
 	}
@@ -50,8 +49,7 @@ func (w wast) visit(ctx context.Context, regex *regexp.Regexp, stg gopium.Strate
 	// from gopium.Visit helper
 	// and run it on pkg scope
 	ch := make(gopium.VisitedStructCh)
-	// TODO use real gopium.IDFunc impl
-	visit := gopium.Visit(regex, stg, nil, ch, deep)
+	visit := gopium.Visit(regex, stg, loc.Sum, ch, deep)
 	// create separate cancelation context for visiting
 	nctx, cancel := context.WithCancel(ctx)
 	defer cancel()
@@ -82,7 +80,7 @@ func (w wast) visit(ctx context.Context, regex *regexp.Regexp, stg gopium.Strate
 // updating os.File list ASTs
 func (w wast) write(ctx context.Context, structs []gopium.Struct) error {
 	// use parser to parse ast pkg data
-	pkg, fset, err := w.parser.ParseAST(ctx)
+	pkg, loc, err := w.parser.ParseAST(ctx)
 	if err != nil {
 		return err
 	}
@@ -109,7 +107,7 @@ func (w wast) write(ctx context.Context, structs []gopium.Struct) error {
 		}
 	}
 	// run async writeAST helper
-	return w.writeAST(ctx, pkg, fset)
+	return w.writeAST(ctx, pkg, loc)
 }
 
 // updateAST helps to update ast.Package
@@ -144,7 +142,7 @@ func (w wast) updateAST(ctx context.Context, pkg *ast.Package, st gopium.Struct)
 // writeAST helps to update os.File list
 // accordingly to updated ast.Package
 // concurently or return error otherwise
-func (w wast) writeAST(ctx context.Context, pkg *ast.Package, fset *token.FileSet) error {
+func (w wast) writeAST(ctx context.Context, pkg *ast.Package, loc *pkgs.Locator) error {
 	// create separate cancelation context for writing
 	// and defer cancelation func
 	nctx, cancel := context.WithCancel(ctx)
@@ -185,7 +183,7 @@ loop:
 			// use original toke.FileSet to keep format
 			err = printer.Fprint(
 				file,
-				fset,
+				loc.Fset(),
 				node,
 			)
 			// in case any error happened put error to chan
