@@ -31,12 +31,12 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	p := pkgs.ParserXToolPackagesAST{
+	p := pkgs.ParserXToolPackagesAst{
 		Pattern: "1pkg/gopium/pkgs",
 		AbsDir:  abs,
 		//nolint
 		ModeTypes: packages.LoadAllSyntax,
-		ModeAST:   parser.ParseComments,
+		ModeAst:   parser.ParseComments,
 	}
 	bw := walker.NewBuilder(p)
 	// build Walker

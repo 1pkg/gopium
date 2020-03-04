@@ -6,9 +6,9 @@ import (
 	"encoding/json"
 )
 
-// StructFormat defines abstraction for
+// StructToBytes defines abstraction for
 // formatting gopium.Struct to byte slice
-type StructFormat func(gopium.Struct) ([]byte, error)
+type StructToBytes func(gopium.Struct) ([]byte, error)
 
 // PrettyJson defines json.Marshal
 // with json.Indent TypeFormat implementation
