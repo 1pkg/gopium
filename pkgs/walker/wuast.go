@@ -15,30 +15,30 @@ import (
 	"1pkg/gopium/pkgs"
 )
 
-// wast defines packages Walker AST implementation
+// wuast defines packages walker update AST implementation
 // that uses pkgs.Parser to parse packages types data
 // astutil to update AST to results from strategy
-type wast struct {
+type wuast struct {
 	parser pkgs.Parser
 }
 
-// VisitTop wast implementation
-func (w wast) VisitTop(ctx context.Context, regex *regexp.Regexp, stg gopium.Strategy) error {
+// VisitTop wuast implementation
+func (w wuast) VisitTop(ctx context.Context, regex *regexp.Regexp, stg gopium.Strategy) error {
 	return w.visit(ctx, regex, stg, false)
 }
 
-// VisitDeep wast implementation
-func (w wast) VisitDeep(ctx context.Context, regex *regexp.Regexp, stg gopium.Strategy) error {
+// VisitDeep wuast implementation
+func (w wuast) VisitDeep(ctx context.Context, regex *regexp.Regexp, stg gopium.Strategy) error {
 	return w.visit(ctx, regex, stg, true)
 }
 
-// visit wast helps with visiting and uses
+// visit wuast helps with visiting and uses
 // gopium.Visit and gopium.VisitFunc helpers
 // to go through all structs decls inside the package
 // and apply strategy to them to get results
 // then overrides os.File list with updated AST
 // builded from strategy results
-func (w wast) visit(ctx context.Context, regex *regexp.Regexp, stg gopium.Strategy, deep bool) error {
+func (w wuast) visit(ctx context.Context, regex *regexp.Regexp, stg gopium.Strategy, deep bool) error {
 	// use parser to parse types pkg data
 	// we don't care about fset
 	pkg, loc, err := w.parser.ParseTypes(ctx)
@@ -60,7 +60,7 @@ func (w wast) visit(ctx context.Context, regex *regexp.Regexp, stg gopium.Strate
 	// but it's probably redundant
 	// as it requires additional level of sync
 	// and intense error handling
-	var structs []gopium.Struct
+	structs := make(map[string]gopium.Struct)
 	for applied := range ch {
 		// in case any error happened just return error
 		// it will cancel context automatically
@@ -68,17 +68,17 @@ func (w wast) visit(ctx context.Context, regex *regexp.Regexp, stg gopium.Strate
 			return applied.Error
 		}
 		// otherwise collect result
-		structs = append(structs, applied.Result)
+		structs[applied.ID] = applied.Result
 	}
 	// run sync write
 	// with collected strategies results
 	return w.write(nctx, structs)
 }
 
-// write wast helps apply
+// write wuast helps apply
 // updateAST/writeAST to format strategy results
 // updating os.File list ASTs
-func (w wast) write(ctx context.Context, structs []gopium.Struct) error {
+func (w wuast) write(ctx context.Context, structs map[string]gopium.Struct) error {
 	// use parser to parse ast pkg data
 	pkg, loc, err := w.parser.ParseAST(ctx)
 	if err != nil {
@@ -89,7 +89,7 @@ func (w wast) write(ctx context.Context, structs []gopium.Struct) error {
 	// but it's probably redundant
 	// as it requires additional level of sync
 	// and intense error handling
-	for _, st := range structs {
+	for id, st := range structs {
 		// manage context actions
 		// in case of cancelation
 		// stop execution
@@ -98,22 +98,22 @@ func (w wast) write(ctx context.Context, structs []gopium.Struct) error {
 			return nil
 		default:
 		}
-		// run updateAST with strategy result
+		// run sync with strategy result to update ast.Package
 		// on the parsed ast.Package
 		// in case any error happened just return error
-		pkg, err = w.updateAST(ctx, pkg, st)
+		pkg, err = w.sync(pkg, loc, id, st)
 		if err != nil {
 			return err
 		}
 	}
-	// run async writeAST helper
-	return w.writeAST(ctx, pkg, loc)
+	// run async persist helper
+	return w.persist(ctx, pkg, loc)
 }
 
-// updateAST helps to update ast.Package
+// sync wuast helps to update ast.Package
 // accordingly to Strategy gopium.Struct result
 // synchronously or return error otherwise
-func (w wast) updateAST(ctx context.Context, pkg *ast.Package, st gopium.Struct) (*ast.Package, error) {
+func (w wuast) sync(pkg *ast.Package, loc *pkgs.Locator, id string, st gopium.Struct) (*ast.Package, error) {
 	// apply astutil.Apply to parsed ast.Package
 	// and update structure in AST
 	unode := astutil.Apply(pkg, func(c *astutil.Cursor) bool {
@@ -122,6 +122,12 @@ func (w wast) updateAST(ctx context.Context, pkg *ast.Package, st gopium.Struct)
 			for _, spec := range gendecl.Specs {
 				if ts, ok := spec.(*ast.TypeSpec); ok {
 					if _, ok := ts.Type.(*ast.StructType); ok {
+						// calculate sum for structure
+						// and skip all irrelevant structs
+						sum := loc.Sum(ts.Pos())
+						if id != sum {
+							return true
+						}
 						// TODO use fmts.StructAST to generate AST for gopium.Struct
 						return true
 					}
@@ -139,10 +145,10 @@ func (w wast) updateAST(ctx context.Context, pkg *ast.Package, st gopium.Struct)
 	return nil, fmt.Errorf("can't update AST for structure %+v", st)
 }
 
-// writeAST helps to update os.File list
+// persist wuast helps to update os.File list
 // accordingly to updated ast.Package
 // concurently or return error otherwise
-func (w wast) writeAST(ctx context.Context, pkg *ast.Package, loc *pkgs.Locator) error {
+func (w wuast) persist(ctx context.Context, pkg *ast.Package, loc *pkgs.Locator) error {
 	// create separate cancelation context for writing
 	// and defer cancelation func
 	nctx, cancel := context.WithCancel(ctx)

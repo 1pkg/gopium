@@ -12,7 +12,7 @@ import (
 	"1pkg/gopium/pkgs"
 )
 
-// wout defines packages Walker out implementation
+// wout defines packages walker out implementation
 // that uses pkgs.TypeParser to parse packages types data
 // fmts.TypeFormat to format strategy result
 // and io.Writer to write output
@@ -112,7 +112,7 @@ loop:
 	return <-wch
 }
 
-// visit wout helps apply
+// write wout helps apply
 // fmts.TypeFormat to format strategy result
 // and use io.Writer to write result to output
 // or return error in any other case
