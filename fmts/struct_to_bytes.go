@@ -11,7 +11,7 @@ import (
 type StructToBytes func(gopium.Struct) ([]byte, error)
 
 // PrettyJson defines json.Marshal
-// with json.Indent TypeFormat implementation
+// with json.Indent StructToBytes implementation
 func PrettyJson(st gopium.Struct) ([]byte, error) {
 	r, err := json.Marshal(st)
 	if err != nil {

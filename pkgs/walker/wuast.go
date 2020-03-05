@@ -117,38 +117,34 @@ func (w wuast) write(ctx context.Context, structs map[string]gopium.Struct) erro
 // synchronously or return error otherwise
 func (w wuast) sync(pkg *ast.Package, loc *pkgs.Locator, id string, st gopium.Struct) (*ast.Package, error) {
 	// tracks error inside astutil.Apply
-	var serr error
+	var err error
 	// apply astutil.Apply to parsed ast.Package
 	// and update structure in ast
 	snode := astutil.Apply(pkg, func(c *astutil.Cursor) bool {
 		if gendecl, ok := c.Node().(*ast.GenDecl); ok {
-			for i, spec := range gendecl.Specs {
+			for _, spec := range gendecl.Specs {
 				if ts, ok := spec.(*ast.TypeSpec); ok {
-					if _, ok := ts.Type.(*ast.StructType); ok {
+					if stAst, ok := ts.Type.(*ast.StructType); ok {
 						// calculate sum for structure
 						// and skip all irrelevant structs
 						sum := loc.Sum(ts.Pos())
-						if id != sum {
-							return true
+						if id == sum {
+							// apply format to ast
+							err = w.fmt(stAst, st)
+							// in case we have error
+							// break iteration
+							return err != nil
 						}
-						r, err := w.fmt(st)
-						if err != nil {
-							serr = err
-							return false
-						}
-						gendecl.Specs[i] = r
-						return true
 					}
 				}
 			}
 		}
 		return true
-
 	}, nil)
 	// in case we had error in astutil.Apply
 	// just return it back
-	if serr != nil {
-		return nil, serr
+	if err != nil {
+		return nil, err
 	}
 	// check that updated type is correct
 	if spkg, ok := snode.(*ast.Package); ok {
