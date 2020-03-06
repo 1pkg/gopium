@@ -9,11 +9,11 @@ import (
 	"regexp"
 	"sync"
 
-	"golang.org/x/tools/go/ast/astutil"
-
 	"1pkg/gopium"
 	"1pkg/gopium/fmts"
 	"1pkg/gopium/pkgs"
+
+	"golang.org/x/tools/go/ast/astutil"
 )
 
 // wuast defines packages walker update ast implementation
@@ -124,13 +124,13 @@ func (w wuast) sync(pkg *ast.Package, loc *pkgs.Locator, id string, st gopium.St
 		if gendecl, ok := c.Node().(*ast.GenDecl); ok {
 			for _, spec := range gendecl.Specs {
 				if ts, ok := spec.(*ast.TypeSpec); ok {
-					if stAst, ok := ts.Type.(*ast.StructType); ok {
+					if _, ok := ts.Type.(*ast.StructType); ok {
 						// calculate sum for structure
 						// and skip all irrelevant structs
 						sum := loc.Sum(ts.Pos())
 						if id == sum {
 							// apply format to ast
-							err = w.fmt(stAst, st)
+							err = w.fmt(ts, st)
 							// in case we have error
 							// break iteration
 							return err != nil
