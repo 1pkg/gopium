@@ -39,7 +39,7 @@ func (b Builder) Build(name gopium.WalkerName) (gopium.Walker, error) {
 	case WalkerUpdateAst:
 		return wuast{
 			parser: b.parser,
-			fmt:    fmts.ShuffleAst,
+			fmt:    fmts.FSA,
 		}, nil
 	default:
 		return nil, fmt.Errorf("walker %q wasn't found", name)

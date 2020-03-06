@@ -1,9 +1,10 @@
 package fmts
 
 import (
-	"1pkg/gopium"
 	"bytes"
 	"encoding/json"
+
+	"1pkg/gopium"
 )
 
 // StructToBytes defines abstraction for
