@@ -16,10 +16,19 @@ type Strategy interface {
 // used by StrategyBuilder to build registered strategies
 type StrategyName string
 
+// StrategyMode defines registered strategy mode abstraction
+// used by StrategyBuilder to build registered strategies
+type StrategyMode uint
+
+// Has checks if mode includes sub mode
+func (mode StrategyMode) Has(m StrategyMode) bool {
+	return mode&m == m
+}
+
 // StrategyBuilder defines strategy builder abstraction
 // that helps to create strategy by strategy name
 type StrategyBuilder interface {
-	Build(StrategyName) (Strategy, error)
+	Build(StrategyName, StrategyMode) (Strategy, error)
 }
 
 // StrategyMock defines strategy mock implementation
