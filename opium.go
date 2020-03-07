@@ -7,12 +7,12 @@ import (
 
 const VERSION = "1.0.0"
 const PKG = "https://github.com/1pkg/gopium"
-const STAMP = " 🌺 gopium @1pkg "
+const STAMP = "// 🌺 gopium @1pkg "
 
 // Stamped adds gopium stamp
 // to specified string
 func Stamp(s string) string {
-	return fmt.Sprintf("%s %s", STAMP, s)
+	return fmt.Sprintf("%s - %s", STAMP, s)
 }
 
 // Stamped checks if specified string

@@ -8,8 +8,8 @@ import (
 
 	"1pkg/gopium/pkgs"
 	"1pkg/gopium/pkgs/walker"
+	"1pkg/gopium/strategy"
 	"1pkg/gopium/types"
-	"1pkg/gopium/types/strategy"
 
 	"golang.org/x/tools/go/packages"
 )
@@ -22,7 +22,7 @@ func main() {
 	e := types.NewExtractorGoTypes("gc", "amd64")
 	bs := strategy.NewBuilder(e)
 	// build Strategy
-	stg, err := bs.Build(strategy.StrategyMemorySort)
+	stg, err := bs.Build(strategy.Lexicographical, strategy.WithAnnotation)
 	if err != nil {
 		panic(err)
 	}
@@ -40,7 +40,7 @@ func main() {
 	}
 	bw := walker.NewBuilder(p)
 	// build Walker
-	w, err := bw.Build(walker.WalkerOutPrettyJsonStd)
+	w, err := bw.Build(walker.WalkerUpdateAst)
 	if err != nil {
 		panic(err)
 	}

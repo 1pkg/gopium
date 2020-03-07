@@ -8,16 +8,16 @@ import (
 	gtypes "1pkg/gopium/types"
 )
 
-// stgenum defines struct enumerating strategy implementation
+// enum defines struct enumerating strategy implementation
 // that goes through all structure fields and uses gtypes.Extractor
 // to extract gopium.Field DTO for each field
 // and puts it back to resulted gopium.Struct object
-type stgenum struct {
+type enum struct {
 	extractor gtypes.Extractor
 }
 
-// Apply stgenum implementation
-func (stg stgenum) Apply(ctx context.Context, name string, st *types.Struct) (o gopium.Struct, r gopium.Struct, err error) {
+// Apply enum implementation
+func (stg enum) Apply(ctx context.Context, name string, st *types.Struct) (o gopium.Struct, r gopium.Struct, err error) {
 	// set structure name
 	r.Name = name
 	// get number of struct fields
