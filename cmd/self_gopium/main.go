@@ -7,9 +7,9 @@ import (
 	"regexp"
 
 	"1pkg/gopium/pkgs"
-	"1pkg/gopium/pkgs/walker"
 	"1pkg/gopium/strategy"
 	"1pkg/gopium/types"
+	"1pkg/gopium/walker"
 
 	"golang.org/x/tools/go/packages"
 )
@@ -40,7 +40,7 @@ func main() {
 	}
 	bw := walker.NewBuilder(p)
 	// build Walker
-	w, err := bw.Build(walker.WalkerUpdateAst)
+	w, err := bw.Build(walker.PrettyJsonStd)
 	if err != nil {
 		panic(err)
 	}
