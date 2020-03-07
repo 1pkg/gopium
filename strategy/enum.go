@@ -5,15 +5,14 @@ import (
 	"go/types"
 
 	"1pkg/gopium"
-	gtypes "1pkg/gopium/types"
 )
 
 // enum defines struct enumerating strategy implementation
-// that goes through all structure fields and uses gtypes.Extractor
-// to extract gopium.Field DTO for each field
+// that goes through all structure fields and uses gopium.Whistleblower
+// to expose gopium.Field DTO for each field
 // and puts it back to resulted gopium.Struct object
 type enum struct {
-	extractor gtypes.Extractor
+	wb gopium.Whistleblower
 }
 
 // Apply enum implementation
@@ -30,7 +29,7 @@ func (stg enum) Apply(ctx context.Context, name string, st *types.Struct) (o gop
 		// get tag
 		tag := st.Tag(i)
 		// get typeinfo
-		tname, tsize := stg.extractor.Extract(f.Type())
+		tname, tsize := stg.wb.Expose(f.Type())
 		// fill field structure
 		r.Fields = append(r.Fields, gopium.Field{
 			Name:     f.Name(),

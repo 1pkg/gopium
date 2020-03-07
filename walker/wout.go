@@ -9,7 +9,6 @@ import (
 
 	"1pkg/gopium"
 	"1pkg/gopium/fmts"
-	"1pkg/gopium/pkgs"
 )
 
 // wout defines packages walker out implementation
@@ -17,7 +16,7 @@ import (
 // fmts.TypeFormat to format strategy result
 // and io.Writer to write output
 type wout struct {
-	parser pkgs.TypeParser
+	parser gopium.TypeParser
 	fmt    fmts.StructToBytes
 	writer io.Writer
 }
@@ -53,11 +52,11 @@ func (w wout) visit(ctx context.Context, regex *regexp.Regexp, stg gopium.Strate
 	if err != nil {
 		return err
 	}
-	// create gopium.VisitFunc
-	// from gopium.Visit helper
+	// create govisit func
+	// using gopium.Visit helper
 	// and run it on pkg scope
-	ch := make(gopium.VisitedStructCh)
-	visit := gopium.Visit(regex, stg, loc.Sum, ch, deep)
+	ch := make(appliedCh)
+	gvisit := visit(regex, stg, loc.Sum, ch, deep)
 	// create separate cancelation context for visiting
 	// and defer cancelation func
 	nctx, cancel := context.WithCancel(ctx)
@@ -68,7 +67,7 @@ func (w wout) visit(ctx context.Context, regex *regexp.Regexp, stg gopium.Strate
 	var wg sync.WaitGroup
 	wch := make(chan error)
 	// run visiting in separate goroutine
-	go visit(nctx, pkg.Scope())
+	go gvisit(nctx, pkg.Scope())
 loop:
 	// go through results from visit func
 	// and write them to buf concurently

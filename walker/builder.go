@@ -6,7 +6,6 @@ import (
 
 	"1pkg/gopium"
 	"1pkg/gopium/fmts"
-	"1pkg/gopium/pkgs"
 )
 
 // List of registered types gopium.WalkerName
@@ -18,12 +17,12 @@ var (
 // Builder defines types gopium.WalkerBuilder implementation
 // that uses pkgs.Parser as an parser and related walkers
 type Builder struct {
-	parser pkgs.Parser
+	parser gopium.Parser
 }
 
 // NewBuilder creates instance of Builder
 // and requires pkgs.Parser to pass it to related walkers
-func NewBuilder(parser pkgs.Parser) Builder {
+func NewBuilder(parser gopium.Parser) Builder {
 	return Builder{parser: parser}
 }
 

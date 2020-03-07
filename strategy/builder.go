@@ -4,8 +4,6 @@ import (
 	"fmt"
 
 	"1pkg/gopium"
-	"1pkg/gopium/types"
-	gtypes "1pkg/gopium/types"
 )
 
 // List of registered types gopium.StrategyName
@@ -23,15 +21,15 @@ const (
 )
 
 // Builder defines types gopium.StrategyBuilder implementation
-// that uses gtypes.Extractor as an extractor and related strategies
+// that uses gopium.Whistleblower as an exposer and related strategies
 type Builder struct {
-	extractor gtypes.Extractor
+	wb gopium.Whistleblower
 }
 
 // NewBuilder creates instance of Builder
-// and requires gtypes.Extractor to pass it to related strategies
-func NewBuilder(extractor types.Extractor) Builder {
-	return Builder{extractor: extractor}
+// and requires gopium.Whistleblower to pass it to related strategies
+func NewBuilder(wb gopium.Whistleblower) Builder {
+	return Builder{wb: wb}
 }
 
 // Build Builder implementation
@@ -40,11 +38,11 @@ func (b Builder) Build(name gopium.StrategyName, mode gopium.StrategyMode) (gopi
 	var stg gopium.Strategy
 	switch name {
 	case Enumerate:
-		stg = enum{b.extractor}
+		stg = enum{b.wb}
 	case Lexicographical:
-		stg = lexicographical{b.extractor}
+		stg = lexicographical{b.wb}
 	case Memory:
-		stg = memory{b.extractor}
+		stg = memory{b.wb}
 	default:
 		return nil, fmt.Errorf("strategy %q wasn't found", name)
 	}

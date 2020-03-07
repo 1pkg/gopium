@@ -1,52 +1,49 @@
-package gopium
+package walker
 
 import (
 	"context"
-	"go/token"
 	"go/types"
 	"regexp"
 	"sync"
+
+	"1pkg/gopium"
 )
 
 // applied encapsulates visited by strategy
 // structs results: id, origin, result structs and error
 type applied struct {
 	ID             string
-	Origin, Result Struct
+	Origin, Result gopium.Struct
 	Error          error
 }
 
-// VisitedStructCh defines abstraction that helpes
+// appliedCh defines abstraction that helpes
 // keep applied stream results
-type VisitedStructCh chan applied
+type appliedCh chan applied
 
-// IDFunc defines abstraction that helpes
-// create unique identifier by token.Pos
-type IDFunc func(token.Pos) string
-
-// VisitFunc defines abstraction that helpes
+// visitFunc defines abstraction that helpes
 // visit filtered structures in the scope
-type VisitFunc func(context.Context, *types.Scope)
+type govisit func(context.Context, *types.Scope)
 
 // Visit helps to implement Walker VisitTop and VisitDeep methods
 // depends on deep flag (different tree levels)
-// it creates VisitFunc instance that
+// it creates visitFunc instance that
 // goes through all struct decls inside the scope
 // and applies the strategy if struct name matches regex
 // then it push result of the strategy to the chan
-func Visit(regex *regexp.Regexp, stg Strategy, idfunc IDFunc, ch VisitedStructCh, deep bool) (f VisitFunc) {
+func visit(regex *regexp.Regexp, stg gopium.Strategy, idfunc gopium.IDFunc, ch appliedCh, deep bool) (f govisit) {
 	// wait group visits counter
 	var wg sync.WaitGroup
 	// govisit defines shallow function
 	// that goes through structures on the scope
 	// with names that match regex and applies strategy to them
 	//nolint
-	var govisit VisitFunc
+	var gotop govisit
 	// visited holds visited structure
 	// hierarchy names list
 	// should be shared between govisit funcs
 	visited := sync.Map{}
-	govisit = func(ctx context.Context, scope *types.Scope) {
+	gotop = func(ctx context.Context, scope *types.Scope) {
 		// after visiting is done
 		// wait until all visits finished
 		// and then close the channel
@@ -113,7 +110,7 @@ func Visit(regex *regexp.Regexp, stg Strategy, idfunc IDFunc, ch VisitedStructCh
 		}
 	}
 	// assign result func
-	f = govisit
+	f = gotop
 	// in case of deep visit
 	if deep {
 		// deep wait group visits counter
@@ -121,7 +118,7 @@ func Visit(regex *regexp.Regexp, stg Strategy, idfunc IDFunc, ch VisitedStructCh
 		// godeep defines recursive function
 		// that goes through all nested scopes with govisit
 		//nolint
-		var godeep VisitFunc
+		var godeep govisit
 		godeep = func(ctx context.Context, scope *types.Scope) {
 			// after deep visiting is done
 			// wait until all visits finished
@@ -134,7 +131,7 @@ func Visit(regex *regexp.Regexp, stg Strategy, idfunc IDFunc, ch VisitedStructCh
 				dwg.Wait()
 				close(ch)
 			}()
-			var ingodeep VisitFunc
+			var ingodeep govisit
 			ingodeep = func(ctx context.Context, scope *types.Scope) {
 				// create child context here
 				nctx, cancel := context.WithCancel(ctx)
@@ -161,8 +158,8 @@ func Visit(regex *regexp.Regexp, stg Strategy, idfunc IDFunc, ch VisitedStructCh
 				go func() {
 					// decrement deep wait group visits counter
 					defer dwg.Done()
-					// run govisit on current scope
-					govisit(ctx, scope)
+					// run gotop on current scope
+					gotop(ctx, scope)
 					// wait until scope wait group is resolved
 					wg.Wait()
 				}()
