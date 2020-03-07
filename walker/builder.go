@@ -11,8 +11,8 @@ import (
 
 // List of registered types gopium.WalkerName
 var (
-	WalkerOutPrettyJsonStd gopium.WalkerName = "WalkerOut-PrettyJsonStd"
-	WalkerUpdateAst        gopium.WalkerName = "WalkerUpdateAst"
+	PrettyJsonStd gopium.WalkerName = "PrettyJsonStd"
+	UpdateAst     gopium.WalkerName = "UpdateAst"
 )
 
 // Builder defines types gopium.WalkerBuilder implementation
@@ -30,13 +30,13 @@ func NewBuilder(parser pkgs.Parser) Builder {
 // Build Builder implementation
 func (b Builder) Build(name gopium.WalkerName) (gopium.Walker, error) {
 	switch name {
-	case WalkerOutPrettyJsonStd:
+	case PrettyJsonStd:
 		return wout{
 			parser: b.parser,
 			fmt:    fmts.PrettyJson,
 			writer: os.Stdout,
 		}, nil
-	case WalkerUpdateAst:
+	case UpdateAst:
 		return wuast{
 			parser: b.parser,
 			fmt:    fmts.FSA,
