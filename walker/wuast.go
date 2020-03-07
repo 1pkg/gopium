@@ -11,7 +11,6 @@ import (
 
 	"1pkg/gopium"
 	"1pkg/gopium/fmts"
-	"1pkg/gopium/pkgs"
 
 	"golang.org/x/tools/go/ast/astutil"
 )
@@ -20,7 +19,7 @@ import (
 // that uses pkgs.Parser to parse packages types data
 // astutil to update ast to results from strategy
 type wuast struct {
-	parser pkgs.Parser
+	parser gopium.Parser
 	fmt    fmts.StructToAst
 }
 
@@ -47,16 +46,16 @@ func (w wuast) visit(ctx context.Context, regex *regexp.Regexp, stg gopium.Strat
 	if err != nil {
 		return err
 	}
-	// create gopium.VisitFunc
-	// from gopium.Visit helper
+	// create govisit func
+	// using visit helper
 	// and run it on pkg scope
-	ch := make(gopium.VisitedStructCh)
-	visit := gopium.Visit(regex, stg, loc.Sum, ch, deep)
+	ch := make(appliedCh)
+	gvisit := visit(regex, stg, loc.Sum, ch, deep)
 	// create separate cancelation context for visiting
 	nctx, cancel := context.WithCancel(ctx)
 	defer cancel()
 	// run visiting in separate goroutine
-	go visit(nctx, pkg.Scope())
+	go gvisit(nctx, pkg.Scope())
 	// go through results from visit func
 	// we can use concurent writitng too
 	// but it's probably redundant
@@ -115,7 +114,7 @@ func (w wuast) write(ctx context.Context, structs map[string]gopium.Struct) erro
 // sync wuast helps to update ast.Package
 // accordingly to Strategy gopium.Struct result
 // synchronously or return error otherwise
-func (w wuast) sync(pkg *ast.Package, loc *pkgs.Locator, id string, st gopium.Struct) (*ast.Package, error) {
+func (w wuast) sync(pkg *ast.Package, loc *gopium.Locator, id string, st gopium.Struct) (*ast.Package, error) {
 	// tracks error inside astutil.Apply
 	var err error
 	// apply astutil.Apply to parsed ast.Package
@@ -157,7 +156,7 @@ func (w wuast) sync(pkg *ast.Package, loc *pkgs.Locator, id string, st gopium.St
 // persist wuast helps to update os.File list
 // accordingly to updated ast.Package
 // concurently or return error otherwise
-func (w wuast) persist(ctx context.Context, pkg *ast.Package, loc *pkgs.Locator) error {
+func (w wuast) persist(ctx context.Context, pkg *ast.Package, loc *gopium.Locator) error {
 	// create separate cancelation context for writing
 	// and defer cancelation func
 	nctx, cancel := context.WithCancel(ctx)

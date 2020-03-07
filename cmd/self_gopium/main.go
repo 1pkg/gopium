@@ -6,9 +6,8 @@ import (
 	"path/filepath"
 	"regexp"
 
-	"1pkg/gopium/pkgs"
+	"1pkg/gopium/pkgs_types"
 	"1pkg/gopium/strategy"
-	"1pkg/gopium/types"
 	"1pkg/gopium/walker"
 
 	"golang.org/x/tools/go/packages"
@@ -19,8 +18,8 @@ func main() {
 	// compile regex
 	regex, _ := regexp.Compile(`.*`)
 	// set up StrategyBuilder
-	e := types.NewExtractorGoTypes("gc", "amd64")
-	bs := strategy.NewBuilder(e)
+	wb := pkgs_types.NewWhistleblowerGoTypes("gc", "amd64")
+	bs := strategy.NewBuilder(wb)
 	// build Strategy
 	stg, err := bs.Build(strategy.Lexicographical, strategy.WithAnnotation)
 	if err != nil {
@@ -31,8 +30,8 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	p := pkgs.ParserXToolPackagesAst{
-		Pattern: "1pkg/gopium/pkgs",
+	p := pkgs_types.ParserXToolPackagesAst{
+		Pattern: "1pkg/gopium/pkgs_types",
 		AbsDir:  abs,
 		//nolint
 		ModeTypes: packages.LoadAllSyntax,
