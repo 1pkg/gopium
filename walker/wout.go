@@ -5,10 +5,11 @@ import (
 	"errors"
 	"io"
 	"regexp"
-	"sync"
 
 	"1pkg/gopium"
 	"1pkg/gopium/fmts"
+
+	"golang.org/x/sync/errgroup"
 )
 
 // wout defines packages walker out implementation
@@ -57,58 +58,41 @@ func (w wout) visit(ctx context.Context, regex *regexp.Regexp, stg gopium.Strate
 	// and run it on pkg scope
 	ch := make(appliedCh)
 	gvisit := visit(regex, stg, loc.Sum, ch, deep)
-	// create separate cancelation context for visiting
-	// and defer cancelation func
-	nctx, cancel := context.WithCancel(ctx)
-	defer cancel()
-	// we also need to have separate
-	// wait group and error chan
-	// to sync concurent writes
-	var wg sync.WaitGroup
-	wch := make(chan error)
+	// create sync error group
+	// with cancelation context
+	group, gctx := errgroup.WithContext(ctx)
 	// run visiting in separate goroutine
-	go gvisit(nctx, pkg.Scope())
+	go gvisit(gctx, pkg.Scope())
 loop:
 	// go through results from visit func
 	// and write them to buf concurently
 	for applied := range ch {
-		// in case any error happened just return error
-		// it will cancel context automatically
-		if applied.Error != nil {
-			return applied.Error
-		}
 		// manage context actions
 		// in case of cancelation
 		// stop execution
 		select {
-		case <-nctx.Done():
+		case <-gctx.Done():
 			break loop
 		default:
 		}
-		// increment writers counter
-		wg.Add(1)
-		go func(st gopium.Struct) {
-			// decrement writers counter
-			defer wg.Done()
-			// execute write subaction
-			err := w.write(st)
-			// in case any error happened put error to chan
-			// and cancel context immediately
-			if err != nil {
-				wch <- err
-				cancel()
-				return
+		// create applied copy
+		visited := applied
+		// run error group write call
+		group.Go(func() error {
+			// in case any error happened just return error
+			// it will cancel context automatically
+			if visited.Error != nil {
+				return visited.Error
 			}
-		}(applied.Result)
+			// just process with write call
+			// in case any error happened just return error
+			// it will cancel context automatically
+			return w.write(visited.Result)
+		})
 	}
-	// will wait until all writers
+	// wait until all writers
 	// resolve their jobs and
-	// close error wait ch after
-	go func() {
-		wg.Wait()
-		close(wch)
-	}()
-	return <-wch
+	return group.Wait()
 }
 
 // write wout helps apply
