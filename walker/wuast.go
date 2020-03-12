@@ -7,11 +7,11 @@ import (
 	"go/printer"
 	"os"
 	"regexp"
-	"sync"
 
 	"1pkg/gopium"
 	"1pkg/gopium/fmts"
 
+	"golang.org/x/sync/errgroup"
 	"golang.org/x/tools/go/ast/astutil"
 )
 
@@ -157,64 +157,45 @@ func (w wuast) sync(pkg *ast.Package, loc *gopium.Locator, id string, st gopium.
 // accordingly to updated ast.Package
 // concurently or return error otherwise
 func (w wuast) persist(ctx context.Context, pkg *ast.Package, loc *gopium.Locator) error {
-	// create separate cancelation context for writing
-	// and defer cancelation func
-	nctx, cancel := context.WithCancel(ctx)
-	defer cancel()
-	// we also need to have separate
-	// wait group and error chan
-	// to sync concurent writes
-	var wg sync.WaitGroup
-	wch := make(chan error)
+	// create sync error group
+	// with cancelation context
+	group, gctx := errgroup.WithContext(ctx)
 loop:
 	// go through all files in package
 	// and update them to concurently
-	for name, file := range pkg.Files {
+	for fname, file := range pkg.Files {
 		// manage context actions
 		// in case of cancelation
 		// stop execution
 		select {
-		case <-nctx.Done():
+		case <-gctx.Done():
 			break loop
 		default:
 		}
-		// increment writers counter
-		wg.Add(1)
-		// concurently update each ast.File to os.File
-		go func(fname string, node *ast.File) {
-			// decrement writers counter
-			defer wg.Done()
+		// create fname and file copies
+		name := fname
+		node := file
+		// run error group write call
+		group.Go(func() error {
 			// open os.File for related ast.File
-			file, err := os.Create(fname)
-			// in case any error happened put error to chan
-			// and cancel context immediately
+			file, err := os.Create(name)
+			// in case any error happened just return error
+			// it will cancel context automatically
 			if err != nil {
-				wch <- err
-				cancel()
-				return
+				return err
 			}
 			// write updated ast.File to related os.File
 			// use original toke.FileSet to keep format
-			err = printer.Fprint(
+			// in case any error happened just return error
+			// it will cancel context automatically
+			return printer.Fprint(
 				file,
 				loc.Fset(),
 				node,
 			)
-			// in case any error happened put error to chan
-			// and cancel context immediately
-			if err != nil {
-				wch <- err
-				cancel()
-				return
-			}
-		}(name, file)
+		})
 	}
-	// will wait until all writers
+	// wait until all writers
 	// resolve their jobs and
-	// close error wait ch after
-	go func() {
-		wg.Wait()
-		close(wch)
-	}()
-	return <-wch
+	return group.Wait()
 }
