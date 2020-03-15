@@ -18,7 +18,7 @@ func main() {
 	// compile regex
 	regex, _ := regexp.Compile(`.*`)
 	// set up StrategyBuilder
-	wb := pkgs_types.NewWhistleblowerGoTypes("gc", "amd64")
+	wb := pkgs_types.NewMavenGoTypes("gc", "amd64")
 	bs := strategy.NewBuilder(wb)
 	// build Strategy
 	stg, err := bs.Build(strategy.Lexicographical, strategy.WithAnnotation)

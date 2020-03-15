@@ -21,15 +21,15 @@ const (
 )
 
 // Builder defines types gopium.StrategyBuilder implementation
-// that uses gopium.Whistleblower as an exposer and related strategies
+// that uses gopium.Maven as an exposer and related strategies
 type Builder struct {
-	wb gopium.Whistleblower
+	m gopium.Maven
 }
 
 // NewBuilder creates instance of Builder
-// and requires gopium.Whistleblower to pass it to related strategies
-func NewBuilder(wb gopium.Whistleblower) Builder {
-	return Builder{wb: wb}
+// and requires gopium.Maven to pass it to related strategies
+func NewBuilder(m gopium.Maven) Builder {
+	return Builder{m: m}
 }
 
 // Build Builder implementation
@@ -38,11 +38,11 @@ func (b Builder) Build(name gopium.StrategyName, mode gopium.StrategyMode) (gopi
 	var stg gopium.Strategy
 	switch name {
 	case Enumerate:
-		stg = enum{b.wb}
+		stg = enum{b.m}
 	case Lexicographical:
-		stg = lexicographical{b.wb}
+		stg = lexicographical{b.m}
 	case Memory:
-		stg = memory{b.wb}
+		stg = memory{b.m}
 	default:
 		return nil, fmt.Errorf("strategy %q wasn't found", name)
 	}

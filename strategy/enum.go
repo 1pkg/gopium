@@ -8,11 +8,11 @@ import (
 )
 
 // enum defines struct enumerating strategy implementation
-// that goes through all structure fields and uses gopium.Whistleblower
+// that goes through all structure fields and uses gopium.Maven
 // to expose gopium.Field DTO for each field
 // and puts it back to resulted gopium.Struct object
 type enum struct {
-	wb gopium.Whistleblower
+	m gopium.Maven
 }
 
 // Apply enum implementation
@@ -29,7 +29,8 @@ func (stg enum) Apply(ctx context.Context, name string, st *types.Struct) (o gop
 		// get tag
 		tag := st.Tag(i)
 		// get typeinfo
-		tname, tsize := stg.wb.Expose(f.Type())
+		tname := stg.m.Name(f.Type())
+		tsize := stg.m.Size(f.Type())
 		// fill field structure
 		r.Fields = append(r.Fields, gopium.Field{
 			Name:     f.Name(),
