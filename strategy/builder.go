@@ -2,6 +2,7 @@ package strategy
 
 import (
 	"fmt"
+	"regexp"
 
 	"1pkg/gopium"
 )
@@ -9,6 +10,7 @@ import (
 // List of registered types gopium.StrategyName
 var (
 	Enumerate       gopium.StrategyName = "Enumerate"
+	FilterPad       gopium.StrategyName = "FilterPad"
 	Lexicographical gopium.StrategyName = "Lexicographical"
 	Memory          gopium.StrategyName = "Memory"
 )
@@ -39,6 +41,12 @@ func (b Builder) Build(name gopium.StrategyName, mode gopium.StrategyMode) (gopi
 	switch name {
 	case Enumerate:
 		stg = enum{b.m}
+	case FilterPad:
+		regex, err := regexp.Compile(`^_$`)
+		if err != nil {
+			return nil, err
+		}
+		stg = filter{m: b.m, r: regex}
 	case Lexicographical:
 		stg = lexicographical{b.m}
 	case Memory:
