@@ -31,11 +31,13 @@ func (stg enum) Apply(ctx context.Context, name string, st *types.Struct) (o gop
 		// get typeinfo
 		tname := stg.m.Name(f.Type())
 		tsize := stg.m.Size(f.Type())
+		talign := stg.m.Align(f.Type())
 		// fill field structure
 		r.Fields = append(r.Fields, gopium.Field{
 			Name:     f.Name(),
 			Type:     tname,
 			Size:     tsize,
+			Align:    talign,
 			Tag:      tag,
 			Exported: f.Exported(),
 			Embedded: f.Embedded(),

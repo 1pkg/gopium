@@ -13,6 +13,7 @@ var (
 	FilterPad       gopium.StrategyName = "FilterPad"
 	Lexicographical gopium.StrategyName = "Lexicographical"
 	Memory          gopium.StrategyName = "Memory"
+	Padding         gopium.StrategyName = "Padding"
 )
 
 // List of registered modes gopium.StrategyMode
@@ -51,6 +52,8 @@ func (b Builder) Build(name gopium.StrategyName, mode gopium.StrategyMode) (gopi
 		stg = lexicographical{b.m}
 	case Memory:
 		stg = memory{b.m}
+	case Padding:
+		stg = padding{b.m}
 	default:
 		return nil, fmt.Errorf("strategy %q wasn't found", name)
 	}

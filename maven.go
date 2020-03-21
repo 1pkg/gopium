@@ -5,9 +5,9 @@ import "go/types"
 // Curator defines system level info curator abstraction
 // to expose system word, aligment and cache level sizes
 type Curator interface {
-	Word() int64
-	Alignment() int64
-	Cache(level uint) int64
+	SysWord() int64
+	SysAlign() int64
+	SysCache(level uint) int64
 }
 
 // Exposer defines type info exposer abstraction

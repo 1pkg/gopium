@@ -6,6 +6,7 @@ type Field struct {
 	Name     string
 	Type     string
 	Size     int64
+	Align    int64
 	Tag      string
 	Exported bool
 	Embedded bool

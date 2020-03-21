@@ -14,18 +14,18 @@ func NewMavenGoTypes(compiler, arch string) MavenGoTypes {
 	return MavenGoTypes{sizes: types.SizesFor(compiler, arch)}
 }
 
-// Word MavenGoTypes implementation
-func (m MavenGoTypes) Word() int64 {
+// SysWord MavenGoTypes implementation
+func (m MavenGoTypes) SysWord() int64 {
 	return m.sizes.(*types.StdSizes).WordSize
 }
 
-// Alignment MavenGoTypes implementation
-func (m MavenGoTypes) Alignment() int64 {
+// SysAlign MavenGoTypes implementation
+func (m MavenGoTypes) SysAlign() int64 {
 	return m.sizes.(*types.StdSizes).MaxAlign
 }
 
-// Cache MavenGoTypes implementation
-func (m MavenGoTypes) Cache(level uint) int64 {
+// SysCache MavenGoTypes implementation
+func (m MavenGoTypes) SysCache(level uint) int64 {
 	// TODO
 	return -1
 }
