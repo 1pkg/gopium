@@ -13,7 +13,11 @@ var (
 	FilterPad       gopium.StrategyName = "FilterPad"
 	Lexicographical gopium.StrategyName = "Lexicographical"
 	Memory          gopium.StrategyName = "Memory"
-	Padding         gopium.StrategyName = "Padding"
+	PaddingType     gopium.StrategyName = "PaddingType"
+	PaddingSys      gopium.StrategyName = "PaddingSys"
+	CachingCPUL1    gopium.StrategyName = "CachingCPUL1"
+	CachingCPUL2    gopium.StrategyName = "CachingCPUL2"
+	CachingCPUL3    gopium.StrategyName = "CachingCPUL3"
 )
 
 // List of registered modes gopium.StrategyMode
@@ -52,8 +56,18 @@ func (b Builder) Build(name gopium.StrategyName, mode gopium.StrategyMode) (gopi
 		stg = lexicographical{b.m}
 	case Memory:
 		stg = memory{b.m}
-	case Padding:
-		stg = padding{b.m}
+	case PaddingType:
+		stg = padding{m: b.m, sys: false}
+	case PaddingSys:
+		stg = padding{m: b.m, sys: true}
+	case PaddingSys:
+		stg = padding{m: b.m, sys: true}
+	case CachingCPUL1:
+		stg = caching{m: b.m, l: 1}
+	case CachingCPUL2:
+		stg = caching{m: b.m, l: 2}
+	case CachingCPUL3:
+		stg = caching{m: b.m, l: 3}
 	default:
 		return nil, fmt.Errorf("strategy %q wasn't found", name)
 	}

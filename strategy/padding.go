@@ -12,7 +12,8 @@ import (
 // that uses enum strategy to get gopium.Field DTO for each field
 // then adds field's paddings accordingly to their system aligment
 type padding struct {
-	m gopium.Maven
+	m   gopium.Maven
+	sys bool
 }
 
 // Apply padding implementation
@@ -21,12 +22,17 @@ func (stg padding) Apply(ctx context.Context, name string, st *types.Struct) (o 
 	enum := enum{stg.m}
 	o, r, err = enum.Apply(ctx, name, st)
 	// setup resulted fields list
-	var offset int64
+	var offset, alignment int64 = 0, stg.m.SysAlign()
 	fields := make([]gopium.Field, 0, len(r.Fields))
 	// go through all fields
 	for _, f := range r.Fields {
+		// if we wanna use
+		// non system align
+		if !stg.sys {
+			alignment = f.Align
+		}
 		// calculate align with padding
-		alpad := align(offset, f.Align)
+		alpad := align(offset, alignment)
 		// if padding greater that zero
 		// append [pad]byte padding
 		if pad := alpad - offset; pad > 0 {
