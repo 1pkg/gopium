@@ -9,15 +9,19 @@ import (
 
 // List of registered types gopium.StrategyName
 var (
-	Enumerate       gopium.StrategyName = "Enumerate"
-	FilterPad       gopium.StrategyName = "FilterPad"
-	Lexicographical gopium.StrategyName = "Lexicographical"
-	Memory          gopium.StrategyName = "Memory"
-	PaddingType     gopium.StrategyName = "PaddingType"
-	PaddingSys      gopium.StrategyName = "PaddingSys"
-	CachingCPUL1    gopium.StrategyName = "CachingCPUL1"
-	CachingCPUL2    gopium.StrategyName = "CachingCPUL2"
-	CachingCPUL3    gopium.StrategyName = "CachingCPUL3"
+	Enumerate              gopium.StrategyName = "Enumerate"
+	FilterPad              gopium.StrategyName = "FilterPad"
+	Lexicographical        gopium.StrategyName = "Lexicographical"
+	Memory                 gopium.StrategyName = "Memory"
+	PaddingType            gopium.StrategyName = "PaddingType"
+	PaddingSys             gopium.StrategyName = "PaddingSys"
+	CachingCPUL1           gopium.StrategyName = "CachingCPUL1"
+	CachingCPUL2           gopium.StrategyName = "CachingCPUL2"
+	CachingCPUL3           gopium.StrategyName = "CachingCPUL3"
+	SeparatingSys          gopium.StrategyName = "SeparatingSys"
+	SeparatingCachingCPUL1 gopium.StrategyName = "SeparatingCachingCPUL1"
+	SeparatingCachingCPUL2 gopium.StrategyName = "SeparatingCachingCPUL2"
+	SeparatingCachingCPUL3 gopium.StrategyName = "SeparatingCachingCPUL3"
 )
 
 // List of registered modes gopium.StrategyMode
@@ -68,6 +72,14 @@ func (b Builder) Build(name gopium.StrategyName, mode gopium.StrategyMode) (gopi
 		stg = caching{m: b.m, l: 2}
 	case CachingCPUL3:
 		stg = caching{m: b.m, l: 3}
+	case SeparatingSys:
+		stg = separating{b.m}
+	case SeparatingCachingCPUL1:
+		stg = separating_caching{m: b.m, l: 1}
+	case SeparatingCachingCPUL2:
+		stg = separating_caching{m: b.m, l: 2}
+	case SeparatingCachingCPUL2:
+		stg = separating_caching{m: b.m, l: 3}
 	default:
 		return nil, fmt.Errorf("strategy %q wasn't found", name)
 	}
