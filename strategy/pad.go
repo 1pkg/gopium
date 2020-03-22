@@ -3,31 +3,30 @@ package strategy
 import (
 	"context"
 	"fmt"
-	"go/types"
 
 	"1pkg/gopium"
 )
 
-// padding defines system struct padding fields strategy implementation
-// that uses enum strategy to get gopium.Field DTO for each field
-// then adds field's paddings accordingly to their system aligment
-type padding struct {
-	m   gopium.Maven
-	sys bool
+// pad defines strategy implementation
+// that align all strucutre field
+// to sys or max sys padding
+// by adding paddings accordingly to system aligments
+type pad struct {
+	c   gopium.Curator
+	sys bool // should max sys padding be used
 }
 
-// Apply padding implementation
-func (stg padding) Apply(ctx context.Context, name string, st *types.Struct) (o gopium.Struct, r gopium.Struct, err error) {
-	// first apply enum strategy
-	enum := enum{stg.m}
-	o, r, err = enum.Apply(ctx, name, st)
+// Apply pad implementation
+func (stg pad) Apply(ctx context.Context, o gopium.Struct) (r gopium.Struct, err error) {
+	// copy original structure to result
+	r = o
 	// setup resulted fields list
-	var offset, alignment int64 = 0, stg.m.SysAlign()
+	var offset, alignment int64 = 0, stg.c.SysAlign()
 	fields := make([]gopium.Field, 0, len(r.Fields))
 	// go through all fields
 	for _, f := range r.Fields {
 		// if we wanna use
-		// non system align
+		// non max system align
 		if !stg.sys {
 			alignment = f.Align
 		}
@@ -40,7 +39,7 @@ func (stg padding) Apply(ctx context.Context, name string, st *types.Struct) (o 
 				Name:  "_",
 				Type:  fmt.Sprintf("[%d]byte", pad),
 				Size:  pad,
-				Align: 1,
+				Align: 1, // fixed number for byte
 			})
 		}
 		// increment structure offset
@@ -53,7 +52,7 @@ func (stg padding) Apply(ctx context.Context, name string, st *types.Struct) (o 
 }
 
 // align returns the smallest y >= x such that y % a == 0.
-// copied from `go/types/sizes.go`
+// note: copied from `go/types/sizes.go`
 func align(x, a int64) int64 {
 	y := x + a - 1
 	return y - y%a

@@ -14,10 +14,12 @@ type StructToBytes func(gopium.Struct) ([]byte, error)
 // PrettyJson defines json.Marshal
 // with json.Indent StructToBytes implementation
 func PrettyJson(st gopium.Struct) ([]byte, error) {
+	// just use json.Marshal
 	r, err := json.Marshal(st)
 	if err != nil {
 		return nil, err
 	}
+	// and make indent pretier
 	var buf bytes.Buffer
 	err = json.Indent(&buf, r, "", "\t")
 	if err != nil {

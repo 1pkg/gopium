@@ -19,8 +19,9 @@ import (
 // that uses pkgs.Parser to parse packages types data
 // astutil to update ast to results from strategy
 type wuast struct {
-	parser gopium.Parser
-	fmt    fmts.StructToAst
+	parser  gopium.Parser
+	exposer gopium.Exposer
+	fmt     fmts.StructToAst
 }
 
 // VisitTop wuast implementation
@@ -50,7 +51,7 @@ func (w wuast) visit(ctx context.Context, regex *regexp.Regexp, stg gopium.Strat
 	// using visit helper
 	// and run it on pkg scope
 	ch := make(appliedCh)
-	gvisit := visit(regex, stg, loc.Sum, ch, deep)
+	gvisit := visit(regex, stg, w.exposer, loc.Sum, ch, deep)
 	// create separate cancelation context for visiting
 	nctx, cancel := context.WithCancel(ctx)
 	defer cancel()

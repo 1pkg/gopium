@@ -9,103 +9,80 @@ import (
 
 // List of registered types gopium.StrategyName
 var (
-	Enumerate              gopium.StrategyName = "Enumerate"
-	FilterPad              gopium.StrategyName = "FilterPad"
-	Lexicographical        gopium.StrategyName = "Lexicographical"
-	Memory                 gopium.StrategyName = "Memory"
-	PaddingType            gopium.StrategyName = "PaddingType"
-	PaddingSys             gopium.StrategyName = "PaddingSys"
-	CachingCPUL1           gopium.StrategyName = "CachingCPUL1"
-	CachingCPUL2           gopium.StrategyName = "CachingCPUL2"
-	CachingCPUL3           gopium.StrategyName = "CachingCPUL3"
-	SeparatingSys          gopium.StrategyName = "SeparatingSys"
-	SeparatingCachingCPUL1 gopium.StrategyName = "SeparatingCachingCPUL1"
-	SeparatingCachingCPUL2 gopium.StrategyName = "SeparatingCachingCPUL2"
-	SeparatingCachingCPUL3 gopium.StrategyName = "SeparatingCachingCPUL3"
-	FalseSharingCPUL1      gopium.StrategyName = "FalseSharingCPUL1"
-	FalseSharingCPUL2      gopium.StrategyName = "FalseSharingCPUL2"
-	FalseSharingCPUL3      gopium.StrategyName = "FalseSharingCPUL3"
-)
-
-// List of registered modes gopium.StrategyMode
-const (
-	WithNone gopium.StrategyMode = 1 << iota
-	WithAnnotation
-	WithStamp
+	Annotate        gopium.StrategyName = "Annotate"
+	Stamp           gopium.StrategyName = "Stamp"
+	FilterPad       gopium.StrategyName = "FilterPad"
+	Lexicographical gopium.StrategyName = "Lexicographical"
+	Memory          gopium.StrategyName = "Memory"
+	PadType         gopium.StrategyName = "PadType"
+	PadSys          gopium.StrategyName = "PadSys"
+	CacheL1         gopium.StrategyName = "CacheL1"
+	CacheL2         gopium.StrategyName = "CacheL2"
+	CacheL3         gopium.StrategyName = "CacheL3"
+	SeparateSys     gopium.StrategyName = "SeparateSys"
+	SeparateL1      gopium.StrategyName = "SeparateL1"
+	SeparateL2      gopium.StrategyName = "SeparateL2"
+	SeparateL3      gopium.StrategyName = "SeparateL3"
+	FalseShareL1    gopium.StrategyName = "FalseShareL1"
+	FalseShareL2    gopium.StrategyName = "FalseShareL2"
+	FalseShareL3    gopium.StrategyName = "FalseShareL3"
 )
 
 // Builder defines types gopium.StrategyBuilder implementation
-// that uses gopium.Maven as an exposer and related strategies
+// that uses gopium.Curator as an exposer and related strategies
 type Builder struct {
-	m gopium.Maven
+	c gopium.Curator
 }
 
 // NewBuilder creates instance of Builder
 // and requires gopium.Maven to pass it to related strategies
-func NewBuilder(m gopium.Maven) Builder {
-	return Builder{m: m}
+func NewBuilder(c gopium.Curator) Builder {
+	return Builder{c: c}
 }
 
 // Build Builder implementation
-func (b Builder) Build(name gopium.StrategyName, mode gopium.StrategyMode) (gopium.Strategy, error) {
+func (b Builder) Build(name gopium.StrategyName) (gopium.Strategy, error) {
 	// build strategy by name
-	var stg gopium.Strategy
 	switch name {
-	case Enumerate:
-		stg = enum{b.m}
+	case Annotate:
+		return annotate{}, nil
+	case Stamp:
+		return stamp{}, nil
 	case FilterPad:
 		regex, err := regexp.Compile(`^_$`)
 		if err != nil {
 			return nil, err
 		}
-		stg = filter{m: b.m, r: regex}
+		return filter{regex}, nil
 	case Lexicographical:
-		stg = lexicographical{b.m}
+		return lex{}, nil
 	case Memory:
-		stg = memory{b.m}
-	case PaddingType:
-		stg = padding{m: b.m, sys: false}
-	case PaddingSys:
-		stg = padding{m: b.m, sys: true}
-	case PaddingSys:
-		stg = padding{m: b.m, sys: true}
-	case CachingCPUL1:
-		stg = caching{m: b.m, l: 1}
-	case CachingCPUL2:
-		stg = caching{m: b.m, l: 2}
-	case CachingCPUL3:
-		stg = caching{m: b.m, l: 3}
-	case SeparatingSys:
-		stg = separating{b.m}
-	case SeparatingCachingCPUL1:
-		stg = separating_caching{m: b.m, l: 1}
-	case SeparatingCachingCPUL2:
-		stg = separating_caching{m: b.m, l: 2}
-	case SeparatingCachingCPUL3:
-		stg = separating_caching{m: b.m, l: 3}
-	case FalseSharingCPUL1:
-		stg = false_sharing{m: b.m, l: 1}
-	case FalseSharingCPUL2:
-		stg = false_sharing{m: b.m, l: 2}
-	case FalseSharingCPUL3:
-		stg = false_sharing{m: b.m, l: 3}
+		return memory{}, nil
+	case PadType:
+		return pad{c: b.c, sys: false}, nil
+	case PadSys:
+		return pad{c: b.c, sys: true}, nil
+	case CacheL1:
+		return cache{c: b.c, l: 1}, nil
+	case CacheL2:
+		return cache{c: b.c, l: 2}, nil
+	case CacheL3:
+		return cache{c: b.c, l: 3}, nil
+	case SeparateSys:
+		return separate{c: b.c, sys: true}, nil
+	case SeparateL1:
+		return separate{c: b.c, l: 1}, nil
+	case SeparateL2:
+		return separate{c: b.c, l: 2}, nil
+	case SeparateL3:
+		return separate{c: b.c, l: 3}, nil
+	case FalseShareL1:
+		return fshare{c: b.c, l: 1}, nil
+	case FalseShareL2:
+		return fshare{c: b.c, l: 2}, nil
+	case FalseShareL3:
+		return fshare{c: b.c, l: 3}, nil
 	default:
 		return nil, fmt.Errorf("strategy %q wasn't found", name)
 	}
-	// iterate through all registered modes
-	for mask := WithNone; mask != WithStamp; mask = mask << 1 {
-		// in case mode doesn't have current mask
-		// just skip current mask
-		if !mode.Has(mask) {
-			continue
-		}
-		// otherwise apply registered mode
-		switch mask {
-		case WithAnnotation:
-			stg = annotate{stg}
-		case WithStamp:
-			stg = stamp{stg}
-		}
-	}
-	return stg, nil
 }

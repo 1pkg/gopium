@@ -29,9 +29,17 @@ type govisit func(context.Context, *types.Scope)
 // depends on deep flag (different tree levels)
 // it creates visitFunc instance that
 // goes through all struct decls inside the scope
+// convert them to inner gopium format
 // and applies the strategy if struct name matches regex
 // then it push result of the strategy to the chan
-func visit(regex *regexp.Regexp, stg gopium.Strategy, idfunc gopium.IDFunc, ch appliedCh, deep bool) (f govisit) {
+func visit(
+	regex *regexp.Regexp,
+	stg gopium.Strategy,
+	exposer gopium.Exposer,
+	idfunc gopium.IDFunc,
+	ch appliedCh,
+	deep bool,
+) (f govisit) {
 	// wait group visits counter
 	var wg sync.WaitGroup
 	// govisit defines shallow function
@@ -95,8 +103,11 @@ func visit(regex *regexp.Regexp, stg gopium.Strategy, idfunc gopium.IDFunc, ch a
 					go func(id, name string, st *types.Struct) {
 						// decrement wait group visits counter
 						defer wg.Done()
+						// convert original struct
+						// to inner gopium format
+						o := enum(exposer, name, st)
 						// apply provided strategy
-						o, r, err := stg.Apply(ctx, name, st)
+						r, err := stg.Apply(ctx, o)
 						// and push results to the chan
 						ch <- applied{
 							ID:     id,
@@ -175,6 +186,34 @@ func visit(regex *regexp.Regexp, stg gopium.Strategy, idfunc gopium.IDFunc, ch a
 		}
 		// assign result func
 		f = godeep
+	}
+	return
+}
+
+// enum defines struct enumerating visit converting helper
+// that goes through all structure fields and uses gopium.Exposer
+// to expose gopium.Field DTO for each field
+// and puts it back to resulted gopium.Struct object
+func enum(exposer gopium.Exposer, name string, st *types.Struct) (r gopium.Struct) {
+	// set structure name
+	r.Name = name
+	// get number of struct fields
+	nf := st.NumFields()
+	// prefill Fields
+	r.Fields = make([]gopium.Field, 0, nf)
+	for i := 0; i < nf; i++ {
+		// get field
+		f := st.Field(i)
+		// fill field structure
+		r.Fields = append(r.Fields, gopium.Field{
+			Name:     f.Name(),
+			Type:     exposer.Name(f.Type()),
+			Size:     exposer.Size(f.Type()),
+			Align:    exposer.Align(f.Type()),
+			Tag:      st.Tag(i),
+			Exported: f.Exported(),
+			Embedded: f.Embedded(),
+		})
 	}
 	return
 }

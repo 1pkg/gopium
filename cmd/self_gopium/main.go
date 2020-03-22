@@ -18,10 +18,10 @@ func main() {
 	// compile regex
 	regex, _ := regexp.Compile(`.*`)
 	// set up StrategyBuilder
-	wb := pkgs_types.NewMavenGoTypes("gc", "amd64")
-	bs := strategy.NewBuilder(wb)
+	m := pkgs_types.NewMavenGoTypes("gc", "amd64")
+	bs := strategy.NewBuilder(m)
 	// build Strategy
-	stg, err := bs.Build(strategy.Lexicographical, strategy.WithAnnotation)
+	stg, err := bs.Build(strategy.Lexicographical)
 	if err != nil {
 		panic(err)
 	}
@@ -37,7 +37,7 @@ func main() {
 		ModeTypes: packages.LoadAllSyntax,
 		ModeAst:   parser.ParseComments,
 	}
-	bw := walker.NewBuilder(p)
+	bw := walker.NewBuilder(p, m)
 	// build Walker
 	w, err := bw.Build(walker.PrettyJsonStd)
 	if err != nil {
