@@ -3,22 +3,21 @@ package strategy
 import (
 	"context"
 	"fmt"
-	"go/types"
 
 	"1pkg/gopium"
 )
 
-// annotate defines struct size annotation strategy implementation adapter
-// that applies underlying strategy and then adds size comment annotation
-// for all structure fields and aggregated annotation to structure
-type annotate struct {
-	stg gopium.Strategy
-}
+// annotate defines strategy implementation
+// that adds size comment annotation
+// for all structure fields
+// and aggregated size annotation
+// for whole structure
+type annotate struct{}
 
 // Apply annotate implementation
-func (stg annotate) Apply(ctx context.Context, name string, st *types.Struct) (o gopium.Struct, r gopium.Struct, err error) {
-	// first apply underlying strategy
-	o, r, err = stg.stg.Apply(ctx, name, st)
+func (stg annotate) Apply(ctx context.Context, o gopium.Struct) (r gopium.Struct, err error) {
+	// copy original structure to result
+	r = o
 	// then annotate each field with size comment
 	var sum int64
 	for i := range r.Fields {

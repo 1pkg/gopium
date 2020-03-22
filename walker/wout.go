@@ -17,9 +17,10 @@ import (
 // fmts.TypeFormat to format strategy result
 // and io.Writer to write output
 type wout struct {
-	parser gopium.TypeParser
-	fmt    fmts.StructToBytes
-	writer io.Writer
+	parser  gopium.TypeParser
+	exposer gopium.Exposer
+	fmt     fmts.StructToBytes
+	writer  io.Writer
 }
 
 // VisitTop wout implementation
@@ -57,7 +58,7 @@ func (w wout) visit(ctx context.Context, regex *regexp.Regexp, stg gopium.Strate
 	// using gopium.Visit helper
 	// and run it on pkg scope
 	ch := make(appliedCh)
-	gvisit := visit(regex, stg, loc.Sum, ch, deep)
+	gvisit := visit(regex, stg, w.exposer, loc.Sum, ch, deep)
 	// create sync error group
 	// with cancelation context
 	group, gctx := errgroup.WithContext(ctx)

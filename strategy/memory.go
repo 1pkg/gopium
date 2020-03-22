@@ -2,25 +2,23 @@ package strategy
 
 import (
 	"context"
-	"go/types"
 	"sort"
 
 	"1pkg/gopium"
 )
 
-// memory defines struct optimal memory fields sorting strategy implementation
-// that uses enum strategy to get gopium.Field DTO for each field
-// then sorts fields accordingly to their sizes in descending order
-type memory struct {
-	m gopium.Maven
-}
+// memory defines strategy implementation
+// that rearranges structure field list
+// for optimal memory utilization
+// by sorting fields accordingly
+// to their sizes in descending order
+type memory struct{}
 
 // Apply memory implementation
-func (stg memory) Apply(ctx context.Context, name string, st *types.Struct) (o gopium.Struct, r gopium.Struct, err error) {
-	// first apply enum strategy
-	enum := enum{stg.m}
-	o, r, err = enum.Apply(ctx, name, st)
-	// then execute memory sorting
+func (stg memory) Apply(ctx context.Context, o gopium.Struct) (r gopium.Struct, err error) {
+	// copy original structure to result
+	r = o
+	// execute memory sorting
 	sort.SliceStable(r.Fields, func(i, j int) bool {
 		return r.Fields[j].Size < r.Fields[i].Size
 	})
