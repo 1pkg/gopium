@@ -170,7 +170,8 @@ func padsync(ts *ast.TypeSpec, st gopium.Struct) error {
 	}
 	// prepare resulted fields list
 	fields := make([]*ast.Field, 0, len(tts.Fields.List)+len(st.Fields))
-	for _, f := range st.Fields {
+	copy(fields, tts.Fields.List)
+	for index, f := range st.Fields {
 		// skip non pad fields
 		if f.Name != "_" {
 			continue
@@ -185,7 +186,7 @@ func padsync(ts *ast.TypeSpec, st gopium.Struct) error {
 		// note: don't need to sync docs/comments here
 		// as it will be done in annotate
 		size := strconv.Itoa(int(f.Size))
-		fields = append(fields, &ast.Field{
+		field := &ast.Field{
 			Names: []*ast.Ident{
 				&ast.Ident{
 					Name: "_",
@@ -204,7 +205,11 @@ func padsync(ts *ast.TypeSpec, st gopium.Struct) error {
 					Name: "byte",
 				},
 			},
-		})
+		}
+		// shift fields one right
+		copy(fields[index+1:], fields[index:])
+		// insert pad at index
+		fields[index] = field
 	}
 	// update original ast fields list
 	tts.Fields.List = fields
