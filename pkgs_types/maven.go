@@ -5,13 +5,23 @@ import "go/types"
 // MavenGoTypes defines maven default "go/types" implementation
 // that uses types.Sizes Sizeof in order to get type info
 type MavenGoTypes struct {
-	sizes types.Sizes
+	sizes  types.Sizes
+	caches map[uint]int64
 }
 
 // NewWhistleblowerGoTypes creates instance of ExtractorGoTypes
 // and requires compiler and arch for types.Sizes initialization
-func NewMavenGoTypes(compiler, arch string) MavenGoTypes {
-	return MavenGoTypes{sizes: types.SizesFor(compiler, arch)}
+func NewMavenGoTypes(compiler, arch string, caches ...int64) MavenGoTypes {
+	// go through all passed caches
+	// and fill them to cache map
+	cm := make(map[uint]int64, len(caches))
+	for i, cache := range caches {
+		cm[uint(i+1)] = cache
+	}
+	return MavenGoTypes{
+		sizes:  types.SizesFor(compiler, arch),
+		caches: cm,
+	}
 }
 
 // SysWord MavenGoTypes implementation
@@ -26,8 +36,13 @@ func (m MavenGoTypes) SysAlign() int64 {
 
 // SysCache MavenGoTypes implementation
 func (m MavenGoTypes) SysCache(level uint) int64 {
-	// TODO
-	return -1
+	// if we have specified cache size
+	if size, ok := m.caches[level]; ok {
+		return size
+	}
+	// otherwise just return
+	// typical cpu cache size
+	return 64
 }
 
 // Name MavenGoTypes implementation
