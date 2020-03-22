@@ -22,6 +22,9 @@ var (
 	SeparatingCachingCPUL1 gopium.StrategyName = "SeparatingCachingCPUL1"
 	SeparatingCachingCPUL2 gopium.StrategyName = "SeparatingCachingCPUL2"
 	SeparatingCachingCPUL3 gopium.StrategyName = "SeparatingCachingCPUL3"
+	FalseSharingCPUL1      gopium.StrategyName = "FalseSharingCPUL1"
+	FalseSharingCPUL2      gopium.StrategyName = "FalseSharingCPUL2"
+	FalseSharingCPUL3      gopium.StrategyName = "FalseSharingCPUL3"
 )
 
 // List of registered modes gopium.StrategyMode
@@ -78,8 +81,14 @@ func (b Builder) Build(name gopium.StrategyName, mode gopium.StrategyMode) (gopi
 		stg = separating_caching{m: b.m, l: 1}
 	case SeparatingCachingCPUL2:
 		stg = separating_caching{m: b.m, l: 2}
-	case SeparatingCachingCPUL2:
+	case SeparatingCachingCPUL3:
 		stg = separating_caching{m: b.m, l: 3}
+	case FalseSharingCPUL1:
+		stg = false_sharing{m: b.m, l: 1}
+	case FalseSharingCPUL2:
+		stg = false_sharing{m: b.m, l: 2}
+	case FalseSharingCPUL3:
+		stg = false_sharing{m: b.m, l: 3}
 	default:
 		return nil, fmt.Errorf("strategy %q wasn't found", name)
 	}
