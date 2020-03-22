@@ -2,8 +2,12 @@ package fmts
 
 import (
 	"errors"
+	"fmt"
 	"go/ast"
+	"go/token"
+	"regexp"
 	"sort"
+	"strconv"
 
 	"1pkg/gopium"
 )
@@ -12,13 +16,17 @@ import (
 // formatting original *ast.TypeSpec with gopium.Struct
 type StructToAst func(*ast.TypeSpec, gopium.Struct) error
 
-// FSA implements StructToAst and combines:
+// FSPA implements StructToAst and combines:
 // - flatten helper
+// - padfilter helper
 // - shuffle helper
+// - padsync helper
 // - annotate helper
-var FSA = combine(
+var FSPA = combine(
 	flatten,
+	padfilter,
 	shuffle,
+	padsync,
 	annotate,
 )
 
@@ -69,7 +77,34 @@ func flatten(ts *ast.TypeSpec, st gopium.Struct) error {
 	return nil
 }
 
-// ShuffleAst helps to sort fields list
+// padfilter helps to filter pads from fields list
+// for original *ast.TypeSpec
+func padfilter(ts *ast.TypeSpec, st gopium.Struct) error {
+	// check that we are working with ast.StructType
+	tts, ok := ts.Type.(*ast.StructType)
+	if !ok {
+		return errors.New("padfilter could only be applied to ast.StructType")
+	}
+	// prepare resulted fields list
+	fields := make([]*ast.Field, 0, len(tts.Fields.List))
+	// go through original ast struct
+	for _, f := range tts.Fields.List {
+		// in case structure isn't flat return error
+		if len(f.Names) != 1 {
+			return errors.New("padfilter could only be applied to flatten structures")
+		}
+		// if pad field was detected
+		// filter it out
+		if f.Names[0].Name != "_" {
+			fields = append(fields, f)
+		}
+	}
+	// update original ast fields list
+	tts.Fields.List = fields
+	return nil
+}
+
+// shuffle helps to sort fields list
 // for original *ast.TypeSpec accordingly resulted gopium.Struct
 func shuffle(ts *ast.TypeSpec, st gopium.Struct) error {
 	// check that we are working with ast.StructType
@@ -109,6 +144,8 @@ func shuffle(ts *ast.TypeSpec, st gopium.Struct) error {
 				fi = index
 			case nj:
 				fj = index
+			case "_": // skip paddings
+				index--
 			}
 		}
 		// compare comparison indexes
@@ -116,6 +153,62 @@ func shuffle(ts *ast.TypeSpec, st gopium.Struct) error {
 	})
 	// no error can happen
 	return err
+}
+
+// padsync helps to sync fields padding list
+// for original *ast.TypeSpec accordingly resulted gopium.Struct
+func padsync(ts *ast.TypeSpec, st gopium.Struct) error {
+	// check that we are working with ast.StructType
+	tts, ok := ts.Type.(*ast.StructType)
+	if !ok {
+		return errors.New("padsync could only be applied to ast.StructType")
+	}
+	// prepare pad type expression regex
+	regexp, err := regexp.Compile(`\[.*\]byte`)
+	if err != nil {
+		return fmt.Errorf("padsync cannot prepare pad type expression regex %w", err)
+	}
+	// prepare resulted fields list
+	fields := make([]*ast.Field, 0, len(tts.Fields.List)+len(st.Fields))
+	for _, f := range st.Fields {
+		// skip non pad fields
+		if f.Name != "_" {
+			continue
+		}
+		// in case pad type is unexpected
+		// return error
+		if !regexp.MatchString(f.Type) {
+			return fmt.Errorf("padsync unexpected pad type expression %s", f.Type)
+		}
+		// transform size to string format
+		// and add pad field to struct
+		// note: don't need to sync docs/comments here
+		// as it will be done in annotate
+		size := strconv.Itoa(int(f.Size))
+		fields = append(fields, &ast.Field{
+			Names: []*ast.Ident{
+				&ast.Ident{
+					Name: "_",
+					Obj: &ast.Object{
+						Kind: ast.Var,
+						Name: "_",
+					},
+				},
+			},
+			Type: &ast.ArrayType{
+				Len: &ast.BasicLit{
+					Kind:  token.INT,
+					Value: size,
+				},
+				Elt: &ast.Ident{
+					Name: "byte",
+				},
+			},
+		})
+	}
+	// update original ast fields list
+	tts.Fields.List = fields
+	return nil
 }
 
 // annotate helps to sync docs and comments
