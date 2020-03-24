@@ -21,6 +21,7 @@ type wout struct {
 	exposer gopium.Exposer
 	fmt     fmts.StructToBytes
 	writer  io.Writer
+	backref bool
 }
 
 // VisitTop wout implementation
@@ -58,7 +59,7 @@ func (w wout) visit(ctx context.Context, regex *regexp.Regexp, stg gopium.Strate
 	// using gopium.Visit helper
 	// and run it on pkg scope
 	ch := make(appliedCh)
-	gvisit := visit(regex, stg, w.exposer, loc.Sum, ch, deep)
+	gvisit := visit(regex, stg, w.exposer, loc.Sum, ch, deep, w.backref)
 	// create sync error group
 	// with cancelation context
 	group, gctx := errgroup.WithContext(ctx)

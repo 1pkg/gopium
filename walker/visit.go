@@ -38,7 +38,8 @@ func visit(
 	exposer gopium.Exposer,
 	idfunc gopium.IDFunc,
 	ch appliedCh,
-	deep bool,
+	deep,
+	backref bool,
 ) govisit {
 	// return govisit func applied
 	// visiting implementation
@@ -47,18 +48,15 @@ func visit(
 	// and applies strategy to them
 	return func(ctx context.Context, scope *types.Scope) {
 		// setup visiting maven
-		m := maven{
-			exposer: exposer,
-			idfunc:  idfunc,
-			store:   sync.Map{},
-		}
+		m := newm(exposer, idfunc, backref)
+		defer m.prune()
 		// determinate which function
 		// should be applied for visiting
 		// depends on deep flag
 		if deep {
-			vdeep(ctx, scope, regex, stg, &m, ch)
+			vdeep(ctx, scope, regex, stg, m, ch)
 		} else {
-			vscope(ctx, scope, regex, stg, &m, ch)
+			vscope(ctx, scope, regex, stg, m, ch)
 		}
 	}
 }
@@ -181,6 +179,7 @@ loop:
 				}
 				// increment wait group visits counter
 				wg.Add(1)
+				maven.link(name)
 				// concurently visit the structure
 				// and apply strategy to it
 				go func(id, name string, st *types.Struct) {
@@ -191,6 +190,8 @@ loop:
 					o := maven.enum(name, st)
 					// apply provided strategy
 					r, err := stg.Apply(ctx, o)
+					// add ref to result structure
+					maven.stref(r)
 					// and push results to the chan
 					ch <- applied{
 						ID:     id,

@@ -37,7 +37,7 @@ func main() {
 		ModeTypes: packages.LoadAllSyntax,
 		ModeAst:   parser.ParseComments,
 	}
-	bw := walker.NewBuilder(p, m)
+	bw := walker.NewBuilder(p, m, false)
 	// build Walker
 	w, err := bw.Build(walker.PrettyJsonStd)
 	if err != nil {

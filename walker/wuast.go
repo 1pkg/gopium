@@ -22,6 +22,7 @@ type wuast struct {
 	parser  gopium.Parser
 	exposer gopium.Exposer
 	fmt     fmts.StructToAst
+	backref bool
 }
 
 // VisitTop wuast implementation
@@ -51,7 +52,7 @@ func (w wuast) visit(ctx context.Context, regex *regexp.Regexp, stg gopium.Strat
 	// using visit helper
 	// and run it on pkg scope
 	ch := make(appliedCh)
-	gvisit := visit(regex, stg, w.exposer, loc.Sum, ch, deep)
+	gvisit := visit(regex, stg, w.exposer, loc.Sum, ch, deep, w.backref)
 	// create separate cancelation context for visiting
 	nctx, cancel := context.WithCancel(ctx)
 	defer cancel()
