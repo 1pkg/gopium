@@ -22,7 +22,7 @@ type applied struct {
 type appliedCh chan applied
 
 // visitFunc defines abstraction that helpes
-// visit filtered structures in the scope
+// visit and filtered structures on the scope
 type govisit func(context.Context, *types.Scope)
 
 // Visit helps to implement Walker VisitTop and VisitDeep methods
@@ -39,155 +39,191 @@ func visit(
 	idfunc gopium.IDFunc,
 	ch appliedCh,
 	deep bool,
-) (f govisit) {
+) govisit {
+	// determinate which function
+	// should be applied depends on
+	// deep flag
+	var v func(
+		ctx context.Context,
+		scope *types.Scope,
+		regex *regexp.Regexp,
+		stg gopium.Strategy,
+		exposer gopium.Exposer,
+		idfunc gopium.IDFunc,
+		visited *sync.Map,
+		ch appliedCh,
+	)
+	if deep {
+		v = vdeep
+	} else {
+		v = vscope
+	}
+	// return govisit func applied
+	// visiting implementation
+	// that goes through all structures
+	// with names that match regex
+	// and applies strategy to them
+	return func(ctx context.Context, scope *types.Scope) {
+		v(
+			ctx,
+			scope,
+			regex,
+			stg,
+			exposer,
+			idfunc,
+			&sync.Map{},
+			ch,
+		)
+	}
+}
+
+// vdeep defines deep visiting helper
+// that goes through all structures on all scopes concurently
+// with names that match regex and applies strategy to them
+func vdeep(
+	ctx context.Context,
+	scope *types.Scope,
+	regex *regexp.Regexp,
+	stg gopium.Strategy,
+	exposer gopium.Exposer,
+	idfunc gopium.IDFunc,
+	visited *sync.Map,
+	ch appliedCh,
+) {
 	// wait group visits counter
 	var wg sync.WaitGroup
-	// govisit defines shallow function
-	// that goes through structures on the scope
-	// with names that match regex and applies strategy to them
-	//nolint
-	var gotop govisit
-	// visited holds visited structure
-	// hierarchy names list
-	// should be shared between govisit funcs
-	visited := sync.Map{}
-	gotop = func(ctx context.Context, scope *types.Scope) {
-		// after visiting is done
-		// wait until all visits finished
-		// and then close the channel
-		// still will close channel gracefully
-		// even in case of context cancelation
-		defer func() {
-			// in case of deep visiting
-			// do nothing as godeep
-			// will close channel itself
-			if !deep {
-				wg.Wait()
-				close(ch)
+	// after deep visiting is done
+	// wait until all visits finished
+	// and then close the channel
+	defer func() {
+		wg.Wait()
+		close(ch)
+	}()
+	// indeep defines recursive inner
+	// visitig helper that visits
+	// all scope one by one
+	// and runs vscope on them
+	var indeep govisit
+	indeep = func(ctx context.Context, scope *types.Scope) {
+		// manage context actions
+		// in case of cancelation
+		// break from futher traverse
+		select {
+		case <-ctx.Done():
+			return
+		default:
+		}
+		// increment wait group visits counter
+		wg.Add(1)
+		// concurently visit current scope
+		go func() {
+			// decrement wait group visits counter
+			// after scope visiting is done
+			defer wg.Done()
+			// run vscope on current scope
+			nch := make(appliedCh)
+			go vscope(
+				ctx,
+				scope,
+				regex,
+				stg,
+				exposer,
+				idfunc,
+				visited,
+				nch,
+			)
+			// redirect results of vscope
+			// to final applied chanel
+			for applied := range nch {
+				ch <- applied
 			}
 		}()
-	loop:
-		// go through all names inside the package scope
-		for _, name := range scope.Names() {
-			// check if object name doesn't matches regex
-			if !regex.MatchString(name) {
-				continue
-			}
-			// in case it does and object is
-			// a type name and it's not an alias for struct
-			// then apply strategy to it
-			if tn, ok := scope.Lookup(name).(*types.TypeName); ok && !tn.IsAlias() {
-				// if underlying type is struct
-				if st, ok := tn.Type().Underlying().(*types.Struct); ok {
-					// build id for structure
-					id := idfunc(tn.Pos())
-					// in case id of structure
-					// has been already visited
-					if _, ok := visited.Load(id); ok {
-						continue
-					}
-					// mark hierarchy name of structure to visited
-					visited.Store(id, struct{}{})
-					// manage context actions
-					// in case of cancelation break from
-					// futher traverse
-					select {
-					case <-ctx.Done():
-						break loop
-					default:
-					}
-					// increment wait group visits counter
-					wg.Add(1)
-					// concurently visit the structure
-					// and apply strategy to it
-					go func(id, name string, st *types.Struct) {
-						// decrement wait group visits counter
-						defer wg.Done()
-						// convert original struct
-						// to inner gopium format
-						o := enum(exposer, name, st)
-						// apply provided strategy
-						r, err := stg.Apply(ctx, o)
-						// and push results to the chan
-						ch <- applied{
-							ID:     id,
-							Origin: o,
-							Result: r,
-							Error:  err,
-						}
-					}(id, name, st)
-				}
-			}
+		// traverse through children scopes
+		for i := 0; i < scope.NumChildren(); i++ {
+			// visit children scopes iteratively
+			// using child context and scope
+			go indeep(ctx, scope.Child(i))
 		}
 	}
-	// assign result func
-	f = gotop
-	// in case of deep visit
-	if deep {
-		// deep wait group visits counter
-		var dwg sync.WaitGroup
-		// godeep defines recursive function
-		// that goes through all nested scopes with govisit
-		//nolint
-		var godeep govisit
-		godeep = func(ctx context.Context, scope *types.Scope) {
-			// after deep visiting is done
-			// wait until all visits finished
-			// and then close the channel
-			// still will close channel gracefully
-			// even in case of context cancelation
-			defer func() {
-				// wait for deep wait group
-				// and close chan
-				dwg.Wait()
-				close(ch)
-			}()
-			var ingodeep govisit
-			ingodeep = func(ctx context.Context, scope *types.Scope) {
-				// create child context here
-				nctx, cancel := context.WithCancel(ctx)
-				// after deep visiting is done
-				// wait until all visits finished
-				// and then cancel child context
-				defer func() {
-					// wait for deep wait group
-					// and cancel child context
-					dwg.Wait()
-					cancel()
-				}()
-				// manage parent context actions
-				// in case of cancelation
-				// break from futher traverse
+	// start indeep chain
+	indeep(ctx, scope)
+}
+
+// vscope defines top visiting helper
+// that goes through structures on the scope
+// with names that match regex and applies strategy to them
+func vscope(
+	ctx context.Context,
+	scope *types.Scope,
+	regex *regexp.Regexp,
+	stg gopium.Strategy,
+	exposer gopium.Exposer,
+	idfunc gopium.IDFunc,
+	visited *sync.Map,
+	ch appliedCh,
+) {
+	// wait group visits counter
+	var wg sync.WaitGroup
+	// after visiting is done
+	// wait until all visits finished
+	// and then close the channel
+	defer func() {
+		wg.Wait()
+		close(ch)
+	}()
+loop:
+	// go through all names inside the package scope
+	for _, name := range scope.Names() {
+		// check if object name doesn't matches regex
+		if !regex.MatchString(name) {
+			continue
+		}
+		// in case it does and object is
+		// a type name and it's not an alias for struct
+		// then apply strategy to it
+		if tn, ok := scope.Lookup(name).(*types.TypeName); ok && !tn.IsAlias() {
+			// if underlying type is struct
+			if st, ok := tn.Type().Underlying().(*types.Struct); ok {
+				// build id for structure
+				id := idfunc(tn.Pos())
+				// in case id of structure
+				// has been already visited
+				if _, ok := visited.Load(id); ok {
+					continue
+				}
+				// mark hierarchy name of structure to visited
+				visited.Store(id, struct{}{})
+				// manage context actions
+				// in case of cancelation break from
+				// futher traverse
 				select {
 				case <-ctx.Done():
-					return
+					break loop
 				default:
 				}
-				// increment deep wait group visits counter
-				dwg.Add(1)
-				// concurently visit current scope
-				go func() {
-					// decrement deep wait group visits counter
-					defer dwg.Done()
-					// run gotop on current scope
-					gotop(ctx, scope)
-					// wait until scope wait group is resolved
-					wg.Wait()
-				}()
-				// traverse children scopes
-				for i := 0; i < scope.NumChildren(); i++ {
-					// visit children scopes iteratively
-					// using child context and scope
-					go ingodeep(nctx, scope.Child(i))
-				}
+				// increment wait group visits counter
+				wg.Add(1)
+				// concurently visit the structure
+				// and apply strategy to it
+				go func(id, name string, st *types.Struct) {
+					// decrement wait group visits counter
+					defer wg.Done()
+					// convert original struct
+					// to inner gopium format
+					o := enum(exposer, name, st)
+					// apply provided strategy
+					r, err := stg.Apply(ctx, o)
+					// and push results to the chan
+					ch <- applied{
+						ID:     id,
+						Origin: o,
+						Result: r,
+						Error:  err,
+					}
+				}(id, name, st)
 			}
-			// run ingodeep chain
-			ingodeep(ctx, scope)
 		}
-		// assign result func
-		f = godeep
 	}
-	return
 }
 
 // enum defines struct enumerating visit converting helper
