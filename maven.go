@@ -24,3 +24,10 @@ type Maven interface {
 	Curator
 	Exposer
 }
+
+// Align returns the smallest y >= x such that y % a == 0.
+// note: copied from `go/types/sizes.go`
+func Align(x, a int64) int64 {
+	y := x + a - 1
+	return y - y%a
+}

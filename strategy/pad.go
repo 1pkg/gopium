@@ -31,7 +31,7 @@ func (stg pad) Apply(ctx context.Context, o gopium.Struct) (r gopium.Struct, err
 			alignment = f.Align
 		}
 		// calculate align with padding
-		alpad := align(offset, alignment)
+		alpad := gopium.Align(offset, alignment)
 		// if padding greater that zero
 		// append [pad]byte padding
 		if pad := alpad - offset; pad > 0 {
@@ -49,11 +49,4 @@ func (stg pad) Apply(ctx context.Context, o gopium.Struct) (r gopium.Struct, err
 	// update fields list
 	r.Fields = fields
 	return
-}
-
-// align returns the smallest y >= x such that y % a == 0.
-// note: copied from `go/types/sizes.go`
-func align(x, a int64) int64 {
-	y := x + a - 1
-	return y - y%a
 }
