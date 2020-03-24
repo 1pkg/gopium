@@ -40,40 +40,26 @@ func visit(
 	ch appliedCh,
 	deep bool,
 ) govisit {
-	// determinate which function
-	// should be applied depends on
-	// deep flag
-	var v func(
-		ctx context.Context,
-		scope *types.Scope,
-		regex *regexp.Regexp,
-		stg gopium.Strategy,
-		exposer gopium.Exposer,
-		idfunc gopium.IDFunc,
-		visited *sync.Map,
-		ch appliedCh,
-	)
-	if deep {
-		v = vdeep
-	} else {
-		v = vscope
-	}
 	// return govisit func applied
 	// visiting implementation
 	// that goes through all structures
 	// with names that match regex
 	// and applies strategy to them
 	return func(ctx context.Context, scope *types.Scope) {
-		v(
-			ctx,
-			scope,
-			regex,
-			stg,
-			exposer,
-			idfunc,
-			&sync.Map{},
-			ch,
-		)
+		// setup visiting maven
+		m := maven{
+			exposer: exposer,
+			idfunc:  idfunc,
+			store:   sync.Map{},
+		}
+		// determinate which function
+		// should be applied for visiting
+		// depends on deep flag
+		if deep {
+			vdeep(ctx, scope, regex, stg, &m, ch)
+		} else {
+			vscope(ctx, scope, regex, stg, &m, ch)
+		}
 	}
 }
 
@@ -85,9 +71,7 @@ func vdeep(
 	scope *types.Scope,
 	regex *regexp.Regexp,
 	stg gopium.Strategy,
-	exposer gopium.Exposer,
-	idfunc gopium.IDFunc,
-	visited *sync.Map,
+	maven *maven,
 	ch appliedCh,
 ) {
 	// wait group visits counter
@@ -127,9 +111,7 @@ func vdeep(
 				scope,
 				regex,
 				stg,
-				exposer,
-				idfunc,
-				visited,
+				maven,
 				nch,
 			)
 			// redirect results of vscope
@@ -157,9 +139,7 @@ func vscope(
 	scope *types.Scope,
 	regex *regexp.Regexp,
 	stg gopium.Strategy,
-	exposer gopium.Exposer,
-	idfunc gopium.IDFunc,
-	visited *sync.Map,
+	maven *maven,
 	ch appliedCh,
 ) {
 	// wait group visits counter
@@ -184,15 +164,13 @@ loop:
 		if tn, ok := scope.Lookup(name).(*types.TypeName); ok && !tn.IsAlias() {
 			// if underlying type is struct
 			if st, ok := tn.Type().Underlying().(*types.Struct); ok {
-				// build id for structure
-				id := idfunc(tn.Pos())
+				// structure id
+				var id string
 				// in case id of structure
 				// has been already visited
-				if _, ok := visited.Load(id); ok {
+				if id, ok = maven.has(tn); ok {
 					continue
 				}
-				// mark hierarchy name of structure to visited
-				visited.Store(id, struct{}{})
 				// manage context actions
 				// in case of cancelation break from
 				// futher traverse
@@ -210,7 +188,7 @@ loop:
 					defer wg.Done()
 					// convert original struct
 					// to inner gopium format
-					o := enum(exposer, name, st)
+					o := maven.enum(name, st)
 					// apply provided strategy
 					r, err := stg.Apply(ctx, o)
 					// and push results to the chan
@@ -224,32 +202,4 @@ loop:
 			}
 		}
 	}
-}
-
-// enum defines struct enumerating visit converting helper
-// that goes through all structure fields and uses gopium.Exposer
-// to expose gopium.Field DTO for each field
-// and puts it back to resulted gopium.Struct object
-func enum(exposer gopium.Exposer, name string, st *types.Struct) (r gopium.Struct) {
-	// set structure name
-	r.Name = name
-	// get number of struct fields
-	nf := st.NumFields()
-	// prefill Fields
-	r.Fields = make([]gopium.Field, 0, nf)
-	for i := 0; i < nf; i++ {
-		// get field
-		f := st.Field(i)
-		// fill field structure
-		r.Fields = append(r.Fields, gopium.Field{
-			Name:     f.Name(),
-			Type:     exposer.Name(f.Type()),
-			Size:     exposer.Size(f.Type()),
-			Align:    exposer.Align(f.Type()),
-			Tag:      st.Tag(i),
-			Exported: f.Exported(),
-			Embedded: f.Embedded(),
-		})
-	}
-	return
 }
