@@ -7,6 +7,7 @@ import (
 	"sync"
 
 	"1pkg/gopium"
+	"1pkg/gopium/walker/reference"
 )
 
 // applied encapsulates visited by strategy
@@ -47,16 +48,17 @@ func visit(
 	// with names that match regex
 	// and applies strategy to them
 	return func(ctx context.Context, scope *types.Scope) {
-		// setup visiting maven
-		m := newm(exposer, idfunc, backref)
-		defer m.prune()
+		// setup visiting maven and reference
+		m := &maven{exposer: exposer, idfunc: idfunc}
+		ref := reference.NewRef(backref)
+		defer ref.Prune()
 		// determinate which function
 		// should be applied for visiting
 		// depends on deep flag
 		if deep {
-			vdeep(ctx, scope, regex, stg, m, ch)
+			vdeep(ctx, scope, regex, stg, m, ref, ch)
 		} else {
-			vscope(ctx, scope, regex, stg, m, ch)
+			vscope(ctx, scope, regex, stg, m, ref, ch)
 		}
 	}
 }
@@ -70,6 +72,7 @@ func vdeep(
 	regex *regexp.Regexp,
 	stg gopium.Strategy,
 	maven *maven,
+	ref *reference.Ref,
 	ch appliedCh,
 ) {
 	// wait group visits counter
@@ -102,14 +105,16 @@ func vdeep(
 			// decrement wait group visits counter
 			// after scope visiting is done
 			defer wg.Done()
-			// run vscope on current scope
+			// setup chan for current scope
 			nch := make(appliedCh)
+			// run vscope on current scope
 			go vscope(
 				ctx,
 				scope,
 				regex,
 				stg,
 				maven,
+				ref,
 				nch,
 			)
 			// redirect results of vscope
@@ -138,6 +143,7 @@ func vscope(
 	regex *regexp.Regexp,
 	stg gopium.Strategy,
 	maven *maven,
+	ref *reference.Ref,
 	ch appliedCh,
 ) {
 	// wait group visits counter
@@ -179,19 +185,20 @@ loop:
 				}
 				// increment wait group visits counter
 				wg.Add(1)
-				maven.link(name)
+				// prepare size ref notifier
+				notif := reference.SizRef(ref, name)
 				// concurently visit the structure
 				// and apply strategy to it
-				go func(id, name string, st *types.Struct) {
+				go func(id, name string, st *types.Struct, notif func(gopium.Struct)) {
 					// decrement wait group visits counter
 					defer wg.Done()
 					// convert original struct
 					// to inner gopium format
-					o := maven.enum(name, st)
+					o := maven.enum(name, st, ref)
 					// apply provided strategy
 					r, err := stg.Apply(ctx, o)
-					// add ref to result structure
-					maven.stref(r)
+					// notify ref with result structure
+					notif(r)
 					// and push results to the chan
 					ch <- applied{
 						ID:     id,
@@ -199,7 +206,7 @@ loop:
 						Result: r,
 						Error:  err,
 					}
-				}(id, name, st)
+				}(id, name, st, notif)
 			}
 		}
 	}
