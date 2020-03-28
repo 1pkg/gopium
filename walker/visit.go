@@ -92,7 +92,7 @@ func vdeep(
 	indeep = func(ctx context.Context, scope *types.Scope) {
 		// manage context actions
 		// in case of cancelation
-		// break from futher traverse
+		// break from further traverse
 		select {
 		case <-ctx.Done():
 			return
@@ -177,7 +177,7 @@ loop:
 				}
 				// manage context actions
 				// in case of cancelation break from
-				// futher traverse
+				// further traverse
 				select {
 				case <-ctx.Done():
 					break loop
@@ -186,7 +186,7 @@ loop:
 				// increment wait group visits counter
 				wg.Add(1)
 				// prepare size ref notifier
-				notif := reference.SizRef(ref, name)
+				notif := reference.SizRef(ref, id)
 				// concurently visit the structure
 				// and apply strategy to it
 				go func(id, name string, st *types.Struct, notif func(gopium.Struct)) {

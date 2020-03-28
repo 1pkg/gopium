@@ -2,7 +2,6 @@ package walker
 
 import (
 	"go/types"
-	"strings"
 	"sync"
 
 	"1pkg/gopium"
@@ -69,15 +68,11 @@ func (m *maven) enum(name string, st *types.Struct, ref *reference.Ref) (r gopiu
 func (m *maven) refsize(t types.Type, ref *reference.Ref) int64 {
 	// in case we have reference
 	if ref != nil {
-		// for refsize only structures
+		// for refsize only named structures
 		// and arrays should be calculated
 		// not with default exposer size
 		switch tp := t.(type) {
 		case *types.Array:
-			// ignore not struct arrays
-			if _, ok := tp.Elem().(*types.Struct); !ok {
-				break
-			}
 			// note: copied from `go/types/sizes.go`
 			n := tp.Len()
 			if n <= 0 {
@@ -87,18 +82,15 @@ func (m *maven) refsize(t types.Type, ref *reference.Ref) int64 {
 			a := m.exposer.Align(tp.Elem())
 			z := m.refsize(tp.Elem(), ref)
 			return gopium.Align(z, a)*(n-1) + z
-		case *types.Struct:
-			name := tp.String()
-			// ignore structs from different pkg
-			if strings.Contains(name, ".") {
+		case *types.Named:
+			// in case it's not a struct skip it
+			if _, ok := tp.Underlying().(*types.Struct); ok {
 				break
 			}
-			// ignore anonymus structs
-			if strings.Contains(name, "struct") {
-				break
-			}
+			// get id for named structures
+			id := m.idfunc(tp.Obj().Pos())
 			// get size of the structure from ref
-			if size := ref.Get(name); size >= 0 {
+			if size := ref.Get(id); size >= 0 {
 				return size
 			}
 		}
