@@ -8,7 +8,7 @@ import (
 )
 
 // pad defines strategy implementation
-// that align all strucutre field
+// that align all structure field
 // to sys or max sys padding
 // by adding paddings accordingly to system aligments
 type pad struct {
