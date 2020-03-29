@@ -16,7 +16,7 @@ var (
 // that rearranges structure field list
 // for optimal memory utilization
 // by sorting fields accordingly
-// to their sizes in descending order
+// to their aligns and sizes in some order
 type pack struct{}
 
 // Apply pack implementation

@@ -8,14 +8,18 @@ import (
 
 // list of registered types strategies
 var (
-	// comment annotation
+	// comment annotation and others
+	Nil   gopium.StrategyName = "NIL"
 	Note  gopium.StrategyName = "Comment_Note"
 	Stamp gopium.StrategyName = "Comment_Stamp"
-	// lexicographical sorts
+	// lexicographical and length sorts
 	LexAsc  gopium.StrategyName = "Lexicographical_Ascending"
 	LexDesc gopium.StrategyName = "Lexicographical_Descending"
-	// pack for optimal mem util
-	Pack gopium.StrategyName = "Memory_Pack"
+	LenAsc  gopium.StrategyName = "Length_Ascending"
+	LenDesc gopium.StrategyName = "Length_Descending"
+	// pack/unpack mem util
+	Pack   gopium.StrategyName = "Memory_Pack"
+	Unpack gopium.StrategyName = "Memory_Unpack"
 	// explicit sys/type pads
 	PadSys  gopium.StrategyName = "Explicit_Padings_System_Alignment"
 	PadTnat gopium.StrategyName = "Explicit_Padings_Type_Natural"
@@ -50,21 +54,32 @@ func NewBuilder(c gopium.Curator) Builder {
 func (b Builder) Build(name gopium.StrategyName) (gopium.Strategy, error) {
 	// build strategy by name
 	switch name {
-	// comment annotation
+	// comment annotation and others
+	case Nil:
+		return nl, nil
 	case Note:
 		return nt, nil
 	case Stamp:
 		return stmp, nil
-	// lexicographical sorts
+	// lexicographical and length sorts
 	case LexAsc:
 		return lexasc, nil
 	case LexAsc:
 		return lexdesc, nil
-	// pack for optimal mem util
+	case LenAsc:
+		return lenasc, nil
+	case LenAsc:
+		return lendesc, nil
+	// pack/unpack mem util
 	case Pack:
 		return Pipe(
 			filterpad,
 			pck,
+		), nil
+	case Unpack:
+		return Pipe(
+			filterpad,
+			unpck,
 		), nil
 	// explicit sys/type pads
 	case PadSys:
