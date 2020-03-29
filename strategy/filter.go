@@ -7,6 +7,11 @@ import (
 	"1pkg/gopium"
 )
 
+// list of filter presets
+var (
+	filterpad = filter{regexp.MustCompile(`^_$`)}
+)
+
 // filter defines strategy implementation
 // that filters all fields
 // that match provided regex

@@ -7,6 +7,13 @@ import (
 	"1pkg/gopium"
 )
 
+// list of fshare presets
+var (
+	fsharel1 = fshare{l: 1}
+	fsharel2 = fshare{l: 2}
+	fsharel3 = fshare{l: 3}
+)
+
 // fshare defines strategy implementation
 // that guards structure from false sharing issue
 // by adding cpu cache paddings
@@ -14,6 +21,12 @@ import (
 type fshare struct {
 	c gopium.Curator
 	l uint // cache line num
+}
+
+// C erich fshare strategy with curator instance
+func (stg fshare) C(c gopium.Curator) gopium.Strategy {
+	stg.c = c
+	return stg
 }
 
 // Apply fshare implementation

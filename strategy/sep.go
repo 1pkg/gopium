@@ -7,19 +7,33 @@ import (
 	"1pkg/gopium"
 )
 
-// separating defines strategy implementation
+// list of fshare presets
+var (
+	sepsys = sep{sys: true}
+	sepl1  = sep{l: 1}
+	sepl2  = sep{l: 2}
+	sepl3  = sep{l: 3}
+)
+
+// sep defines strategy implementation
 // that separates structure with
 // additional sys/cpu cache padding
 // by adding one padding before and one padding after
 // structure fields list
-type separate struct {
+type sep struct {
 	c   gopium.Curator
 	l   uint // cache line num
 	sys bool // should sys padding be used
 }
 
-// Apply separate implementation
-func (stg separate) Apply(ctx context.Context, o gopium.Struct) (r gopium.Struct, err error) {
+// C erich sep strategy with curator instance
+func (stg sep) C(c gopium.Curator) gopium.Strategy {
+	stg.c = c
+	return stg
+}
+
+// Apply sep implementation
+func (stg sep) Apply(ctx context.Context, o gopium.Struct) (r gopium.Struct, err error) {
 	// copy original structure to result
 	r = o
 	// get separator size

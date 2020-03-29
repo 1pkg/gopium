@@ -19,7 +19,7 @@ func main() {
 	m := pkgs_types.NewMavenGoTypes("gc", "amd64")
 	bs := strategy.NewBuilder(m)
 	// build Strategy
-	stg, err := bs.Build(strategy.Lexicographical)
+	stg, err := bs.Build(strategy.LexAsc)
 	if err != nil {
 		panic(err)
 	}
