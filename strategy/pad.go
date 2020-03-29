@@ -7,6 +7,12 @@ import (
 	"1pkg/gopium"
 )
 
+// list of pad presets
+var (
+	padsys  = pad{sys: true}
+	padtnat = pad{sys: false}
+)
+
 // pad defines strategy implementation
 // that align all structure field
 // to sys or max sys padding
@@ -14,6 +20,12 @@ import (
 type pad struct {
 	c   gopium.Curator
 	sys bool // should max sys padding be used
+}
+
+// C erich pad strategy with curator instance
+func (stg pad) C(c gopium.Curator) gopium.Strategy {
+	stg.c = c
+	return stg
 }
 
 // Apply pad implementation

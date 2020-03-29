@@ -7,6 +7,11 @@ import (
 	"1pkg/gopium"
 )
 
+// list of stamp presets
+var (
+	stmp = stamp{}
+)
+
 // stamp defines strategy implementation
 // that adds doc `auto curated` stamp to structure doc
 type stamp struct{}

@@ -8,7 +8,7 @@ import (
 	"1pkg/gopium/fmts"
 )
 
-// List of registered types gopium.WalkerName
+// list of registered types walkers
 var (
 	PrettyJsonStd gopium.WalkerName = "PrettyJsonStd"
 	UpdateAst     gopium.WalkerName = "UpdateAst"
