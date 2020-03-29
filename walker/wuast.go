@@ -152,7 +152,7 @@ func (w wuast) sync(pkg *ast.Package, loc *gopium.Locator, id string, st gopium.
 		return spkg, nil
 	}
 	// in case updated type isn't expected
-	return nil, fmt.Errorf("can't update ast for structure %+v", st)
+	return nil, fmt.Errorf("can't update ast for structure %q", st.Name)
 }
 
 // persist wuast helps to update os.File list

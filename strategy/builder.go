@@ -9,9 +9,10 @@ import (
 // list of registered types strategies
 var (
 	// comment annotation and others
-	Nil   gopium.StrategyName = "NIL"
+	Nil   gopium.StrategyName = "Nil"
 	Note  gopium.StrategyName = "Comment_Note"
 	Stamp gopium.StrategyName = "Comment_Stamp"
+	Group gopium.StrategyName = "Group_Tag"
 	// lexicographical and length sorts
 	LexAsc  gopium.StrategyName = "Lexicographical_Ascending"
 	LexDesc gopium.StrategyName = "Lexicographical_Descending"
@@ -61,6 +62,8 @@ func (b Builder) Build(name gopium.StrategyName) (gopium.Strategy, error) {
 		return nt, nil
 	case Stamp:
 		return stmp, nil
+	case Group:
+		return grp, nil
 	// lexicographical and length sorts
 	case LexAsc:
 		return lexasc, nil

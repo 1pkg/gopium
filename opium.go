@@ -5,9 +5,12 @@ import (
 	"strings"
 )
 
-const VERSION = "1.0.0"
-const PKG = "https://github.com/1pkg/gopium"
-const STAMP = "// 🌺 gopium @1pkg "
+const (
+	VERSION = "1.0.0"
+	PKG     = "https://github.com/1pkg/gopium"
+	STAMP   = "// 🌺 gopium @1pkg "
+	TAG     = "gopium"
+)
 
 // Stamped adds gopium stamp
 // to specified string
