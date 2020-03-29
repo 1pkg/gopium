@@ -11,7 +11,6 @@ import (
 var (
 	Annotate        gopium.StrategyName = "Annotate"
 	Stamp           gopium.StrategyName = "Stamp"
-	FilterPad       gopium.StrategyName = "FilterPad"
 	Lexicographical gopium.StrategyName = "Lexicographical"
 	Memory          gopium.StrategyName = "Memory"
 	PadType         gopium.StrategyName = "PadType"
@@ -48,20 +47,20 @@ func (b Builder) Build(name gopium.StrategyName) (gopium.Strategy, error) {
 		return annotate{}, nil
 	case Stamp:
 		return stamp{}, nil
-	case FilterPad:
-		regex, err := regexp.Compile(`^_$`)
-		if err != nil {
-			return nil, err
-		}
-		return filter{regex}, nil
 	case Lexicographical:
 		return lex{}, nil
 	case Memory:
 		return memory{}, nil
 	case PadType:
-		return pad{c: b.c, sys: false}, nil
+		return Pipe(
+			filter{regexp.MustCompile(`^_$`)},
+			pad{c: b.c, sys: false},
+		), nil
 	case PadSys:
-		return pad{c: b.c, sys: true}, nil
+		return Pipe(
+			filter{regexp.MustCompile(`^_$`)},
+			pad{c: b.c, sys: true},
+		), nil
 	case CacheL1:
 		return cache{c: b.c, l: 1}, nil
 	case CacheL2:
@@ -77,12 +76,27 @@ func (b Builder) Build(name gopium.StrategyName) (gopium.Strategy, error) {
 	case SeparateL3:
 		return separate{c: b.c, l: 3}, nil
 	case FalseShareL1:
-		return fshare{c: b.c, l: 1}, nil
+		return Pipe(
+			filter{regexp.MustCompile(`^_$`)},
+			fshare{c: b.c, l: 1},
+		), nil
 	case FalseShareL2:
-		return fshare{c: b.c, l: 2}, nil
+		return Pipe(
+			filter{regexp.MustCompile(`^_$`)},
+			fshare{c: b.c, l: 2},
+		), nil
 	case FalseShareL3:
-		return fshare{c: b.c, l: 3}, nil
+		return Pipe(
+			filter{regexp.MustCompile(`^_$`)},
+			fshare{c: b.c, l: 1},
+		), nil
 	default:
 		return nil, fmt.Errorf("strategy %q wasn't found", name)
 	}
+}
+
+// Pipe concats list of strategy in one
+// single piped strategy
+func Pipe(stgs ...gopium.Strategy) gopium.Strategy {
+	return pipe(stgs)
 }
