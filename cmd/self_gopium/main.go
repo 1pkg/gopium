@@ -15,8 +15,6 @@ import (
 
 // small gopium self example
 func main() {
-	// compile regex
-	regex, _ := regexp.Compile(`.*`)
 	// set up StrategyBuilder
 	m := pkgs_types.NewMavenGoTypes("gc", "amd64")
 	bs := strategy.NewBuilder(m)
@@ -44,7 +42,11 @@ func main() {
 		panic(err)
 	}
 	// run VisitTop for Strategy with regex
-	err = w.VisitDeep(context.Background(), regex, stg)
+	err = w.VisitDeep(
+		context.Background(),
+		regexp.MustCompile(`.*`),
+		stg,
+	)
 	if err != nil {
 		panic(err)
 	}
