@@ -164,10 +164,7 @@ func padsync(ts *ast.TypeSpec, st gopium.Struct) error {
 		return errors.New("padsync could only be applied to ast.StructType")
 	}
 	// prepare pad type expression regex
-	regexp, err := regexp.Compile(`\[.*\]byte`)
-	if err != nil {
-		return fmt.Errorf("padsync cannot prepare pad type expression regex %w", err)
-	}
+	regex := regexp.MustCompile(`\[.*\]byte`)
 	// prepare resulted fields list
 	fields := make([]*ast.Field, 0, len(tts.Fields.List)+len(st.Fields))
 	copy(fields, tts.Fields.List)
@@ -178,7 +175,7 @@ func padsync(ts *ast.TypeSpec, st gopium.Struct) error {
 		}
 		// in case pad type is unexpected
 		// return error
-		if !regexp.MatchString(f.Type) {
+		if !regex.MatchString(f.Type) {
 			return fmt.Errorf("padsync unexpected pad type expression %s", f.Type)
 		}
 		// transform size to string format
