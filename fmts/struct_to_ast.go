@@ -16,18 +16,20 @@ import (
 // formatting original *ast.TypeSpec with gopium.Struct
 type StructToAst func(*ast.TypeSpec, gopium.Struct) error
 
-// FSPA implements StructToAst and combines:
+// FSPTN implements StructToAst and combines:
 // - flatten helper
 // - padfilter helper
 // - shuffle helper
 // - padsync helper
-// - annotate helper
-var FSPA = combine(
+// - tagsync helper
+// - notesync helper
+var FSPTN = combine(
 	flatten,
 	padfilter,
 	shuffle,
 	padsync,
-	annotate,
+	tagsync,
+	notesync,
 )
 
 // combine helps to pipe several
@@ -213,13 +215,48 @@ func padsync(ts *ast.TypeSpec, st gopium.Struct) error {
 	return nil
 }
 
-// annotate helps to sync docs and comments
-// between original *ast.TypeSpec and resulted gopium.Struct
-func annotate(ts *ast.TypeSpec, st gopium.Struct) error {
+// tagsync helps to sync field tags between
+// original *ast.TypeSpec and resulted gopium.Struct
+func tagsync(ts *ast.TypeSpec, st gopium.Struct) error {
 	// check that we are working with ast.StructType
 	tts, ok := ts.Type.(*ast.StructType)
 	if !ok {
-		return errors.New("annotate could only be applied to ast.StructType")
+		return errors.New("tagsync could only be applied to ast.StructType")
+	}
+	// prepare struct tags list
+	sttags := make(map[string]*ast.BasicLit)
+	// go through all resulted structure fields
+	for _, field := range st.Fields {
+		// put ast tag to the map
+		sttags[field.Name] = &ast.BasicLit{
+			Kind:  token.STRING,
+			Value: field.Tag,
+		}
+	}
+	// go through all original structure fields
+	for _, field := range tts.Fields.List {
+		// in case structure isn't flat return error
+		if len(field.Names) != 1 {
+			return errors.New("tagsync could only be applied to flatten structures")
+		}
+		// grab the only field name
+		fname := field.Names[0].Name
+		// if we have tag in the map
+		// set it as field tag
+		if sttag, ok := sttags[fname]; ok {
+			field.Tag = sttag
+		}
+	}
+	return nil
+}
+
+// notesync helps to sync docs and comments
+// between original *ast.TypeSpec and resulted gopium.Struct
+func notesync(ts *ast.TypeSpec, st gopium.Struct) error {
+	// check that we are working with ast.StructType
+	tts, ok := ts.Type.(*ast.StructType)
+	if !ok {
+		return errors.New("notesync could only be applied to ast.StructType")
 	}
 	// prepare struct docs list
 	sdocs := make([]*ast.Comment, 0, len(st.Doc))
@@ -312,7 +349,7 @@ func annotate(ts *ast.TypeSpec, st gopium.Struct) error {
 		}
 		// in case structure isn't flat return error
 		if len(field.Names) != 1 {
-			return errors.New("annotate could only be applied to flatten structures")
+			return errors.New("notesync could only be applied to flatten structures")
 		}
 		// grab the only field name
 		fname := field.Names[0].Name

@@ -47,7 +47,7 @@ func (b Builder) Build(name gopium.WalkerName) (gopium.Walker, error) {
 		return wuast{
 			parser:  b.parser,
 			exposer: b.exposer,
-			fmt:     fmts.FSPA,
+			fmt:     fmts.FSPTN,
 			backref: b.backref,
 		}, nil
 	default:
