@@ -23,7 +23,7 @@ type note struct{}
 func (stg note) Apply(ctx context.Context, o gopium.Struct) (r gopium.Struct, err error) {
 	// copy original structure to result
 	r = o
-	// then note each field with size comment
+	// note each field with size comment
 	var sum int64
 	for i := range r.Fields {
 		f := &r.Fields[i]
@@ -31,7 +31,7 @@ func (stg note) Apply(ctx context.Context, o gopium.Struct) (r gopium.Struct, er
 		f.Comment = append(f.Comment, size)
 		sum += f.Size
 	}
-	// then note whole structure with size comment
+	// note whole structure with size comment
 	size := gopium.Stamp(fmt.Sprintf("%d bytes", sum))
 	r.Comment = append(r.Comment, size)
 	return

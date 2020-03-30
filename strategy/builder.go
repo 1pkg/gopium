@@ -2,6 +2,7 @@ package strategy
 
 import (
 	"fmt"
+	"strings"
 
 	"1pkg/gopium"
 )
@@ -9,34 +10,34 @@ import (
 // list of registered types strategies
 var (
 	// comment annotation and others
-	Nil   gopium.StrategyName = "Nil"
-	Note  gopium.StrategyName = "Comment_Note"
-	Stamp gopium.StrategyName = "Comment_Stamp"
-	Group gopium.StrategyName = "Group_Tag"
+	Nil   gopium.StrategyName = "nil"
+	Note  gopium.StrategyName = "comment_fields_annotate"
+	Stamp gopium.StrategyName = "comment_struct_stamp"
+	Group gopium.StrategyName = "group_tag"
 	// lexicographical and length sorts
-	LexAsc  gopium.StrategyName = "Lexicographical_Ascending"
-	LexDesc gopium.StrategyName = "Lexicographical_Descending"
-	LenAsc  gopium.StrategyName = "Length_Ascending"
-	LenDesc gopium.StrategyName = "Length_Descending"
+	LexAsc  gopium.StrategyName = "lexicographical_ascending"
+	LexDesc gopium.StrategyName = "lexicographical_descending"
+	LenAsc  gopium.StrategyName = "length_ascending"
+	LenDesc gopium.StrategyName = "length_descending"
 	// pack/unpack mem util
-	Pack   gopium.StrategyName = "Memory_Pack"
-	Unpack gopium.StrategyName = "Memory_Unpack"
+	Pack   gopium.StrategyName = "memory_pack"
+	Unpack gopium.StrategyName = "memory_unpack"
 	// explicit sys/type pads
-	PadSys  gopium.StrategyName = "Explicit_Padings_System_Alignment"
-	PadTnat gopium.StrategyName = "Explicit_Padings_Type_Natural"
+	PadSys  gopium.StrategyName = "explicit_padings_system_alignment"
+	PadTnat gopium.StrategyName = "explicit_padings_type_natural"
 	// false sharing guards
-	FShareL1 gopium.StrategyName = "False_Sharing_CPU_L1"
-	FShareL2 gopium.StrategyName = "False_Sharing_CPU_L2"
-	FShareL3 gopium.StrategyName = "False_Sharing_CPU_L3"
+	FShareL1 gopium.StrategyName = "false_sharing_cpu_l1"
+	FShareL2 gopium.StrategyName = "false_sharing_cpu_l2"
+	FShareL3 gopium.StrategyName = "false_sharing_cpu_l2"
 	// cache line pad roundings
-	CacheL1 gopium.StrategyName = "Cache_Rounding_CPU_L1"
-	CacheL2 gopium.StrategyName = "Cache_Rounding_CPU_L2"
-	CacheL3 gopium.StrategyName = "Cache_Rounding_CPU_L3"
+	CacheL1 gopium.StrategyName = "cache_rounding_cpu_l1"
+	CacheL2 gopium.StrategyName = "cache_rounding_cpu_l2"
+	CacheL3 gopium.StrategyName = "cache_rounding_cpu_l3"
 	// start, end separate pads
-	SepSys gopium.StrategyName = "Separate_Padding_System_Alignment"
-	SepL1  gopium.StrategyName = "Separate_Padding_CPU_L1"
-	SepL2  gopium.StrategyName = "Separate_Padding_CPU_L2"
-	SepL3  gopium.StrategyName = "Separate_Padding_CPU_L3"
+	SepSys gopium.StrategyName = "separate_padding_system_alignment"
+	SepL1  gopium.StrategyName = "separate_padding_cpu_l1"
+	SepL2  gopium.StrategyName = "separate_padding_cpu_l2"
+	SepL3  gopium.StrategyName = "separate_padding_cpu_l3"
 )
 
 // Builder defines types gopium.StrategyBuilder implementation
@@ -66,74 +67,124 @@ func (b Builder) Build(name gopium.StrategyName) (gopium.Strategy, error) {
 		return grp, nil
 	// lexicographical and length sorts
 	case LexAsc:
-		return lexasc, nil
+		return Pipe(
+			lexasc,
+			taglexasc,
+		), nil
 	case LexAsc:
-		return lexdesc, nil
+		return Pipe(
+			lexdesc,
+			taglexdesc,
+		), nil
 	case LenAsc:
-		return lenasc, nil
+		return Pipe(
+			lenasc,
+			taglenasc,
+		), nil
 	case LenAsc:
-		return lendesc, nil
+		return Pipe(
+			lendesc,
+			taglendesc,
+		), nil
 	// pack/unpack mem util
 	case Pack:
 		return Pipe(
 			filterpad,
 			pck,
+			tagpack,
 		), nil
 	case Unpack:
 		return Pipe(
 			filterpad,
 			unpck,
+			tagunpack,
 		), nil
 	// explicit sys/type pads
 	case PadSys:
 		return Pipe(
 			filterpad,
 			padsys.C(b.c),
+			tagpadsys,
 		), nil
 	case PadTnat:
 		return Pipe(
 			filterpad,
 			padtnat.C(b.c),
+			tagpadtnat,
 		), nil
 	// false sharing guards
 	case FShareL1:
 		return Pipe(
 			filterpad,
 			fsharel1.C(b.c),
+			tagfsahrel1,
 		), nil
 	case FShareL2:
 		return Pipe(
 			filterpad,
 			fsharel2.C(b.c),
+			tagfsahrel2,
 		), nil
 	case FShareL3:
 		return Pipe(
 			filterpad,
 			fsharel3.C(b.c),
+			tagfsahrel3,
 		), nil
 	// cache line pad roundings
 	case CacheL1:
-		return cachel1.C(b.c), nil
+		return Pipe(
+			cachel1.C(b.c),
+			tagcachel1,
+		), nil
 	case CacheL2:
-		return cachel2.C(b.c), nil
+		return Pipe(
+			cachel2.C(b.c),
+			tagcachel2,
+		), nil
 	case CacheL3:
-		return cachel3.C(b.c), nil
+		return Pipe(
+			cachel3.C(b.c),
+			tagcachel3,
+		), nil
 	// start, end separate pads
 	case SepSys:
-		return sepsys.C(b.c), nil
+		return Pipe(
+			sepsys.C(b.c),
+			tagsepsys,
+		), nil
 	case SepL1:
-		return sepl1.C(b.c), nil
+		return Pipe(
+			sepl1.C(b.c),
+			tagsepl1,
+		), nil
 	case SepL2:
-		return sepl2.C(b.c), nil
+		return Pipe(
+			sepl2.C(b.c),
+			tagsepl2,
+		), nil
 	case SepL3:
-		return sepl3.C(b.c), nil
+		return Pipe(
+			sepl3.C(b.c),
+			tagsepl3,
+		), nil
 	default:
 		return nil, fmt.Errorf("strategy %q wasn't found", name)
 	}
 }
 
-// Pipe concats list of strategy in one
-// single piped strategy
+// Pipe helpes to concat list of strategies
+// in one single pipe strategy
 func Pipe(stgs ...gopium.Strategy) gopium.Strategy {
 	return pipe(stgs)
+}
+
+// Tag concats list of strategy names
+// in one single tag strategy
+func Tag(stgs ...gopium.StrategyName) gopium.Strategy {
+	s := make([]string, 0, len(stgs))
+	for _, stg := range stgs {
+		s = append(s, string(stg))
+	}
+	return tag{tag: strings.Join(s, ","), f: true}
 }
