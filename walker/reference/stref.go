@@ -2,11 +2,11 @@ package reference
 
 import "1pkg/gopium"
 
-// SizRef helps to create gopium.Struct
+// StRef helps to create gopium.Struct
 // size refence for provided key
 // by preallocating the key and then
 // pushing total struct size to ref with closure
-func SizRef(r *Ref, key string) func(gopium.Struct) {
+func StRef(r *Ref, key string) func(gopium.Struct) {
 	// preallocate the key
 	r.alloc(key)
 	// return the pushing closure

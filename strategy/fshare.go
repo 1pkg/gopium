@@ -9,9 +9,9 @@ import (
 
 // list of fshare presets
 var (
-	fsharel1 = fshare{l: 1}
-	fsharel2 = fshare{l: 2}
-	fsharel3 = fshare{l: 3}
+	fsharel1 = fshare{line: 1}
+	fsharel2 = fshare{line: 2}
+	fsharel3 = fshare{line: 3}
 )
 
 // fshare defines strategy implementation
@@ -19,13 +19,13 @@ var (
 // by adding cpu cache paddings
 // for each structure field
 type fshare struct {
-	c gopium.Curator
-	l uint // cache line num
+	curator gopium.Curator
+	line    uint
 }
 
-// C erich fshare strategy with curator instance
-func (stg fshare) C(c gopium.Curator) gopium.Strategy {
-	stg.c = c
+// Curator erich fshare strategy with curator instance
+func (stg fshare) Curator(curator gopium.Curator) fshare {
+	stg.curator = curator
 	return stg
 }
 
@@ -34,7 +34,7 @@ func (stg fshare) Apply(ctx context.Context, o gopium.Struct) (r gopium.Struct, 
 	// copy original structure to result
 	r = o
 	// setup resulted fields list
-	cachel := stg.c.SysCache(stg.l)
+	cachel := stg.curator.SysCache(stg.line)
 	fields := make([]gopium.Field, 0, len(r.Fields))
 	// go through all fields
 	for _, f := range r.Fields {

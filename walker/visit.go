@@ -185,8 +185,8 @@ loop:
 				}
 				// increment wait group visits counter
 				wg.Add(1)
-				// prepare size ref notifier
-				notif := reference.SizRef(ref, id)
+				// prepare struct ref notifier
+				notif := reference.StRef(ref, id)
 				// concurently visit the structure
 				// and apply strategy to it
 				go func(id, name string, st *types.Struct, notif func(gopium.Struct)) {

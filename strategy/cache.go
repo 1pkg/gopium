@@ -9,22 +9,22 @@ import (
 
 // list of cache presets
 var (
-	cachel1 = cache{l: 1}
-	cachel2 = cache{l: 2}
-	cachel3 = cache{l: 3}
+	cachel1 = cache{line: 1}
+	cachel2 = cache{line: 2}
+	cachel3 = cache{line: 3}
 )
 
 // cache defines strategy implementation
 // that fits structure into l cpu cache line
 // by adding end resulting cpu cache padding
 type cache struct {
-	c gopium.Curator
-	l uint // cache line num
+	curator gopium.Curator
+	line    uint
 }
 
-// C erich cache strategy with curator instance
-func (stg cache) C(c gopium.Curator) gopium.Strategy {
-	stg.c = c
+// Curator erich cache strategy with curator instance
+func (stg cache) Curator(curator gopium.Curator) cache {
+	stg.curator = curator
 	return stg
 }
 
@@ -39,7 +39,7 @@ func (stg cache) Apply(ctx context.Context, o gopium.Struct) (r gopium.Struct, e
 	}
 	// get number of padding bytes
 	// to fill cpu cache line
-	cache := stg.c.SysCache(stg.l)
+	cache := stg.curator.SysCache(stg.line)
 	if pad := size % cache; pad != 0 {
 		pad = cache - pad
 		r.Fields = append(r.Fields, gopium.Field{

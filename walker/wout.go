@@ -4,12 +4,29 @@ import (
 	"context"
 	"errors"
 	"io"
+	"os"
 	"regexp"
 
 	"1pkg/gopium"
 	"1pkg/gopium/fmts"
 
 	"golang.org/x/sync/errgroup"
+)
+
+// list of wout presets
+var (
+	jsonstd = wout{
+		fmt:    fmts.PrettyJson,
+		writer: os.Stdout,
+	}
+	xmlstd = wout{
+		fmt:    fmts.PrettyXml,
+		writer: os.Stdout,
+	}
+	csvstd = wout{
+		fmt:    fmts.PrettyCsv,
+		writer: os.Stdout,
+	}
 )
 
 // wout defines packages walker out implementation
@@ -32,6 +49,14 @@ func (w wout) VisitTop(ctx context.Context, regex *regexp.Regexp, stg gopium.Str
 // VisitDeep wout implementation
 func (w wout) VisitDeep(ctx context.Context, regex *regexp.Regexp, stg gopium.Strategy) error {
 	return w.visit(ctx, regex, stg, true)
+}
+
+// With erich wout walker with parser, exposer, and ref instance
+func (w wout) With(parser gopium.Parser, exposer gopium.Exposer, backref bool) wout {
+	w.parser = parser
+	w.exposer = exposer
+	w.backref = backref
+	return w
 }
 
 // visit wout helps with visiting and uses
@@ -59,7 +84,15 @@ func (w wout) visit(ctx context.Context, regex *regexp.Regexp, stg gopium.Strate
 	// using gopium.Visit helper
 	// and run it on pkg scope
 	ch := make(appliedCh)
-	gvisit := visit(regex, stg, w.exposer, loc.Sum, ch, deep, w.backref)
+	gvisit := visit(
+		regex,
+		stg,
+		w.exposer,
+		loc.Sum,
+		ch,
+		deep,
+		w.backref,
+	)
 	// create sync error group
 	// with cancelation context
 	group, gctx := errgroup.WithContext(ctx)

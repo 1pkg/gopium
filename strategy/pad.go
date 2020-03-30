@@ -18,13 +18,13 @@ var (
 // to sys or max sys padding
 // by adding paddings accordingly to system aligments
 type pad struct {
-	c   gopium.Curator
-	sys bool // should max sys padding be used
+	curator gopium.Curator
+	sys     bool
 }
 
-// C erich pad strategy with curator instance
-func (stg pad) C(c gopium.Curator) gopium.Strategy {
-	stg.c = c
+// Curator erich pad strategy with curator instance
+func (stg pad) Curator(curator gopium.Curator) pad {
+	stg.curator = curator
 	return stg
 }
 
@@ -33,7 +33,7 @@ func (stg pad) Apply(ctx context.Context, o gopium.Struct) (r gopium.Struct, err
 	// copy original structure to result
 	r = o
 	// setup resulted fields list
-	var offset, alignment int64 = 0, stg.c.SysAlign()
+	var offset, alignment int64 = 0, stg.curator.SysAlign()
 	fields := make([]gopium.Field, 0, len(r.Fields))
 	// go through all fields
 	for _, f := range r.Fields {
