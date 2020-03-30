@@ -37,7 +37,7 @@ func main() {
 	}
 	bw := walker.NewBuilder(p, m, false)
 	// build Walker
-	w, err := bw.Build(walker.PrettyJsonStd)
+	w, err := bw.Build(walker.JsonStd)
 	if err != nil {
 		panic(err)
 	}

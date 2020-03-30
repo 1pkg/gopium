@@ -10,9 +10,9 @@ import (
 // list of fshare presets
 var (
 	sepsys = sep{sys: true}
-	sepl1  = sep{l: 1}
-	sepl2  = sep{l: 2}
-	sepl3  = sep{l: 3}
+	sepl1  = sep{line: 1}
+	sepl2  = sep{line: 2}
+	sepl3  = sep{line: 3}
 )
 
 // sep defines strategy implementation
@@ -21,14 +21,14 @@ var (
 // by adding one padding before and one padding after
 // structure fields list
 type sep struct {
-	c   gopium.Curator
-	l   uint // cache line num
-	sys bool // should sys padding be used
+	curator gopium.Curator
+	line    uint
+	sys     bool
 }
 
-// C erich sep strategy with curator instance
-func (stg sep) C(c gopium.Curator) gopium.Strategy {
-	stg.c = c
+// Curator erich sep strategy with curator instance
+func (stg sep) Curator(curator gopium.Curator) sep {
+	stg.curator = curator
 	return stg
 }
 
@@ -37,11 +37,11 @@ func (stg sep) Apply(ctx context.Context, o gopium.Struct) (r gopium.Struct, err
 	// copy original structure to result
 	r = o
 	// get separator size
-	sep := stg.c.SysAlign()
+	sep := stg.curator.SysAlign()
 	// if we wanna use
 	// non max system separator
 	if !stg.sys {
-		sep = stg.c.SysCache(stg.l)
+		sep = stg.curator.SysCache(stg.line)
 	}
 	// add field before and after
 	r.Fields = append([]gopium.Field{

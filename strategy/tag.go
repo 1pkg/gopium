@@ -34,8 +34,8 @@ var (
 // that adds or updates tag annotation
 // that could be parsed by group strategy
 type tag struct {
-	tag string
-	f   bool
+	tag   string
+	force bool
 }
 
 // Apply tag implementation
@@ -52,7 +52,7 @@ func (stg tag) Apply(ctx context.Context, o gopium.Struct) (r gopium.Struct, err
 		// in case tag is not empty and
 		// gopium tag doesn't exist - append tag
 		// in case tag is empty - set tag
-		if ok && stg.f {
+		if ok && stg.force {
 			f.Tag = strings.Replace(f.Tag, tag, stg.tag, 1)
 		} else if len(f.Tag) != 0 {
 			f.Tag += " " + stg.tag

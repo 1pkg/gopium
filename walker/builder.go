@@ -2,16 +2,16 @@ package walker
 
 import (
 	"fmt"
-	"os"
 
 	"1pkg/gopium"
-	"1pkg/gopium/fmts"
 )
 
 // list of registered types walkers
 var (
-	PrettyJsonStd gopium.WalkerName = "PrettyJsonStd"
-	UpdateAst     gopium.WalkerName = "UpdateAst"
+	JsonStd gopium.WalkerName = "json_std"
+	XmlStd  gopium.WalkerName = "xml_std"
+	CsvStd  gopium.WalkerName = "csv_std"
+	SyncAst gopium.WalkerName = "sync_ast"
 )
 
 // Builder defines types gopium.WalkerBuilder implementation
@@ -35,21 +35,30 @@ func NewBuilder(parser gopium.Parser, exposer gopium.Exposer, backref bool) Buil
 // Build Builder implementation
 func (b Builder) Build(name gopium.WalkerName) (gopium.Walker, error) {
 	switch name {
-	case PrettyJsonStd:
-		return wout{
-			parser:  b.parser,
-			exposer: b.exposer,
-			fmt:     fmts.PrettyJson,
-			writer:  os.Stdout,
-			backref: b.backref,
-		}, nil
-	case UpdateAst:
-		return wuast{
-			parser:  b.parser,
-			exposer: b.exposer,
-			fmt:     fmts.FSPTN,
-			backref: b.backref,
-		}, nil
+	case JsonStd:
+		return jsonstd.With(
+			b.parser,
+			b.exposer,
+			b.backref,
+		), nil
+	case XmlStd:
+		return xmlstd.With(
+			b.parser,
+			b.exposer,
+			b.backref,
+		), nil
+	case CsvStd:
+		return csvstd.With(
+			b.parser,
+			b.exposer,
+			b.backref,
+		), nil
+	case SyncAst:
+		return fsptn.With(
+			b.parser,
+			b.exposer,
+			b.backref,
+		), nil
 	default:
 		return nil, fmt.Errorf("walker %q wasn't found", name)
 	}

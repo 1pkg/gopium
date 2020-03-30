@@ -43,13 +43,13 @@ var (
 // Builder defines types gopium.StrategyBuilder implementation
 // that uses gopium.Curator as an exposer and related strategies
 type Builder struct {
-	c gopium.Curator
+	curator gopium.Curator
 }
 
 // NewBuilder creates instance of Builder
 // and requires gopium.Maven to pass it to related strategies
-func NewBuilder(c gopium.Curator) Builder {
-	return Builder{c: c}
+func NewBuilder(curator gopium.Curator) Builder {
+	return Builder{curator: curator}
 }
 
 // Build Builder implementation
@@ -64,7 +64,7 @@ func (b Builder) Build(name gopium.StrategyName) (gopium.Strategy, error) {
 	case Stamp:
 		return stmp, nil
 	case Group:
-		return grp, nil
+		return grp.Builder(b), nil
 	// lexicographical and length sorts
 	case LexAsc:
 		return Pipe(
@@ -103,69 +103,69 @@ func (b Builder) Build(name gopium.StrategyName) (gopium.Strategy, error) {
 	case PadSys:
 		return Pipe(
 			filterpad,
-			padsys.C(b.c),
+			padsys.Curator(b.curator),
 			tagpadsys,
 		), nil
 	case PadTnat:
 		return Pipe(
 			filterpad,
-			padtnat.C(b.c),
+			padtnat.Curator(b.curator),
 			tagpadtnat,
 		), nil
 	// false sharing guards
 	case FShareL1:
 		return Pipe(
 			filterpad,
-			fsharel1.C(b.c),
+			fsharel1.Curator(b.curator),
 			tagfsahrel1,
 		), nil
 	case FShareL2:
 		return Pipe(
 			filterpad,
-			fsharel2.C(b.c),
+			fsharel2.Curator(b.curator),
 			tagfsahrel2,
 		), nil
 	case FShareL3:
 		return Pipe(
 			filterpad,
-			fsharel3.C(b.c),
+			fsharel3.Curator(b.curator),
 			tagfsahrel3,
 		), nil
 	// cache line pad roundings
 	case CacheL1:
 		return Pipe(
-			cachel1.C(b.c),
+			cachel1.Curator(b.curator),
 			tagcachel1,
 		), nil
 	case CacheL2:
 		return Pipe(
-			cachel2.C(b.c),
+			cachel2.Curator(b.curator),
 			tagcachel2,
 		), nil
 	case CacheL3:
 		return Pipe(
-			cachel3.C(b.c),
+			cachel3.Curator(b.curator),
 			tagcachel3,
 		), nil
 	// start, end separate pads
 	case SepSys:
 		return Pipe(
-			sepsys.C(b.c),
+			sepsys.Curator(b.curator),
 			tagsepsys,
 		), nil
 	case SepL1:
 		return Pipe(
-			sepl1.C(b.c),
+			sepl1.Curator(b.curator),
 			tagsepl1,
 		), nil
 	case SepL2:
 		return Pipe(
-			sepl2.C(b.c),
+			sepl2.Curator(b.curator),
 			tagsepl2,
 		), nil
 	case SepL3:
 		return Pipe(
-			sepl3.C(b.c),
+			sepl3.Curator(b.curator),
 			tagsepl3,
 		), nil
 	default:
@@ -186,5 +186,5 @@ func Tag(stgs ...gopium.StrategyName) gopium.Strategy {
 	for _, stg := range stgs {
 		s = append(s, string(stg))
 	}
-	return tag{tag: strings.Join(s, ","), f: true}
+	return tag{tag: strings.Join(s, ","), force: true}
 }
