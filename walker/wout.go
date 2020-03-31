@@ -53,7 +53,7 @@ type wout struct {
 	parser  gopium.TypeParser
 	exposer gopium.Exposer
 	fmt     io_fmts.StructToBytes
-	wgen    io_fmts.WriteGen
+	wgen    io_fmts.WriterGen
 	tp      string
 	backref bool
 }

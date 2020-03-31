@@ -8,7 +8,7 @@ import (
 	"path/filepath"
 )
 
-// Locator defines abstraction that helpes
+// Locator defines abstraction that helps
 // encapsulate pkgs token.FileSet and provides
 // some operations on top of it
 type Locator token.FileSet

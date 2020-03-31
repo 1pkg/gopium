@@ -18,11 +18,11 @@ type applied struct {
 	Error          error
 }
 
-// appliedCh defines abstraction that helpes
+// appliedCh defines abstraction that helps
 // keep applied stream results
 type appliedCh chan applied
 
-// visitFunc defines abstraction that helpes
+// visitFunc defines abstraction that helps
 // visit and filtered structures on the scope
 type govisit func(context.Context, *types.Scope)
 
