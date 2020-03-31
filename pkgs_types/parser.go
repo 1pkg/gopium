@@ -27,7 +27,7 @@ type ParserXToolPackagesAst struct {
 }
 
 // ParseTypes ParserXToolPackagesAst implementation
-func (p ParserXToolPackagesAst) ParseTypes(ctx context.Context) (*types.Package, *gopium.Locator, error) {
+func (p ParserXToolPackagesAst) ParseTypes(ctx context.Context) (*types.Package, gopium.Locator, error) {
 	// create packages.Config obj
 	fset := token.NewFileSet()
 	cfg := &packages.Config{
@@ -48,11 +48,11 @@ func (p ParserXToolPackagesAst) ParseTypes(ctx context.Context) (*types.Package,
 	if len(pkgs) != 1 || pkgs[0].String() != p.Pattern {
 		return nil, nil, fmt.Errorf("package %q wasn't found", p.Pattern)
 	}
-	return pkgs[0].Types, (*gopium.Locator)(fset), nil
+	return pkgs[0].Types, (*Locator)(fset), nil
 }
 
 // ParseAst ParserXToolPackagesAst implementation
-func (p ParserXToolPackagesAst) ParseAst(ctx context.Context) (*ast.Package, *gopium.Locator, error) {
+func (p ParserXToolPackagesAst) ParseAst(ctx context.Context) (*ast.Package, gopium.Locator, error) {
 	// use parser.ParseDir
 	fset := token.NewFileSet()
 	dir := path.Join(p.AbsDir, p.Pattern)
@@ -71,5 +71,5 @@ func (p ParserXToolPackagesAst) ParseAst(ctx context.Context) (*ast.Package, *go
 	if !ok {
 		return nil, nil, fmt.Errorf("package %q wasn't found", p.Pattern)
 	}
-	return pkg, (*gopium.Locator)(fset), nil
+	return pkg, (*Locator)(fset), nil
 }

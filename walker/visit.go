@@ -7,13 +7,13 @@ import (
 	"sync"
 
 	"1pkg/gopium"
-	"1pkg/gopium/walker/reference"
+	"1pkg/gopium/walker/ref"
 )
 
 // applied encapsulates visited by strategy
 // structs results: id, origin, result structs and error
 type applied struct {
-	ID             string
+	ID, Loc        string
 	Origin, Result gopium.Struct
 	Error          error
 }
@@ -37,10 +37,9 @@ func visit(
 	regex *regexp.Regexp,
 	stg gopium.Strategy,
 	exposer gopium.Exposer,
-	idfunc gopium.IDFunc,
+	loc gopium.Locator,
 	ch appliedCh,
-	deep,
-	backref bool,
+	deep, backref bool,
 ) govisit {
 	// return govisit func applied
 	// visiting implementation
@@ -49,8 +48,8 @@ func visit(
 	// and applies strategy to them
 	return func(ctx context.Context, scope *types.Scope) {
 		// setup visiting maven and reference
-		m := &maven{exposer: exposer, idfunc: idfunc}
-		ref := reference.NewRef(backref)
+		m := &maven{exposer: exposer, locator: loc}
+		ref := ref.NewRef(backref)
 		defer ref.Prune()
 		// determinate which function
 		// should be applied for visiting
@@ -72,7 +71,7 @@ func vdeep(
 	regex *regexp.Regexp,
 	stg gopium.Strategy,
 	maven *maven,
-	ref *reference.Ref,
+	ref *ref.Ref,
 	ch appliedCh,
 ) {
 	// wait group visits counter
@@ -143,7 +142,7 @@ func vscope(
 	regex *regexp.Regexp,
 	stg gopium.Strategy,
 	maven *maven,
-	ref *reference.Ref,
+	ref *ref.Ref,
 	ch appliedCh,
 ) {
 	// wait group visits counter
@@ -169,10 +168,10 @@ loop:
 			// if underlying type is struct
 			if st, ok := tn.Type().Underlying().(*types.Struct); ok {
 				// structure id
-				var id string
+				var id, loc string
 				// in case id of structure
 				// has been already visited
-				if id, ok = maven.has(tn); ok {
+				if id, loc, ok = maven.has(tn); ok {
 					continue
 				}
 				// manage context actions
@@ -186,10 +185,10 @@ loop:
 				// increment wait group visits counter
 				wg.Add(1)
 				// prepare struct ref notifier
-				notif := reference.StRef(ref, id)
+				notif := ref.StRef(id)
 				// concurently visit the structure
 				// and apply strategy to it
-				go func(id, name string, st *types.Struct, notif func(gopium.Struct)) {
+				go func(id, loc, name string, st *types.Struct, notif func(gopium.Struct)) {
 					// decrement wait group visits counter
 					defer wg.Done()
 					// convert original struct
@@ -202,11 +201,12 @@ loop:
 					// and push results to the chan
 					ch <- applied{
 						ID:     id,
+						Loc:    loc,
 						Origin: o,
 						Result: r,
 						Error:  err,
 					}
-				}(id, name, st, notif)
+				}(id, loc, name, st, notif)
 			}
 		}
 	}

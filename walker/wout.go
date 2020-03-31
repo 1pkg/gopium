@@ -3,12 +3,10 @@ package walker
 import (
 	"context"
 	"errors"
-	"io"
-	"os"
 	"regexp"
 
 	"1pkg/gopium"
-	"1pkg/gopium/fmts"
+	"1pkg/gopium/io_fmts"
 
 	"golang.org/x/sync/errgroup"
 )
@@ -16,16 +14,34 @@ import (
 // list of wout presets
 var (
 	jsonstd = wout{
-		fmt:    fmts.PrettyJson,
-		writer: os.Stdout,
+		fmt:  io_fmts.PrettyJson,
+		wgen: io_fmts.Stdout,
+		tp:   "json",
 	}
 	xmlstd = wout{
-		fmt:    fmts.PrettyXml,
-		writer: os.Stdout,
+		fmt:  io_fmts.PrettyXml,
+		wgen: io_fmts.Stdout,
+		tp:   "xml",
 	}
 	csvstd = wout{
-		fmt:    fmts.PrettyCsv,
-		writer: os.Stdout,
+		fmt:  io_fmts.PrettyCsv,
+		wgen: io_fmts.Stdout,
+		tp:   "csv",
+	}
+	jsontf = wout{
+		fmt:  io_fmts.PrettyJson,
+		wgen: io_fmts.TempFile,
+		tp:   "json",
+	}
+	xmltf = wout{
+		fmt:  io_fmts.PrettyXml,
+		wgen: io_fmts.TempFile,
+		tp:   "xml",
+	}
+	csvtf = wout{
+		fmt:  io_fmts.PrettyCsv,
+		wgen: io_fmts.TempFile,
+		tp:   "csv",
 	}
 )
 
@@ -36,8 +52,9 @@ var (
 type wout struct {
 	parser  gopium.TypeParser
 	exposer gopium.Exposer
-	fmt     fmts.StructToBytes
-	writer  io.Writer
+	fmt     io_fmts.StructToBytes
+	wgen    io_fmts.WriteGen
+	tp      string
 	backref bool
 }
 
@@ -70,9 +87,9 @@ func (w wout) visit(ctx context.Context, regex *regexp.Regexp, stg gopium.Strate
 	if w.fmt == nil {
 		return errors.New("formatter wasn't set")
 	}
-	// check that writter wasn't set correctly
-	if w.writer == nil {
-		return errors.New("writter wasn't set")
+	// check that gen wasn't set correctly
+	if w.wgen == nil {
+		return errors.New("writter generator wasn't set")
 	}
 	// use parser to parse types pkg data
 	// we don't care about fset
@@ -88,7 +105,7 @@ func (w wout) visit(ctx context.Context, regex *regexp.Regexp, stg gopium.Strate
 		regex,
 		stg,
 		w.exposer,
-		loc.Sum,
+		loc,
 		ch,
 		deep,
 		w.backref,
@@ -122,7 +139,7 @@ loop:
 			// just process with write call
 			// in case any error happened just return error
 			// it will cancel context automatically
-			return w.write(visited.Result)
+			return w.write(visited.ID, visited.Loc, visited.Result)
 		})
 	}
 	// wait until all writers
@@ -134,7 +151,7 @@ loop:
 // fmts.TypeFormat to format strategy result
 // and use io.Writer to write result to output
 // or return error in any other case
-func (w wout) write(st gopium.Struct) error {
+func (w wout) write(id, loc string, st gopium.Struct) error {
 	// apply formatter
 	buf, err := w.fmt(st)
 	// in case any error happened
@@ -142,8 +159,13 @@ func (w wout) write(st gopium.Struct) error {
 	if err != nil {
 		return err
 	}
+	// generate relevant writer
+	writer, err := w.wgen(id, loc, w.tp)
+	if err != nil {
+		return err
+	}
 	// apply writter
-	_, err = w.writer.Write(buf)
+	_, err = writer.Write(buf)
 	// in case any error happened
 	// in writer return error
 	return err

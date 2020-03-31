@@ -1,4 +1,4 @@
-package reference
+package ref
 
 import "1pkg/gopium"
 
@@ -6,7 +6,7 @@ import "1pkg/gopium"
 // size refence for provided key
 // by preallocating the key and then
 // pushing total struct size to ref with closure
-func StRef(r *Ref, key string) func(gopium.Struct) {
+func (r *Ref) StRef(key string) func(gopium.Struct) {
 	// preallocate the key
 	r.alloc(key)
 	// return the pushing closure

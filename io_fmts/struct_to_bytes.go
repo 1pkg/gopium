@@ -1,4 +1,4 @@
-package fmts
+package io_fmts
 
 import (
 	"bytes"
