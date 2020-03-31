@@ -173,7 +173,7 @@ func (b Builder) Build(name gopium.StrategyName) (gopium.Strategy, error) {
 	}
 }
 
-// Pipe helpes to concat list of strategies
+// Pipe helps to concat list of strategies
 // in one single pipe strategy
 func Pipe(stgs ...gopium.Strategy) gopium.Strategy {
 	return pipe(stgs)

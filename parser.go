@@ -7,7 +7,7 @@ import (
 	"go/types"
 )
 
-// Locator defines abstraction that helpes
+// Locator defines abstraction that helps
 // encapsulate pkgs token.FileSet related operations
 type Locator interface {
 	ID(token.Pos) string

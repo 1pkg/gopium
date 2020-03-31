@@ -23,3 +23,9 @@ func Stamp(s string) string {
 func Stamped(s string) bool {
 	return strings.Contains(s, STAMP)
 }
+
+// Runner defines abstraction for
+// simple root gopium runner
+type Runner interface {
+	Run() error
+}
