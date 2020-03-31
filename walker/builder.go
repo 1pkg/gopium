@@ -8,10 +8,13 @@ import (
 
 // list of registered types walkers
 var (
-	JsonStd gopium.WalkerName = "json_std"
-	XmlStd  gopium.WalkerName = "xml_std"
-	CsvStd  gopium.WalkerName = "csv_std"
-	SyncAst gopium.WalkerName = "sync_ast"
+	JsonStd   gopium.WalkerName = "json_std"
+	XmlStd    gopium.WalkerName = "xml_std"
+	CsvStd    gopium.WalkerName = "csv_std"
+	JsonFiles gopium.WalkerName = "json_files"
+	XmlFiles  gopium.WalkerName = "xml_files"
+	CsvFiles  gopium.WalkerName = "csv_files"
+	SyncAst   gopium.WalkerName = "sync_ast"
 )
 
 // Builder defines types gopium.WalkerBuilder implementation
@@ -49,6 +52,24 @@ func (b Builder) Build(name gopium.WalkerName) (gopium.Walker, error) {
 		), nil
 	case CsvStd:
 		return csvstd.With(
+			b.parser,
+			b.exposer,
+			b.backref,
+		), nil
+	case JsonFiles:
+		return jsontf.With(
+			b.parser,
+			b.exposer,
+			b.backref,
+		), nil
+	case XmlFiles:
+		return xmltf.With(
+			b.parser,
+			b.exposer,
+			b.backref,
+		), nil
+	case CsvFiles:
+		return csvtf.With(
 			b.parser,
 			b.exposer,
 			b.backref,

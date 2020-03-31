@@ -5,32 +5,34 @@ import (
 	"sync"
 
 	"1pkg/gopium"
-	"1pkg/gopium/walker/reference"
+	"1pkg/gopium/walker/ref"
 )
 
 // maven defines visiting helper
 // that aggregates has and enum facilities
 type maven struct {
 	exposer gopium.Exposer
-	idfunc  gopium.IDFunc
+	locator gopium.Locator
 	store   sync.Map
 }
 
 // has defines struct store id helper
-// that uses gopium.IDFunc to build id
+// that uses gopium.Locator to build id
 // for a structure and check that
 // builded id has not been stored already
-func (m *maven) has(tn *types.TypeName) (string, bool) {
+func (m *maven) has(tn *types.TypeName) (id, loc string, ok bool) {
 	// build id for the structure
-	id := m.idfunc(tn.Pos())
+	id = m.locator.ID(tn.Pos())
+	// build loc for the structure
+	loc = m.locator.Loc(tn.Pos())
 	// in case id of structure
 	// has been already stored
 	if _, ok := m.store.Load(id); ok {
-		return id, true
+		return id, loc, true
 	}
 	// mark id of structure as stored
 	m.store.Store(id, struct{}{})
-	return id, false
+	return id, loc, false
 }
 
 // enum defines struct enumerating converting helper
@@ -38,7 +40,7 @@ func (m *maven) has(tn *types.TypeName) (string, bool) {
 // and uses gopium.Exposer to expose gopium.Field DTO
 // for each field and puts them back
 // to resulted gopium.Struct object
-func (m *maven) enum(name string, st *types.Struct, ref *reference.Ref) (r gopium.Struct) {
+func (m *maven) enum(name string, st *types.Struct, ref *ref.Ref) (r gopium.Struct) {
 	// set structure name
 	r.Name = name
 	// get number of struct fields
@@ -65,7 +67,7 @@ func (m *maven) enum(name string, st *types.Struct, ref *reference.Ref) (r gopiu
 // refsize defines size getter with reference helper
 // that uses reference if it has been provided
 // or uses gopium.Exposer to expose type size
-func (m *maven) refsize(t types.Type, ref *reference.Ref) int64 {
+func (m *maven) refsize(t types.Type, ref *ref.Ref) int64 {
 	// in case we have reference
 	if ref != nil {
 		// for refsize only named structures
@@ -88,7 +90,7 @@ func (m *maven) refsize(t types.Type, ref *reference.Ref) int64 {
 				break
 			}
 			// get id for named structures
-			id := m.idfunc(tp.Obj().Pos())
+			id := m.locator.ID(tp.Obj().Pos())
 			// get size of the structure from ref
 			if size := ref.Get(id); size >= 0 {
 				return size

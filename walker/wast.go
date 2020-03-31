@@ -9,7 +9,7 @@ import (
 	"regexp"
 
 	"1pkg/gopium"
-	"1pkg/gopium/fmts"
+	"1pkg/gopium/io_fmts"
 
 	"golang.org/x/sync/errgroup"
 	"golang.org/x/tools/go/ast/astutil"
@@ -18,7 +18,7 @@ import (
 // list of wast presets
 var (
 	fsptn = wast{
-		fmt: fmts.FSPTN,
+		fmt: io_fmts.FSPTN,
 	}
 )
 
@@ -28,7 +28,7 @@ var (
 type wast struct {
 	parser  gopium.Parser
 	exposer gopium.Exposer
-	fmt     fmts.StructToAst
+	fmt     io_fmts.StructToAst
 	backref bool
 }
 
@@ -67,7 +67,15 @@ func (w wast) visit(ctx context.Context, regex *regexp.Regexp, stg gopium.Strate
 	// using visit helper
 	// and run it on pkg scope
 	ch := make(appliedCh)
-	gvisit := visit(regex, stg, w.exposer, loc.Sum, ch, deep, w.backref)
+	gvisit := visit(
+		regex,
+		stg,
+		w.exposer,
+		loc,
+		ch,
+		deep,
+		w.backref,
+	)
 	// create separate cancelation context for visiting
 	nctx, cancel := context.WithCancel(ctx)
 	defer cancel()
@@ -131,7 +139,7 @@ func (w wast) write(ctx context.Context, structs map[string]gopium.Struct) error
 // sync wast helps to update ast.Package
 // accordingly to Strategy gopium.Struct result
 // synchronously or return error otherwise
-func (w wast) sync(pkg *ast.Package, loc *gopium.Locator, id string, st gopium.Struct) (*ast.Package, error) {
+func (w wast) sync(pkg *ast.Package, loc gopium.Locator, id string, st gopium.Struct) (*ast.Package, error) {
 	// tracks error inside astutil.Apply
 	var err error
 	// apply astutil.Apply to parsed ast.Package
@@ -143,7 +151,7 @@ func (w wast) sync(pkg *ast.Package, loc *gopium.Locator, id string, st gopium.S
 					if _, ok := ts.Type.(*ast.StructType); ok {
 						// calculate sum for structure
 						// and skip all irrelevant structs
-						sum := loc.Sum(ts.Pos())
+						sum := loc.ID(ts.Pos())
 						if id == sum {
 							// apply format to ast
 							err = w.fmt(ts, st)
@@ -173,7 +181,7 @@ func (w wast) sync(pkg *ast.Package, loc *gopium.Locator, id string, st gopium.S
 // persist wast helps to update os.File list
 // accordingly to updated ast.Package
 // concurently or return error otherwise
-func (w wast) persist(ctx context.Context, pkg *ast.Package, loc *gopium.Locator) error {
+func (w wast) persist(ctx context.Context, pkg *ast.Package, loc gopium.Locator) error {
 	// create sync error group
 	// with cancelation context
 	group, gctx := errgroup.WithContext(ctx)
