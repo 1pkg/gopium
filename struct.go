@@ -25,9 +25,9 @@ type Struct struct {
 	Fields  []Field
 }
 
-// Pad defines helper that
+// PadField defines helper that
 // creates pad field with specified size
-func Pad(pad int64) Field {
+func PadField(pad int64) Field {
 	return Field{
 		Name:  "_",
 		Type:  fmt.Sprintf("[%d]byte", pad),

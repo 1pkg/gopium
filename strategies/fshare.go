@@ -1,4 +1,4 @@
-package strategy
+package strategies
 
 import (
 	"context"
@@ -42,7 +42,7 @@ func (stg fshare) Apply(ctx context.Context, o gopium.Struct) (r gopium.Struct, 
 		// append padding
 		if pad := f.Size % cachel; pad != 0 {
 			pad = cachel - pad
-			fields = append(fields, gopium.Pad(pad))
+			fields = append(fields, gopium.PadField(pad))
 		}
 	}
 	// update fields list

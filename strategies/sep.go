@@ -1,4 +1,4 @@
-package strategy
+package strategies
 
 import (
 	"context"
@@ -49,9 +49,9 @@ func (stg sep) Apply(ctx context.Context, o gopium.Struct) (r gopium.Struct, err
 	}
 	// add field before or after
 	if stg.top {
-		r.Fields = append([]gopium.Field{gopium.Pad(sep)}, r.Fields...)
+		r.Fields = append([]gopium.Field{gopium.PadField(sep)}, r.Fields...)
 	} else {
-		r.Fields = append(r.Fields, gopium.Pad(sep))
+		r.Fields = append(r.Fields, gopium.PadField(sep))
 	}
 	return
 }

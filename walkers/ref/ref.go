@@ -1,6 +1,9 @@
 package ref
 
-import "sync"
+import (
+	"1pkg/gopium"
+	"sync"
+)
 
 // Ref defines backreference helper
 // that helps to set, and get wait for
@@ -128,5 +131,24 @@ func (r *Ref) alloc(key string) {
 	// then allocate a signal for the key
 	if _, ok := r.signals[key]; !ok {
 		r.signals[key] = make(chan struct{})
+	}
+}
+
+// StRef helps to create gopium.Struct
+// size refence for provided key
+// by preallocating the key and then
+// pushing total struct size to ref with closure
+func (r *Ref) StRef(name string) func(gopium.Struct) {
+	// preallocate the key
+	r.alloc(name)
+	// return the pushing closure
+	return func(st gopium.Struct) {
+		// calculate total struct size
+		var size int64
+		for _, f := range st.Fields {
+			size += f.Size
+		}
+		// set ref key size
+		r.Set(name, size)
 	}
 }

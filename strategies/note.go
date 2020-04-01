@@ -1,4 +1,4 @@
-package strategy
+package strategies
 
 import (
 	"context"
@@ -27,22 +27,32 @@ func (stg note) Apply(ctx context.Context, o gopium.Struct) (r gopium.Struct, er
 	// copy original structure to result
 	r = o
 	// note each field with size comment
-	var sum, align int64
+	var size, align int64
 	for i := range r.Fields {
 		f := &r.Fields[i]
-		note := gopium.Stamp(fmt.Sprintf("field size: %d align: %d in bytes", f.Size, f.Align))
+		note := fmt.Sprintf(
+			"// field size: %d align: %d in bytes - %s",
+			f.Size,
+			f.Align,
+			gopium.STAMP,
+		)
 		if stg.doc {
 			f.Comment = append(f.Doc, note)
 		} else {
 			f.Comment = append(f.Comment, note)
 		}
-		sum += f.Size
+		size += f.Size
 		if align < f.Align {
 			align = f.Align
 		}
 	}
 	// note whole structure with size comment
-	note := gopium.Stamp(fmt.Sprintf("struct size: %d align: %d in bytes", sum, align))
+	note := fmt.Sprintf(
+		"// struct size: %d align: %d in bytes - %s",
+		size,
+		align,
+		gopium.STAMP,
+	)
 	if stg.doc {
 		r.Doc = append(r.Doc, note)
 	} else {
