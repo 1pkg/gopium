@@ -8,17 +8,31 @@ import (
 )
 
 // list of registered types strategies
-var (
-	// comment annotation and others
-	Nope  gopium.StrategyName = "nope"
-	Note  gopium.StrategyName = "comment_fields_annotate"
-	Stamp gopium.StrategyName = "comment_struct_stamp"
-	Group gopium.StrategyName = "group_tag"
-	// lexicographical and length sorts
-	LexAsc  gopium.StrategyName = "lexicographical_ascending"
-	LexDesc gopium.StrategyName = "lexicographical_descending"
-	LenAsc  gopium.StrategyName = "length_ascending"
-	LenDesc gopium.StrategyName = "length_descending"
+const (
+	// tag processors and modifiers
+	Group    gopium.StrategyName = "group_process_tag"
+	TagClean gopium.StrategyName = "clean_tag"
+	// filters and others
+	FPad    gopium.StrategyName = "filter_pads"
+	FEmb    gopium.StrategyName = "filter_embedded"
+	FNotEmb gopium.StrategyName = "filter_not_embedded"
+	FExp    gopium.StrategyName = "filter_exported"
+	FNotExp gopium.StrategyName = "filter_not_exported"
+	Nope    gopium.StrategyName = "nope"
+	Void    gopium.StrategyName = "void"
+	// lexicographical, length, embedded, exported sorts
+	NLexAsc  gopium.StrategyName = "name_lexicographical_ascending"
+	NLexDesc gopium.StrategyName = "name_lexicographical_descending"
+	NLenAsc  gopium.StrategyName = "name_length_ascending"
+	NLenDesc gopium.StrategyName = "name_length_descending"
+	TLexAsc  gopium.StrategyName = "type_lexicographical_ascending"
+	TLexDesc gopium.StrategyName = "type_lexicographical_descending"
+	TLenAsc  gopium.StrategyName = "type_length_ascending"
+	TLenDesc gopium.StrategyName = "type_length_descending"
+	EmbAsc   gopium.StrategyName = "embedded_ascending"
+	EmbDesc  gopium.StrategyName = "embedded_descending"
+	ExpAsc   gopium.StrategyName = "exported_ascending"
+	ExpDesc  gopium.StrategyName = "exported_descending"
 	// pack/unpack mem util
 	Pack   gopium.StrategyName = "memory_pack"
 	Unpack gopium.StrategyName = "memory_unpack"
@@ -28,7 +42,7 @@ var (
 	// false sharing guards
 	FShareL1 gopium.StrategyName = "false_sharing_cpu_l1"
 	FShareL2 gopium.StrategyName = "false_sharing_cpu_l2"
-	FShareL3 gopium.StrategyName = "false_sharing_cpu_l2"
+	FShareL3 gopium.StrategyName = "false_sharing_cpu_l3"
 	// cache line pad roundings
 	CacheL1 gopium.StrategyName = "cache_rounding_cpu_l1"
 	CacheL2 gopium.StrategyName = "cache_rounding_cpu_l2"
@@ -42,10 +56,11 @@ var (
 	SepL1B  gopium.StrategyName = "separate_padding_cpu_l1_bottom"
 	SepL2B  gopium.StrategyName = "separate_padding_cpu_l2_bottom"
 	SepL3B  gopium.StrategyName = "separate_padding_cpu_l3_bottom"
-	SepSysA gopium.StrategyName = "separate_padding_system_alignment_both"
-	SepL1A  gopium.StrategyName = "separate_padding_cpu_l1_both"
-	SepL2A  gopium.StrategyName = "separate_padding_cpu_l2_both"
-	SepL3A  gopium.StrategyName = "separate_padding_cpu_l3_both"
+	// doc and comment annotations
+	NoteDoc  gopium.StrategyName = "doc_fields_annotate"
+	NoteCom  gopium.StrategyName = "comment_fields_annotate"
+	StampDoc gopium.StrategyName = "doc_struct_stamp"
+	StampCom gopium.StrategyName = "comment_struct_stamp"
 )
 
 // Builder defines types gopium.StrategyBuilder implementation
@@ -64,62 +79,68 @@ func NewBuilder(curator gopium.Curator) Builder {
 func (b Builder) Build(name gopium.StrategyName) (gopium.Strategy, error) {
 	// build strategy by name
 	switch name {
-	// comment annotation and others
-	case Nope:
-		return np, nil
-	case Note:
-		return nt, nil
-	case Stamp:
-		return stmp, nil
+	// tag processors and modifiers
 	case Group:
 		return grp.Builder(b), nil
-	// lexicographical and length sorts
-	case LexAsc:
-		return lexasc, nil
-	case LexAsc:
-		return lexdesc, nil
-	case LenAsc:
-		return lenasc, nil
-	case LenAsc:
-		return lendesc, nil
+	case TagClean:
+		return tagclean, nil
+	// filters and others
+	case FPad:
+		return fpad, nil
+	case FEmb:
+		return femb, nil
+	case FNotEmb:
+		return fnotemb, nil
+	case FExp:
+		return fexp, nil
+	case FNotExp:
+		return fnotexp, nil
+	case Nope:
+		return np, nil
+	case Void:
+		return vd, nil
+	// lexicographical, length, embedded, exported sorts
+	case NLexAsc:
+		return nlexasc, nil
+	case NLexDesc:
+		return nlexdesc, nil
+	case NLenAsc:
+		return nlenasc, nil
+	case NLenDesc:
+		return nlendesc, nil
+	case TLexAsc:
+		return tlexasc, nil
+	case TLexDesc:
+		return tlexdesc, nil
+	case TLenAsc:
+		return tlenasc, nil
+	case TLenDesc:
+		return tlendesc, nil
+	case EmbAsc:
+		return embasc, nil
+	case EmbDesc:
+		return embdesc, nil
+	case ExpAsc:
+		return expasc, nil
+	case ExpDesc:
+		return expdesc, nil
 	// pack/unpack mem util
 	case Pack:
-		return Pipe(
-			filterpad,
-			pck,
-		), nil
+		return pck, nil
 	case Unpack:
-		return Pipe(
-			filterpad,
-			unpck,
-		), nil
+		return unpck, nil
 	// explicit sys/type pads
 	case PadSys:
-		return Pipe(
-			filterpad,
-			padsys.Curator(b.curator),
-		), nil
+		return padsys.Curator(b.curator), nil
 	case PadTnat:
-		return Pipe(
-			filterpad,
-			padtnat.Curator(b.curator),
-		), nil
+		return padtnat.Curator(b.curator), nil
 	// false sharing guards
 	case FShareL1:
-		return Pipe(
-			filterpad,
-			fsharel1.Curator(b.curator),
-		), nil
+		return fsharel1.Curator(b.curator), nil
 	case FShareL2:
-		return Pipe(
-			filterpad,
-			fsharel2.Curator(b.curator),
-		), nil
+		return fsharel2.Curator(b.curator), nil
 	case FShareL3:
-		return Pipe(
-			filterpad,
-			fsharel3.Curator(b.curator),
-		), nil
+		return fsharel3.Curator(b.curator), nil
 	// cache line pad roundings
 	case CacheL1:
 		return cachel1.Curator(b.curator), nil
@@ -144,26 +165,15 @@ func (b Builder) Build(name gopium.StrategyName) (gopium.Strategy, error) {
 		return sepl2b.Curator(b.curator), nil
 	case SepL3B:
 		return sepl3b.Curator(b.curator), nil
-	case SepSysA:
-		return Pipe(
-			sepsyst.Curator(b.curator),
-			sepsysb.Curator(b.curator),
-		), nil
-	case SepL1A:
-		return Pipe(
-			sepl1t.Curator(b.curator),
-			sepl1b.Curator(b.curator),
-		), nil
-	case SepL2A:
-		return Pipe(
-			sepl2t.Curator(b.curator),
-			sepl2b.Curator(b.curator),
-		), nil
-	case SepL3A:
-		return Pipe(
-			sepl3t.Curator(b.curator),
-			sepl3b.Curator(b.curator),
-		), nil
+	// doc and comment annotations
+	case NoteDoc:
+		return notedoc, nil
+	case NoteCom:
+		return notecom, nil
+	case StampDoc:
+		return stampcom, nil
+	case StampCom:
+		return stampcom, nil
 	default:
 		return nil, fmt.Errorf("strategy %q wasn't found", name)
 	}

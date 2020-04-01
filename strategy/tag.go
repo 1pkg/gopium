@@ -8,6 +8,11 @@ import (
 	"1pkg/gopium"
 )
 
+// list of tag presets
+var (
+	tagclean = tag{force: true}
+)
+
 // tag defines strategy implementation
 // that adds or updates tag annotation
 // that could be parsed by group strategy

@@ -9,14 +9,33 @@ import (
 
 // list of filter presets
 var (
-	filterpad = filter{regexp.MustCompile(`^_$`)}
+	// to make bools them addressable
+	t = true
+	f = false
+	// list of filter presets
+	fpad = filter{
+		nregex: regexp.MustCompile(`^_$`),
+	}
+	femb = filter{
+		emb: &t,
+	}
+	fnotemb = filter{
+		emb: &f,
+	}
+	fexp = filter{
+		exp: &t,
+	}
+	fnotexp = filter{
+		exp: &f,
+	}
 )
 
 // filter defines strategy implementation
 // that filters all fields
 // that match provided regex
 type filter struct {
-	regex *regexp.Regexp
+	nregex, tregex *regexp.Regexp
+	emb, exp       *bool
 }
 
 // Apply filter implementation
@@ -28,7 +47,19 @@ func (stg filter) Apply(ctx context.Context, o gopium.Struct) (r gopium.Struct, 
 	// then go though all original fields
 	for _, f := range r.Fields {
 		// check if field name matches regex
-		if stg.regex.MatchString(r.Name) {
+		if stg.nregex != nil && stg.nregex.MatchString(f.Name) {
+			continue
+		}
+		// check if field type matches regex
+		if stg.tregex != nil && stg.tregex.MatchString(f.Type) {
+			continue
+		}
+		// check if field embedded matches condition
+		if stg.emb != nil && *stg.emb == f.Embedded {
+			continue
+		}
+		// check if field exported matches condition
+		if stg.exp != nil && *stg.exp == f.Exported {
 			continue
 		}
 		// if it doesn't append it to fields
