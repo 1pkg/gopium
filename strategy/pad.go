@@ -2,7 +2,6 @@ package strategy
 
 import (
 	"context"
-	"fmt"
 
 	"1pkg/gopium"
 )
@@ -44,15 +43,10 @@ func (stg pad) Apply(ctx context.Context, o gopium.Struct) (r gopium.Struct, err
 		}
 		// calculate align with padding
 		alpad := gopium.Align(offset, alignment)
-		// if padding greater that zero
-		// append [pad]byte padding
-		if pad := alpad - offset; pad > 0 {
-			fields = append(fields, gopium.Field{
-				Name:  "_",
-				Type:  fmt.Sprintf("[%d]byte", pad),
-				Size:  pad,
-				Align: 1, // fixed number for byte
-			})
+		// if padding not equals zero
+		// append padding
+		if pad := alpad - offset; pad != 0 {
+			fields = append(fields, gopium.Pad(pad))
 		}
 		// increment structure offset
 		offset = alpad + f.Size

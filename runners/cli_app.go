@@ -58,6 +58,8 @@ func NewCliApp(
 		compiler:   compiler,
 		arch:       arch,
 		cpucaches:  caches,
+		pkg:        pkg,
+		path:       path,
 		benvs:      benvs,
 		bflags:     bflags,
 		walker:     wname,
