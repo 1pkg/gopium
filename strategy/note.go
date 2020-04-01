@@ -9,7 +9,8 @@ import (
 
 // list of note presets
 var (
-	nt = note{}
+	notedoc = note{doc: true}
+	notecom = note{doc: false}
 )
 
 // note defines strategy implementation
@@ -17,22 +18,35 @@ var (
 // for all structure fields
 // and aggregated size annotation
 // for whole structure
-type note struct{}
+type note struct {
+	doc bool
+}
 
 // Apply note implementation
 func (stg note) Apply(ctx context.Context, o gopium.Struct) (r gopium.Struct, err error) {
 	// copy original structure to result
 	r = o
 	// note each field with size comment
-	var sum int64
+	var sum, align int64
 	for i := range r.Fields {
 		f := &r.Fields[i]
-		size := gopium.Stamp(fmt.Sprintf("%d bytes", f.Size))
-		f.Comment = append(f.Comment, size)
+		note := gopium.Stamp(fmt.Sprintf("field size: %d align: %d in bytes", f.Size, f.Align))
+		if stg.doc {
+			f.Comment = append(f.Doc, note)
+		} else {
+			f.Comment = append(f.Comment, note)
+		}
 		sum += f.Size
+		if align < f.Align {
+			align = f.Align
+		}
 	}
 	// note whole structure with size comment
-	size := gopium.Stamp(fmt.Sprintf("%d bytes", sum))
-	r.Comment = append(r.Comment, size)
+	note := gopium.Stamp(fmt.Sprintf("struct size: %d align: %d in bytes", sum, align))
+	if stg.doc {
+		r.Doc = append(r.Doc, note)
+	} else {
+		r.Comment = append(r.Comment, note)
+	}
 	return
 }

@@ -7,24 +7,24 @@ import (
 	"1pkg/gopium"
 )
 
-// list of length presets
+// list of nlen presets
 var (
-	lenasc  = length{true}
-	lendesc = length{false}
+	nlenasc  = nlen{asc: true}
+	nlendesc = nlen{asc: false}
 )
 
-// length defines strategy implementation
-// that sorts fields accordingly to their name lengths
+// nlen defines strategy implementation
+// that sorts fields accordingly to their names length
 // in ascending or descending order
-type length struct {
+type nlen struct {
 	asc bool
 }
 
-// Apply length implementation
-func (stg length) Apply(ctx context.Context, o gopium.Struct) (r gopium.Struct, err error) {
+// Apply nlen implementation
+func (stg nlen) Apply(ctx context.Context, o gopium.Struct) (r gopium.Struct, err error) {
 	// copy original structure to result
 	r = o
-	// then execute length sorting
+	// then execute len sorting
 	sort.SliceStable(r.Fields, func(i, j int) bool {
 		// sort depends on type of ordering
 		if stg.asc {
