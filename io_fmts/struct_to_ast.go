@@ -25,7 +25,7 @@ type StructToAst func(*ast.TypeSpec, gopium.Struct) error
 // - notesync helper
 var FSPTN = combine(
 	flatten,
-	padfilter,
+	fpadfilter,
 	shuffle,
 	padsync,
 	tagsync,
@@ -79,13 +79,19 @@ func flatten(ts *ast.TypeSpec, st gopium.Struct) error {
 	return nil
 }
 
-// padfilter helps to filter pads from fields list
-// for original *ast.TypeSpec
-func padfilter(ts *ast.TypeSpec, st gopium.Struct) error {
+// fpadfilter helps to filter fields and pads
+// from fields list for original *ast.TypeSpec
+// accordingly to result gopium.Struct
+func fpadfilter(ts *ast.TypeSpec, st gopium.Struct) error {
 	// check that we are working with ast.StructType
 	tts, ok := ts.Type.(*ast.StructType)
 	if !ok {
-		return errors.New("padfilter could only be applied to ast.StructType")
+		return errors.New("fpadfilter could only be applied to ast.StructType")
+	}
+	// collect all unique fields list
+	stfields := make(map[string]struct{}, len(st.Fields))
+	for _, f := range st.Fields {
+		stfields[f.Name] = struct{}{}
 	}
 	// prepare resulted fields list
 	fields := make([]*ast.Field, 0, len(tts.Fields.List))
@@ -93,13 +99,20 @@ func padfilter(ts *ast.TypeSpec, st gopium.Struct) error {
 	for _, f := range tts.Fields.List {
 		// in case structure isn't flat return error
 		if len(f.Names) != 1 {
-			return errors.New("padfilter could only be applied to flatten structures")
+			return errors.New("fpadfilter could only be applied to flatten structures")
 		}
 		// if pad field was detected
 		// filter it out
-		if f.Names[0].Name != "_" {
-			fields = append(fields, f)
+		if f.Names[0].Name == "_" {
+			continue
 		}
+		// if field isn't in result list
+		// filter it out
+		if _, ok := stfields[f.Names[0].Name]; !ok {
+			continue
+		}
+		// otherwise collect field
+		fields = append(fields, f)
 	}
 	// update original ast fields list
 	tts.Fields.List = fields
@@ -107,7 +120,7 @@ func padfilter(ts *ast.TypeSpec, st gopium.Struct) error {
 }
 
 // shuffle helps to sort fields list
-// for original *ast.TypeSpec accordingly resulted gopium.Struct
+// for original *ast.TypeSpec accordingly to result gopium.Struct
 func shuffle(ts *ast.TypeSpec, st gopium.Struct) error {
 	// check that we are working with ast.StructType
 	tts, ok := ts.Type.(*ast.StructType)
@@ -158,7 +171,7 @@ func shuffle(ts *ast.TypeSpec, st gopium.Struct) error {
 }
 
 // padsync helps to sync fields padding list
-// for original *ast.TypeSpec accordingly resulted gopium.Struct
+// for original *ast.TypeSpec accordingly to result gopium.Struct
 func padsync(ts *ast.TypeSpec, st gopium.Struct) error {
 	// check that we are working with ast.StructType
 	tts, ok := ts.Type.(*ast.StructType)
@@ -216,7 +229,7 @@ func padsync(ts *ast.TypeSpec, st gopium.Struct) error {
 }
 
 // tagsync helps to sync field tags between
-// original *ast.TypeSpec and resulted gopium.Struct
+// original *ast.TypeSpec result gopium.Struct
 func tagsync(ts *ast.TypeSpec, st gopium.Struct) error {
 	// check that we are working with ast.StructType
 	tts, ok := ts.Type.(*ast.StructType)
@@ -251,7 +264,7 @@ func tagsync(ts *ast.TypeSpec, st gopium.Struct) error {
 }
 
 // notesync helps to sync docs and comments
-// between original *ast.TypeSpec and resulted gopium.Struct
+// between original *ast.TypeSpec and result gopium.Struct
 func notesync(ts *ast.TypeSpec, st gopium.Struct) error {
 	// check that we are working with ast.StructType
 	tts, ok := ts.Type.(*ast.StructType)
