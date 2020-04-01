@@ -16,32 +16,32 @@ var (
 	jsonstd = wout{
 		fmt:  io_fmts.PrettyJson,
 		wgen: io_fmts.Stdout,
-		tp:   "json",
+		tp:   io_fmts.Json,
 	}
 	xmlstd = wout{
 		fmt:  io_fmts.PrettyXml,
 		wgen: io_fmts.Stdout,
-		tp:   "xml",
+		tp:   io_fmts.Xml,
 	}
 	csvstd = wout{
 		fmt:  io_fmts.PrettyCsv,
 		wgen: io_fmts.Stdout,
-		tp:   "csv",
+		tp:   io_fmts.Csv,
 	}
 	jsontf = wout{
 		fmt:  io_fmts.PrettyJson,
 		wgen: io_fmts.TempFile,
-		tp:   "json",
+		tp:   io_fmts.Json,
 	}
 	xmltf = wout{
 		fmt:  io_fmts.PrettyXml,
 		wgen: io_fmts.TempFile,
-		tp:   "xml",
+		tp:   io_fmts.Xml,
 	}
 	csvtf = wout{
 		fmt:  io_fmts.PrettyCsv,
 		wgen: io_fmts.TempFile,
-		tp:   "csv",
+		tp:   io_fmts.Csv,
 	}
 )
 
