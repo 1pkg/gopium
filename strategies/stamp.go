@@ -1,4 +1,4 @@
-package strategy
+package strategies
 
 import (
 	"context"
@@ -24,8 +24,11 @@ func (stg stamp) Apply(ctx context.Context, o gopium.Struct) (r gopium.Struct, e
 	// copy original structure to result
 	r = o
 	// create stamp
-	stamp := fmt.Sprintf("struct %q has been auto curated", r.Name)
-	stamp = gopium.Stamp(stamp)
+	stamp := fmt.Sprintf(
+		"// struct %q has been auto curated by gopium - %s",
+		r.Name,
+		gopium.STAMP,
+	)
 	// add stamp to structure doc or comment
 	if stg.doc {
 		r.Doc = append(r.Doc, stamp)

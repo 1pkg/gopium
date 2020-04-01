@@ -1,4 +1,4 @@
-package walker
+package walkers
 
 import (
 	"context"

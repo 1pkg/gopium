@@ -1,4 +1,4 @@
-package strategy
+package strategies
 
 import (
 	"context"
@@ -43,7 +43,7 @@ func (stg cache) Apply(ctx context.Context, o gopium.Struct) (r gopium.Struct, e
 	cache := stg.curator.SysCache(stg.line)
 	if pad := size % cache; pad != 0 {
 		pad = cache - pad
-		r.Fields = append(r.Fields, gopium.Pad(pad))
+		r.Fields = append(r.Fields, gopium.PadField(pad))
 	}
 	return
 }

@@ -9,8 +9,8 @@ import (
 
 	"1pkg/gopium"
 	"1pkg/gopium/pkgs_types"
-	"1pkg/gopium/strategy"
-	"1pkg/gopium/walker"
+	"1pkg/gopium/strategies"
+	"1pkg/gopium/walkers"
 
 	"golang.org/x/tools/go/packages"
 )
@@ -94,8 +94,8 @@ func (cli CliApp) Run(ctx context.Context) error {
 		BuildFlags: cli.bflags,
 	}
 	// set walker and strategy builders
-	wb := walker.NewBuilder(p, m, cli.backref)
-	sb := strategy.NewBuilder(m)
+	wb := walkers.NewBuilder(p, m, cli.backref)
+	sb := strategies.NewBuilder(m)
 	// build strategy
 	stgs := make([]gopium.Strategy, 0, len(cli.strategies))
 	for _, strategy := range cli.strategies {
@@ -108,10 +108,10 @@ func (cli CliApp) Run(ctx context.Context) error {
 	// append tag strategy
 	if cli.tagtype != None {
 		force := cli.tagtype == Force
-		tag := strategy.Tag(force, cli.strategies...)
+		tag := strategies.Tag(force, cli.strategies...)
 		stgs = append(stgs, tag)
 	}
-	stg := strategy.Pipe(stgs...)
+	stg := strategies.Pipe(stgs...)
 	// build walker
 	w, err := wb.Build(gopium.WalkerName(cli.walker))
 	if err != nil {

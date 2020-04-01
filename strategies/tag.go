@@ -1,4 +1,4 @@
-package strategy
+package strategies
 
 import (
 	"context"
@@ -7,6 +7,9 @@ import (
 
 	"1pkg/gopium"
 )
+
+// gopium tag name
+const tagn = "gopium"
 
 // list of tag presets
 var (
@@ -29,7 +32,7 @@ func (stg tag) Apply(ctx context.Context, o gopium.Struct) (r gopium.Struct, err
 	for i := range r.Fields {
 		f := &r.Fields[i]
 		// grab the field tag
-		tag, ok := reflect.StructTag(f.Tag).Lookup(gopium.TAG)
+		tag, ok := reflect.StructTag(f.Tag).Lookup(tagn)
 		// in case gopium tag already exists
 		// and force is set - replace tag
 		// in case tag is not empty and

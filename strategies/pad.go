@@ -1,4 +1,4 @@
-package strategy
+package strategies
 
 import (
 	"context"
@@ -46,7 +46,7 @@ func (stg pad) Apply(ctx context.Context, o gopium.Struct) (r gopium.Struct, err
 		// if padding not equals zero
 		// append padding
 		if pad := alpad - offset; pad != 0 {
-			fields = append(fields, gopium.Pad(pad))
+			fields = append(fields, gopium.PadField(pad))
 		}
 		// increment structure offset
 		offset = alpad + f.Size
