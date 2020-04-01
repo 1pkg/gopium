@@ -10,7 +10,7 @@ import (
 // list of registered types strategies
 var (
 	// comment annotation and others
-	Nil   gopium.StrategyName = "nil"
+	Nope  gopium.StrategyName = "nope"
 	Note  gopium.StrategyName = "comment_fields_annotate"
 	Stamp gopium.StrategyName = "comment_struct_stamp"
 	Group gopium.StrategyName = "group_tag"
@@ -34,10 +34,18 @@ var (
 	CacheL2 gopium.StrategyName = "cache_rounding_cpu_l2"
 	CacheL3 gopium.StrategyName = "cache_rounding_cpu_l3"
 	// start, end separate pads
-	SepSys gopium.StrategyName = "separate_padding_system_alignment"
-	SepL1  gopium.StrategyName = "separate_padding_cpu_l1"
-	SepL2  gopium.StrategyName = "separate_padding_cpu_l2"
-	SepL3  gopium.StrategyName = "separate_padding_cpu_l3"
+	SepSysT gopium.StrategyName = "separate_padding_system_alignment_top"
+	SepL1T  gopium.StrategyName = "separate_padding_cpu_l1_top"
+	SepL2T  gopium.StrategyName = "separate_padding_cpu_l2_top"
+	SepL3T  gopium.StrategyName = "separate_padding_cpu_l3_top"
+	SepSysB gopium.StrategyName = "separate_padding_system_alignment_bottom"
+	SepL1B  gopium.StrategyName = "separate_padding_cpu_l1_bottom"
+	SepL2B  gopium.StrategyName = "separate_padding_cpu_l2_bottom"
+	SepL3B  gopium.StrategyName = "separate_padding_cpu_l3_bottom"
+	SepSysA gopium.StrategyName = "separate_padding_system_alignment_both"
+	SepL1A  gopium.StrategyName = "separate_padding_cpu_l1_both"
+	SepL2A  gopium.StrategyName = "separate_padding_cpu_l2_both"
+	SepL3A  gopium.StrategyName = "separate_padding_cpu_l3_both"
 )
 
 // Builder defines types gopium.StrategyBuilder implementation
@@ -57,8 +65,8 @@ func (b Builder) Build(name gopium.StrategyName) (gopium.Strategy, error) {
 	// build strategy by name
 	switch name {
 	// comment annotation and others
-	case Nil:
-		return nl, nil
+	case Nope:
+		return np, nil
 	case Note:
 		return nt, nil
 	case Stamp:
@@ -67,106 +75,94 @@ func (b Builder) Build(name gopium.StrategyName) (gopium.Strategy, error) {
 		return grp.Builder(b), nil
 	// lexicographical and length sorts
 	case LexAsc:
-		return Pipe(
-			lexasc,
-			taglexasc,
-		), nil
+		return lexasc, nil
 	case LexAsc:
-		return Pipe(
-			lexdesc,
-			taglexdesc,
-		), nil
+		return lexdesc, nil
 	case LenAsc:
-		return Pipe(
-			lenasc,
-			taglenasc,
-		), nil
+		return lenasc, nil
 	case LenAsc:
-		return Pipe(
-			lendesc,
-			taglendesc,
-		), nil
+		return lendesc, nil
 	// pack/unpack mem util
 	case Pack:
 		return Pipe(
 			filterpad,
 			pck,
-			tagpack,
 		), nil
 	case Unpack:
 		return Pipe(
 			filterpad,
 			unpck,
-			tagunpack,
 		), nil
 	// explicit sys/type pads
 	case PadSys:
 		return Pipe(
 			filterpad,
 			padsys.Curator(b.curator),
-			tagpadsys,
 		), nil
 	case PadTnat:
 		return Pipe(
 			filterpad,
 			padtnat.Curator(b.curator),
-			tagpadtnat,
 		), nil
 	// false sharing guards
 	case FShareL1:
 		return Pipe(
 			filterpad,
 			fsharel1.Curator(b.curator),
-			tagfsahrel1,
 		), nil
 	case FShareL2:
 		return Pipe(
 			filterpad,
 			fsharel2.Curator(b.curator),
-			tagfsahrel2,
 		), nil
 	case FShareL3:
 		return Pipe(
 			filterpad,
 			fsharel3.Curator(b.curator),
-			tagfsahrel3,
 		), nil
 	// cache line pad roundings
 	case CacheL1:
-		return Pipe(
-			cachel1.Curator(b.curator),
-			tagcachel1,
-		), nil
+		return cachel1.Curator(b.curator), nil
 	case CacheL2:
-		return Pipe(
-			cachel2.Curator(b.curator),
-			tagcachel2,
-		), nil
+		return cachel2.Curator(b.curator), nil
 	case CacheL3:
-		return Pipe(
-			cachel3.Curator(b.curator),
-			tagcachel3,
-		), nil
+		return cachel3.Curator(b.curator), nil
 	// start, end separate pads
-	case SepSys:
+	case SepSysT:
+		return sepsyst.Curator(b.curator), nil
+	case SepL1T:
+		return sepl1t.Curator(b.curator), nil
+	case SepL2T:
+		return sepl2t.Curator(b.curator), nil
+	case SepL3T:
+		return sepl3t.Curator(b.curator), nil
+	case SepSysB:
+		return sepsysb.Curator(b.curator), nil
+	case SepL1B:
+		return sepl1b.Curator(b.curator), nil
+	case SepL2B:
+		return sepl2b.Curator(b.curator), nil
+	case SepL3B:
+		return sepl3b.Curator(b.curator), nil
+	case SepSysA:
 		return Pipe(
-			sepsys.Curator(b.curator),
-			tagsepsys,
+			sepsyst.Curator(b.curator),
+			sepsysb.Curator(b.curator),
 		), nil
-	case SepL1:
+	case SepL1A:
 		return Pipe(
-			sepl1.Curator(b.curator),
-			tagsepl1,
+			sepl1t.Curator(b.curator),
+			sepl1b.Curator(b.curator),
 		), nil
-	case SepL2:
+	case SepL2A:
 		return Pipe(
-			sepl2.Curator(b.curator),
-			tagsepl2,
+			sepl2t.Curator(b.curator),
+			sepl2b.Curator(b.curator),
 		), nil
-	case SepL3:
+	case SepL3A:
 		return Pipe(
-			sepl3.Curator(b.curator),
-			tagsepl3,
+			sepl3t.Curator(b.curator),
+			sepl3b.Curator(b.curator),
 		), nil
 	default:
 		return nil, fmt.Errorf("strategy %q wasn't found", name)
@@ -181,10 +177,10 @@ func Pipe(stgs ...gopium.Strategy) gopium.Strategy {
 
 // Tag concats list of strategy names
 // in one single tag strategy
-func Tag(stgs ...gopium.StrategyName) gopium.Strategy {
+func Tag(force bool, stgs ...gopium.StrategyName) gopium.Strategy {
 	s := make([]string, 0, len(stgs))
 	for _, stg := range stgs {
 		s = append(s, string(stg))
 	}
-	return tag{tag: strings.Join(s, ","), force: true}
+	return tag{tag: strings.Join(s, ","), force: force}
 }

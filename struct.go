@@ -1,5 +1,7 @@
 package gopium
 
+import "fmt"
+
 // Field defines single structure field
 // data transfer object abstraction
 type Field struct {
@@ -21,4 +23,15 @@ type Struct struct {
 	Doc     []string
 	Comment []string
 	Fields  []Field
+}
+
+// Pad defines helper that
+// creates pad field with specified size
+func Pad(pad int64) Field {
+	return Field{
+		Name:  "_",
+		Type:  fmt.Sprintf("[%d]byte", pad),
+		Size:  pad,
+		Align: 1,
+	}
 }
