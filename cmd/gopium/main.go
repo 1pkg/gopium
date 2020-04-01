@@ -3,6 +3,8 @@ package main
 import (
 	"context"
 	"log"
+	"os"
+	"os/signal"
 	"time"
 
 	"1pkg/gopium/runners"
@@ -265,7 +267,23 @@ func init() {
 
 // main gopium cobra cli entry point
 func main() {
-	if err := cli.Execute(); err != nil {
+	// prepare context with cancelation
+	// on system signals
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+	go func() {
+		sig := make(chan os.Signal, 1)
+		signal.Notify(sig, os.Interrupt, os.Kill)
+		select {
+		case <-ctx.Done():
+		case <-sig:
+			cancel()
+		}
+	}()
+	// execute cobra cli command
+	// and log error if any
+	if err := cli.ExecuteContext(ctx); err != nil {
 		log.Fatal(err.Error())
+		os.Exit(1)
 	}
 }

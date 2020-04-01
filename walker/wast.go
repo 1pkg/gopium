@@ -76,11 +76,8 @@ func (w wast) visit(ctx context.Context, regex *regexp.Regexp, stg gopium.Strate
 		deep,
 		w.backref,
 	)
-	// create separate cancelation context for visiting
-	nctx, cancel := context.WithCancel(ctx)
-	defer cancel()
 	// run visiting in separate goroutine
-	go gvisit(nctx, pkg.Scope())
+	go gvisit(ctx, pkg.Scope())
 	// go through results from visit func
 	// we can use concurent writitng too
 	// but it's probably redundant
@@ -98,7 +95,7 @@ func (w wast) visit(ctx context.Context, regex *regexp.Regexp, stg gopium.Strate
 	}
 	// run sync write
 	// with collected strategies results
-	return w.write(nctx, structs)
+	return w.write(ctx, structs)
 }
 
 // write wast helps apply
@@ -121,7 +118,7 @@ func (w wast) write(ctx context.Context, structs map[string]gopium.Struct) error
 		// stop execution
 		select {
 		case <-ctx.Done():
-			return nil
+			return ctx.Err()
 		default:
 		}
 		// run sync with strategy result to update ast.Package
@@ -202,6 +199,14 @@ loop:
 		node := file
 		// run error group write call
 		group.Go(func() error {
+			// manage context actions
+			// in case of cancelation
+			// stop execution and return error
+			select {
+			case <-gctx.Done():
+				return gctx.Err()
+			default:
+			}
 			// open os.File for related ast.File
 			file, err := os.Create(name)
 			// in case any error happened just return error
