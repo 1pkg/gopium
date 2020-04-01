@@ -26,6 +26,7 @@ type CliApp struct {
 	regex          *regexp.Regexp
 	deep, backref  bool
 	strategies     []gopium.StrategyName
+	tagtype        TagType
 }
 
 // NewCliApp helps to spawn new cli application runner
@@ -38,6 +39,7 @@ func NewCliApp(
 	walker, regex string,
 	deep, backref bool,
 	strategies []string,
+	tagtype string,
 ) CliApp {
 	// cast caches to int64
 	caches := make([]int64, 0, len(cpucaches))
@@ -53,6 +55,8 @@ func NewCliApp(
 	wname := gopium.WalkerName(walker)
 	// compile regex
 	cregex := regexp.MustCompile(regex)
+	// cast tagtype string to tag type
+	tt := TagType(tagtype)
 	// combine cli runner
 	return CliApp{
 		compiler:   compiler,
@@ -67,6 +71,7 @@ func NewCliApp(
 		deep:       deep,
 		backref:    backref,
 		strategies: stgs,
+		tagtype:    tt,
 	}
 }
 
@@ -99,6 +104,12 @@ func (cli CliApp) Run(ctx context.Context) error {
 			return fmt.Errorf("can't build such strategy %q %v", strategy, err)
 		}
 		stgs = append(stgs, stg)
+	}
+	// append tag strategy
+	if cli.tagtype != None {
+		force := cli.tagtype == Force
+		tag := strategy.Tag(force, cli.strategies...)
+		stgs = append(stgs, tag)
 	}
 	stg := strategy.Pipe(stgs...)
 	// build walker

@@ -24,6 +24,7 @@ var (
 	wname, wregex   string
 	wdeep, wbackref bool
 	snames          []string
+	tagtype         string
 	// global vars
 	timeout int
 )
@@ -50,6 +51,7 @@ func init() {
 				wdeep,
 				wbackref,
 				snames,
+				tagtype,
 			)
 			ctx := cmd.Context()
 			if timeout > 0 {
@@ -235,6 +237,19 @@ func init() {
 		`,
 	)
 	cli.MarkFlagRequired("strategies_names")
+	// set tag_type flag
+	cli.Flags().StringVarP(
+		&tagtype,
+		"tag_type",
+		"e",
+		"",
+		`
+		Tag type, possible values are: 
+			- none
+			- soft
+			- force
+		`,
+	)
 	// set timeout flag
 	cli.Flags().IntVarP(
 		&timeout,
@@ -242,7 +257,7 @@ func init() {
 		"t",
 		0,
 		`
-		Gopium gloab cli timeout (default no timeout),
+		Gopium global cli timeout (default no timeout),
 		timeout specified in seconds. 
 		`,
 	)
