@@ -1,4 +1,4 @@
-package strategy
+package strategies
 
 import (
 	"context"
@@ -7,21 +7,21 @@ import (
 	"1pkg/gopium"
 )
 
-// list of lex presets
+// list of nlex presets
 var (
-	lexasc  = lex{true}
-	lexdesc = lex{false}
+	nlexasc  = nlex{asc: true}
+	nlexdesc = nlex{asc: false}
 )
 
-// lex defines strategy implementation
+// nlex defines strategy implementation
 // that sorts fields accordingly to their names
 // in ascending or descending order
-type lex struct {
+type nlex struct {
 	asc bool
 }
 
-// Apply lex implementation
-func (stg lex) Apply(ctx context.Context, o gopium.Struct) (r gopium.Struct, err error) {
+// Apply nlex implementation
+func (stg nlex) Apply(ctx context.Context, o gopium.Struct) (r gopium.Struct, err error) {
 	// copy original structure to result
 	r = o
 	// then execute lexicographical sorting

@@ -6,11 +6,12 @@ import (
 	"go/parser"
 	"path/filepath"
 	"regexp"
+	"time"
 
 	"1pkg/gopium"
 	"1pkg/gopium/pkgs_types"
-	"1pkg/gopium/strategy"
-	"1pkg/gopium/walker"
+	"1pkg/gopium/strategies"
+	"1pkg/gopium/walkers"
 
 	"golang.org/x/tools/go/packages"
 )
@@ -26,6 +27,8 @@ type CliApp struct {
 	regex          *regexp.Regexp
 	deep, backref  bool
 	strategies     []gopium.StrategyName
+	tagtype        TagType
+	timeout        time.Duration
 }
 
 // NewCliApp helps to spawn new cli application runner
@@ -38,6 +41,8 @@ func NewCliApp(
 	walker, regex string,
 	deep, backref bool,
 	strategies []string,
+	tagtype string,
+	timeout int,
 ) CliApp {
 	// cast caches to int64
 	caches := make([]int64, 0, len(cpucaches))
@@ -53,11 +58,17 @@ func NewCliApp(
 	wname := gopium.WalkerName(walker)
 	// compile regex
 	cregex := regexp.MustCompile(regex)
+	// cast tagtype string to tag type
+	tt := TagType(tagtype)
+	// cast timeout to second duration
+	tm := time.Duration(timeout) * time.Second
 	// combine cli runner
 	return CliApp{
 		compiler:   compiler,
 		arch:       arch,
 		cpucaches:  caches,
+		pkg:        pkg,
+		path:       path,
 		benvs:      benvs,
 		bflags:     bflags,
 		walker:     wname,
@@ -65,11 +76,19 @@ func NewCliApp(
 		deep:       deep,
 		backref:    backref,
 		strategies: stgs,
+		tagtype:    tt,
+		timeout:    tm,
 	}
 }
 
 // Run CliApp implementation
 func (cli CliApp) Run(ctx context.Context) error {
+	// set up timeout context
+	if cli.timeout > 0 {
+		nctx, cancel := context.WithTimeout(ctx, cli.timeout)
+		defer cancel()
+		ctx = nctx
+	}
 	// set up maven
 	m := pkgs_types.NewMavenGoTypes(cli.compiler, cli.arch, cli.cpucaches...)
 	// set up parser
@@ -87,8 +106,8 @@ func (cli CliApp) Run(ctx context.Context) error {
 		BuildFlags: cli.bflags,
 	}
 	// set walker and strategy builders
-	wb := walker.NewBuilder(p, m, cli.backref)
-	sb := strategy.NewBuilder(m)
+	wb := walkers.NewBuilder(p, m, cli.backref)
+	sb := strategies.NewBuilder(m)
 	// build strategy
 	stgs := make([]gopium.Strategy, 0, len(cli.strategies))
 	for _, strategy := range cli.strategies {
@@ -98,7 +117,13 @@ func (cli CliApp) Run(ctx context.Context) error {
 		}
 		stgs = append(stgs, stg)
 	}
-	stg := strategy.Pipe(stgs...)
+	// append tag strategy
+	if cli.tagtype != None {
+		force := cli.tagtype == Force
+		tag := strategies.Tag(force, cli.strategies...)
+		stgs = append(stgs, tag)
+	}
+	stg := strategies.Pipe(stgs...)
 	// build walker
 	w, err := wb.Build(gopium.WalkerName(cli.walker))
 	if err != nil {

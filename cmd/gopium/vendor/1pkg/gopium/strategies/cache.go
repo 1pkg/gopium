@@ -1,8 +1,7 @@
-package strategy
+package strategies
 
 import (
 	"context"
-	"fmt"
 
 	"1pkg/gopium"
 )
@@ -15,8 +14,8 @@ var (
 )
 
 // cache defines strategy implementation
-// that fits structure into l cpu cache line
-// by adding end resulting cpu cache padding
+// that fits structure into cpu cache line
+// by adding bottom rounding cpu cache padding
 type cache struct {
 	curator gopium.Curator
 	line    uint
@@ -39,15 +38,12 @@ func (stg cache) Apply(ctx context.Context, o gopium.Struct) (r gopium.Struct, e
 	}
 	// get number of padding bytes
 	// to fill cpu cache line
+	// if padding not equals zero
+	// append padding
 	cache := stg.curator.SysCache(stg.line)
 	if pad := size % cache; pad != 0 {
 		pad = cache - pad
-		r.Fields = append(r.Fields, gopium.Field{
-			Name:  "_",
-			Type:  fmt.Sprintf("[%d]byte", pad),
-			Size:  pad,
-			Align: 1, // fixed number for byte
-		})
+		r.Fields = append(r.Fields, gopium.PadField(pad))
 	}
 	return
 }

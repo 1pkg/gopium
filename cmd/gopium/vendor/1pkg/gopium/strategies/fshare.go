@@ -1,8 +1,7 @@
-package strategy
+package strategies
 
 import (
 	"context"
-	"fmt"
 
 	"1pkg/gopium"
 )
@@ -15,8 +14,8 @@ var (
 )
 
 // fshare defines strategy implementation
-// that guards structure from false sharing issue
-// by adding cpu cache paddings
+// that guards structure from false sharing
+// by adding extra cpu cache line paddings
 // for each structure field
 type fshare struct {
 	curator gopium.Curator
@@ -39,16 +38,11 @@ func (stg fshare) Apply(ctx context.Context, o gopium.Struct) (r gopium.Struct, 
 	// go through all fields
 	for _, f := range r.Fields {
 		fields = append(fields, f)
-		// if padding greater that zero
-		// append [pad]byte padding
-		if alpad := f.Size % cachel; alpad > 0 {
-			pad := cachel - alpad
-			fields = append(fields, gopium.Field{
-				Name:  "_",
-				Type:  fmt.Sprintf("[%d]byte", pad),
-				Size:  pad,
-				Align: 1, // fixed number for byte
-			})
+		// if padding not equals zero
+		// append padding
+		if pad := f.Size % cachel; pad != 0 {
+			pad = cachel - pad
+			fields = append(fields, gopium.PadField(pad))
 		}
 	}
 	// update fields list
