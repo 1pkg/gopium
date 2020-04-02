@@ -1,4 +1,4 @@
-package walker
+package walkers
 
 import (
 	"context"
@@ -7,7 +7,7 @@ import (
 	"sync"
 
 	"1pkg/gopium"
-	"1pkg/gopium/walker/ref"
+	"1pkg/gopium/walkers/ref"
 )
 
 // applied encapsulates visited by strategy
@@ -122,11 +122,20 @@ func vdeep(
 				ch <- applied
 			}
 		}()
+		// for child visiting
+		// create separate child context and
+		// wait until all visits finished
+		// and then cancel the context
+		nctx, cancel := context.WithCancel(ctx)
+		defer func() {
+			wg.Wait()
+			cancel()
+		}()
 		// traverse through children scopes
 		for i := 0; i < scope.NumChildren(); i++ {
 			// visit children scopes iteratively
 			// using child context and scope
-			go indeep(ctx, scope.Child(i))
+			go indeep(nctx, scope.Child(i))
 		}
 	}
 	// start indeep chain
@@ -179,6 +188,8 @@ loop:
 				// further traverse
 				select {
 				case <-ctx.Done():
+					// push error to the chan
+					ch <- applied{Error: ctx.Err()}
 					break loop
 				default:
 				}

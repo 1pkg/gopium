@@ -1,4 +1,4 @@
-package strategy
+package strategies
 
 import (
 	"context"
@@ -14,7 +14,7 @@ var (
 
 // unpack defines strategy implementation
 // that rearranges structure field list
-// for inflated memory utilization
+// to obtain inflated memory utilization
 // by sorting fields accordingly
 // to their aligns and sizes in some order
 type unpack struct{}

@@ -1,11 +1,11 @@
-package walker
+package walkers
 
 import (
 	"go/types"
 	"sync"
 
 	"1pkg/gopium"
-	"1pkg/gopium/walker/ref"
+	"1pkg/gopium/walkers/ref"
 )
 
 // maven defines visiting helper

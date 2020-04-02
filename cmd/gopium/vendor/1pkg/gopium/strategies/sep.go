@@ -1,29 +1,33 @@
-package strategy
+package strategies
 
 import (
 	"context"
-	"fmt"
 
 	"1pkg/gopium"
 )
 
 // list of fshare presets
 var (
-	sepsys = sep{sys: true}
-	sepl1  = sep{line: 1}
-	sepl2  = sep{line: 2}
-	sepl3  = sep{line: 3}
+	sepsyst = sep{sys: true, top: true}
+	sepl1t  = sep{line: 1, top: true}
+	sepl2t  = sep{line: 2, top: true}
+	sepl3t  = sep{line: 3, top: true}
+	sepsysb = sep{sys: true, top: false}
+	sepl1b  = sep{line: 1, top: false}
+	sepl2b  = sep{line: 2, top: false}
+	sepl3b  = sep{line: 3, top: false}
 )
 
 // sep defines strategy implementation
 // that separates structure with
-// additional sys/cpu cache padding
-// by adding one padding before and one padding after
-// structure fields list
+// extra system or cpu cache alignment padding
+// by adding the padding at the top
+// or the padding at the bottom
 type sep struct {
 	curator gopium.Curator
 	line    uint
 	sys     bool
+	top     bool
 }
 
 // Curator erich sep strategy with curator instance
@@ -43,20 +47,11 @@ func (stg sep) Apply(ctx context.Context, o gopium.Struct) (r gopium.Struct, err
 	if !stg.sys {
 		sep = stg.curator.SysCache(stg.line)
 	}
-	// add field before and after
-	r.Fields = append([]gopium.Field{
-		gopium.Field{
-			Name:  "_",
-			Type:  fmt.Sprintf("[%d]byte", sep),
-			Size:  sep,
-			Align: 1,
-		},
-	}, r.Fields...)
-	r.Fields = append(r.Fields, gopium.Field{
-		Name:  "_",
-		Type:  fmt.Sprintf("[%d]byte", sep),
-		Size:  sep,
-		Align: 1,
-	})
+	// add field before or after
+	if stg.top {
+		r.Fields = append([]gopium.Field{gopium.PadField(sep)}, r.Fields...)
+	} else {
+		r.Fields = append(r.Fields, gopium.PadField(sep))
+	}
 	return
 }

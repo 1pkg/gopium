@@ -1,8 +1,7 @@
-package strategy
+package strategies
 
 import (
 	"context"
-	"fmt"
 
 	"1pkg/gopium"
 )
@@ -14,9 +13,9 @@ var (
 )
 
 // pad defines strategy implementation
-// that align all structure field
-// to sys or max sys padding
-// by adding paddings accordingly to system aligments
+// that explicitly aligns each structure field
+// to system or type alignment padding
+// by adding missing paddings for each field
 type pad struct {
 	curator gopium.Curator
 	sys     bool
@@ -44,15 +43,10 @@ func (stg pad) Apply(ctx context.Context, o gopium.Struct) (r gopium.Struct, err
 		}
 		// calculate align with padding
 		alpad := gopium.Align(offset, alignment)
-		// if padding greater that zero
-		// append [pad]byte padding
-		if pad := alpad - offset; pad > 0 {
-			fields = append(fields, gopium.Field{
-				Name:  "_",
-				Type:  fmt.Sprintf("[%d]byte", pad),
-				Size:  pad,
-				Align: 1, // fixed number for byte
-			})
+		// if padding not equals zero
+		// append padding
+		if pad := alpad - offset; pad != 0 {
+			fields = append(fields, gopium.PadField(pad))
 		}
 		// increment structure offset
 		offset = alpad + f.Size

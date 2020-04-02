@@ -1,4 +1,4 @@
-package walker
+package walkers
 
 import (
 	"fmt"
@@ -7,7 +7,7 @@ import (
 )
 
 // list of registered types walkers
-var (
+const (
 	JsonStd   gopium.WalkerName = "json_std"
 	XmlStd    gopium.WalkerName = "xml_std"
 	CsvStd    gopium.WalkerName = "csv_std"

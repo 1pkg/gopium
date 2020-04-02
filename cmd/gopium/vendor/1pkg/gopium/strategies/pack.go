@@ -1,4 +1,4 @@
-package strategy
+package strategies
 
 import (
 	"context"
@@ -13,8 +13,8 @@ var (
 )
 
 // pack defines strategy implementation
-// that rearranges structure field list
-// for optimal memory utilization
+// that rearranges structure fields
+// to obtain optimal memory utilization
 // by sorting fields accordingly
 // to their aligns and sizes in some order
 type pack struct{}
