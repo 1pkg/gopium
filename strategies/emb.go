@@ -14,8 +14,8 @@ var (
 )
 
 // emb defines strategy implementation
-// that sorts fields accordingly to their embeded flag
-// in ascending or descending order
+// that sorts fields accordingly to their
+// embeded flag in ascending or descending order
 type emb struct {
 	asc bool
 }

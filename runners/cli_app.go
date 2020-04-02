@@ -6,6 +6,7 @@ import (
 	"go/parser"
 	"path/filepath"
 	"regexp"
+	"time"
 
 	"1pkg/gopium"
 	"1pkg/gopium/pkgs_types"
@@ -27,6 +28,7 @@ type CliApp struct {
 	deep, backref  bool
 	strategies     []gopium.StrategyName
 	tagtype        TagType
+	timeout        time.Duration
 }
 
 // NewCliApp helps to spawn new cli application runner
@@ -40,6 +42,7 @@ func NewCliApp(
 	deep, backref bool,
 	strategies []string,
 	tagtype string,
+	timeout int,
 ) CliApp {
 	// cast caches to int64
 	caches := make([]int64, 0, len(cpucaches))
@@ -57,6 +60,8 @@ func NewCliApp(
 	cregex := regexp.MustCompile(regex)
 	// cast tagtype string to tag type
 	tt := TagType(tagtype)
+	// cast timeout to second duration
+	tm := time.Duration(timeout) * time.Second
 	// combine cli runner
 	return CliApp{
 		compiler:   compiler,
@@ -72,11 +77,18 @@ func NewCliApp(
 		backref:    backref,
 		strategies: stgs,
 		tagtype:    tt,
+		timeout:    tm,
 	}
 }
 
 // Run CliApp implementation
 func (cli CliApp) Run(ctx context.Context) error {
+	// set up timeout context
+	if cli.timeout > 0 {
+		nctx, cancel := context.WithTimeout(ctx, cli.timeout)
+		defer cancel()
+		ctx = nctx
+	}
 	// set up maven
 	m := pkgs_types.NewMavenGoTypes(cli.compiler, cli.arch, cli.cpucaches...)
 	// set up parser

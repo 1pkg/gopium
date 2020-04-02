@@ -13,9 +13,9 @@ var (
 )
 
 // pad defines strategy implementation
-// that align all structure field
-// to sys or max sys padding
-// by adding paddings accordingly to system aligments
+// that explicitly aligns each structure field
+// to system or type alignment padding
+// by adding missing paddings for each field
 type pad struct {
 	curator gopium.Curator
 	sys     bool

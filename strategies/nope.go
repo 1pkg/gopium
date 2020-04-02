@@ -12,7 +12,7 @@ var (
 )
 
 // nope defines nil strategy implementation
-// that only does nothing and just returns original
+// that does nothing by returning original structure
 type nope struct{}
 
 // Apply nope implementation

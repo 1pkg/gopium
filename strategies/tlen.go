@@ -14,8 +14,8 @@ var (
 )
 
 // nlen defines strategy implementation
-// that sorts fields accordingly to their types length
-// in ascending or descending order
+// that sorts fields accordingly to their types
+// length in ascending or descending order
 type tlen struct {
 	asc bool
 }

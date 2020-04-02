@@ -14,7 +14,7 @@ var (
 )
 
 // stamp defines strategy implementation
-// that adds doc `auto curated` stamp to structure doc
+// that adds doc or comment gopium stamp to structure
 type stamp struct {
 	doc bool
 }
