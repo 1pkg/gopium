@@ -13,12 +13,12 @@ const tagn = "gopium"
 
 // list of tag presets
 var (
-	tagclean = tag{force: true}
+	tagrm = tag{force: true}
 )
 
 // tag defines strategy implementation
-// that adds or updates tag annotation
-// that could be parsed by group strategy
+// that adds or updates fields tags annotation
+// that could be processed by group strategy
 type tag struct {
 	tag   string
 	force bool

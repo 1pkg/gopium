@@ -14,8 +14,8 @@ var (
 )
 
 // note defines strategy implementation
-// that adds size comment annotation
-// for all structure fields
+// that adds size doc or comment annotation
+// for each structure field
 // and aggregated size annotation
 // for whole structure
 type note struct {

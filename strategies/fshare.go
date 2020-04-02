@@ -14,8 +14,8 @@ var (
 )
 
 // fshare defines strategy implementation
-// that guards structure from false sharing issue
-// by adding cpu cache paddings
+// that guards structure from false sharing
+// by adding extra cpu cache line paddings
 // for each structure field
 type fshare struct {
 	curator gopium.Curator

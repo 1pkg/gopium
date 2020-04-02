@@ -14,8 +14,8 @@ var (
 )
 
 // cache defines strategy implementation
-// that fits structure into l cpu cache line
-// by adding end resulting cpu cache padding
+// that fits structure into cpu cache line
+// by adding bottom rounding cpu cache padding
 type cache struct {
 	curator gopium.Curator
 	line    uint

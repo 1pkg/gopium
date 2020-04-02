@@ -10,8 +10,8 @@ import (
 // list of registered types strategies
 const (
 	// tag processors and modifiers
-	Group    gopium.StrategyName = "group_process_tag"
-	TagClean gopium.StrategyName = "clean_tag"
+	TagGroup gopium.StrategyName = "process_tag_group"
+	TagRm    gopium.StrategyName = "remove_tag_group"
 	// filters and others
 	FPad    gopium.StrategyName = "filter_pads"
 	FEmb    gopium.StrategyName = "filter_embedded"
@@ -80,10 +80,10 @@ func (b Builder) Build(name gopium.StrategyName) (gopium.Strategy, error) {
 	// build strategy by name
 	switch name {
 	// tag processors and modifiers
-	case Group:
+	case TagGroup:
 		return grp.Builder(b), nil
-	case TagClean:
-		return tagclean, nil
+	case TagRm:
+		return tagrm, nil
 	// filters and others
 	case FPad:
 		return fpad, nil

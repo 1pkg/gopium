@@ -31,8 +31,8 @@ var (
 )
 
 // filter defines strategy implementation
-// that filters all fields
-// that match provided regex
+// that filters out all structure fields
+// that matches provided criterias
 type filter struct {
 	nregex, tregex *regexp.Regexp
 	emb, exp       *bool

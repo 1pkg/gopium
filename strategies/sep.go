@@ -20,9 +20,9 @@ var (
 
 // sep defines strategy implementation
 // that separates structure with
-// additional sys/cpu cache padding
-// by adding one padding before and one padding after
-// structure fields list
+// extra system or cpu cache alignment padding
+// by adding the padding at the top
+// or the padding at the bottom
 type sep struct {
 	curator gopium.Curator
 	line    uint

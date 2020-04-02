@@ -12,7 +12,7 @@ var (
 )
 
 // nope defines void strategy implementation
-// that only does nothing and just returns void struct
+// that does nothing by returning void struct
 type void struct{}
 
 // Apply void implementation
