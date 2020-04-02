@@ -2,6 +2,7 @@ package strategies
 
 import (
 	"context"
+	"fmt"
 	"reflect"
 	"strings"
 
@@ -38,12 +39,13 @@ func (stg tag) Apply(ctx context.Context, o gopium.Struct) (r gopium.Struct, err
 		// in case tag is not empty and
 		// gopium tag doesn't exist - append tag
 		// in case tag is empty - set tag
+		ntag := fmt.Sprintf(`%s:"%s"`, tagn, stg.tag)
 		if ok && stg.force {
 			f.Tag = strings.Replace(f.Tag, tag, stg.tag, 1)
 		} else if len(f.Tag) != 0 {
-			f.Tag += " " + stg.tag
+			f.Tag += " " + ntag
 		} else {
-			f.Tag = stg.tag
+			f.Tag = ntag
 		}
 	}
 	return
