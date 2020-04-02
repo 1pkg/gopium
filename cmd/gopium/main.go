@@ -20,12 +20,12 @@ var (
 	tcompiler, tarch string
 	tcpulines        []int
 	// package parser vars
-	pname, ppath    string
+	ppath           string
 	pbenvs, pbflags []string
 	// walker strategies vars
-	wname, wregex   string
+	wregex          string
 	wdeep, wbackref bool
-	tagtype         string
+	stagtype        string
 	// global vars
 	timeout int
 	// global running context
@@ -38,10 +38,10 @@ var (
 func init() {
 	// set root cli command app
 	cli = &cobra.Command{
-		Use:     "gopium -w walker_name -n package_name strategy_name#1 strategy_name#2 strategy_name#3 ...",
+		Use:     "gopium walker_name package_name strategy_name#1 strategy_name#2 strategy_name#3 ...",
 		Short:   gopium.STAMP,
 		Version: gopium.VERSION,
-		Example: "gopium -w json_std -n 1pkg/gopium -g soft filter_pads memory_pack separate_padding_cpu_l1_top separate_padding_cpu_l1_bottom",
+		Example: "gopium -r ^A -s soft json_std 1pkg/gopium filter_pads memory_pack separate_padding_cpu_l1_top separate_padding_cpu_l1_bottom",
 		Long: `
 Gopium is the tool which was designed to automate and simplify non trivial actions on structs, like:
  - cpu cache alignment
@@ -51,12 +51,24 @@ Gopium is the tool which was designed to automate and simplify non trivial actio
  - generic fields management
  - other relevant activities
 
-In order to use gopium cli you need to provide at least victim package_name list of strategies which will be applied one by one and walker_name.
-Outcome of execution is fully defined by list of strategies and walker_name combination. List of strategies modifies victim structs in package.
-Walker facilitates and insures that outcome is written to one of supported destination (check walker_name flag).
+In order to use gopium cli you need to provide at least package_name (full package name is expected),
+list of strategy_name which will be applied one by one and walker_name.
+Outcome of execution is fully defined by list of strategy_name and walker_name combination.
+List of strategy_name modifies structs inside the package and walker facilitates and insures,
+that outcome is written to one of supported destination.
+
+Gopium supports next walkers list: 
+ - json_std (prints json encoded result to stdout)
+ - xml_std (prints xml encoded result to stdout)
+ - csv_std (prints csv encoded result to stdout)
+ - json_files (prints json encoded result to files inside package directory)
+ - xml_files (prints xml encoded result to files inside package directory)
+ - csv_files (prints csv encoded result to files inside package directory)
+ - sync_ast (directly syncs result as go code in orinal package)
 
 Gopium supports next strategies list: 
- - process_tag_group (uses gopium fields tags annotation in order to process different set of strategies on different groups and then combine results in single struct result)
+ - process_tag_group (uses gopium fields tags annotation in order to process different set of strategies
+	on different groups and then combine results in single struct result)
 
  - memory_pack (rearranges structure fields to obtain optimal memory utilization)
  - memory_unpack (rearranges structure field list to obtain inflated memory utilization)
@@ -65,24 +77,39 @@ Gopium supports next strategies list:
  - cache_rounding_cpu_l2 (fits structure into cpu cache line #2 by adding bottom rounding cpu cache padding)
  - cache_rounding_cpu_l3 (fits structure into cpu cache line #3 by adding bottom rounding cpu cache padding)
 
- - false_sharing_cpu_l1 (guards structure from false sharing by adding extra cpu cache line #1 paddings for each structure field)
- - false_sharing_cpu_l2 (guards structure from false sharing by adding extra cpu cache line #1 paddings for each structure field)
- - false_sharing_cpu_l3 (guards structure from false sharing by adding extra cpu cache line #1 paddings for each structure field)
+ - false_sharing_cpu_l1 (guards structure from false sharing by adding extra cpu cache line #1 paddings
+	for each structure field)
+ - false_sharing_cpu_l2 (guards structure from false sharing by adding extra cpu cache line #1 paddings
+	for each structure field)
+ - false_sharing_cpu_l3 (guards structure from false sharing by adding extra cpu cache line #1 paddings
+	for each structure field)
 
- - separate_padding_system_alignment_top (separates structure with extra system alignment padding by adding the padding at the top)
- - separate_padding_cpu_l1_top (separates structure with extra cpu cache line #1 padding by adding the padding at the top)
- - separate_padding_cpu_l2_top (separates structure with extra cpu cache line #2 padding by adding the padding at the top)
- - separate_padding_cpu_l3_top (separates structure with extra cpu cache line #3 padding by adding the padding at the top)
- - separate_padding_system_alignment_bottom (separates structure with extra system alignment padding by adding the padding at the bottom)
- - separate_padding_cpu_l1_bottom (separates structure with extra cpu cache line #1 padding by adding the padding at the bottom)
- - separate_padding_cpu_l2_bottom (separates structure with extra cpu cache line #2 padding by adding the padding at the bottom)
- - separate_padding_cpu_l3_bottom (separates structure with extra cpu cache line #3 padding by adding the padding at the bottom)
+ - separate_padding_system_alignment_top (separates structure with extra system alignment padding by adding
+	the padding at the top)
+ - separate_padding_cpu_l1_top (separates structure with extra cpu cache line #1 padding by adding
+	the padding at the top)
+ - separate_padding_cpu_l2_top (separates structure with extra cpu cache line #2 padding by adding
+	the padding at the top)
+ - separate_padding_cpu_l3_top (separates structure with extra cpu cache line #3 padding by adding
+	the padding at the top)
+ - separate_padding_system_alignment_bottom (separates structure with extra system alignment padding by adding
+	the padding at the bottom)
+ - separate_padding_cpu_l1_bottom (separates structure with extra cpu cache line #1 padding by adding
+	the padding at the bottom)
+ - separate_padding_cpu_l2_bottom (separates structure with extra cpu cache line #2 padding by adding
+	the padding at the bottom)
+ - separate_padding_cpu_l3_bottom (separates structure with extra cpu cache line #3 padding by adding
+	the padding at the bottom)
 
- - explicit_padings_system_alignment (explicitly aligns each structure field to system alignment padding by adding missing paddings for each field)
- - explicit_padings_type_natural (explicitly aligns each structure field to max type alignment padding by adding missing paddings for each field)
+ - explicit_padings_system_alignment (explicitly aligns each structure field to system alignment padding by adding
+	missing paddings for each field)
+ - explicit_padings_type_natural (explicitly aligns each structure field to max type alignment padding by adding
+	missing paddings for each field)
 
- - doc_fields_annotate (adds size doc annotation for each structure field and aggregated size annotation for whole structure)
- - comment_fields_annotate (adds size comment annotation for each structure field and aggregated size annotation for whole structure)
+ - doc_fields_annotate (adds size doc annotation for each structure field and aggregated size annotation
+	for whole structure)
+ - comment_fields_annotate (adds size comment annotation for each structure field and aggregated size annotation
+	for whole structure)
  - doc_struct_stamp (adds doc gopium stamp to structure)
  - comment_struct_stamp (adds comment gopium stamp to structure)
 
@@ -117,22 +144,22 @@ Notes:
   - gopium:"group:def;stg,stg,stg" processed as named group
 - by specifying tag_type you can automatically generate fields tags annotation suitable for process_tag_group
 		`,
-		Args: cobra.MinimumNArgs(1),
-		RunE: func(cmd *cobra.Command, stgs []string) error {
+		Args: cobra.MinimumNArgs(3),
+		RunE: func(cmd *cobra.Command, args []string) error {
 			return runners.NewCliApp(
 				tcompiler,
 				tarch,
 				tcpulines,
-				pname,
+				args[1], // package_name
 				ppath,
 				pbenvs,
 				pbflags,
-				wname,
+				args[0], // walker_name
 				wregex,
 				wdeep,
 				wbackref,
-				stgs,
-				tagtype,
+				args[2:], // strategy_name list
+				stagtype,
 				timeout,
 			).Run(cmd.Context())
 		},
@@ -176,15 +203,6 @@ Target platform CPU cache line sizes in bytes, cache line size is set one by one
 For now only 3 lines of cache are supported by strategies.
 		`,
 	)
-	// set required package_name flag
-	cli.Flags().StringVarP(
-		&pname,
-		"package_name",
-		"n",
-		"",
-		"Go package name, full package name is expected.",
-	)
-	cli.MarkFlagRequired("package_name")
 	// set package_path flag
 	cli.Flags().StringVarP(
 		&ppath,
@@ -197,7 +215,7 @@ For now only 3 lines of cache are supported by strategies.
 	cli.Flags().StringSliceVarP(
 		&pbenvs,
 		"package_build_envs",
-		"",
+		"e",
 		[]string{},
 		"Go package build envs, additional list of building envs is expected.",
 	)
@@ -205,28 +223,10 @@ For now only 3 lines of cache are supported by strategies.
 	cli.Flags().StringSliceVarP(
 		&pbflags,
 		"package_build_flags",
-		"",
+		"f",
 		[]string{},
 		"Go package build flags, additional list of building flags is expected.",
 	)
-	// set required walker_name flag
-	cli.Flags().StringVarP(
-		&wname,
-		"walker_name",
-		"w",
-		"",
-		`
-Gopium walker name, possible values are: 
- - json_std (prints json encoded result to stdout)
- - xml_std (prints xml encoded result to stdout)
- - csv_std (prints csv encoded result to stdout)
- - json_files (prints json encoded result to files inside package directory)
- - xml_files (prints xml encoded result to files inside package directory)
- - csv_files (prints csv encoded result to files inside package directory)
- - sync_ast (directly syncs result as go code in orinal package)
-		`,
-	)
-	cli.MarkFlagRequired("walker_name")
 	// set walker_regexp flag
 	cli.Flags().StringVarP(
 		&wregex,
@@ -262,9 +262,9 @@ By default any previous visited types have affect on future relevant visits.
 	)
 	// set tag_type flag
 	cli.Flags().StringVarP(
-		&tagtype,
-		"tag_type",
-		"g",
+		&stagtype,
+		"strategy_tag_type",
+		"s",
 		"none",
 		`
 Gopium strategy tag type write policy, possible values are: 
