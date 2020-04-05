@@ -55,7 +55,7 @@ func (m MavenGoTypes) Size(t types.Type) int64 {
 	return m.sizes.Sizeof(t)
 }
 
-// Size MavenGoTypes implementation
+// Align MavenGoTypes implementation
 func (m MavenGoTypes) Align(t types.Type) int64 {
 	return m.sizes.Alignof(t)
 }
