@@ -9,7 +9,7 @@ import (
 	"regexp"
 
 	"1pkg/gopium"
-	"1pkg/gopium/io_fmts"
+	"1pkg/gopium/fmtio"
 
 	"golang.org/x/sync/errgroup"
 	"golang.org/x/tools/go/ast/astutil"
@@ -18,7 +18,7 @@ import (
 // list of wast presets
 var (
 	fsptn = wast{
-		fmt: io_fmts.FSPTN,
+		fmt: fmtio.FSPTN,
 	}
 )
 
@@ -28,18 +28,8 @@ var (
 type wast struct {
 	parser  gopium.Parser
 	exposer gopium.Exposer
-	fmt     io_fmts.StructToAst
+	fmt     fmtio.StructToAst
 	backref bool
-}
-
-// VisitTop wast implementation
-func (w wast) VisitTop(ctx context.Context, regex *regexp.Regexp, stg gopium.Strategy) error {
-	return w.visit(ctx, regex, stg, false)
-}
-
-// VisitDeep wast implementation
-func (w wast) VisitDeep(ctx context.Context, regex *regexp.Regexp, stg gopium.Strategy) error {
-	return w.visit(ctx, regex, stg, true)
 }
 
 // With erich wast walker with parser, exposer, and ref instance
@@ -50,13 +40,14 @@ func (w wast) With(parser gopium.Parser, exposer gopium.Exposer, backref bool) w
 	return w
 }
 
-// visit wast helps with visiting and uses
-// gopium.Visit and gopium.VisitFunc helpers
-// to go through all structs decls inside the package
-// and apply strategy to them to get results
-// then overrides os.File list with updated ast
-// builded from strategy results
-func (w wast) visit(ctx context.Context, regex *regexp.Regexp, stg gopium.Strategy, deep bool) error {
+// Visit wast implementation
+func (w wast) Visit(ctx context.Context, regex *regexp.Regexp, stg gopium.Strategy, deep bool) error {
+	// uses gopium.Visit and gopium.VisitFunc helpers
+	// to go through all structs decls inside the package
+	// and apply strategy to them to get results
+	// then overrides os.File list with updated ast
+	// builded from strategy results
+
 	// use parser to parse types pkg data
 	// we don't care about fset
 	pkg, loc, err := w.parser.ParseTypes(ctx)

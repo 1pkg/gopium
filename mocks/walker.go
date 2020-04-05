@@ -16,38 +16,30 @@ type StructMock struct {
 
 // WalkerMock defines mock walker implementation
 type WalkerMock struct {
-	List []StructMock
-	Err  error
+	Structs []StructMock
+	Err     error
 }
 
 // VisitTop mock implementation
-func (w WalkerMock) VisitTop(ctx context.Context, regex *regexp.Regexp, stg gopium.Strategy) error {
+func (w WalkerMock) Visit(ctx context.Context, regex *regexp.Regexp, stg gopium.Strategy, deep bool) error {
+	// check error at start
 	if w.Err != nil {
 		return w.Err
 	}
-	for i := range w.List {
-		item := &w.List[i]
-		if item.Deep {
+	// go through structs list
+	for i := range w.Structs {
+		st := &w.Structs[i]
+		// in case type of visiting
+		// doesn't match skip it
+		if st.Deep != deep {
 			continue
 		}
-		if r, err := stg.Apply(ctx, item.Struct); err == nil {
-			item.Struct = r
-		} else {
-			return err
-		}
-	}
-	return nil
-}
-
-// VisitDeep mock implementation
-func (w WalkerMock) VisitDeep(ctx context.Context, regex *regexp.Regexp, stg gopium.Strategy) error {
-	if w.Err != nil {
-		return w.Err
-	}
-	for i := range w.List {
-		item := &w.List[i]
-		if r, err := stg.Apply(ctx, item.Struct); err == nil {
-			item.Struct = r
+		// otherwise apply visiting
+		// in case of any error
+		// return it back
+		// otherwise update struct in the slice
+		if r, err := stg.Apply(ctx, st.Struct); err == nil {
+			st.Struct = r
 		} else {
 			return err
 		}

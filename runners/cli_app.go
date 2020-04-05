@@ -9,8 +9,8 @@ import (
 	"time"
 
 	"1pkg/gopium"
-	"1pkg/gopium/pkgs_types"
 	"1pkg/gopium/strategies"
+	"1pkg/gopium/typepkg"
 	"1pkg/gopium/walkers"
 
 	"golang.org/x/tools/go/packages"
@@ -90,13 +90,13 @@ func (cli CliApp) Run(ctx context.Context) error {
 		ctx = nctx
 	}
 	// set up maven
-	m := pkgs_types.NewMavenGoTypes(cli.compiler, cli.arch, cli.cpucaches...)
+	m := typepkg.NewMavenGoTypes(cli.compiler, cli.arch, cli.cpucaches...)
 	// set up parser
 	absp, err := filepath.Abs(cli.path)
 	if err != nil {
 		return fmt.Errorf("can't find such path %q %v", cli.path, err)
 	}
-	p := pkgs_types.ParserXToolPackagesAst{
+	p := typepkg.ParserXToolPackagesAst{
 		Pattern: cli.pkg,
 		AbsDir:  absp,
 		//nolint
@@ -130,14 +130,8 @@ func (cli CliApp) Run(ctx context.Context) error {
 		return fmt.Errorf("can't build such walker %q %v", cli.walker, err)
 	}
 	// run visit function for strategy with regex
-	if cli.deep {
-		if err = w.VisitDeep(ctx, cli.regex, stg); err != nil {
-			return fmt.Errorf("strategy error happened %v", err)
-		}
-	} else {
-		if err = w.VisitTop(ctx, cli.regex, stg); err != nil {
-			return fmt.Errorf("strategy error happened %v", err)
-		}
+	if err = w.Visit(ctx, cli.regex, stg, cli.deep); err != nil {
+		return fmt.Errorf("strategy error happened %v", err)
 	}
 	return nil
 }

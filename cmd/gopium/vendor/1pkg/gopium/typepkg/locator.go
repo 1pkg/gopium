@@ -1,4 +1,4 @@
-package pkgs_types
+package typepkg
 
 import (
 	"crypto/sha256"

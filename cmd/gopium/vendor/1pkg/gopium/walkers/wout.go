@@ -6,7 +6,7 @@ import (
 	"regexp"
 
 	"1pkg/gopium"
-	"1pkg/gopium/io_fmts"
+	"1pkg/gopium/fmtio"
 
 	"golang.org/x/sync/errgroup"
 )
@@ -14,34 +14,34 @@ import (
 // list of wout presets
 var (
 	jsonstd = wout{
-		fmt:  io_fmts.PrettyJson,
-		wgen: io_fmts.Stdout,
-		tp:   io_fmts.Json,
+		fmt:  fmtio.PrettyJson,
+		wgen: fmtio.Stdout,
+		tp:   fmtio.Json,
 	}
 	xmlstd = wout{
-		fmt:  io_fmts.PrettyXml,
-		wgen: io_fmts.Stdout,
-		tp:   io_fmts.Xml,
+		fmt:  fmtio.PrettyXml,
+		wgen: fmtio.Stdout,
+		tp:   fmtio.Xml,
 	}
 	csvstd = wout{
-		fmt:  io_fmts.PrettyCsv,
-		wgen: io_fmts.Stdout,
-		tp:   io_fmts.Csv,
+		fmt:  fmtio.PrettyCsv,
+		wgen: fmtio.Stdout,
+		tp:   fmtio.Csv,
 	}
 	jsontf = wout{
-		fmt:  io_fmts.PrettyJson,
-		wgen: io_fmts.TempFile,
-		tp:   io_fmts.Json,
+		fmt:  fmtio.PrettyJson,
+		wgen: fmtio.TempFile,
+		tp:   fmtio.Json,
 	}
 	xmltf = wout{
-		fmt:  io_fmts.PrettyXml,
-		wgen: io_fmts.TempFile,
-		tp:   io_fmts.Xml,
+		fmt:  fmtio.PrettyXml,
+		wgen: fmtio.TempFile,
+		tp:   fmtio.Xml,
 	}
 	csvtf = wout{
-		fmt:  io_fmts.PrettyCsv,
-		wgen: io_fmts.TempFile,
-		tp:   io_fmts.Csv,
+		fmt:  fmtio.PrettyCsv,
+		wgen: fmtio.TempFile,
+		tp:   fmtio.Csv,
 	}
 )
 
@@ -52,20 +52,10 @@ var (
 type wout struct {
 	parser  gopium.TypeParser
 	exposer gopium.Exposer
-	fmt     io_fmts.StructToBytes
-	wgen    io_fmts.WriterGen
+	fmt     fmtio.StructToBytes
+	wgen    fmtio.WriterGen
 	tp      string
 	backref bool
-}
-
-// VisitTop wout implementation
-func (w wout) VisitTop(ctx context.Context, regex *regexp.Regexp, stg gopium.Strategy) error {
-	return w.visit(ctx, regex, stg, false)
-}
-
-// VisitDeep wout implementation
-func (w wout) VisitDeep(ctx context.Context, regex *regexp.Regexp, stg gopium.Strategy) error {
-	return w.visit(ctx, regex, stg, true)
 }
 
 // With erich wout walker with parser, exposer, and ref instance
@@ -76,13 +66,13 @@ func (w wout) With(parser gopium.Parser, exposer gopium.Exposer, backref bool) w
 	return w
 }
 
-// visit wout helps with visiting and uses
-// gopium.Visit and gopium.VisitFunc helpers
-// to go through all structs decls inside the package
-// and apply strategy to them to get results
-// then use fmts.TypeFormat to format strategy results
-// and use io.Writer to write results to output
-func (w wout) visit(ctx context.Context, regex *regexp.Regexp, stg gopium.Strategy, deep bool) error {
+// Visit wout implementation
+func (w wout) Visit(ctx context.Context, regex *regexp.Regexp, stg gopium.Strategy, deep bool) error {
+	// uses gopium.Visit and gopium.VisitFunc helpers
+	// to go through all structs decls inside the package
+	// and apply strategy to them to get results
+	// then use fmts.TypeFormat to format strategy results
+	// and use io.Writer to write results to output
 	// check that formatter wasn't set correctly
 	if w.fmt == nil {
 		return errors.New("formatter wasn't set")
