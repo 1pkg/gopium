@@ -45,7 +45,7 @@ func (stg tag) Apply(ctx context.Context, o gopium.Struct) (r gopium.Struct, err
 		} else if len(f.Tag) != 0 {
 			f.Tag += " " + ntag
 		} else {
-			f.Tag = ntag
+			f.Tag = fmt.Sprintf("`%s`", ntag)
 		}
 	}
 	return
