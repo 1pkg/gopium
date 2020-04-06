@@ -31,13 +31,13 @@ func (stg note) Apply(ctx context.Context, o gopium.Struct) (r gopium.Struct, er
 	for i := range r.Fields {
 		f := &r.Fields[i]
 		note := fmt.Sprintf(
-			"// field size: %d align: %d in bytes - %s",
+			"// field size: %d bytes field align: %d bytes - %s",
 			f.Size,
 			f.Align,
 			gopium.STAMP,
 		)
 		if stg.doc {
-			f.Comment = append(f.Doc, note)
+			f.Doc = append(f.Doc, note)
 		} else {
 			f.Comment = append(f.Comment, note)
 		}
@@ -48,7 +48,7 @@ func (stg note) Apply(ctx context.Context, o gopium.Struct) (r gopium.Struct, er
 	}
 	// note whole structure with size comment
 	note := fmt.Sprintf(
-		"// struct size: %d align: %d in bytes - %s",
+		"// struct size: %d bytes struct align: %d bytes - %s",
 		size,
 		align,
 		gopium.STAMP,

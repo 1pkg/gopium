@@ -258,6 +258,7 @@ func tagsync(ts *ast.TypeSpec, st gopium.Struct) error {
 		// if we have tag in the map
 		// set it as field tag
 		if sttag, ok := sttags[fname]; ok {
+			sttag.ValuePos = field.Pos() + token.Pos(1)
 			field.Tag = sttag
 		}
 	}
@@ -288,7 +289,9 @@ func notesync(ts *ast.TypeSpec, st gopium.Struct) error {
 	}
 	// collect all docs from resulted structure
 	for _, d := range st.Doc {
-		sdoc := ast.Comment{Text: d}
+		// doc position is position of name - name len - 1
+		slash := ts.Name.Pos() - token.Pos(len(ts.Name.Name)) - token.Pos(1)
+		sdoc := ast.Comment{Slash: slash, Text: d}
 		sdocs = append(sdocs, &sdoc)
 	}
 	// update docs list
@@ -309,7 +312,9 @@ func notesync(ts *ast.TypeSpec, st gopium.Struct) error {
 	}
 	// collect all comments from resulted structure
 	for _, c := range st.Comment {
-		scomment := ast.Comment{Text: c}
+		// comment position is end of type decl
+		slash := ts.Type.End()
+		scomment := ast.Comment{Slash: slash, Text: c}
 		scomments = append(scomments, &scomment)
 	}
 	// update comments list
@@ -370,11 +375,21 @@ func notesync(ts *ast.TypeSpec, st gopium.Struct) error {
 		// if we have docs in storage
 		// append them to collected list
 		if stdoc, ok := stdocs[fname]; ok {
+			// set original slash pos
+			for _, doc := range stdoc {
+				// doc position is position of name - 1
+				doc.Slash = field.Pos() - token.Pos(1)
+			}
 			fdocs = append(fdocs, stdoc...)
 		}
 		// if we have comments in storage
 		// append them to collected list
 		if stcomment, ok := stcomments[fname]; ok {
+			// set original slash pos
+			for _, com := range stcomment {
+				// comment position is end of field type
+				com.Slash = field.Type.End()
+			}
 			fcomments = append(fcomments, stcomment...)
 		}
 		// update docs and comments list

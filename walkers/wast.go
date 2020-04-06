@@ -2,7 +2,6 @@ package walkers
 
 import (
 	"context"
-	"fmt"
 	"go/ast"
 	"go/printer"
 	"regexp"
@@ -11,7 +10,6 @@ import (
 	"1pkg/gopium/fmtio"
 
 	"golang.org/x/sync/errgroup"
-	"golang.org/x/tools/go/ast/astutil"
 )
 
 // list of wast presets
@@ -124,55 +122,13 @@ func (w wast) write(ctx context.Context, structs map[string]gopium.Struct) error
 		// run sync with strategy result to update ast.Package
 		// on the parsed ast.Package
 		// in case any error happened just return error
-		pkg, err = w.sync(pkg, loc, id, st)
+		pkg, err = fmtio.SyncAst(pkg, loc, id, st, w.fmt)
 		if err != nil {
 			return err
 		}
 	}
 	// run async persist helper
 	return w.persist(ctx, pkg, loc)
-}
-
-// sync wast helps to update ast.Package
-// accordingly to Strategy gopium.Struct result
-// synchronously or return error otherwise
-func (w wast) sync(pkg *ast.Package, loc gopium.Locator, id string, st gopium.Struct) (*ast.Package, error) {
-	// tracks error inside astutil.Apply
-	var err error
-	// apply astutil.Apply to parsed ast.Package
-	// and update structure in ast
-	snode := astutil.Apply(pkg, func(c *astutil.Cursor) bool {
-		if gendecl, ok := c.Node().(*ast.GenDecl); ok {
-			for _, spec := range gendecl.Specs {
-				if ts, ok := spec.(*ast.TypeSpec); ok {
-					if _, ok := ts.Type.(*ast.StructType); ok {
-						// calculate sum for structure
-						// and skip all irrelevant structs
-						sum := loc.ID(ts.Pos())
-						if id == sum {
-							// apply format to ast
-							err = w.fmt(ts, st)
-							// in case we have error
-							// break iteration
-							return err != nil
-						}
-					}
-				}
-			}
-		}
-		return true
-	}, nil)
-	// in case we had error in astutil.Apply
-	// just return it back
-	if err != nil {
-		return nil, err
-	}
-	// check that updated type is correct
-	if spkg, ok := snode.(*ast.Package); ok {
-		return spkg, nil
-	}
-	// in case updated type isn't expected
-	return nil, fmt.Errorf("can't update ast for structure %q", st.Name)
 }
 
 // persist wast helps to update os.File list
