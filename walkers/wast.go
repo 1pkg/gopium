@@ -127,6 +127,14 @@ func (w wast) write(ctx context.Context, structs map[string]gopium.Struct) error
 			return err
 		}
 	}
+	// go through all files and press
+	// docs and comments directly to them
+	for _, file := range pkg.Files {
+		if _, err := fmtio.DocComPressAst(file); err != nil {
+			// in case any error happened just return error
+			return err
+		}
+	}
 	// run async persist helper
 	return w.persist(ctx, pkg, loc)
 }
