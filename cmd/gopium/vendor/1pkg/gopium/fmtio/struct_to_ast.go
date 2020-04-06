@@ -141,11 +141,13 @@ func shuffle(ts *ast.TypeSpec, st gopium.Struct) error {
 		// we can safely pick only first name
 		// as structure is flat
 		// get ast's i-th structure field
-		ni := tts.Fields.List[i].Names[0].Name
+		fni := tts.Fields.List[i].Names[0]
+		ni := fni.Name
 		// we can safely pick only first name
 		// as structure is flat
 		// get ast's j-th structure field
-		nj := tts.Fields.List[j].Names[0].Name
+		fnj := tts.Fields.List[j].Names[0]
+		nj := fnj.Name
 		// prepare comparison indexes
 		// and search for them in resulted structure
 		fi, fj := 0, 0
@@ -163,6 +165,13 @@ func shuffle(ts *ast.TypeSpec, st gopium.Struct) error {
 			case "_": // skip paddings
 				index--
 			}
+		}
+		// swap position if
+		// i-th index less than j-th index
+		if fi < fj {
+			p := fni.NamePos
+			fni.NamePos = fnj.NamePos
+			fnj.NamePos = p
 		}
 		// compare comparison indexes
 		return fi < fj
@@ -182,7 +191,7 @@ func padsync(ts *ast.TypeSpec, st gopium.Struct) error {
 	// prepare pad type expression regex
 	regex := regexp.MustCompile(`\[.*\]byte`)
 	// prepare resulted fields list
-	fields := make([]*ast.Field, 0, len(tts.Fields.List)+len(st.Fields))
+	fields := make([]*ast.Field, len(tts.Fields.List), len(tts.Fields.List)+len(st.Fields))
 	copy(fields, tts.Fields.List)
 	for index, f := range st.Fields {
 		// skip non pad fields
@@ -258,6 +267,7 @@ func tagsync(ts *ast.TypeSpec, st gopium.Struct) error {
 		// if we have tag in the map
 		// set it as field tag
 		if sttag, ok := sttags[fname]; ok {
+			sttag.ValuePos = field.Pos() + token.Pos(1)
 			field.Tag = sttag
 		}
 	}
@@ -288,7 +298,9 @@ func notesync(ts *ast.TypeSpec, st gopium.Struct) error {
 	}
 	// collect all docs from resulted structure
 	for _, d := range st.Doc {
-		sdoc := ast.Comment{Text: d}
+		// doc position is position of name - name len - 1
+		slash := ts.Name.Pos() - token.Pos(len(ts.Name.Name)) - token.Pos(1)
+		sdoc := ast.Comment{Slash: slash, Text: d}
 		sdocs = append(sdocs, &sdoc)
 	}
 	// update docs list
@@ -309,7 +321,9 @@ func notesync(ts *ast.TypeSpec, st gopium.Struct) error {
 	}
 	// collect all comments from resulted structure
 	for _, c := range st.Comment {
-		scomment := ast.Comment{Text: c}
+		// comment position is end of type decl
+		slash := ts.Type.End()
+		scomment := ast.Comment{Slash: slash, Text: c}
 		scomments = append(scomments, &scomment)
 	}
 	// update comments list
@@ -370,11 +384,21 @@ func notesync(ts *ast.TypeSpec, st gopium.Struct) error {
 		// if we have docs in storage
 		// append them to collected list
 		if stdoc, ok := stdocs[fname]; ok {
+			// set original slash pos
+			for _, doc := range stdoc {
+				// doc position is position of name - 1
+				doc.Slash = field.Pos() - token.Pos(1)
+			}
 			fdocs = append(fdocs, stdoc...)
 		}
 		// if we have comments in storage
 		// append them to collected list
 		if stcomment, ok := stcomments[fname]; ok {
+			// set original slash pos
+			for _, com := range stcomment {
+				// comment position is end of field type
+				com.Slash = field.Type.End()
+			}
 			fcomments = append(fcomments, stcomment...)
 		}
 		// update docs and comments list

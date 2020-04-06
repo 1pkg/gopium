@@ -5,7 +5,7 @@ import (
 	"sync"
 
 	"1pkg/gopium"
-	"1pkg/gopium/walkers/ref"
+	"1pkg/gopium/ref"
 )
 
 // maven defines visiting helper

@@ -25,8 +25,7 @@ func (stg stamp) Apply(ctx context.Context, o gopium.Struct) (r gopium.Struct, e
 	r = o
 	// create stamp
 	stamp := fmt.Sprintf(
-		"// struct %q has been auto curated by gopium - %s",
-		r.Name,
+		"// struct has been auto curated by gopium - %s",
 		gopium.STAMP,
 	)
 	// add stamp to structure doc or comment
