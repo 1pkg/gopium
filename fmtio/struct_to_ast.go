@@ -182,7 +182,7 @@ func padsync(ts *ast.TypeSpec, st gopium.Struct) error {
 	// prepare pad type expression regex
 	regex := regexp.MustCompile(`\[.*\]byte`)
 	// prepare resulted fields list
-	fields := make([]*ast.Field, 0, len(tts.Fields.List)+len(st.Fields))
+	fields := make([]*ast.Field, len(tts.Fields.List), len(tts.Fields.List)+len(st.Fields))
 	copy(fields, tts.Fields.List)
 	for index, f := range st.Fields {
 		// skip non pad fields

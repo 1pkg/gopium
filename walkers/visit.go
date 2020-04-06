@@ -76,13 +76,9 @@ func vdeep(
 ) {
 	// wait group visits counter
 	var wg sync.WaitGroup
-	// after deep visiting is done
 	// wait until all visits finished
 	// and then close the channel
-	defer func() {
-		wg.Wait()
-		close(ch)
-	}()
+	defer close(ch)
 	// indeep defines recursive inner
 	// visitig helper that visits
 	// all scope one by one
@@ -127,16 +123,16 @@ func vdeep(
 		// wait until all visits finished
 		// and then cancel the context
 		nctx, cancel := context.WithCancel(ctx)
-		defer func() {
-			wg.Wait()
-			cancel()
-		}()
+		defer cancel()
 		// traverse through children scopes
 		for i := 0; i < scope.NumChildren(); i++ {
 			// visit children scopes iteratively
 			// using child context and scope
 			go indeep(nctx, scope.Child(i))
 		}
+		// sync all visiting to finish
+		// the same time
+		wg.Wait()
 	}
 	// start indeep chain
 	indeep(ctx, scope)
