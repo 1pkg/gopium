@@ -7,7 +7,7 @@ import (
 	"sync"
 
 	"1pkg/gopium"
-	"1pkg/gopium/walkers/ref"
+	"1pkg/gopium/ref"
 )
 
 // applied encapsulates visited by strategy
@@ -49,7 +49,7 @@ func visit(
 	return func(ctx context.Context, scope *types.Scope) {
 		// setup visiting maven and reference
 		m := &maven{exposer: exposer, locator: loc}
-		ref := ref.NewRef(backref)
+		ref := ref.NewRef(!backref)
 		defer ref.Prune()
 		// determinate which function
 		// should be applied for visiting
@@ -74,11 +74,11 @@ func vdeep(
 	ref *ref.Ref,
 	ch appliedCh,
 ) {
-	// wait group visits counter
-	var wg sync.WaitGroup
 	// wait until all visits finished
 	// and then close the channel
 	defer close(ch)
+	// wait group visits counter
+	var wg sync.WaitGroup
 	// indeep defines recursive inner
 	// visitig helper that visits
 	// all scope one by one
@@ -118,24 +118,18 @@ func vdeep(
 				ch <- applied
 			}
 		}()
-		// for child visiting
-		// create separate child context and
-		// wait until all visits finished
-		// and then cancel the context
-		nctx, cancel := context.WithCancel(ctx)
-		defer cancel()
 		// traverse through children scopes
 		for i := 0; i < scope.NumChildren(); i++ {
 			// visit children scopes iteratively
 			// using child context and scope
-			go indeep(nctx, scope.Child(i))
+			go indeep(ctx, scope.Child(i))
 		}
-		// sync all visiting to finish
-		// the same time
-		wg.Wait()
 	}
 	// start indeep chain
 	indeep(ctx, scope)
+	// sync all visiting to finish
+	// the same time
+	wg.Wait()
 }
 
 // vscope defines top visiting helper
@@ -150,15 +144,11 @@ func vscope(
 	ref *ref.Ref,
 	ch appliedCh,
 ) {
-	// wait group visits counter
-	var wg sync.WaitGroup
-	// after visiting is done
 	// wait until all visits finished
 	// and then close the channel
-	defer func() {
-		wg.Wait()
-		close(ch)
-	}()
+	defer close(ch)
+	// wait group visits counter
+	var wg sync.WaitGroup
 loop:
 	// go through all names inside the package scope
 	for _, name := range scope.Names() {
@@ -192,7 +182,7 @@ loop:
 				// increment wait group visits counter
 				wg.Add(1)
 				// prepare struct ref notifier
-				notif := ref.StRef(id)
+				notif := stRef(ref, id)
 				// concurently visit the structure
 				// and apply strategy to it
 				go func(id, loc, name string, st *types.Struct, notif func(gopium.Struct)) {
@@ -217,4 +207,6 @@ loop:
 			}
 		}
 	}
+	// wait until all visits finished
+	wg.Wait()
 }

@@ -1,9 +1,6 @@
 package ref
 
-import (
-	"1pkg/gopium"
-	"sync"
-)
+import "sync"
 
 // Ref defines backreference helper
 // that helps to set, and get wait for
@@ -16,18 +13,18 @@ type Ref struct {
 
 // NewRef creates ref instance
 // accordingly to passed nonnil flag
-func NewRef(nonnil bool) *Ref {
+func NewRef(null bool) *Ref {
 	// in case we wanna use
-	// real ref instance
-	if nonnil {
-		return &Ref{
-			vals:    make(map[string]int64),
-			signals: make(map[string]chan struct{}),
-			mutex:   sync.Mutex{},
-		}
+	// nil ref instance
+	if null {
+		return nil
 	}
-	// othewise return nil ref
-	return nil
+	// othewise return real ref instance
+	return &Ref{
+		vals:    make(map[string]int64),
+		signals: make(map[string]chan struct{}),
+		mutex:   sync.Mutex{},
+	}
 }
 
 // Get retrieves value for given key
@@ -92,6 +89,24 @@ func (r *Ref) Set(key string, val int64) {
 	}
 }
 
+// Alloc preallocates slot in the ref
+// for the given key
+func (r *Ref) Alloc(key string) {
+	// in case of nil ref
+	// just skip it
+	if r == nil {
+		return
+	}
+	// lock the ref
+	defer r.mutex.Unlock()
+	r.mutex.Lock()
+	// if signal hasn't been set yet
+	// then allocate a signal for the key
+	if _, ok := r.signals[key]; !ok {
+		r.signals[key] = make(chan struct{})
+	}
+}
+
 // Prune releases all value waiters
 // and clean all signal resources
 func (r *Ref) Prune() {
@@ -113,42 +128,5 @@ func (r *Ref) Prune() {
 		default:
 			close(ch)
 		}
-	}
-}
-
-// alloc preallocates slot in the ref
-// for the given key
-func (r *Ref) alloc(key string) {
-	// in case of nil ref
-	// just skip it
-	if r == nil {
-		return
-	}
-	// lock the ref
-	defer r.mutex.Unlock()
-	r.mutex.Lock()
-	// if signal hasn't been set yet
-	// then allocate a signal for the key
-	if _, ok := r.signals[key]; !ok {
-		r.signals[key] = make(chan struct{})
-	}
-}
-
-// StRef helps to create gopium.Struct
-// size refence for provided key
-// by preallocating the key and then
-// pushing total struct size to ref with closure
-func (r *Ref) StRef(name string) func(gopium.Struct) {
-	// preallocate the key
-	r.alloc(name)
-	// return the pushing closure
-	return func(st gopium.Struct) {
-		// calculate total struct size
-		var size int64
-		for _, f := range st.Fields {
-			size += f.Size
-		}
-		// set ref key size
-		r.Set(name, size)
 	}
 }

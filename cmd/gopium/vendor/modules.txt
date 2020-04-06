@@ -1,11 +1,11 @@
 # 1pkg/gopium v0.0.0-00010101000000-000000000000 => ./../../
 1pkg/gopium
 1pkg/gopium/fmtio
+1pkg/gopium/ref
 1pkg/gopium/runners
 1pkg/gopium/strategies
 1pkg/gopium/typepkg
 1pkg/gopium/walkers
-1pkg/gopium/walkers/ref
 # github.com/inconshreveable/mousetrap v1.0.0
 github.com/inconshreveable/mousetrap
 # github.com/spf13/cobra v0.0.7

@@ -141,11 +141,13 @@ func shuffle(ts *ast.TypeSpec, st gopium.Struct) error {
 		// we can safely pick only first name
 		// as structure is flat
 		// get ast's i-th structure field
-		ni := tts.Fields.List[i].Names[0].Name
+		fni := tts.Fields.List[i].Names[0]
+		ni := fni.Name
 		// we can safely pick only first name
 		// as structure is flat
 		// get ast's j-th structure field
-		nj := tts.Fields.List[j].Names[0].Name
+		fnj := tts.Fields.List[j].Names[0]
+		nj := fnj.Name
 		// prepare comparison indexes
 		// and search for them in resulted structure
 		fi, fj := 0, 0
@@ -163,6 +165,13 @@ func shuffle(ts *ast.TypeSpec, st gopium.Struct) error {
 			case "_": // skip paddings
 				index--
 			}
+		}
+		// swap position if
+		// i-th index less than j-th index
+		if fi < fj {
+			p := fni.NamePos
+			fni.NamePos = fnj.NamePos
+			fnj.NamePos = p
 		}
 		// compare comparison indexes
 		return fi < fj
