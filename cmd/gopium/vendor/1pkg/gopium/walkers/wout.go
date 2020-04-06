@@ -16,32 +16,26 @@ var (
 	jsonstd = wout{
 		fmt:  fmtio.PrettyJson,
 		wgen: fmtio.Stdout,
-		tp:   fmtio.Json,
 	}
 	xmlstd = wout{
 		fmt:  fmtio.PrettyXml,
 		wgen: fmtio.Stdout,
-		tp:   fmtio.Xml,
 	}
 	csvstd = wout{
 		fmt:  fmtio.PrettyCsv,
 		wgen: fmtio.Stdout,
-		tp:   fmtio.Csv,
 	}
 	jsontf = wout{
 		fmt:  fmtio.PrettyJson,
-		wgen: fmtio.TempFile,
-		tp:   fmtio.Json,
+		wgen: fmtio.FileJson,
 	}
 	xmltf = wout{
 		fmt:  fmtio.PrettyXml,
-		wgen: fmtio.TempFile,
-		tp:   fmtio.Xml,
+		wgen: fmtio.FileXml,
 	}
 	csvtf = wout{
 		fmt:  fmtio.PrettyCsv,
-		wgen: fmtio.TempFile,
-		tp:   fmtio.Csv,
+		wgen: fmtio.FileCsv,
 	}
 )
 
@@ -54,7 +48,6 @@ type wout struct {
 	exposer gopium.Exposer
 	fmt     fmtio.StructToBytes
 	wgen    fmtio.WriterGen
-	tp      string
 	backref bool
 }
 
@@ -73,6 +66,7 @@ func (w wout) Visit(ctx context.Context, regex *regexp.Regexp, stg gopium.Strate
 	// and apply strategy to them to get results
 	// then use fmts.TypeFormat to format strategy results
 	// and use io.Writer to write results to output
+
 	// check that formatter wasn't set correctly
 	if w.fmt == nil {
 		return errors.New("formatter wasn't set")
@@ -150,7 +144,7 @@ func (w wout) write(id, loc string, st gopium.Struct) error {
 		return err
 	}
 	// generate relevant writer
-	writer, err := w.wgen(id, loc, w.tp)
+	writer, err := w.wgen(id, loc)
 	if err != nil {
 		return err
 	}
