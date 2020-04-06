@@ -3,6 +3,7 @@ package astutil
 import (
 	"context"
 	"go/ast"
+	"go/token"
 
 	"1pkg/gopium"
 	"1pkg/gopium/fmtio"
@@ -17,10 +18,16 @@ func sync(sta fmtio.StructToAst) Apply {
 		ctx context.Context,
 		pkg *ast.Package,
 		loc gopium.Locator,
-		sts map[string]gopium.Struct,
+		hsts HierarchyStructs,
+		fsets map[string]*token.FileSet,
 	) (*ast.Package, error) {
 		// just reuse inner walk helper
 		// and apply format to ast
-		return walk(ctx, pkg, loc, sts, wact(sta))
+		return walkPkg(
+			ctx,
+			pkg,
+			hierarchy(loc, hsts),
+			wact(sta),
+		)
 	}
 }

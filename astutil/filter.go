@@ -20,17 +20,17 @@ func filternote(
 	ctx context.Context,
 	pkg *ast.Package,
 	loc gopium.Locator,
-	sts map[string]gopium.Struct,
+	hsts HierarchyStructs,
+	fsets map[string]*token.FileSet,
 ) (*ast.Package, error) {
 	// prepare structs boundaries
 	type boundary struct{ Pos, End token.Pos }
-	boundaries := make([]boundary, 0, len(sts))
+	boundaries := make([]boundary, 0, len(hsts))
 	// collect structs boundaries
-	walk(
+	if _, err := walkPkg(
 		ctx,
 		pkg,
-		loc,
-		sts,
+		hierarchy(loc, hsts),
 		func(ts *ast.TypeSpec, st gopium.Struct) error {
 			// check that we are working with ast.StructType
 			tts, ok := ts.Type.(*ast.StructType)
@@ -44,7 +44,9 @@ func filternote(
 			})
 			return nil
 		},
-	)
+	); err != nil {
+		return nil, err
+	}
 	// create sync error group
 	// with cancelation context
 	group, gctx := errgroup.WithContext(ctx)

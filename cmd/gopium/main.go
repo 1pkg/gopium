@@ -124,8 +124,8 @@ Gopium supports next strategies list:
  - type_length_ascending (sorts fields accordingly to their types length in ascending order)
  - type_length_descending (sorts fields accordingly to their types length in descending order)
 
- - embedded_ascending (sorts fields accordingly to their embeded flag in ascending order)
- - embedded_descending (sorts fields accordingly to their embeded flag in descending order)
+ - embedded_ascending (sorts fields accordingly to their embedded flag in ascending order)
+ - embedded_descending (sorts fields accordingly to their embedded flag in descending order)
  - exported_ascending (sorts fields accordingly to their exported flag in ascending order)
  - exported_descending (sorts fields accordingly to their exported flag in descending order)
 
