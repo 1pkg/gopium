@@ -14,7 +14,9 @@ const (
 	JsonFiles gopium.WalkerName = "json_files"
 	XmlFiles  gopium.WalkerName = "xml_files"
 	CsvFiles  gopium.WalkerName = "csv_files"
-	SyncAst   gopium.WalkerName = "sync_ast"
+	AstStd    gopium.WalkerName = "ast_std"
+	AstGo     gopium.WalkerName = "ast_go"
+	AstGopium gopium.WalkerName = "ast_gopium"
 )
 
 // Builder defines types gopium.WalkerBuilder implementation
@@ -74,8 +76,20 @@ func (b Builder) Build(name gopium.WalkerName) (gopium.Walker, error) {
 			b.exposer,
 			b.backref,
 		), nil
-	case SyncAst:
-		return fsptn.With(
+	case AstStd:
+		return fsptnstd.With(
+			b.parser,
+			b.exposer,
+			b.backref,
+		), nil
+	case AstGo:
+		return fsptngo.With(
+			b.parser,
+			b.exposer,
+			b.backref,
+		), nil
+	case AstGopium:
+		return fsptngopium.With(
 			b.parser,
 			b.exposer,
 			b.backref,

@@ -64,7 +64,9 @@ Gopium supports next walkers list:
  - json_files (prints json encoded result to files inside package directory)
  - xml_files (prints xml encoded result to files inside package directory)
  - csv_files (prints csv encoded result to files inside package directory)
- - sync_ast (directly syncs result as go code in orinal package)
+ - ast_std (prints result as go code to stdout)
+ - ast_go (directly syncs result as go code in orinal file)
+ - ast_gopium (directly syncs result as go code in copy package)
 
 Gopium supports next strategies list: 
  - process_tag_group (uses gopium fields tags annotation in order to process different set of strategies

@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"go/ast"
 	"go/printer"
-	"os"
 	"regexp"
 
 	"1pkg/gopium"
@@ -17,8 +16,17 @@ import (
 
 // list of wast presets
 var (
-	fsptn = wast{
-		fmt: fmtio.FSPTN,
+	fsptnstd = wast{
+		fmt:  fmtio.FSPTN,
+		wgen: fmtio.Stdout,
+	}
+	fsptngo = wast{
+		fmt:  fmtio.FSPTN,
+		wgen: fmtio.FileGo,
+	}
+	fsptngopium = wast{
+		fmt:  fmtio.FSPTN,
+		wgen: fmtio.FileGopium,
 	}
 )
 
@@ -29,6 +37,7 @@ type wast struct {
 	parser  gopium.Parser
 	exposer gopium.Exposer
 	fmt     fmtio.StructToAst
+	wgen    fmtio.WriterGen
 	backref bool
 }
 
@@ -47,6 +56,7 @@ func (w wast) Visit(ctx context.Context, regex *regexp.Regexp, stg gopium.Strate
 	// and apply strategy to them to get results
 	// then overrides os.File list with updated ast
 	// builded from strategy results
+
 	// use parser to parse types pkg data
 	// we don't care about fset
 	pkg, loc, err := w.parser.ParseTypes(ctx)
@@ -197,8 +207,8 @@ loop:
 				return gctx.Err()
 			default:
 			}
-			// open os.File for related ast.File
-			file, err := os.Create(name)
+			// generate relevant writer
+			writer, err := w.wgen(name, loc.Loc(file.Pos()))
 			// in case any error happened just return error
 			// it will cancel context automatically
 			if err != nil {
@@ -209,7 +219,7 @@ loop:
 			// in case any error happened just return error
 			// it will cancel context automatically
 			return printer.Fprint(
-				file,
+				writer,
 				loc.Fset(),
 				node,
 			)

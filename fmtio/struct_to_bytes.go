@@ -11,13 +11,6 @@ import (
 	"1pkg/gopium"
 )
 
-// list of registered fmts
-const (
-	Json = "json"
-	Xml  = "xml"
-	Csv  = "csv"
-)
-
 // StructToBytes defines abstraction for
 // formatting gopium.Struct to byte slice
 type StructToBytes func(gopium.Struct) ([]byte, error)
