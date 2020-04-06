@@ -11,6 +11,7 @@ import (
 // encapsulate pkgs token.FileSet related operations
 type Locator interface {
 	ID(token.Pos) string
+	Cat(token.Pos) string
 	Loc(token.Pos) string
 	Fset() *token.FileSet
 }

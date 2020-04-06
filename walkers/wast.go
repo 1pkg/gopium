@@ -4,6 +4,7 @@ import (
 	"context"
 	"go/ast"
 	"go/printer"
+	"go/token"
 	"regexp"
 
 	"1pkg/gopium"
@@ -82,7 +83,7 @@ func (w wast) Visit(ctx context.Context, regex *regexp.Regexp, stg gopium.Strate
 	// but it's probably redundant
 	// as it requires additional level of sync
 	// and intense error handling
-	structs := make(map[string]gopium.Struct)
+	hsts := make(astutil.HierarchyStructs)
 	for applied := range ch {
 		// in case any error happened just return error
 		// it will cancel context automatically
@@ -90,17 +91,24 @@ func (w wast) Visit(ctx context.Context, regex *regexp.Regexp, stg gopium.Strate
 			return applied.Error
 		}
 		// otherwise collect result
-		structs[applied.ID] = applied.Result
+		sts, ok := hsts[applied.Cat]
+		// if loc hasn't been created yet
+		if !ok {
+			sts = make(map[string]gopium.Struct)
+		}
+		// update hierarchy structs list
+		sts[applied.ID] = applied.Result
+		hsts[applied.Cat] = sts
 	}
 	// run sync write
 	// with collected strategies results
-	return w.write(ctx, structs)
+	return w.write(ctx, hsts)
 }
 
 // write wast helps apply
 // sync and persist to format strategy results
 // updating os.File ast list
-func (w wast) write(ctx context.Context, structs map[string]gopium.Struct) error {
+func (w wast) write(ctx context.Context, hsts astutil.HierarchyStructs) error {
 	// use parser to parse ast pkg data
 	pkg, loc, err := w.parser.ParseAst(ctx)
 	if err != nil {
@@ -109,18 +117,19 @@ func (w wast) write(ctx context.Context, structs map[string]gopium.Struct) error
 	// run ast apply with strategy result
 	// to update ast.Package on the parsed ast.Package
 	// in case any error happened just return error back
-	pkg, err = w.apply(ctx, pkg, loc, structs)
+	fsets := make(map[string]*token.FileSet, len(pkg.Files))
+	pkg, err = w.apply(ctx, pkg, loc, hsts, fsets)
 	if err != nil {
 		return err
 	}
 	// run async persist helper
-	return w.persist(ctx, pkg, loc)
+	return w.persist(ctx, pkg, loc, fsets)
 }
 
 // persist wast helps to update os.File list
 // accordingly to updated ast.Package
 // concurently or return error otherwise
-func (w wast) persist(ctx context.Context, pkg *ast.Package, loc gopium.Locator) error {
+func (w wast) persist(ctx context.Context, pkg *ast.Package, loc gopium.Locator, fsets map[string]*token.FileSet) error {
 	// create sync error group
 	// with cancelation context
 	group, gctx := errgroup.WithContext(ctx)
@@ -156,13 +165,17 @@ loop:
 			if err != nil {
 				return err
 			}
+			fset := loc.Fset()
+			if nfset, ok := fsets[name]; ok {
+				fset = nfset
+			}
 			// write updated ast.File to related os.File
 			// use original toke.FileSet to keep format
 			// in case any error happened just return error
 			// it will cancel context automatically
 			return printer.Fprint(
 				writer,
-				loc.Fset(),
+				fset,
 				node,
 			)
 		})

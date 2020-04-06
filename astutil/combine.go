@@ -3,6 +3,7 @@ package astutil
 import (
 	"context"
 	"go/ast"
+	"go/token"
 
 	"1pkg/gopium"
 )
@@ -14,7 +15,8 @@ func combine(funcs ...Apply) Apply {
 		ctx context.Context,
 		pkg *ast.Package,
 		loc gopium.Locator,
-		sts map[string]gopium.Struct,
+		hsts HierarchyStructs,
+		fsets map[string]*token.FileSet,
 	) (*ast.Package, error) {
 		// tracks error inside loop
 		var err error
@@ -29,7 +31,7 @@ func combine(funcs ...Apply) Apply {
 			default:
 			}
 			// exec single func
-			pkg, err = fun(ctx, pkg, loc, sts)
+			pkg, err = fun(ctx, pkg, loc, hsts, fsets)
 			// in case of any error
 			// just propagate it
 			if err != nil {
