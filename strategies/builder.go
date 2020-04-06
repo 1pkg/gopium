@@ -171,7 +171,7 @@ func (b Builder) Build(name gopium.StrategyName) (gopium.Strategy, error) {
 	case NoteCom:
 		return notecom, nil
 	case StampDoc:
-		return stampcom, nil
+		return stampdoc, nil
 	case StampCom:
 		return stampcom, nil
 	default:

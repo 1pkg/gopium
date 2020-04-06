@@ -49,10 +49,10 @@ func (stg tag) Apply(ctx context.Context, o gopium.Struct) (r gopium.Struct, err
 			break
 		case len(f.Tag) != 0:
 			f.Tag += " " + ntag
-			f.Tag = fmt.Sprintf("`%s`", f.Tag)
 		default:
-			f.Tag = fmt.Sprintf("`%s`", ntag)
+			f.Tag = ntag
 		}
+		f.Tag = fmt.Sprintf("`%s`", f.Tag)
 	}
 	return
 }
