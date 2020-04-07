@@ -19,10 +19,11 @@ type StructToAst func(*ast.TypeSpec, gopium.Struct) error
 
 // FSPTN implements StructToAst and combines:
 // - flatten helper
-// - padfilter helper
+// - fpadfilter helper
 // - shuffle helper
 // - padsync helper
 // - tagsync helper
+// - reindex helper
 // - notesync helper
 var FSPTN = combine(
 	flatten,
@@ -30,6 +31,7 @@ var FSPTN = combine(
 	shuffle,
 	padsync,
 	tagsync,
+	reindex,
 	notesync,
 )
 
@@ -262,6 +264,36 @@ func tagsync(ts *ast.TypeSpec, st gopium.Struct) error {
 		if sttag, ok := sttags[fname]; ok {
 			field.Tag = sttag
 		}
+	}
+	return nil
+}
+
+// reindex helps to reindex fields local token pos
+// for original *ast.TypeSpec, by just incrementing
+// pos for each struct field, note this is not
+// full compliant ast implementation as we are losing
+// absolute pos for all other elements, but it's
+// too complex to recalculate all elements pos, so
+// we can just recalculate local pos which will lead
+// to almost identical result
+func reindex(ts *ast.TypeSpec, st gopium.Struct) error {
+	// check that we are working with ast.StructType
+	tts, ok := ts.Type.(*ast.StructType)
+	if !ok {
+		return errors.New("reindex could only be applied to ast.StructType")
+	}
+	// set initial pos to zero inside a structure
+	pos := token.Pos(0)
+	// go through all structure fields
+	for _, field := range tts.Fields.List {
+		// in case structure isn't flat return error
+		if len(field.Names) != 1 {
+			return errors.New("reindex could only be applied to flatten structures")
+		}
+		// set field to current pos
+		field.Names[0].NamePos = pos
+		// just increment pos
+		pos += token.Pos(1)
 	}
 	return nil
 }
