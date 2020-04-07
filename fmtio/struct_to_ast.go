@@ -14,7 +14,7 @@ import (
 )
 
 // StructToAst defines abstraction for
-// formatting original *ast.TypeSpec with gopium.Struct
+// formatting original ast.TypeSpec with gopium.Struct
 type StructToAst func(*ast.TypeSpec, gopium.Struct) error
 
 // FSPTN implements StructToAst and combines:

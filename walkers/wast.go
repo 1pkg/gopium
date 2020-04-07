@@ -7,6 +7,7 @@ import (
 	"regexp"
 
 	"1pkg/gopium"
+	"1pkg/gopium/astutil"
 	"1pkg/gopium/fmtio"
 
 	"golang.org/x/sync/errgroup"
@@ -15,16 +16,16 @@ import (
 // list of wast presets
 var (
 	fsptnstd = wast{
-		fmt:  fmtio.FSPTN,
-		wgen: fmtio.Stdout,
+		apply: astutil.Sync,
+		wgen:  fmtio.Stdout,
 	}
 	fsptngo = wast{
-		fmt:  fmtio.FSPTN,
-		wgen: fmtio.FileGo,
+		apply: astutil.Sync,
+		wgen:  fmtio.FileGo,
 	}
 	fsptngopium = wast{
-		fmt:  fmtio.FSPTN,
-		wgen: fmtio.FileGopium,
+		apply: astutil.Sync,
+		wgen:  fmtio.FileGopium,
 	}
 )
 
@@ -34,7 +35,7 @@ var (
 type wast struct {
 	parser  gopium.Parser
 	exposer gopium.Exposer
-	fmt     fmtio.StructToAst
+	apply   astutil.Apply
 	wgen    fmtio.WriterGen
 	backref bool
 }
@@ -105,35 +106,12 @@ func (w wast) write(ctx context.Context, structs map[string]gopium.Struct) error
 	if err != nil {
 		return err
 	}
-	// go through results from visit func
-	// we can use concurent updating too
-	// but it's probably redundant
-	// as it requires additional level of sync
-	// and intense error handling
-	for id, st := range structs {
-		// manage context actions
-		// in case of cancelation
-		// stop execution
-		select {
-		case <-ctx.Done():
-			return ctx.Err()
-		default:
-		}
-		// run sync with strategy result to update ast.Package
-		// on the parsed ast.Package
-		// in case any error happened just return error
-		pkg, err = fmtio.SyncAst(pkg, loc, id, st, w.fmt)
-		if err != nil {
-			return err
-		}
-	}
-	// go through all files and press
-	// docs and comments directly to them
-	for _, file := range pkg.Files {
-		if _, err := fmtio.DocComPressAst(file); err != nil {
-			// in case any error happened just return error
-			return err
-		}
+	// run ast apply with strategy result
+	// to update ast.Package on the parsed ast.Package
+	// in case any error happened just return error back
+	pkg, err = w.apply(ctx, pkg, loc, structs)
+	if err != nil {
+		return err
 	}
 	// run async persist helper
 	return w.persist(ctx, pkg, loc)
