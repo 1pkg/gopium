@@ -166,13 +166,6 @@ func shuffle(ts *ast.TypeSpec, st gopium.Struct) error {
 				index--
 			}
 		}
-		// swap position if
-		// i-th index less than j-th index
-		if fi < fj {
-			p := fni.NamePos
-			fni.NamePos = fnj.NamePos
-			fnj.NamePos = p
-		}
 		// compare comparison indexes
 		return fi < fj
 	})
@@ -191,7 +184,7 @@ func padsync(ts *ast.TypeSpec, st gopium.Struct) error {
 	// prepare pad type expression regex
 	regex := regexp.MustCompile(`\[.*\]byte`)
 	// prepare resulted fields list
-	fields := make([]*ast.Field, len(tts.Fields.List), len(tts.Fields.List)+len(st.Fields))
+	fields := make([]*ast.Field, len(st.Fields))
 	copy(fields, tts.Fields.List)
 	for index, f := range st.Fields {
 		// skip non pad fields
@@ -267,7 +260,6 @@ func tagsync(ts *ast.TypeSpec, st gopium.Struct) error {
 		// if we have tag in the map
 		// set it as field tag
 		if sttag, ok := sttags[fname]; ok {
-			sttag.ValuePos = field.Pos() + token.Pos(1)
 			field.Tag = sttag
 		}
 	}
