@@ -7,7 +7,7 @@ import (
 	"sync"
 
 	"1pkg/gopium"
-	"1pkg/gopium/ref"
+	"1pkg/gopium/collections"
 )
 
 // applied encapsulates visited by strategy
@@ -49,7 +49,7 @@ func visit(
 	return func(ctx context.Context, scope *types.Scope) {
 		// setup visiting maven and reference
 		m := &maven{exposer: exposer, locator: loc}
-		ref := ref.NewRef(!backref)
+		ref := collections.NewReference(!backref)
 		defer ref.Prune()
 		// determinate which function
 		// should be applied for visiting
@@ -71,7 +71,7 @@ func vdeep(
 	regex *regexp.Regexp,
 	stg gopium.Strategy,
 	maven *maven,
-	ref *ref.Ref,
+	ref *collections.Reference,
 	ch appliedCh,
 ) {
 	// wait until all visits finished
@@ -141,7 +141,7 @@ func vscope(
 	regex *regexp.Regexp,
 	stg gopium.Strategy,
 	maven *maven,
-	ref *ref.Ref,
+	ref *collections.Reference,
 	ch appliedCh,
 ) {
 	// wait until all visits finished

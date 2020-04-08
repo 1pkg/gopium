@@ -88,7 +88,7 @@ func fpadfilter(ts *ast.TypeSpec, st gopium.Struct) error {
 	if !ok {
 		return errors.New("fpadfilter could only be applied to ast.StructType")
 	}
-	// collect all unique fields
+	// collect unique fields
 	fields := make(map[string]struct{}, len(st.Fields))
 	for _, f := range st.Fields {
 		fields[f.Name] = struct{}{}
@@ -127,6 +127,11 @@ func shuffle(ts *ast.TypeSpec, st gopium.Struct) error {
 	if !ok {
 		return errors.New("shuffle could only be applied to ast.StructType")
 	}
+	// collect fields indexes
+	fields := make(map[string]int, len(st.Fields))
+	for i, f := range st.Fields {
+		fields[f.Name] = i
+	}
 	// err holds inner sorting error
 	var err error
 	// shuffle fields list
@@ -135,35 +140,29 @@ func shuffle(ts *ast.TypeSpec, st gopium.Struct) error {
 		// and keep the same order
 		if len(tts.Fields.List[i].Names) != 1 || len(tts.Fields.List[j].Names) != 1 {
 			err = errors.New("annotate could only be applied to flatten structures")
-			return i < j
+			return false
 		}
 		// we can safely pick only first name
 		// as structure is flat
 		// get ast's i-th structure field
-		fni := tts.Fields.List[i].Names[0]
-		ni := fni.Name
+		ni := tts.Fields.List[i].Names[0].Name
 		// we can safely pick only first name
 		// as structure is flat
 		// get ast's j-th structure field
-		fnj := tts.Fields.List[j].Names[0]
-		nj := fnj.Name
+		nj := tts.Fields.List[j].Names[0].Name
 		// prepare comparison indexes
 		// and search for them in resulted structure
+		// in case field name of resulted
+		// structure matches either:
+		// - ast's i-th structure field
+		// - ast's j-th structure field
+		// set related comparison index
 		fi, fj := 0, 0
-		for index, field := range st.Fields {
-			// in case field name of resulted
-			// structure matches either:
-			// - ast's i-th structure field
-			// - ast's j-th structure field
-			// set related comparison index
-			switch field.Name {
-			case ni:
-				fi = index
-			case nj:
-				fj = index
-			case "_": // skip paddings
-				index--
-			}
+		if index, ok := fields[ni]; ok {
+			fi = index
+		}
+		if index, ok := fields[nj]; ok {
+			fj = index
 		}
 		// compare comparison indexes
 		return fi < fj

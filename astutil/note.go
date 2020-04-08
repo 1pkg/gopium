@@ -54,8 +54,6 @@ func note(
 				return gctx.Err()
 			default:
 			}
-			// create origin file copy
-			ofile := file
 			// print ast to buffer
 			var buf bytes.Buffer
 			err := printer.Fprint(
@@ -77,13 +75,13 @@ func note(
 				return err
 			}
 			// push child fset to locator
-			loc.Fset(file.Pos(), fset)
+			loc.Fset(name, fset)
 			// go through file structs
 			// and note all commentss
 			if file, err = walkFile(
 				gctx,
 				file,
-				comploc(loc, ofile.Pos(), hsts),
+				comploc(loc, name, hsts),
 				func(ts *ast.TypeSpec, st gopium.Struct) error {
 					// check that we are working with ast.StructType
 					tts, ok := ts.Type.(*ast.StructType)

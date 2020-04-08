@@ -49,7 +49,7 @@ func (l *Locator) Loc(p token.Pos) string {
 }
 
 // Locator returns child locator if any
-func (l *Locator) Locator(loc token.Pos) (gopium.Locator, bool) {
+func (l *Locator) Locator(loc string) (gopium.Locator, bool) {
 	fset, ok := l.Fset(loc, nil)
 	return NewLocator(fset), ok
 }
@@ -57,14 +57,14 @@ func (l *Locator) Locator(loc token.Pos) (gopium.Locator, bool) {
 // Fset multifunc method that
 // either set new fset for location
 // or returns child fset if any
-func (l *Locator) Fset(pos token.Pos, fset *token.FileSet) (*token.FileSet, bool) {
+func (l *Locator) Fset(loc string, fset *token.FileSet) (*token.FileSet, bool) {
 	if fset == nil {
-		if fset, ok := l.extra[l.Loc(pos)]; ok {
+		if fset, ok := l.extra[loc]; ok {
 			return fset, true
 		}
 		return l.root, false
 	}
-	l.extra[l.Loc(pos)] = fset
+	l.extra[loc] = fset
 	return fset, true
 }
 

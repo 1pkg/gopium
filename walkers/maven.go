@@ -5,7 +5,7 @@ import (
 	"sync"
 
 	"1pkg/gopium"
-	"1pkg/gopium/ref"
+	"1pkg/gopium/collections"
 )
 
 // maven defines visiting helper
@@ -40,7 +40,7 @@ func (m *maven) has(tn *types.TypeName) (id, loc string, ok bool) {
 // and uses gopium.Exposer to expose gopium.Field DTO
 // for each field and puts them back
 // to resulted gopium.Struct object
-func (m *maven) enum(name string, st *types.Struct, ref *ref.Ref) (r gopium.Struct) {
+func (m *maven) enum(name string, st *types.Struct, ref *collections.Reference) (r gopium.Struct) {
 	// set structure name
 	r.Name = name
 	// get number of struct fields
@@ -67,7 +67,7 @@ func (m *maven) enum(name string, st *types.Struct, ref *ref.Ref) (r gopium.Stru
 // refsize defines size getter with reference helper
 // that uses reference if it has been provided
 // or uses gopium.Exposer to expose type size
-func (m *maven) refsize(t types.Type, ref *ref.Ref) int64 {
+func (m *maven) refsize(t types.Type, ref *collections.Reference) int64 {
 	// in case we have reference
 	if ref != nil {
 		// for refsize only named structures
