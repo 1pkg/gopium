@@ -28,6 +28,7 @@ func (h Hierarchic) Cat(loc string) (Flat, bool) {
 
 // Flat converts hierarchic collection to flat collection
 func (h Hierarchic) Flat() Flat {
+	// collect all structs by key
 	flat := make(Flat)
 	for _, lsts := range h {
 		for key, st := range lsts {

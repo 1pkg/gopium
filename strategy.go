@@ -1,8 +1,6 @@
 package gopium
 
-import (
-	"context"
-)
+import "context"
 
 // Strategy defines action abstraction
 // that applies some strategy payload on types.Struct

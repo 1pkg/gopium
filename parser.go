@@ -12,8 +12,8 @@ import (
 type Locator interface {
 	ID(token.Pos) string
 	Loc(token.Pos) string
-	Locator(token.Pos) (Locator, bool)
-	Fset(token.Pos, *token.FileSet) (*token.FileSet, bool)
+	Locator(string) (Locator, bool)
+	Fset(string, *token.FileSet) (*token.FileSet, bool)
 	Root() *token.FileSet
 }
 

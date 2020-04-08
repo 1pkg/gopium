@@ -116,7 +116,8 @@ func (stg group) parse(st gopium.Struct) ([]container, error) {
 	// setup temporary groups maps
 	// for fields and strategies
 	gfields := make(map[string][]gopium.Field)
-	gstrategies := make(map[string]string)
+	gstrategies := make(map[string]gopium.Strategy)
+	gstrategiesnames := make(map[string]string)
 	// go through all struct fields
 	for _, f := range st.Fields {
 		// grab the field tag
@@ -132,11 +133,11 @@ func (stg group) parse(st gopium.Struct) ([]container, error) {
 		if len(tokens) == 1 {
 			stgs := tokens[0]
 			// check that strategies list is consistent
-			if gstg, ok := gstrategies[tdef]; ok && gstg != stgs {
+			if gstg, ok := gstrategiesnames[tdef]; ok && gstg != stgs {
 				return nil, fmt.Errorf("inconsistent strategies list %q for field %q", stgs, f.Name)
 			}
 			// collect strategies and fields
-			gstrategies[tdef] = stgs
+			gstrategiesnames[tdef] = stgs
 			gfields[tdef] = append(gfields[tdef], f)
 		} else if len(tokens) == 2 {
 			group := tokens[0]
@@ -148,16 +149,37 @@ func (stg group) parse(st gopium.Struct) ([]container, error) {
 			// remove group anchor
 			group = strings.Replace(group, "group:", "", 1)
 			// check that strategies list is consistent
-			if gstg, ok := gstrategies[group]; ok && gstg != stgs {
+			if gstg, ok := gstrategiesnames[group]; ok && gstg != stgs {
 				return nil, fmt.Errorf("inconsistent strategies list %q for field %q", stgs, f.Name)
 			}
 			// collect strategies and fields
-			gstrategies[group] = stgs
+			gstrategiesnames[group] = stgs
 			gfields[group] = append(gfields[group], f)
 		} else {
 			// return parsing error msg
 			return nil, fmt.Errorf("tag %q can't be parsed neither as `default` nor named group", tag)
 		}
+	}
+	// go through all collected group strategies names
+	// and build pipe strategy from them
+	for grp, gstgs := range gstrategiesnames {
+		// prepare strategy pipe
+		p := pipe{}
+		names := strings.Split(gstgs, ",")
+		// go through list of strategy name
+		for _, name := range names {
+			// try to build new strategy by name
+			stg, err := stg.builder.Build(gopium.StrategyName(name))
+			// in case of any error
+			// just return it back
+			if err != nil {
+				return nil, err
+			}
+			// otherwise append strategy to pipe
+			p = append(p, stg)
+		}
+		// set group strategies val
+		gstrategies[grp] = p
 	}
 	// setup result containers
 	containers := make([]container, len(gfields))
@@ -171,26 +193,10 @@ func (stg group) parse(st gopium.Struct) ([]container, error) {
 		// struct and its fields
 		cnt.o = st
 		cnt.o.Fields = fields
-		// if group has strategy
-		// then build it
+		// if group has strategy set it
 		// otherwise set nil strategy
-		if gstgs, ok := gstrategies[grp]; ok {
-			// prepare strategy pipe
-			p := pipe{}
-			names := strings.Split(gstgs, ",")
-			// go through list of strategy name
-			for _, name := range names {
-				// try to build new strategy by name
-				stg, err := stg.builder.Build(gopium.StrategyName(name))
-				// in case of any error
-				// just return it back
-				if err != nil {
-					return nil, err
-				}
-				// otherwise append strategy to pipe
-				p = append(p, stg)
-			}
-			cnt.stg = p
+		if stg, ok := gstrategies[grp]; ok {
+			cnt.stg = stg
 		} else {
 			cnt.stg = np
 		}

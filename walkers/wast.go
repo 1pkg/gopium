@@ -147,14 +147,14 @@ loop:
 			default:
 			}
 			// generate relevant writer
-			writer, err := w.wgen(name, loc.Loc(file.Pos()))
+			writer, err := w.wgen(name, name)
 			// in case any error happened just return error
 			// it will cancel context automatically
 			if err != nil {
 				return err
 			}
 			// grab the latest file fset
-			fset, _ := loc.Fset(file.Pos(), nil)
+			fset, _ := loc.Fset(name, nil)
 			// write updated ast.File to related os.File
 			// use original toke.FileSet to keep format
 			// in case any error happened just return error

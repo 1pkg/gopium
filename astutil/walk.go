@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"go/ast"
-	"go/token"
 
 	"1pkg/gopium"
 	"1pkg/gopium/collections"
@@ -135,9 +134,9 @@ func compid(loc gopium.Locator, h collections.Hierarchic) wcomp {
 // comploc helps to create wcomp
 // which uses match on sorted struct name
 // in provided loc
-func comploc(loc gopium.Locator, pos token.Pos, h collections.Hierarchic) wcomp {
+func comploc(loc gopium.Locator, cat string, h collections.Hierarchic) wcomp {
 	// build sorted collection for loc
-	f, ok := h.Cat(loc.Loc(pos))
+	f, ok := h.Cat(cat)
 	sorted := f.Sorted()
 	// return basic comparator func
 	return func(ts *ast.TypeSpec) (gopium.Struct, bool) {
