@@ -48,7 +48,7 @@ func (p ParserXToolPackagesAst) ParseTypes(ctx context.Context) (*types.Package,
 	if len(pkgs) != 1 || pkgs[0].String() != p.Pattern {
 		return nil, nil, fmt.Errorf("package %q wasn't found", p.Pattern)
 	}
-	return pkgs[0].Types, (*Locator)(fset), nil
+	return pkgs[0].Types, NewLocator(fset), nil
 }
 
 // ParseAst ParserXToolPackagesAst implementation
@@ -71,5 +71,5 @@ func (p ParserXToolPackagesAst) ParseAst(ctx context.Context) (*ast.Package, gop
 	if !ok {
 		return nil, nil, fmt.Errorf("package %q wasn't found", p.Pattern)
 	}
-	return pkg, (*Locator)(fset), nil
+	return pkg, NewLocator(fset), nil
 }

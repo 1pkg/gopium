@@ -179,13 +179,13 @@ func (b Builder) Build(name gopium.StrategyName) (gopium.Strategy, error) {
 	}
 }
 
-// Pipe helps to concat list of strategies
+// Pipe helps to concat slice of strategies
 // in one single pipe strategy
 func Pipe(stgs ...gopium.Strategy) gopium.Strategy {
 	return pipe(stgs)
 }
 
-// Tag concats list of strategy names
+// Tag concats slice of strategy names
 // in one single tag strategy
 func Tag(force bool, stgs ...gopium.StrategyName) gopium.Strategy {
 	s := make([]string, 0, len(stgs))

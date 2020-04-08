@@ -54,5 +54,6 @@ func FileGopium(id, loc string) (io.Writer, error) {
 func file(name, path, ext string) (io.Writer, error) {
 	bname := filepath.Base(name)
 	bname = strings.Split(bname, ".")[0]
+	path = filepath.Dir(path)
 	return os.Create(fmt.Sprintf("%s/%s.%s", path, bname, ext))
 }

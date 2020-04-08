@@ -20,21 +20,19 @@ type maven struct {
 // that uses gopium.Locator to build id
 // for a structure and check that
 // builded id has not been stored already
-func (m *maven) has(tn *types.TypeName) (id, cat, loc string, ok bool) {
+func (m *maven) has(tn *types.TypeName) (id, loc string, ok bool) {
 	// build id for the structure
 	id = m.locator.ID(tn.Pos())
-	// build cat for the structure
-	cat = m.locator.Cat(tn.Pos())
 	// build loc for the structure
 	loc = m.locator.Loc(tn.Pos())
 	// in case id of structure
 	// has been already stored
 	if _, ok := m.store.Load(id); ok {
-		return id, cat, loc, true
+		return id, loc, true
 	}
 	// mark id of structure as stored
 	m.store.Store(id, struct{}{})
-	return id, cat, loc, false
+	return id, loc, false
 }
 
 // enum defines struct enumerating converting helper

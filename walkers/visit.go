@@ -11,9 +11,9 @@ import (
 )
 
 // applied encapsulates visited by strategy
-// structs results: id, origin, result structs and error
+// structs results: id, loc, origin, result structs and error
 type applied struct {
-	ID, Cat, Loc   string
+	ID, Loc        string
 	Origin, Result gopium.Struct
 	Error          error
 }
@@ -163,10 +163,10 @@ loop:
 			// if underlying type is struct
 			if st, ok := tn.Type().Underlying().(*types.Struct); ok {
 				// structure id
-				var id, cat, loc string
+				var id, loc string
 				// in case id of structure
 				// has been already visited
-				if id, cat, loc, ok = maven.has(tn); ok {
+				if id, loc, ok = maven.has(tn); ok {
 					continue
 				}
 				// manage context actions
@@ -198,7 +198,6 @@ loop:
 					// and push results to the chan
 					ch <- applied{
 						ID:     id,
-						Cat:    cat,
 						Loc:    loc,
 						Origin: o,
 						Result: r,

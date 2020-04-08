@@ -31,7 +31,7 @@ func (stg pad) Curator(curator gopium.Curator) pad {
 func (stg pad) Apply(ctx context.Context, o gopium.Struct) (r gopium.Struct, err error) {
 	// copy original structure to result
 	r = o
-	// setup resulted fields list
+	// setup resulted fields slice
 	var offset, alignment int64 = 0, stg.curator.SysAlign()
 	fields := make([]gopium.Field, 0, len(r.Fields))
 	// go through all fields
@@ -52,7 +52,7 @@ func (stg pad) Apply(ctx context.Context, o gopium.Struct) (r gopium.Struct, err
 		offset = alpad + f.Size
 		fields = append(fields, f)
 	}
-	// update fields list
+	// update resulted fields
 	r.Fields = fields
 	return
 }

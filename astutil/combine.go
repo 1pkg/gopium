@@ -3,9 +3,9 @@ package astutil
 import (
 	"context"
 	"go/ast"
-	"go/token"
 
 	"1pkg/gopium"
+	"1pkg/gopium/collections"
 )
 
 // combine helps to pipe several
@@ -15,8 +15,7 @@ func combine(funcs ...Apply) Apply {
 		ctx context.Context,
 		pkg *ast.Package,
 		loc gopium.Locator,
-		hsts HierarchyStructs,
-		fsets map[string]*token.FileSet,
+		hsts collections.Hierarchic,
 	) (*ast.Package, error) {
 		// tracks error inside loop
 		var err error
@@ -31,7 +30,7 @@ func combine(funcs ...Apply) Apply {
 			default:
 			}
 			// exec single func
-			pkg, err = fun(ctx, pkg, loc, hsts, fsets)
+			pkg, err = fun(ctx, pkg, loc, hsts)
 			// in case of any error
 			// just propagate it
 			if err != nil {
