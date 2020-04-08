@@ -32,7 +32,7 @@ func (stg fshare) Curator(curator gopium.Curator) fshare {
 func (stg fshare) Apply(ctx context.Context, o gopium.Struct) (r gopium.Struct, err error) {
 	// copy original structure to result
 	r = o
-	// setup resulted fields list
+	// setup resulted fields slice
 	cachel := stg.curator.SysCache(stg.line)
 	fields := make([]gopium.Field, 0, len(r.Fields))
 	// go through all fields
@@ -45,7 +45,7 @@ func (stg fshare) Apply(ctx context.Context, o gopium.Struct) (r gopium.Struct, 
 			fields = append(fields, gopium.PadField(pad))
 		}
 	}
-	// update fields list
+	// update resulted fields
 	r.Fields = fields
 	return
 }

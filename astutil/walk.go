@@ -3,11 +3,11 @@ package astutil
 import (
 	"context"
 	"errors"
-	"fmt"
 	"go/ast"
-	"sort"
+	"go/token"
 
 	"1pkg/gopium"
+	"1pkg/gopium/collections"
 
 	"golang.org/x/tools/go/ast/astutil"
 )
@@ -117,42 +117,35 @@ func walkFile(
 	return nil, errors.New("can't update file ast")
 }
 
-func hierarchy(loc gopium.Locator, hsts HierarchyStructs) wcomp {
-	// convert hierarchy struct to flat map
-	sts := make(map[string]gopium.Struct, len(hsts))
-	for _, lsts := range hsts {
-		for id, st := range lsts {
-			sts[id] = st
-		}
-	}
+// compid helps to create wcomp
+// which uses match on structs ids
+func compid(loc gopium.Locator, h collections.Hierarchic) wcomp {
+	// build flat collection from hierarchic
+	f := h.Flat()
 	// return basic comparator func
 	return func(ts *ast.TypeSpec) (gopium.Struct, bool) {
+		// just check if struct
+		// with such id is inside
 		id := loc.ID(ts.Pos())
-		st, ok := sts[id]
+		st, ok := f[id]
 		return st, ok
 	}
 }
 
-func ordered(sts map[string]gopium.Struct) wcomp {
-	var ids []string
-	var stssorted []gopium.Struct
-	for id := range sts {
-		ids = append(ids, id)
-	}
-	sort.SliceStable(ids, func(i, j int) bool {
-		var idi, idj int
-		var sumi, sumj string
-		fmt.Sscanf(ids[i], "%d-%s", &idi, &sumi)
-		fmt.Sscanf(ids[j], "%d-%s", &idj, &sumj)
-		return idi < idj
-	})
-	for _, id := range ids {
-		stssorted = append(stssorted, sts[id])
-	}
+// comploc helps to create wcomp
+// which uses match on sorted struct name
+// in provided loc
+func comploc(loc gopium.Locator, pos token.Pos, h collections.Hierarchic) wcomp {
+	// build sorted collection for loc
+	f, ok := h.Cat(loc.Loc(pos))
+	sorted := f.Sorted()
+	// return basic comparator func
 	return func(ts *ast.TypeSpec) (gopium.Struct, bool) {
-		if len(stssorted) > 0 {
-			if st := stssorted[0]; st.Name == ts.Name.Name {
-				stssorted = stssorted[1:]
+		// if loc exists
+		if ok && len(sorted) > 0 {
+			// check the top sorted element name
+			if st := sorted[0]; st.Name == ts.Name.Name {
+				sorted = sorted[1:]
 				return st, true
 			}
 		}

@@ -26,7 +26,7 @@ func (w WalkerMock) Visit(ctx context.Context, regex *regexp.Regexp, stg gopium.
 	if w.Err != nil {
 		return w.Err
 	}
-	// go through structs list
+	// go through structs slice
 	for i := range w.Structs {
 		st := &w.Structs[i]
 		// in case type of visiting

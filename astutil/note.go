@@ -11,40 +11,62 @@ import (
 	"sort"
 
 	"1pkg/gopium"
+	"1pkg/gopium/collections"
 
 	"golang.org/x/sync/errgroup"
 )
 
+// note helps to update ast.Package
+// accordingly to gopium.Struct result,
+// it synchronizes all docs and comments by
+//  regenerating ast for each file
+// in order to update all definitions position
+// and ingest docs and comments directly
+// to file with correct calculated position
 func note(
 	ctx context.Context,
 	pkg *ast.Package,
 	loc gopium.Locator,
-	hsts HierarchyStructs,
-	fsets map[string]*token.FileSet,
+	hsts collections.Hierarchic,
 ) (*ast.Package, error) {
 	// create sync error group
 	// with cancelation context
 	group, gctx := errgroup.WithContext(ctx)
 	// concurently go through package files
 	for name, file := range pkg.Files {
+		// manage context actions
+		// in case of cancelation
+		// stop execution
+		select {
+		case <-gctx.Done():
+			return pkg, gctx.Err()
+		default:
+		}
+		// capture name and file copies
 		name := name
 		file := file
-		ofile := file
 		group.Go(func() error {
-			// regenerate ast for file
-			// in order to update all
-			// definitions position
-			// printing ast to buffer
+			// manage context actions
+			// in case of cancelation
+			// stop execution and return error
+			select {
+			case <-gctx.Done():
+				return gctx.Err()
+			default:
+			}
+			// create origin file copy
+			ofile := file
+			// print ast to buffer
 			var buf bytes.Buffer
 			err := printer.Fprint(
 				&buf,
-				loc.Fset(),
-				ofile,
+				loc.Root(),
+				file,
 			)
 			if err != nil {
 				return err
 			}
-			// parser ast back to file
+			// parse ast back to file
 			fset := token.NewFileSet()
 			if file, err = parser.ParseFile(
 				fset,
@@ -54,21 +76,21 @@ func note(
 			); err != nil {
 				return err
 			}
-			fsets[name] = fset
+			// push child fset to locator
+			loc.Fset(file.Pos(), fset)
 			// go through file structs
 			// and note all commentss
-			cat := loc.Cat(ofile.Pos())
 			if file, err = walkFile(
 				gctx,
 				file,
-				ordered(hsts[cat]),
+				comploc(loc, ofile.Pos(), hsts),
 				func(ts *ast.TypeSpec, st gopium.Struct) error {
 					// check that we are working with ast.StructType
 					tts, ok := ts.Type.(*ast.StructType)
 					if !ok {
 						return errors.New("notesync could only be applied to ast.StructType")
 					}
-					// prepare struct docs list
+					// prepare struct docs slice
 					stdocs := make([]*ast.Comment, 0, len(st.Doc))
 					// collect all docs from resulted structure
 					for _, doc := range st.Doc {
@@ -77,9 +99,9 @@ func note(
 						sdoc := ast.Comment{Slash: slash, Text: doc}
 						stdocs = append(stdocs, &sdoc)
 					}
-					// update file docs list
+					// update file comments list
 					file.Comments = append(file.Comments, &ast.CommentGroup{List: stdocs})
-					// prepare struct comments list
+					// prepare struct comments slice
 					stcoms := make([]*ast.Comment, 0, len(st.Comment))
 					// collect all comments from resulted structure
 					for _, com := range st.Comment {
@@ -90,53 +112,35 @@ func note(
 					}
 					// update file comments list
 					file.Comments = append(file.Comments, &ast.CommentGroup{List: stcoms})
-					// prepare fields storage for docs list and comments list
-					fdocs := make([][]*ast.Comment, 0, len(st.Fields))
-					fcoms := make([][]*ast.Comment, 0, len(st.Fields))
 					// go through all resulted structure fields
-					for _, field := range st.Fields {
+					for index, field := range st.Fields {
+						// if index is greater that ast
+						// field number break the loop
+						if len(tts.Fields.List) <= index {
+							break
+						}
+						// get the field from ast
+						astfield := tts.Fields.List[index]
 						// collect all docs from resulted structure
-						docs := make([]*ast.Comment, 0, len(field.Doc))
+						fdocs := make([]*ast.Comment, 0, len(field.Doc))
 						for _, doc := range field.Doc {
-							doc := ast.Comment{Text: doc}
-							docs = append(docs, &doc)
+							// doc position is position of name - 1
+							slash := astfield.Pos() - token.Pos(1)
+							fdoc := ast.Comment{Slash: slash, Text: doc}
+							fdocs = append(fdocs, &fdoc)
 						}
+						// update file comments list
+						file.Comments = append(file.Comments, &ast.CommentGroup{List: fdocs})
 						// collect all comments from resulted structure
-						coms := make([]*ast.Comment, 0, len(field.Comment))
+						fcoms := make([]*ast.Comment, 0, len(field.Comment))
 						for _, com := range field.Comment {
-							com := ast.Comment{Text: com}
-							coms = append(coms, &com)
+							// comment position is end of field type
+							slash := astfield.Type.End()
+							fcom := ast.Comment{Slash: slash, Text: com}
+							fcoms = append(fcoms, &fcom)
 						}
-						// put collected results to storages
-						fdocs = append(fdocs, docs)
-						fcoms = append(fcoms, coms)
-					}
-					// go through all original structure fields
-					for index, field := range tts.Fields.List {
-						// if we have docs in storage
-						// append them to collected list
-						if len(fdocs) > index {
-							fdocs := fdocs[index]
-							// set original slash pos
-							for _, fdoc := range fdocs {
-								// doc position is position of name - 1
-								fdoc.Slash = field.Pos() - token.Pos(1)
-							}
-							// update file docs list
-							file.Comments = append(file.Comments, &ast.CommentGroup{List: fdocs})
-						}
-						// if we have comments in storage
-						// append them to collected list
-						if len(fcoms) > index {
-							fcoms := fcoms[index]
-							// set original slash pos
-							for _, fcom := range fcoms {
-								// comment position is end of field type
-								fcom.Slash = field.Type.End()
-							}
-							// update file comments list
-							file.Comments = append(file.Comments, &ast.CommentGroup{List: fcoms})
-						}
+						// update file comments list
+						file.Comments = append(file.Comments, &ast.CommentGroup{List: fcoms})
 					}
 					return nil
 				},

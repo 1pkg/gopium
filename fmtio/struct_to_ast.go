@@ -59,8 +59,8 @@ func flatten(ts *ast.TypeSpec, st gopium.Struct) error {
 	if !ok {
 		return errors.New("flatten could only be applied to ast.StructType")
 	}
-	// prepare result list
-	list := make([]*ast.Field, 0, tts.Fields.NumFields())
+	// prepare result slice
+	fields := make([]*ast.Field, 0, tts.Fields.NumFields())
 	// iterate over fields list
 	for _, field := range tts.Fields.List {
 		// for each concatenated name
@@ -68,14 +68,14 @@ func flatten(ts *ast.TypeSpec, st gopium.Struct) error {
 		for _, name := range field.Names {
 			// copy current field
 			f := *field
-			// update names list
+			// update names slice
 			f.Names = []*ast.Ident{name}
-			// put it to result list
-			list = append(list, &f)
+			// put it to result slice
+			fields = append(fields, &f)
 		}
 	}
 	// update structure fields list
-	tts.Fields.List = list
+	tts.Fields.List = fields
 	return nil
 }
 
@@ -88,14 +88,14 @@ func fpadfilter(ts *ast.TypeSpec, st gopium.Struct) error {
 	if !ok {
 		return errors.New("fpadfilter could only be applied to ast.StructType")
 	}
-	// collect all unique fields list
-	stfields := make(map[string]struct{}, len(st.Fields))
+	// collect all unique fields
+	fields := make(map[string]struct{}, len(st.Fields))
 	for _, f := range st.Fields {
-		stfields[f.Name] = struct{}{}
+		fields[f.Name] = struct{}{}
 	}
-	// prepare resulted fields list
-	fields := make([]*ast.Field, 0, len(tts.Fields.List))
-	// go through original ast struct
+	// prepare resulted fields slice
+	astfields := make([]*ast.Field, 0, len(tts.Fields.List))
+	// go through original ast fields list
 	for _, f := range tts.Fields.List {
 		// in case structure isn't flat return error
 		if len(f.Names) != 1 {
@@ -106,16 +106,16 @@ func fpadfilter(ts *ast.TypeSpec, st gopium.Struct) error {
 		if f.Names[0].Name == "_" {
 			continue
 		}
-		// if field isn't in result list
+		// if field isn't inside
 		// filter it out
-		if _, ok := stfields[f.Names[0].Name]; !ok {
+		if _, ok := fields[f.Names[0].Name]; !ok {
 			continue
 		}
 		// otherwise collect field
-		fields = append(fields, f)
+		astfields = append(astfields, f)
 	}
 	// update original ast fields list
-	tts.Fields.List = fields
+	tts.Fields.List = astfields
 	return nil
 }
 
@@ -182,7 +182,7 @@ func padsync(ts *ast.TypeSpec, st gopium.Struct) error {
 	}
 	// prepare pad type expression regex
 	regex := regexp.MustCompile(`\[.*\]byte`)
-	// prepare resulted fields list
+	// prepare resulted fields slice
 	fields := make([]*ast.Field, len(st.Fields))
 	copy(fields, tts.Fields.List)
 	for index, f := range st.Fields {
@@ -238,12 +238,12 @@ func tagsync(ts *ast.TypeSpec, st gopium.Struct) error {
 	if !ok {
 		return errors.New("tagsync could only be applied to ast.StructType")
 	}
-	// prepare struct tags list
-	sttags := make(map[string]*ast.BasicLit)
+	// prepare struct tags slice
+	tags := make(map[string]*ast.BasicLit)
 	// go through all resulted structure fields
 	for _, field := range st.Fields {
 		// put ast tag to the map
-		sttags[field.Name] = &ast.BasicLit{
+		tags[field.Name] = &ast.BasicLit{
 			Kind:  token.STRING,
 			Value: field.Tag,
 		}
@@ -258,8 +258,8 @@ func tagsync(ts *ast.TypeSpec, st gopium.Struct) error {
 		fname := field.Names[0].Name
 		// if we have tag in the map
 		// set it as field tag
-		if sttag, ok := sttags[fname]; ok {
-			field.Tag = sttag
+		if tag, ok := tags[fname]; ok {
+			field.Tag = tag
 		}
 	}
 	return nil

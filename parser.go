@@ -11,9 +11,10 @@ import (
 // encapsulate pkgs token.FileSet related operations
 type Locator interface {
 	ID(token.Pos) string
-	Cat(token.Pos) string
 	Loc(token.Pos) string
-	Fset() *token.FileSet
+	Locator(token.Pos) (Locator, bool)
+	Fset(token.Pos, *token.FileSet) (*token.FileSet, bool)
+	Root() *token.FileSet
 }
 
 // Parser defines abstraction for

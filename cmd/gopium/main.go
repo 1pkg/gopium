@@ -160,7 +160,7 @@ Notes:
 				wregex,
 				wdeep,
 				wbackref,
-				args[2:], // strategy_name list
+				args[2:], // strategy_name slice
 				stagtype,
 				timeout,
 			).Run(cmd.Context())
