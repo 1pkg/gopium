@@ -19,5 +19,5 @@ type WalkerName string
 // WalkerBuilder defines walker builder abstraction
 // that helps to create walker by walker name
 type WalkerBuilder interface {
-	Build(StrategyName) (Walker, error)
+	Build(WalkerName) (Walker, error)
 }

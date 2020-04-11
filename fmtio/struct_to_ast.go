@@ -150,6 +150,12 @@ func shuffle(ts *ast.TypeSpec, st gopium.Struct) error {
 		// as structure is flat
 		// get ast's j-th structure field
 		nj := tts.Fields.List[j].Names[0].Name
+		// in case structure isn't filtered save error
+		// and keep the same order
+		if ni == "_" || nj == "_" {
+			err = errors.New("shuffle could only be applied to fpadfiltered structures")
+			return false
+		}
 		// prepare comparison indexes
 		// and search for them in resulted structure
 		// in case field name of resulted
@@ -237,28 +243,20 @@ func tagsync(ts *ast.TypeSpec, st gopium.Struct) error {
 	if !ok {
 		return errors.New("tagsync could only be applied to ast.StructType")
 	}
-	// prepare struct tags slice
-	tags := make(map[string]*ast.BasicLit)
-	// go through all resulted structure fields
-	for _, field := range st.Fields {
-		// put ast tag to the map
-		tags[field.Name] = &ast.BasicLit{
-			Kind:  token.STRING,
-			Value: field.Tag,
-		}
-	}
+	flen := len(st.Fields)
 	// go through all original structure fields
-	for _, field := range tts.Fields.List {
+	for index, field := range tts.Fields.List {
 		// in case structure isn't flat return error
 		if len(field.Names) != 1 {
 			return errors.New("tagsync could only be applied to flatten structures")
 		}
-		// grab the only field name
-		fname := field.Names[0].Name
-		// if we have tag in the map
-		// set it as field tag
-		if tag, ok := tags[fname]; ok {
-			field.Tag = tag
+		if index < flen {
+			// update ast tag
+			f := st.Fields[index]
+			field.Tag = &ast.BasicLit{
+				Kind:  token.STRING,
+				Value: f.Tag,
+			}
 		}
 	}
 	return nil

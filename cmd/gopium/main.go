@@ -22,10 +22,12 @@ var (
 	// package parser vars
 	ppath           string
 	pbenvs, pbflags []string
-	// walker strategies vars
+	// walker vars
 	wregex          string
 	wdeep, wbackref bool
-	stagtype        string
+	// tag vars
+	tgroup                     string
+	tenable, tforce, tdiscrete bool
 	// global vars
 	timeout int
 	// global running context
@@ -38,7 +40,7 @@ var (
 func init() {
 	// set root cli command app
 	cli = &cobra.Command{
-		Use:     "gopium walker_name package_name strategy_name#1 strategy_name#2 strategy_name#3 ...",
+		Use:     "gopium walker package strategy#1 strategy#2 strategy#3 ...",
 		Short:   gopium.STAMP,
 		Version: gopium.VERSION,
 		Example: "gopium -r ^A -s soft json_std 1pkg/gopium filter_pads memory_pack separate_padding_cpu_l1_top separate_padding_cpu_l1_bottom",
@@ -51,13 +53,13 @@ Gopium is the tool which was designed to automate and simplify non trivial actio
  - generic fields management
  - other relevant activities
 
-In order to use gopium cli you need to provide at least package_name (full package name is expected),
-list of strategy_name which will be applied one by one and walker_name.
-Outcome of execution is fully defined by list of strategy_name and walker_name combination.
-List of strategy_name modifies structs inside the package and walker facilitates and insures,
-that outcome is written to one of supported destination.
+In order to use gopium cli you need to provide at least package name (full package name is expected),
+list of strategies which will be applied one by one and single walker.
+Outcome of execution is fully defined by list of strategies and walker combination.
+List of strategies modifies structs inside the package, walker facilitates and insures,
+that outcome is written to one of supported destinations.
 
-Gopium supports next walkers list: 
+Gopium supports next walkers: 
  - json_std (prints json encoded result to stdout)
  - xml_std (prints xml encoded result to stdout)
  - csv_std (prints csv encoded result to stdout)
@@ -68,7 +70,7 @@ Gopium supports next walkers list:
  - ast_go (directly syncs result as go code in orinal file)
  - ast_gopium (directly syncs result as go code in copy package)
 
-Gopium supports next strategies list: 
+Gopium supports next strategies: 
  - process_tag_group (uses gopium fields tags annotation in order to process different set of strategies
 	on different groups and then combine results in single struct result)
 
@@ -148,22 +150,24 @@ Notes:
 		`,
 		Args: cobra.MinimumNArgs(3),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			return runners.NewCliApp(
-				tcompiler,
-				tarch,
+			if app, err := runners.NewCliApp(
+				tcompiler, tarch,
 				tcpulines,
 				args[1], // package_name
 				ppath,
-				pbenvs,
-				pbflags,
+				pbenvs, pbflags,
 				args[0], // walker_name
 				wregex,
-				wdeep,
-				wbackref,
+				wdeep, wbackref,
 				args[2:], // strategy_name slice
-				stagtype,
+				tgroup,
+				tenable, tforce, tdiscrete,
 				timeout,
-			).Run(cmd.Context())
+			); err == nil {
+				return app.Run(cmd.Context())
+			} else {
+				return err
+			}
 		},
 	}
 	// set target_compiler flag
@@ -172,11 +176,7 @@ Notes:
 		"target_compiler",
 		"c",
 		"gc",
-		`
-Target platform compiler name, possible values are:
- - gc
- - gccgo
-		`,
+		"Target platform compiler, possible values are: gc or gccgo.",
 	)
 	// set target_architecture flag
 	cli.Flags().StringVarP(
@@ -184,15 +184,7 @@ Target platform compiler name, possible values are:
 		"target_architecture",
 		"a",
 		"amd64",
-		`
-Target platform architecture name, possible values are: 
- - 386
- - arm
- - arm64
- - amd64
- - mips
- - etc.
-		`,
+		"Target platform architecture, possible values are: 386, arm, arm64, amd64, mips, etc.",
 	)
 	// set target_cpu_cache_line_sizes flag
 	cli.Flags().IntSliceVarP(
@@ -262,17 +254,45 @@ Gopium walker backref flag, flag that defines type of names referencing.
 By default any previous visited types have affect on future relevant visits.
 		`,
 	)
-	// set tag_type flag
+	// set tag_group flag
 	cli.Flags().StringVarP(
-		&stagtype,
-		"strategy_tag_type",
-		"s",
-		"none",
+		&tgroup,
+		"tag_group",
+		"g",
+		"",
 		`
-Gopium strategy tag type write policy, possible values are: 
- - none (do nothing with tag)
- - soft (write tag only if not exists yet)
- - force (overwrite tag even if tag exists already)
+Gopium tag group name, name that defines group inside of gopium tag.
+Used only if tag_enable is set to true.
+		`,
+	)
+	// set tag_enable flag
+	cli.Flags().BoolVarP(
+		&tenable,
+		"tag_enable",
+		"E",
+		false,
+		"Gopium tag enable flag, flag that defines if running strategies would modify structs tags.",
+	)
+	// set tag_force flag
+	cli.Flags().BoolVarP(
+		&tforce,
+		"tag_force",
+		"F",
+		false,
+		`
+Gopium tag force flag, flag that defines if existed gopium tag would be overwritten.
+Used only if tag_enable is set to true.
+		`,
+	)
+	// set tag_discrete flag
+	cli.Flags().BoolVarP(
+		&tdiscrete,
+		"tag_discrete",
+		"D",
+		false,
+		`
+Gopium tag discrete flag, flag that defines if incremental suffix for tag group name would be applied.
+Used only if tag_enable is set to true.
 		`,
 	)
 	// set timeout flag

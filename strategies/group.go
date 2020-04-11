@@ -121,7 +121,7 @@ func (stg group) parse(st gopium.Struct) ([]container, error) {
 	// go through all struct fields
 	for _, f := range st.Fields {
 		// grab the field tag
-		tag, ok := reflect.StructTag(f.Tag).Lookup(tagn)
+		tag, ok := reflect.StructTag(f.Tag).Lookup(tagname)
 		// in case tag is empty
 		// or marked as skipped
 		if !ok || tag == tskip {
