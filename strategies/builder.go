@@ -187,10 +187,15 @@ func Pipe(stgs ...gopium.Strategy) gopium.Strategy {
 
 // Tag concats slice of strategy names
 // in one single tag strategy
-func Tag(force bool, stgs ...gopium.StrategyName) gopium.Strategy {
+func Tag(group string, force, discrete bool, stgs ...gopium.StrategyName) gopium.Strategy {
 	s := make([]string, 0, len(stgs))
 	for _, stg := range stgs {
 		s = append(s, string(stg))
 	}
-	return tag{tag: strings.Join(s, ","), force: force}
+	return tag{
+		tag:      strings.Join(s, ","),
+		group:    group,
+		force:    force,
+		discrete: discrete,
+	}
 }
