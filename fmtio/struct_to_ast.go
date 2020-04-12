@@ -202,8 +202,6 @@ func padsync(ts *ast.TypeSpec, st gopium.Struct) error {
 		}
 		// transform size to string format
 		// and add pad field to struct
-		// note: don't need to sync docs/comments here
-		// as it will be done in annotate
 		size := strconv.Itoa(int(f.Size))
 		field := &ast.Field{
 			Names: []*ast.Ident{
@@ -268,7 +266,7 @@ func tagsync(ts *ast.TypeSpec, st gopium.Struct) error {
 // full compliant ast implementation as we are losing
 // absolute pos for all other elements, but it's
 // too complex to recalculate all elements pos, so
-// we can just recalculate local pos which will lead
+// we can just recalculate local pos which leads
 // to almost identical result
 func reindex(ts *ast.TypeSpec, st gopium.Struct) error {
 	// check that we are working with ast.StructType

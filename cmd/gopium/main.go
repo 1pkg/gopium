@@ -28,6 +28,9 @@ var (
 	// tag vars
 	tgroup                     string
 	tenable, tforce, tdiscrete bool
+	// printer vars
+	ptabwidth int
+	pusespace bool
 	// global vars
 	timeout int
 	// global running context
@@ -54,7 +57,7 @@ Gopium is the tool which was designed to automate and simplify non trivial actio
  - other relevant activities
 
 In order to use gopium cli you need to provide at least package name (full package name is expected),
-list of strategies which will be applied one by one and single walker.
+list of strategies which would be applied one by one and single walker.
 Outcome of execution is fully defined by list of strategies and walker combination.
 List of strategies modifies structs inside the package, walker facilitates and insures,
 that outcome is written to one of supported destinations.
@@ -162,6 +165,8 @@ Notes:
 				args[2:], // strategy_name slice
 				tgroup,
 				tenable, tforce, tdiscrete,
+				ptabwidth,
+				pusespace,
 				timeout,
 			); err == nil {
 				return app.Run(cmd.Context())
@@ -294,6 +299,22 @@ Used only if tag_enable is set to true.
 Gopium tag discrete flag, flag that defines if incremental suffix for tag group name would be applied.
 Used only if tag_enable is set to true.
 		`,
+	)
+	// set printer_tab_width flag
+	cli.Flags().IntVarP(
+		&ptabwidth,
+		"printer_tab_width",
+		"W",
+		8,
+		"Gopium printer width of tab, defines width of tab in spaces for printer.",
+	)
+	// set printer_use_space flag
+	cli.Flags().BoolVarP(
+		&pusespace,
+		"printer_use_space",
+		"S",
+		false,
+		"Gopium printer use space flag, flag that defines if all formatting should be done by spaces.",
 	)
 	// set timeout flag
 	cli.Flags().IntVarP(

@@ -94,8 +94,6 @@ func (stg group) Apply(ctx context.Context, o gopium.Struct) (r gopium.Struct, e
 		return o, nil
 	}
 	// sort result containers lexicographicaly
-	// groups with lexicographicaly lower names
-	// will be at the top
 	sort.SliceStable(containers, func(i, j int) bool {
 		return containers[i].grp < containers[j].grp
 	})

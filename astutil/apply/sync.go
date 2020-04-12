@@ -1,10 +1,11 @@
-package astutil
+package apply
 
 import (
 	"context"
 	"go/ast"
 
 	"1pkg/gopium"
+	"1pkg/gopium/astutil"
 	"1pkg/gopium/collections"
 	"1pkg/gopium/fmtio"
 )
@@ -12,7 +13,7 @@ import (
 // sync helps to update ast.Package
 // accordingly to gopium.Struct result
 // using custom fmtio.StructToAst formatter
-func sync(sta fmtio.StructToAst) Apply {
+func sync(sta fmtio.StructToAst) astutil.Apply {
 	return func(
 		ctx context.Context,
 		pkg *ast.Package,

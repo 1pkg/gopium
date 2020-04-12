@@ -42,7 +42,7 @@ func PrettyXml(st gopium.Struct) ([]byte, error) {
 // PrettyCsv defines StructToBytes implementation
 // that serializes struct to csv format
 func PrettyCsv(st gopium.Struct) ([]byte, error) {
-	// prepare buf and csv writter
+	// prepare buf and csv writer
 	var buf bytes.Buffer
 	w := csv.NewWriter(&buf)
 	// write header
