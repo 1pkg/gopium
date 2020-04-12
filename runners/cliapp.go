@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"1pkg/gopium"
+	"1pkg/gopium/astutil/print"
 	"1pkg/gopium/strategies"
 	"1pkg/gopium/typepkg"
 	"1pkg/gopium/walkers"
@@ -37,8 +38,10 @@ func NewCliApp(
 	walker, regex string,
 	deep, backref bool,
 	stgs []string,
-	tgroup string,
+	group string,
 	tenable, tforce, tdiscrete bool,
+	tabwidth int,
+	usespace bool,
 	timeout int,
 ) (*CliApp, error) {
 	// cast caches to int64
@@ -62,6 +65,8 @@ func NewCliApp(
 		BuildEnv:   benvs,
 		BuildFlags: bflags,
 	}
+	// set up printer
+	pr := print.GoPrinter(tabwidth, usespace)
 	// compile regexp
 	wregex, err := regexp.Compile(regex)
 	if err != nil {
@@ -71,13 +76,14 @@ func NewCliApp(
 	coord := coordinator{
 		wregex:    wregex,
 		wdeep:     deep,
-		tgroup:    tgroup,
+		wbackref:  backref,
+		tgroup:    group,
 		tenable:   tenable,
 		tforce:    tforce,
 		tdiscrete: tdiscrete,
 	}
 	// set walker and strategy builders
-	wbuilder := walkers.NewBuilder(p, m, backref)
+	wbuilder := walkers.NewBuilder(p, m, pr)
 	sbuilder := strategies.NewBuilder(m)
 	// cast strategies strings to strategy names
 	snames := make([]gopium.StrategyName, 0, len(stgs))

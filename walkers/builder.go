@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"1pkg/gopium"
+	"1pkg/gopium/astutil"
 )
 
 // list of registered types walkers
@@ -24,16 +25,16 @@ const (
 type Builder struct {
 	parser  gopium.Parser
 	exposer gopium.Exposer
-	backref bool
+	print   astutil.Print
 }
 
 // NewBuilder creates instance of Builder
 // and requires parser and exposer to pass it to related walkers
-func NewBuilder(parser gopium.Parser, exposer gopium.Exposer, backref bool) Builder {
+func NewBuilder(parser gopium.Parser, exposer gopium.Exposer, print astutil.Print) Builder {
 	return Builder{
 		parser:  parser,
 		exposer: exposer,
-		backref: backref,
+		print:   print,
 	}
 }
 
@@ -44,55 +45,49 @@ func (b Builder) Build(name gopium.WalkerName) (gopium.Walker, error) {
 		return jsonstd.With(
 			b.parser,
 			b.exposer,
-			b.backref,
 		), nil
 	case XmlStd:
 		return xmlstd.With(
 			b.parser,
 			b.exposer,
-			b.backref,
 		), nil
 	case CsvStd:
 		return csvstd.With(
 			b.parser,
 			b.exposer,
-			b.backref,
 		), nil
 	case JsonFiles:
 		return jsontf.With(
 			b.parser,
 			b.exposer,
-			b.backref,
 		), nil
 	case XmlFiles:
 		return xmltf.With(
 			b.parser,
 			b.exposer,
-			b.backref,
 		), nil
 	case CsvFiles:
 		return csvtf.With(
 			b.parser,
 			b.exposer,
-			b.backref,
 		), nil
 	case AstStd:
 		return fsptnstd.With(
 			b.parser,
 			b.exposer,
-			b.backref,
+			b.print,
 		), nil
 	case AstGo:
 		return fsptngo.With(
 			b.parser,
 			b.exposer,
-			b.backref,
+			b.print,
 		), nil
 	case AstGopium:
 		return fsptngopium.With(
 			b.parser,
 			b.exposer,
-			b.backref,
+			b.print,
 		), nil
 	default:
 		return nil, fmt.Errorf("walker %q wasn't found", name)

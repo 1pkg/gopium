@@ -14,28 +14,28 @@ import (
 // list of wout presets
 var (
 	jsonstd = wout{
-		fmt:  fmtio.PrettyJson,
-		wgen: fmtio.Stdout,
+		fmt:    fmtio.PrettyJson,
+		writer: fmtio.Stdout,
 	}
 	xmlstd = wout{
-		fmt:  fmtio.PrettyXml,
-		wgen: fmtio.Stdout,
+		fmt:    fmtio.PrettyXml,
+		writer: fmtio.Stdout,
 	}
 	csvstd = wout{
-		fmt:  fmtio.PrettyCsv,
-		wgen: fmtio.Stdout,
+		fmt:    fmtio.PrettyCsv,
+		writer: fmtio.Stdout,
 	}
 	jsontf = wout{
-		fmt:  fmtio.PrettyJson,
-		wgen: fmtio.FileJson,
+		fmt:    fmtio.PrettyJson,
+		writer: fmtio.FileJson,
 	}
 	xmltf = wout{
-		fmt:  fmtio.PrettyXml,
-		wgen: fmtio.FileXml,
+		fmt:    fmtio.PrettyXml,
+		writer: fmtio.FileXml,
 	}
 	csvtf = wout{
-		fmt:  fmtio.PrettyCsv,
-		wgen: fmtio.FileCsv,
+		fmt:    fmtio.PrettyCsv,
+		writer: fmtio.FileCsv,
 	}
 )
 
@@ -47,33 +47,38 @@ type wout struct {
 	parser  gopium.TypeParser
 	exposer gopium.Exposer
 	fmt     fmtio.StructToBytes
-	wgen    fmtio.WriterGen
-	backref bool
+	writer  fmtio.Writer
 }
 
 // With erich wout walker with parser, exposer, and ref instance
-func (w wout) With(parser gopium.Parser, exposer gopium.Exposer, backref bool) wout {
+func (w wout) With(parser gopium.Parser, exposer gopium.Exposer) wout {
 	w.parser = parser
 	w.exposer = exposer
-	w.backref = backref
 	return w
 }
 
 // Visit wout implementation
-func (w wout) Visit(ctx context.Context, regex *regexp.Regexp, stg gopium.Strategy, deep bool) error {
-	// uses gopium.Visit and gopium.VisitFunc helpers
-	// to go through all structs decls inside the package
-	// and apply strategy to them to get results
-	// then use fmts.TypeFormat to format strategy results
-	// and use io.Writer to write results to output
-
+// uses visit function helper
+// to go through all structs decls inside the package
+// and apply strategy to them to get results
+// then use fmts.TypeFormat to format strategy results
+// and use io.Writer to write results to output
+func (w wout) Visit(ctx context.Context, regex *regexp.Regexp, stg gopium.Strategy, deep, backref bool) error {
+	// check that parser wasn't set correctly
+	if w.parser == nil {
+		return errors.New("parser wasn't set")
+	}
+	// check that exposer wasn't set correctly
+	if w.exposer == nil {
+		return errors.New("exposer wasn't set")
+	}
 	// check that formatter wasn't set correctly
 	if w.fmt == nil {
 		return errors.New("formatter wasn't set")
 	}
-	// check that gen wasn't set correctly
-	if w.wgen == nil {
-		return errors.New("writter generator wasn't set")
+	// check that writer wasn't set correctly
+	if w.writer == nil {
+		return errors.New("writer wasn't set")
 	}
 	// use parser to parse types pkg data
 	// we don't care about fset
@@ -92,14 +97,13 @@ func (w wout) Visit(ctx context.Context, regex *regexp.Regexp, stg gopium.Strate
 		loc,
 		ch,
 		deep,
-		w.backref,
+		backref,
 	)
 	// create sync error group
 	// with cancelation context
 	group, gctx := errgroup.WithContext(ctx)
 	// run visiting in separate goroutine
 	go gvisit(gctx, pkg.Scope())
-loop:
 	// go through results from visit func
 	// and write them to buf concurently
 	for applied := range ch {
@@ -108,7 +112,7 @@ loop:
 		// stop execution
 		select {
 		case <-gctx.Done():
-			break loop
+			return gctx.Err()
 		default:
 		}
 		// create applied copy
@@ -116,13 +120,13 @@ loop:
 		// run error group write call
 		group.Go(func() error {
 			// in case any error happened just return error
-			// it will cancel context automatically
+			// it cancels context automatically
 			if visited.Error != nil {
 				return visited.Error
 			}
 			// just process with write call
 			// in case any error happened just return error
-			// it will cancel context automatically
+			// it cancels context automatically
 			return w.write(visited.ID, visited.Loc, visited.Result)
 		})
 	}
@@ -144,11 +148,11 @@ func (w wout) write(id, loc string, st gopium.Struct) error {
 		return err
 	}
 	// generate relevant writer
-	writer, err := w.wgen(id, loc)
+	writer, err := w.writer(id, loc)
 	if err != nil {
 		return err
 	}
-	// apply writter
+	// apply writer
 	_, err = writer.Write(buf)
 	// in case any error happened
 	// in writer return error

@@ -1,16 +1,28 @@
-package astutil
+package apply
 
 import (
 	"context"
 	"go/ast"
 
 	"1pkg/gopium"
+	"1pkg/gopium/astutil"
 	"1pkg/gopium/collections"
+	"1pkg/gopium/fmtio"
+)
+
+// SFN implements apply and combines:
+// - sync with fmtio.FSPT helper
+// - filter helper
+// - note helper
+var SFN = combine(
+	sync(fmtio.FSPT),
+	filter,
+	note,
 )
 
 // combine helps to pipe several
-// ast helpers to single Apply func
-func combine(funcs ...Apply) Apply {
+// ast helpers to single apply func
+func combine(funcs ...astutil.Apply) astutil.Apply {
 	return func(
 		ctx context.Context,
 		pkg *ast.Package,

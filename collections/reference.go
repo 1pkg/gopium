@@ -27,9 +27,9 @@ func NewReference(null bool) *Reference {
 	}
 }
 
-// Get retrieves value for given key
-// from the reference in case value hasn't been set yet
-// it waits until value will be set
+// Get retrieves value for given key from the reference,
+// in case value hasn't been set yet
+// it waits until value is set
 func (r *Reference) Get(key string) int64 {
 	// in case of nil reference
 	// just skip it and
@@ -61,7 +61,7 @@ func (r *Reference) Get(key string) int64 {
 	return -1
 }
 
-// Set update value for given key
+// Set update value for given key,
 // if slot for that value has been preallocated
 func (r *Reference) Set(key string, val int64) {
 	// in case of nil reference

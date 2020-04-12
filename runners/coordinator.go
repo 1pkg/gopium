@@ -17,6 +17,7 @@ import (
 type coordinator struct {
 	wregex    *regexp.Regexp
 	wdeep     bool
+	wbackref  bool
 	tgroup    string
 	tenable   bool
 	tforce    bool
@@ -58,7 +59,13 @@ func (coord coordinator) walker(b gopium.WalkerBuilder, wname gopium.WalkerName)
 // visit coordinates walker visiting
 func (coord coordinator) visit(ctx context.Context, w gopium.Walker, stg gopium.Strategy) error {
 	// exec visit on walker with strategy
-	if err := w.Visit(ctx, coord.wregex, stg, coord.wdeep); err != nil {
+	if err := w.Visit(
+		ctx,
+		coord.wregex,
+		stg,
+		coord.wdeep,
+		coord.wbackref,
+	); err != nil {
 		return fmt.Errorf("strategy error happened %v", err)
 	}
 	return nil
