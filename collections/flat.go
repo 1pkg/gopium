@@ -29,9 +29,19 @@ func (f Flat) Sorted() []gopium.Struct {
 		// so we need to parse and compare it
 		var idi, idj int
 		var sumi, sumj string
-		fmt.Sscanf(ids[i], "%d-%s", &idi, &sumi)
-		fmt.Sscanf(ids[j], "%d-%s", &idj, &sumj)
-		return idi < idj
+		// in case of any pattern error
+		// just apply natural sort
+		_, erri := fmt.Sscanf(ids[i], "%d-%s", &idi, &sumi)
+		_, errj := fmt.Sscanf(ids[j], "%d-%s", &idj, &sumj)
+		if erri != nil && errj != nil {
+			return ids[i] < ids[j]
+		} else if erri != nil {
+			return false
+		} else if errj != nil {
+			return true
+		} else {
+			return idi < idj
+		}
 	})
 	// collect all structs in asc order
 	for _, id := range ids {
