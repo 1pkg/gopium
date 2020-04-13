@@ -5,31 +5,78 @@ import (
 	"encoding/hex"
 	"fmt"
 	"go/token"
-	"path/filepath"
+	"sync"
+
+	"1pkg/gopium"
 )
 
 // Locator defines abstraction that helps
-// encapsulate pkgs token.FileSet and provides
+// encapsulate pkgs token.FileSets and provides
 // some operations on top of it
-type Locator token.FileSet
+type Locator struct {
+	root  *token.FileSet
+	mutex sync.Mutex
+	extra map[string]*token.FileSet
+}
+
+// NewLocator creates new locator instance
+// from provided file set
+func NewLocator(fset *token.FileSet) *Locator {
+	if fset == nil {
+		fset = token.NewFileSet()
+	}
+	return &Locator{
+		root:  fset,
+		extra: make(map[string]*token.FileSet),
+	}
+}
 
 // ID calculates sha256 hash hex string
 // for specified token.Pos in token.FileSet
+// note: generated id would be ordered inside same loc
 func (l *Locator) ID(p token.Pos) string {
-	f := (*token.FileSet)(l).File(p)
+	f := l.root.File(p)
+	// generate hash sum
 	r := fmt.Sprintf("%s/%d", f.Name(), f.Line(p))
 	h := sha256.Sum256([]byte(r))
-	return hex.EncodeToString(h[:])
+	sum := hex.EncodeToString(h[:])
+	// generate ordered id
+	return fmt.Sprintf("%d-%s", f.Line(p), sum)
 }
 
-// Loc returns filepath base dir
+// Loc returns full filepath
 // for specified token.Pos in token.FileSet
 func (l *Locator) Loc(p token.Pos) string {
-	f := (*token.FileSet)(l).File(p)
-	return filepath.Dir(f.Name())
+	return l.root.File(p).Name()
 }
 
-// Fset just returns token.FileSet back
-func (l *Locator) Fset() *token.FileSet {
-	return (*token.FileSet)(l)
+// Locator returns child locator if any
+func (l *Locator) Locator(loc string) (gopium.Locator, bool) {
+	fset, ok := l.Fset(loc, nil)
+	return NewLocator(fset), ok
+}
+
+// Fset multifunc method that
+// either set new fset for location
+// or returns child fset if any
+func (l *Locator) Fset(loc string, fset *token.FileSet) (*token.FileSet, bool) {
+	// lock concurrent map access
+	defer l.mutex.Unlock()
+	l.mutex.Lock()
+	// if fset isn't nil
+	if fset == nil {
+		// write it to exta
+		if fset, ok := l.extra[loc]; ok {
+			return fset, true
+		}
+		return l.root, false
+	}
+	// otherwise read if from exta
+	l.extra[loc] = fset
+	return fset, true
+}
+
+// Root just returns root token.FileSet back
+func (l *Locator) Root() *token.FileSet {
+	return l.root
 }

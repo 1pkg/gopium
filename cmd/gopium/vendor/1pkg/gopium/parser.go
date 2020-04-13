@@ -12,7 +12,9 @@ import (
 type Locator interface {
 	ID(token.Pos) string
 	Loc(token.Pos) string
-	Fset() *token.FileSet
+	Locator(string) (Locator, bool)
+	Fset(string, *token.FileSet) (*token.FileSet, bool)
+	Root() *token.FileSet
 }
 
 // Parser defines abstraction for

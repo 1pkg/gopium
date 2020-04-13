@@ -9,7 +9,7 @@ import (
 
 // list of filter presets
 var (
-	// to make bools them addressable
+	// to make bools addressable
 	t = true
 	f = false
 	// list of filter presets
@@ -42,7 +42,7 @@ type filter struct {
 func (stg filter) Apply(ctx context.Context, o gopium.Struct) (r gopium.Struct, err error) {
 	// copy original structure to result
 	r = o
-	// prepare filtered fields list
+	// prepare filtered fields slice
 	fields := make([]gopium.Field, 0, len(r.Fields))
 	// then go though all original fields
 	for _, f := range r.Fields {
@@ -65,7 +65,7 @@ func (stg filter) Apply(ctx context.Context, o gopium.Struct) (r gopium.Struct, 
 		// if it doesn't append it to fields
 		fields = append(fields, f)
 	}
-	// update result field list
+	// update result fields
 	r.Fields = fields
 	return
 }

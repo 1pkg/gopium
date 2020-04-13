@@ -9,7 +9,7 @@ import (
 // that applies some strategy to tree structures
 // and modifies tree or creates other side effects
 type Walker interface {
-	Visit(context.Context, *regexp.Regexp, Strategy, bool) error
+	Visit(context.Context, *regexp.Regexp, Strategy, bool, bool) error
 }
 
 // WalkerName defines registered walker name abstraction
@@ -19,5 +19,5 @@ type WalkerName string
 // WalkerBuilder defines walker builder abstraction
 // that helps to create walker by walker name
 type WalkerBuilder interface {
-	Build(StrategyName) (Walker, error)
+	Build(WalkerName) (Walker, error)
 }
