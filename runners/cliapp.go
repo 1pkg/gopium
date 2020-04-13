@@ -40,7 +40,7 @@ func NewCliApp(
 	stgs []string,
 	group string,
 	tenable, tforce, tdiscrete bool,
-	tabwidth int,
+	indent, tabwidth int,
 	usespace bool,
 	timeout int,
 ) (*CliApp, error) {
@@ -66,7 +66,7 @@ func NewCliApp(
 		BuildFlags: bflags,
 	}
 	// set up printer
-	pr := print.GoPrinter(tabwidth, usespace)
+	pr := print.GoPrinter(indent, tabwidth, usespace)
 	// compile regexp
 	wregex, err := regexp.Compile(regex)
 	if err != nil {

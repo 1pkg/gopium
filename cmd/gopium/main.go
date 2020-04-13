@@ -5,6 +5,7 @@ import (
 	"log"
 	"os"
 	"os/signal"
+	"runtime"
 
 	"1pkg/gopium"
 	"1pkg/gopium/runners"
@@ -29,8 +30,8 @@ var (
 	tgroup                     string
 	tenable, tforce, tdiscrete bool
 	// printer vars
-	ptabwidth int
-	pusespace bool
+	pindent, ptabwidth int
+	pusespace          bool
 	// global vars
 	timeout int
 	// global running context
@@ -165,6 +166,7 @@ Notes:
 				args[2:], // strategy_name slice
 				tgroup,
 				tenable, tforce, tdiscrete,
+				pindent,
 				ptabwidth,
 				pusespace,
 				timeout,
@@ -300,6 +302,14 @@ Gopium tag discrete flag, flag that defines if incremental suffix for tag group 
 Used only if tag_enable is set to true.
 		`,
 	)
+	// set printer_indent flag
+	cli.Flags().IntVarP(
+		&pindent,
+		"printer_indent",
+		"I",
+		0,
+		"Gopium printer width of tab, defines the least code indent.",
+	)
 	// set printer_tab_width flag
 	cli.Flags().IntVarP(
 		&ptabwidth,
@@ -341,6 +351,9 @@ Used only if tag_enable is set to true.
 
 // main gopium cli entry point
 func main() {
+	// explicitly set number of threads
+	// to number of logical cpu
+	runtime.GOMAXPROCS(runtime.NumCPU())
 	// execute cobra cli command
 	// on global running context
 	// and log error if any
