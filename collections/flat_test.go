@@ -140,7 +140,7 @@ func TestFlatSorted(t *testing.T) {
 			output := tcase.input.Sorted()
 			// check
 			if !reflect.DeepEqual(output, tcase.output) {
-				t.Errorf("actual %v not equals expected %v", output, tcase.output)
+				t.Errorf("actual %v doesn't equal to expected %v", output, tcase.output)
 			}
 		})
 	}

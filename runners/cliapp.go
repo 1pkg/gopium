@@ -26,7 +26,6 @@ type CliApp struct {
 	sbuilder gopium.StrategyBuilder
 	wname    gopium.WalkerName
 	snames   []gopium.StrategyName
-	timeout  time.Duration
 }
 
 // NewCliApp helps to spawn new cli application runner
@@ -51,7 +50,10 @@ func NewCliApp(
 		caches = append(caches, int64(cache))
 	}
 	// set up maven
-	m := typepkg.NewMavenGoTypes(compiler, arch, caches...)
+	m, err := typepkg.NewMavenGoTypes(compiler, arch, caches...)
+	if err != nil {
+		return nil, fmt.Errorf("can't set up maven %v", err)
+	}
 	// set up parser
 	absp := filepath.Join(build.Default.GOPATH, path)
 	// in case full path to package hasn't been provided
@@ -75,6 +77,8 @@ func NewCliApp(
 	if err != nil {
 		return nil, fmt.Errorf("can't compile such regexp %q %v", wregex, err)
 	}
+	// cast timeout to second duration
+	gtimeout := time.Duration(timeout) * time.Second
 	// set up coordinator
 	coord := coordinator{
 		wregex:    wregex,
@@ -84,6 +88,7 @@ func NewCliApp(
 		tenable:   tenable,
 		tforce:    tforce,
 		tdiscrete: tdiscrete,
+		gtimeout:  gtimeout,
 	}
 	// set walker and strategy builders
 	wbuilder := walkers.NewBuilder(p, m, pr)
@@ -95,8 +100,6 @@ func NewCliApp(
 	}
 	// cast walker string to walker name
 	wname := gopium.WalkerName(walker)
-	// cast timeout to second duration
-	tm := time.Duration(timeout) * time.Second
 	// combine cli runner
 	return &CliApp{
 		coord:    coord,
@@ -104,18 +107,11 @@ func NewCliApp(
 		sbuilder: sbuilder,
 		wname:    wname,
 		snames:   snames,
-		timeout:  tm,
 	}, nil
 }
 
 // Run CliApp implementation
 func (cli CliApp) Run(ctx context.Context) error {
-	// set up timeout context
-	if cli.timeout > 0 {
-		nctx, cancel := context.WithTimeout(ctx, cli.timeout)
-		defer cancel()
-		ctx = nctx
-	}
 	// build strategy
 	stg, err := cli.coord.strategy(cli.sbuilder, cli.snames)
 	if err != nil {

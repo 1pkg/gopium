@@ -13,20 +13,20 @@ func TestHierarchicPushCatMixed(t *testing.T) {
 	cat, ok := h.Cat("cat")
 	expected := Flat(nil)
 	if ok || !reflect.DeepEqual(cat, expected) {
-		t.Errorf("actual %v not equals expected %v", cat, expected)
+		t.Errorf("actual %v doesn't equal to %v", cat, expected)
 	}
 	// create new and check existed cat
 	h.Push("test-1", "cat", gopium.Struct{Name: "test-1"})
 	cat, ok = h.Cat("cat")
 	expected = Flat{"test-1": gopium.Struct{Name: "test-1"}}
 	if !ok || !reflect.DeepEqual(cat, expected) {
-		t.Errorf("actual %v not equals expected %v", cat, expected)
+		t.Errorf("actual %v doesn't equal to %v", cat, expected)
 	}
 	// check another non existed cat
 	cat, ok = h.Cat("cat-1")
 	expected = Flat(nil)
 	if ok || !reflect.DeepEqual(cat, expected) {
-		t.Errorf("actual %v not equals expected %v", cat, expected)
+		t.Errorf("actual %v doesn't equal to %v", cat, expected)
 	}
 	// update and check existed cat
 	h.Push("test-2", "cat", gopium.Struct{Name: "test-2"})
@@ -38,13 +38,13 @@ func TestHierarchicPushCatMixed(t *testing.T) {
 		"test-3": gopium.Struct{Name: "test-3"},
 	}
 	if !ok || !reflect.DeepEqual(cat, expected) {
-		t.Errorf("actual %v not equals expected %v", cat, expected)
+		t.Errorf("actual %v doesn't equal to %v", cat, expected)
 	}
 	// check another non existed cat
 	cat, ok = h.Cat("cat-1")
 	expected = Flat(nil)
 	if ok || !reflect.DeepEqual(cat, expected) {
-		t.Errorf("actual %v not equals expected %v", cat, expected)
+		t.Errorf("actual %v doesn't equal to %v", cat, expected)
 	}
 	// create new and update and check existed cat
 	h.Push("test-1", "cat", gopium.Struct{Name: "test-5"})
@@ -56,13 +56,13 @@ func TestHierarchicPushCatMixed(t *testing.T) {
 		"test-3": gopium.Struct{Name: "test-3"},
 	}
 	if !ok || !reflect.DeepEqual(cat, expected) {
-		t.Errorf("actual %v not equals expected %v", cat, expected)
+		t.Errorf("actual %v doesn't equal to %v", cat, expected)
 	}
 	// check another existed cat
 	cat, ok = h.Cat("cat-1")
 	expected = Flat{"test-1": gopium.Struct{Name: "test-1"}}
 	if !ok || !reflect.DeepEqual(cat, expected) {
-		t.Errorf("actual %v not equals expected %v", cat, expected)
+		t.Errorf("actual %v doesn't equal to %v", cat, expected)
 	}
 }
 
@@ -129,7 +129,7 @@ func TestHierarchicFlat(t *testing.T) {
 			output := tcase.input.Flat()
 			// check
 			if !reflect.DeepEqual(output, tcase.output) {
-				t.Errorf("actual %v not equals expected %v", output, tcase.output)
+				t.Errorf("actual %v doesn't equal to %v", output, tcase.output)
 			}
 		})
 	}

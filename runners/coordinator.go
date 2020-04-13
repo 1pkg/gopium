@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"regexp"
+	"time"
 
 	"1pkg/gopium"
 	"1pkg/gopium/strategies"
@@ -22,6 +23,7 @@ type coordinator struct {
 	tenable   bool
 	tforce    bool
 	tdiscrete bool
+	gtimeout  time.Duration
 }
 
 // strategy builds strategy instance
@@ -58,6 +60,12 @@ func (coord coordinator) walker(b gopium.WalkerBuilder, wname gopium.WalkerName)
 
 // visit coordinates walker visiting
 func (coord coordinator) visit(ctx context.Context, w gopium.Walker, stg gopium.Strategy) error {
+	// set up timeout context
+	if coord.gtimeout > 0 {
+		nctx, cancel := context.WithTimeout(ctx, coord.gtimeout)
+		defer cancel()
+		ctx = nctx
+	}
 	// exec visit on walker with strategy
 	if err := w.Visit(
 		ctx,
