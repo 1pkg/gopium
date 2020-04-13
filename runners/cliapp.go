@@ -63,7 +63,7 @@ func NewCliApp(
 	}
 	p := typepkg.ParserXToolPackagesAst{
 		Pattern: pkg,
-		AbsDir:  absp,
+		Path:    absp,
 		//nolint
 		ModeTypes:  packages.LoadAllSyntax,
 		ModeAst:    parser.ParseComments | parser.AllErrors,
