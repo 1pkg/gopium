@@ -21,7 +21,12 @@ type WalkerMock struct {
 }
 
 // VisitTop mock implementation
-func (w WalkerMock) Visit(ctx context.Context, regex *regexp.Regexp, stg gopium.Strategy, deep bool) error {
+func (w WalkerMock) Visit(
+	ctx context.Context,
+	regex *regexp.Regexp,
+	stg gopium.Strategy,
+	deep, backref bool,
+) error {
 	// check error at start
 	if w.Err != nil {
 		return w.Err

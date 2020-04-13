@@ -63,7 +63,12 @@ func (w wout) With(parser gopium.Parser, exposer gopium.Exposer) wout {
 // and apply strategy to them to get results
 // then use fmts.TypeFormat to format strategy results
 // and use io.Writer to write results to output
-func (w wout) Visit(ctx context.Context, regex *regexp.Regexp, stg gopium.Strategy, deep, backref bool) error {
+func (w wout) Visit(
+	ctx context.Context,
+	regex *regexp.Regexp,
+	stg gopium.Strategy,
+	deep, backref bool,
+) error {
 	// check that parser wasn't set correctly
 	if w.parser == nil {
 		return errors.New("parser wasn't set")

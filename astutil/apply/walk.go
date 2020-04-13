@@ -22,7 +22,7 @@ type wact func(ts *ast.TypeSpec, st gopium.Struct) error
 // that checks if ast.TypeSpec node
 // needs to be visitted and returns
 // relevant struct and visit flag
-type wcomp func(ts *ast.TypeSpec) (gopium.Struct, bool)
+type wcomp func(ts *ast.TypeSpec) (gopium.Struct, bool, bool)
 
 // walk helps to walk through ast.Node
 // on comparator function and
@@ -54,14 +54,19 @@ func walk(
 						}
 						// check that structure
 						// should be visited
-						// and skip irrelevant structs
-						if st, ok := wcomp(ts); ok {
+						// skip irrelevant structs
+						// check if walk should be broken
+						if st, skip, brk := wcomp(ts); skip {
+							return true
+						} else if brk {
+							err = errors.New("walk has been stoped")
+						} else {
 							// apply action to ast
 							err = wact(ts, st)
-							// in case we have error
-							// break iteration
-							return err != nil
 						}
+						// in case we have error
+						// break iteration
+						return err != nil
 					}
 				}
 			}
@@ -122,32 +127,63 @@ func compid(loc gopium.Locator, h collections.Hierarchic) wcomp {
 	// build flat collection from hierarchic
 	f := h.Flat()
 	// return basic comparator func
-	return func(ts *ast.TypeSpec) (gopium.Struct, bool) {
+	return func(ts *ast.TypeSpec) (gopium.Struct, bool, bool) {
 		// just check if struct
 		// with such id is inside
 		id := loc.ID(ts.Pos())
 		st, ok := f[id]
-		return st, ok
+		return st, !ok, false
 	}
 }
 
 // comploc helps to create wcomp
-// which uses match on sorted struct name
-// in provided loc
+// which uses match on sorted
+// struct names in provided loc
 func comploc(loc gopium.Locator, cat string, h collections.Hierarchic) wcomp {
 	// build sorted collection for loc
 	f, ok := h.Cat(cat)
 	sorted := f.Sorted()
 	// return basic comparator func
-	return func(ts *ast.TypeSpec) (gopium.Struct, bool) {
+	return func(ts *ast.TypeSpec) (gopium.Struct, bool, bool) {
 		// if loc exists
 		if ok && len(sorted) > 0 {
 			// check the top sorted element name
 			if st := sorted[0]; st.Name == ts.Name.Name {
 				sorted = sorted[1:]
-				return st, true
+				return st, false, false
 			}
 		}
-		return gopium.Struct{}, false
+		// otherwise break it
+		return gopium.Struct{}, true, true
+	}
+}
+
+// compwnote helps to create wcomp
+// which adaptes wcomp by adding
+// check that structure or any structure field
+// has any notes inside
+func compwnote(comp wcomp) wcomp {
+	return func(ts *ast.TypeSpec) (gopium.Struct, bool, bool) {
+		// use underlying comp func
+		st, skip, brk := comp(ts)
+		// check if we can process struct
+		if !brk && !skip {
+			// if struct has any notes
+			if len(st.Doc) > 0 || len(st.Comment) > 0 {
+				return st, false, false
+			}
+			// if any field of struct has any notes
+			for _, f := range st.Fields {
+				if len(f.Doc) > 0 || len(f.Comment) > 0 {
+					return st, false, false
+				}
+			}
+			// in case struct has no inner
+			// notes, just skip it
+			return st, true, false
+		}
+		// otherwise return underlying
+		// comp func results
+		return st, skip, brk
 	}
 }

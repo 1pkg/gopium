@@ -46,7 +46,7 @@ func init() {
 		Use:     "gopium walker package strategy#1 strategy#2 strategy#3 ...",
 		Short:   gopium.STAMP,
 		Version: gopium.VERSION,
-		Example: "gopium -r ^A -s soft json_std 1pkg/gopium filter_pads memory_pack separate_padding_cpu_l1_top separate_padding_cpu_l1_bottom",
+		Example: "gopium -E -r ^A json_std 1pkg/gopium filter_pads memory_pack separate_padding_cpu_l1_top separate_padding_cpu_l1_bottom",
 		Long: `
 Gopium is the tool which was designed to automate and simplify non trivial actions on structs, like:
  - cpu cache alignment
