@@ -23,7 +23,6 @@ func NewReference(null bool) *Reference {
 	return &Reference{
 		vals:    make(map[string]int64),
 		signals: make(map[string]chan struct{}),
-		mutex:   sync.Mutex{},
 	}
 }
 
@@ -129,4 +128,7 @@ func (r *Reference) Prune() {
 			close(ch)
 		}
 	}
+	// reset vals and signals
+	r.vals = make(map[string]int64)
+	r.signals = make(map[string]chan struct{})
 }
