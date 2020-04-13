@@ -13,7 +13,7 @@ var (
 )
 
 // unpack defines strategy implementation
-// that rearranges structure field list
+// that rearranges structure fields
 // to obtain inflated memory utilization
 // by sorting fields accordingly
 // to their aligns and sizes in some order

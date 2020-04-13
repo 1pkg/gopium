@@ -8,29 +8,28 @@ import (
 	"regexp"
 	"sort"
 	"strconv"
-	"strings"
 
 	"1pkg/gopium"
 )
 
 // StructToAst defines abstraction for
-// formatting original *ast.TypeSpec with gopium.Struct
+// formatting original ast.TypeSpec with gopium.Struct
 type StructToAst func(*ast.TypeSpec, gopium.Struct) error
 
 // FSPTN implements StructToAst and combines:
 // - flatten helper
-// - padfilter helper
+// - fpadfilter helper
 // - shuffle helper
 // - padsync helper
 // - tagsync helper
-// - notesync helper
-var FSPTN = combine(
+// - reindex helper
+var FSPT = combine(
 	flatten,
 	fpadfilter,
 	shuffle,
 	padsync,
 	tagsync,
-	notesync,
+	reindex,
 )
 
 // combine helps to pipe several
@@ -60,23 +59,27 @@ func flatten(ts *ast.TypeSpec, st gopium.Struct) error {
 	if !ok {
 		return errors.New("flatten could only be applied to ast.StructType")
 	}
-	// prepare result list
-	list := make([]*ast.Field, 0, tts.Fields.NumFields())
+	// prepare result slice
+	fields := make([]*ast.Field, 0, tts.Fields.NumFields())
 	// iterate over fields list
 	for _, field := range tts.Fields.List {
+		// check that structure is valid
+		if field == nil || len(field.Names) == 0 {
+			return errors.New("flatten could only be applied to valid structure")
+		}
 		// for each concatenated name
 		// create separate line
 		for _, name := range field.Names {
 			// copy current field
 			f := *field
-			// update names list
+			// update names slice
 			f.Names = []*ast.Ident{name}
-			// put it to result list
-			list = append(list, &f)
+			// put it to result slice
+			fields = append(fields, &f)
 		}
 	}
 	// update structure fields list
-	tts.Fields.List = list
+	tts.Fields.List = fields
 	return nil
 }
 
@@ -89,17 +92,17 @@ func fpadfilter(ts *ast.TypeSpec, st gopium.Struct) error {
 	if !ok {
 		return errors.New("fpadfilter could only be applied to ast.StructType")
 	}
-	// collect all unique fields list
-	stfields := make(map[string]struct{}, len(st.Fields))
+	// collect unique fields
+	fields := make(map[string]struct{}, len(st.Fields))
 	for _, f := range st.Fields {
-		stfields[f.Name] = struct{}{}
+		fields[f.Name] = struct{}{}
 	}
-	// prepare resulted fields list
-	fields := make([]*ast.Field, 0, len(tts.Fields.List))
-	// go through original ast struct
+	// prepare resulted fields slice
+	astfields := make([]*ast.Field, 0, len(tts.Fields.List))
+	// go through original ast fields list
 	for _, f := range tts.Fields.List {
 		// in case structure isn't flat return error
-		if len(f.Names) != 1 {
+		if f == nil || len(f.Names) != 1 {
 			return errors.New("fpadfilter could only be applied to flatten structures")
 		}
 		// if pad field was detected
@@ -107,16 +110,16 @@ func fpadfilter(ts *ast.TypeSpec, st gopium.Struct) error {
 		if f.Names[0].Name == "_" {
 			continue
 		}
-		// if field isn't in result list
+		// if field isn't inside
 		// filter it out
-		if _, ok := stfields[f.Names[0].Name]; !ok {
+		if _, ok := fields[f.Names[0].Name]; !ok {
 			continue
 		}
 		// otherwise collect field
-		fields = append(fields, f)
+		astfields = append(astfields, f)
 	}
 	// update original ast fields list
-	tts.Fields.List = fields
+	tts.Fields.List = astfields
 	return nil
 }
 
@@ -128,50 +131,45 @@ func shuffle(ts *ast.TypeSpec, st gopium.Struct) error {
 	if !ok {
 		return errors.New("shuffle could only be applied to ast.StructType")
 	}
+	// collect fields indexes
+	fields := make(map[string]int, len(st.Fields))
+	for i, f := range st.Fields {
+		fields[f.Name] = i
+	}
 	// err holds inner sorting error
 	var err error
 	// shuffle fields list
 	sort.SliceStable(tts.Fields.List, func(i, j int) bool {
 		// in case structure isn't flat save error
 		// and keep the same order
-		if len(tts.Fields.List[i].Names) != 1 || len(tts.Fields.List[j].Names) != 1 {
+		fni, fnj := tts.Fields.List[i], tts.Fields.List[j]
+		if fni == nil || fnj == nil || len(fni.Names) != 1 || len(fnj.Names) != 1 {
 			err = errors.New("annotate could only be applied to flatten structures")
-			return i < j
+			return false
 		}
 		// we can safely pick only first name
 		// as structure is flat
-		// get ast's i-th structure field
-		fni := tts.Fields.List[i].Names[0]
-		ni := fni.Name
-		// we can safely pick only first name
-		// as structure is flat
-		// get ast's j-th structure field
-		fnj := tts.Fields.List[j].Names[0]
-		nj := fnj.Name
+		// get ast's i-th and j-th structure fields
+		ni, nj := fni.Names[0].Name, fnj.Names[0].Name
+		// in case structure isn't filtered save error
+		// and keep the same order
+		if ni == "_" || nj == "_" {
+			err = errors.New("shuffle could only be applied to fpadfiltered structures")
+			return false
+		}
 		// prepare comparison indexes
 		// and search for them in resulted structure
+		// in case field name of resulted
+		// structure matches either:
+		// - ast's i-th structure field
+		// - ast's j-th structure field
+		// set related comparison index
 		fi, fj := 0, 0
-		for index, field := range st.Fields {
-			// in case field name of resulted
-			// structure matches either:
-			// - ast's i-th structure field
-			// - ast's j-th structure field
-			// set related comparison index
-			switch field.Name {
-			case ni:
-				fi = index
-			case nj:
-				fj = index
-			case "_": // skip paddings
-				index--
-			}
+		if index, ok := fields[ni]; ok {
+			fi = index
 		}
-		// swap position if
-		// i-th index less than j-th index
-		if fi < fj {
-			p := fni.NamePos
-			fni.NamePos = fnj.NamePos
-			fnj.NamePos = p
+		if index, ok := fields[nj]; ok {
+			fj = index
 		}
 		// compare comparison indexes
 		return fi < fj
@@ -190,8 +188,8 @@ func padsync(ts *ast.TypeSpec, st gopium.Struct) error {
 	}
 	// prepare pad type expression regex
 	regex := regexp.MustCompile(`\[.*\]byte`)
-	// prepare resulted fields list
-	fields := make([]*ast.Field, len(tts.Fields.List), len(tts.Fields.List)+len(st.Fields))
+	// prepare resulted fields slice
+	fields := make([]*ast.Field, len(st.Fields))
 	copy(fields, tts.Fields.List)
 	for index, f := range st.Fields {
 		// skip non pad fields
@@ -205,8 +203,6 @@ func padsync(ts *ast.TypeSpec, st gopium.Struct) error {
 		}
 		// transform size to string format
 		// and add pad field to struct
-		// note: don't need to sync docs/comments here
-		// as it will be done in annotate
 		size := strconv.Itoa(int(f.Size))
 		field := &ast.Field{
 			Names: []*ast.Ident{
@@ -246,164 +242,47 @@ func tagsync(ts *ast.TypeSpec, st gopium.Struct) error {
 	if !ok {
 		return errors.New("tagsync could only be applied to ast.StructType")
 	}
-	// prepare struct tags list
-	sttags := make(map[string]*ast.BasicLit)
-	// go through all resulted structure fields
-	for _, field := range st.Fields {
-		// put ast tag to the map
-		sttags[field.Name] = &ast.BasicLit{
-			Kind:  token.STRING,
-			Value: field.Tag,
-		}
-	}
+	flen := len(st.Fields)
 	// go through all original structure fields
-	for _, field := range tts.Fields.List {
-		// in case structure isn't flat return error
-		if len(field.Names) != 1 {
-			return errors.New("tagsync could only be applied to flatten structures")
-		}
-		// grab the only field name
-		fname := field.Names[0].Name
-		// if we have tag in the map
-		// set it as field tag
-		if sttag, ok := sttags[fname]; ok {
-			sttag.ValuePos = field.Pos() + token.Pos(1)
-			field.Tag = sttag
+	for index, field := range tts.Fields.List {
+		if index < flen {
+			// update ast tag
+			f := st.Fields[index]
+			field.Tag = &ast.BasicLit{
+				Kind:  token.STRING,
+				Value: f.Tag,
+			}
 		}
 	}
 	return nil
 }
 
-// notesync helps to sync docs and comments
-// between original *ast.TypeSpec and result gopium.Struct
-func notesync(ts *ast.TypeSpec, st gopium.Struct) error {
+// reindex helps to reindex fields local token pos
+// for original *ast.TypeSpec, by just incrementing
+// pos for each struct field, note this is not
+// full compliant ast implementation as we are losing
+// absolute pos for all other elements, but it's
+// too complex to recalculate all elements pos, so
+// we can just recalculate local pos which leads
+// to almost identical result
+func reindex(ts *ast.TypeSpec, st gopium.Struct) error {
 	// check that we are working with ast.StructType
 	tts, ok := ts.Type.(*ast.StructType)
 	if !ok {
-		return errors.New("notesync could only be applied to ast.StructType")
+		return errors.New("reindex could only be applied to ast.StructType")
 	}
-	// prepare struct docs list
-	sdocs := make([]*ast.Comment, 0, len(st.Doc))
-	// in case original structure has doc
-	if ts.Doc != nil {
-		// prepare struct docs list
-		sdocs := make([]*ast.Comment, 0, len(ts.Doc.List)+len(st.Doc))
-		// collect all docs from original structure
-		for _, d := range ts.Doc.List {
-			// in case doc has autogenerated prefix skip it
-			if !strings.Contains(d.Text, gopium.STAMP) {
-				sdocs = append(sdocs, d)
-			}
-		}
-	}
-	// collect all docs from resulted structure
-	for _, d := range st.Doc {
-		// doc position is position of name - name len - 1
-		slash := ts.Name.Pos() - token.Pos(len(ts.Name.Name)) - token.Pos(1)
-		sdoc := ast.Comment{Slash: slash, Text: d}
-		sdocs = append(sdocs, &sdoc)
-	}
-	// update docs list
-	ts.Doc = &ast.CommentGroup{List: sdocs}
-	// prepare struct comments list
-	scomments := make([]*ast.Comment, 0, len(st.Comment))
-	// in case original structure has comment
-	if ts.Comment != nil {
-		// prepare struct comments list
-		scomments := make([]*ast.Comment, 0, len(ts.Comment.List)+len(st.Comment))
-		// collect all comments from original structure
-		for _, c := range ts.Comment.List {
-			// in case comment has autogenerated prefix skip it
-			if !strings.Contains(c.Text, gopium.STAMP) {
-				scomments = append(scomments, c)
-			}
-		}
-	}
-	// collect all comments from resulted structure
-	for _, c := range st.Comment {
-		// comment position is end of type decl
-		slash := ts.Type.End()
-		scomment := ast.Comment{Slash: slash, Text: c}
-		scomments = append(scomments, &scomment)
-	}
-	// update comments list
-	ts.Comment = &ast.CommentGroup{List: scomments}
-	// prepare fields storage for docs list and comments list
-	stdocs := make(map[string][]*ast.Comment)
-	stcomments := make(map[string][]*ast.Comment)
-	// go through all resulted structure fields
-	for _, field := range st.Fields {
-		// collect all docs from resulted structure
-		fdocs := make([]*ast.Comment, 0, len(field.Doc))
-		for _, d := range field.Doc {
-			fdoc := ast.Comment{Text: d}
-			fdocs = append(fdocs, &fdoc)
-		}
-		// collect all comments from resulted structure
-		fcomments := make([]*ast.Comment, 0, len(field.Comment))
-		for _, c := range field.Comment {
-			fcomment := ast.Comment{Text: c}
-			fcomments = append(fcomments, &fcomment)
-		}
-		// put collected results to storage
-		stdocs[field.Name] = fdocs
-		stcomments[field.Name] = fcomments
-	}
-	// go through all original structure fields
+	// set initial pos to zero inside a structure
+	pos := token.Pos(0)
+	// go through all structure fields
 	for _, field := range tts.Fields.List {
-		var fdocs []*ast.Comment
-		// in case original field has doc
-		if field.Doc != nil {
-			// collect all docs from original structure
-			fdocs := make([]*ast.Comment, 0, len(field.Doc.List))
-			for _, d := range field.Doc.List {
-				// in case doc has autogenerated prefix skip it
-				if !strings.Contains(d.Text, gopium.STAMP) {
-					fdocs = append(fdocs, d)
-				}
-			}
-		}
-		var fcomments []*ast.Comment
-		// in case original field has comment
-		if field.Comment != nil {
-			// collect all comments from original structure
-			fcomments := make([]*ast.Comment, 0, len(field.Comment.List))
-			for _, c := range field.Comment.List {
-				// in case comment has autogenerated prefix skip it
-				if !strings.Contains(c.Text, gopium.STAMP) {
-					fcomments = append(fcomments, c)
-				}
-			}
-		}
 		// in case structure isn't flat return error
-		if len(field.Names) != 1 {
-			return errors.New("notesync could only be applied to flatten structures")
+		if field == nil || len(field.Names) != 1 {
+			return errors.New("reindex could only be applied to flatten structures")
 		}
-		// grab the only field name
-		fname := field.Names[0].Name
-		// if we have docs in storage
-		// append them to collected list
-		if stdoc, ok := stdocs[fname]; ok {
-			// set original slash pos
-			for _, doc := range stdoc {
-				// doc position is position of name - 1
-				doc.Slash = field.Pos() - token.Pos(1)
-			}
-			fdocs = append(fdocs, stdoc...)
-		}
-		// if we have comments in storage
-		// append them to collected list
-		if stcomment, ok := stcomments[fname]; ok {
-			// set original slash pos
-			for _, com := range stcomment {
-				// comment position is end of field type
-				com.Slash = field.Type.End()
-			}
-			fcomments = append(fcomments, stcomment...)
-		}
-		// update docs and comments list
-		field.Doc = &ast.CommentGroup{List: fdocs}
-		field.Comment = &ast.CommentGroup{List: fcomments}
+		// set field to current pos
+		field.Names[0].NamePos = pos
+		// just increment pos
+		pos += token.Pos(1)
 	}
 	return nil
 }

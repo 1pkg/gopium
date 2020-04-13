@@ -10,7 +10,7 @@ import (
 )
 
 // gopium tag name
-const tagn = "gopium"
+const tagname = "gopium"
 
 // list of tag presets
 var (
@@ -21,8 +21,8 @@ var (
 // that adds or updates fields tags annotation
 // that could be processed by group strategy
 type tag struct {
-	tag   string
-	force bool
+	tag, group      string
+	force, discrete bool
 }
 
 // Apply tag implementation
@@ -33,7 +33,23 @@ func (stg tag) Apply(ctx context.Context, o gopium.Struct) (r gopium.Struct, err
 	for i := range r.Fields {
 		f := &r.Fields[i]
 		// grab the field tag
-		tag, ok := reflect.StructTag(f.Tag).Lookup(tagn)
+		tag, ok := reflect.StructTag(f.Tag).Lookup(tagname)
+		// build group tag
+		gtag := stg.tag
+		if stg.group != "" {
+			gtag = fmt.Sprintf("group:%s;%s", stg.group, stg.tag)
+		}
+		// if we wanna build discrete groups
+		if stg.discrete {
+			// use default group tag
+			group := tdef
+			if stg.group != "" {
+				group = stg.group
+			}
+			// append index of field to it
+			group = fmt.Sprintf("%s-%d", group, i)
+			gtag = fmt.Sprintf("group:%s;%s", group, stg.tag)
+		}
 		// in case gopium tag already exists
 		// and force is set - replace tag
 		// in case gopium tag already exists
@@ -41,16 +57,16 @@ func (stg tag) Apply(ctx context.Context, o gopium.Struct) (r gopium.Struct, err
 		// in case tag is not empty and
 		// gopium tag doesn't exist - append tag
 		// in case tag is empty - set tag
-		ntag := fmt.Sprintf(`%s:"%s"`, tagn, stg.tag)
+		fulltag := fmt.Sprintf(`%s:"%s"`, tagname, gtag)
 		switch {
 		case ok && stg.force:
-			f.Tag = strings.Replace(f.Tag, tag, stg.tag, 1)
+			f.Tag = strings.Replace(f.Tag, tag, gtag, 1)
 		case ok:
 			break
 		case len(f.Tag) != 0:
-			f.Tag += " " + ntag
+			f.Tag += " " + fulltag
 		default:
-			f.Tag = ntag
+			f.Tag = fulltag
 		}
 		f.Tag = fmt.Sprintf("`%s`", f.Tag)
 	}

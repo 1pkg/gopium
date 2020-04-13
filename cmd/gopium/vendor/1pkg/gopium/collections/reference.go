@@ -1,37 +1,37 @@
-package ref
+package collections
 
 import "sync"
 
-// Ref defines backreference helper
+// Reference defines backreference helper
 // that helps to set, and get wait for
 // key value pairs
-type Ref struct {
+type Reference struct {
 	vals    map[string]int64
 	signals map[string]chan struct{}
 	mutex   sync.Mutex
 }
 
-// NewRef creates ref instance
+// NewReference creates reference instance
 // accordingly to passed nonnil flag
-func NewRef(null bool) *Ref {
+func NewReference(null bool) *Reference {
 	// in case we wanna use
-	// nil ref instance
+	// nil reference instance
 	if null {
 		return nil
 	}
-	// othewise return real ref instance
-	return &Ref{
+	// othewise return real reference instance
+	return &Reference{
 		vals:    make(map[string]int64),
 		signals: make(map[string]chan struct{}),
 		mutex:   sync.Mutex{},
 	}
 }
 
-// Get retrieves value for given key
-// from the ref in case value hasn't been set yet
-// it waits until value will be set
-func (r *Ref) Get(key string) int64 {
-	// in case of nil ref
+// Get retrieves value for given key from the reference,
+// in case value hasn't been set yet
+// it waits until value is set
+func (r *Reference) Get(key string) int64 {
+	// in case of nil reference
 	// just skip it and
 	// return def size
 	if r == nil {
@@ -49,10 +49,10 @@ func (r *Ref) Get(key string) int64 {
 	}
 	// othewise wait for signal
 	<-sig
-	// lock the ref againg
+	// lock the reference againg
 	defer r.mutex.Unlock()
 	r.mutex.Lock()
-	// grab the ref value
+	// grab the reference value
 	if val, ok := r.vals[key]; ok {
 		return val
 	}
@@ -61,15 +61,15 @@ func (r *Ref) Get(key string) int64 {
 	return -1
 }
 
-// Set update value for given key
+// Set update value for given key,
 // if slot for that value has been preallocated
-func (r *Ref) Set(key string, val int64) {
-	// in case of nil ref
+func (r *Reference) Set(key string, val int64) {
+	// in case of nil reference
 	// just skip it
 	if r == nil {
 		return
 	}
-	// lock the ref
+	// lock the reference
 	defer r.mutex.Unlock()
 	r.mutex.Lock()
 	// if slot hasn't been allocated yet
@@ -89,15 +89,15 @@ func (r *Ref) Set(key string, val int64) {
 	}
 }
 
-// Alloc preallocates slot in the ref
-// for the given key
-func (r *Ref) Alloc(key string) {
-	// in case of nil ref
+// Alloc preallocates slot in the
+// reference for the given key
+func (r *Reference) Alloc(key string) {
+	// in case of nil reference
 	// just skip it
 	if r == nil {
 		return
 	}
-	// lock the ref
+	// lock the reference
 	defer r.mutex.Unlock()
 	r.mutex.Lock()
 	// if signal hasn't been set yet
@@ -109,16 +109,16 @@ func (r *Ref) Alloc(key string) {
 
 // Prune releases all value waiters
 // and clean all signal resources
-func (r *Ref) Prune() {
-	// in case of nil ref
+func (r *Reference) Prune() {
+	// in case of nil reference
 	// just skip it
 	if r == nil {
 		return
 	}
-	// lock the ref
+	// lock the reference
 	defer r.mutex.Unlock()
 	r.mutex.Lock()
-	// go through all ref's signals
+	// go through all reference signals
 	for _, ch := range r.signals {
 		// check that channel
 		// hasn't been closed yet
