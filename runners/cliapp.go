@@ -3,6 +3,7 @@ package runners
 import (
 	"context"
 	"fmt"
+	"go/build"
 	"go/parser"
 	"path/filepath"
 	"regexp"
@@ -52,16 +53,18 @@ func NewCliApp(
 	// set up maven
 	m := typepkg.NewMavenGoTypes(compiler, arch, caches...)
 	// set up parser
-	absp, err := filepath.Abs(path)
-	if err != nil {
-		return nil, fmt.Errorf("can't find such path %q %v", path, err)
+	absp := filepath.Join(build.Default.GOPATH, path)
+	// in case full path to package hasn't been provided
+	// try to build it from package name
+	if absp == build.Default.GOPATH {
+		absp = filepath.Join(build.Default.GOPATH, "src", pkg)
 	}
 	p := typepkg.ParserXToolPackagesAst{
 		Pattern: pkg,
 		AbsDir:  absp,
 		//nolint
 		ModeTypes:  packages.LoadAllSyntax,
-		ModeAst:    parser.ParseComments,
+		ModeAst:    parser.ParseComments | parser.AllErrors,
 		BuildEnv:   benvs,
 		BuildFlags: bflags,
 	}

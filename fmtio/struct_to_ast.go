@@ -63,6 +63,10 @@ func flatten(ts *ast.TypeSpec, st gopium.Struct) error {
 	fields := make([]*ast.Field, 0, tts.Fields.NumFields())
 	// iterate over fields list
 	for _, field := range tts.Fields.List {
+		// check that structure is valid
+		if field == nil || len(field.Names) == 0 {
+			return errors.New("flatten could only be applied to valid structure")
+		}
 		// for each concatenated name
 		// create separate line
 		for _, name := range field.Names {
@@ -98,7 +102,7 @@ func fpadfilter(ts *ast.TypeSpec, st gopium.Struct) error {
 	// go through original ast fields list
 	for _, f := range tts.Fields.List {
 		// in case structure isn't flat return error
-		if len(f.Names) != 1 {
+		if f == nil || len(f.Names) != 1 {
 			return errors.New("fpadfilter could only be applied to flatten structures")
 		}
 		// if pad field was detected
@@ -138,18 +142,15 @@ func shuffle(ts *ast.TypeSpec, st gopium.Struct) error {
 	sort.SliceStable(tts.Fields.List, func(i, j int) bool {
 		// in case structure isn't flat save error
 		// and keep the same order
-		if len(tts.Fields.List[i].Names) != 1 || len(tts.Fields.List[j].Names) != 1 {
+		fni, fnj := tts.Fields.List[i], tts.Fields.List[j]
+		if fni == nil || fnj == nil || len(fni.Names) != 1 || len(fnj.Names) != 1 {
 			err = errors.New("annotate could only be applied to flatten structures")
 			return false
 		}
 		// we can safely pick only first name
 		// as structure is flat
-		// get ast's i-th structure field
-		ni := tts.Fields.List[i].Names[0].Name
-		// we can safely pick only first name
-		// as structure is flat
-		// get ast's j-th structure field
-		nj := tts.Fields.List[j].Names[0].Name
+		// get ast's i-th and j-th structure fields
+		ni, nj := fni.Names[0].Name, fnj.Names[0].Name
 		// in case structure isn't filtered save error
 		// and keep the same order
 		if ni == "_" || nj == "_" {
@@ -244,10 +245,6 @@ func tagsync(ts *ast.TypeSpec, st gopium.Struct) error {
 	flen := len(st.Fields)
 	// go through all original structure fields
 	for index, field := range tts.Fields.List {
-		// in case structure isn't flat return error
-		if len(field.Names) != 1 {
-			return errors.New("tagsync could only be applied to flatten structures")
-		}
 		if index < flen {
 			// update ast tag
 			f := st.Fields[index]
@@ -279,7 +276,7 @@ func reindex(ts *ast.TypeSpec, st gopium.Struct) error {
 	// go through all structure fields
 	for _, field := range tts.Fields.List {
 		// in case structure isn't flat return error
-		if len(field.Names) != 1 {
+		if field == nil || len(field.Names) != 1 {
 			return errors.New("reindex could only be applied to flatten structures")
 		}
 		// set field to current pos

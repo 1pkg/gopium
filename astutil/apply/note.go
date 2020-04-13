@@ -92,8 +92,8 @@ func note(
 					stdocs := make([]*ast.Comment, 0, len(st.Doc))
 					// collect all docs from resulted structure
 					for _, doc := range st.Doc {
-						// doc position is position of name - name len - 1
-						slash := ts.Name.Pos() - token.Pos(len(ts.Name.Name)) - token.Pos(1)
+						// doc position is position of name - len of `type` keyword
+						slash := ts.Name.Pos() - token.Pos(6)
 						sdoc := ast.Comment{Slash: slash, Text: doc}
 						stdocs = append(stdocs, &sdoc)
 					}
