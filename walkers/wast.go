@@ -58,7 +58,12 @@ func (w wast) With(parser gopium.Parser, exposer gopium.Exposer, print astutil.P
 // and apply strategy to them to get results
 // then overrides os.Files with updated ast
 // builded from strategy results
-func (w wast) Visit(ctx context.Context, regex *regexp.Regexp, stg gopium.Strategy, deep, backref bool) error {
+func (w wast) Visit(
+	ctx context.Context,
+	regex *regexp.Regexp,
+	stg gopium.Strategy,
+	deep, backref bool,
+) error {
 	// check that parser wasn't set correctly
 	if w.parser == nil {
 		return errors.New("parser wasn't set")

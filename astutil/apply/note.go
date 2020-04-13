@@ -77,11 +77,11 @@ func note(
 			// push child fset to locator
 			loc.Fset(name, fset)
 			// go through file structs
-			// and note all commentss
+			// and note all comments
 			if file, err = walkFile(
 				gctx,
 				file,
-				comploc(loc, name, hsts),
+				compwnote(comploc(loc, name, hsts)),
 				func(ts *ast.TypeSpec, st gopium.Struct) error {
 					// check that we are working with ast.StructType
 					tts, ok := ts.Type.(*ast.StructType)
