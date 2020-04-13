@@ -15,8 +15,8 @@ import (
 // some operations on top of it
 type Locator struct {
 	root  *token.FileSet
-	mutex sync.Mutex
 	extra map[string]*token.FileSet
+	mutex sync.Mutex
 }
 
 // NewLocator creates new locator instance
@@ -35,19 +35,26 @@ func NewLocator(fset *token.FileSet) *Locator {
 // for specified token.Pos in token.FileSet
 // note: generated id would be ordered inside same loc
 func (l *Locator) ID(p token.Pos) string {
-	f := l.root.File(p)
-	// generate hash sum
-	r := fmt.Sprintf("%s/%d", f.Name(), f.Line(p))
-	h := sha256.Sum256([]byte(r))
-	sum := hex.EncodeToString(h[:])
-	// generate ordered id
-	return fmt.Sprintf("%d-%s", f.Line(p), sum)
+	// check if such file exists
+	if f := l.root.File(p); f != nil {
+		// generate hash sum
+		r := fmt.Sprintf("%s/%d", f.Name(), f.Line(p))
+		h := sha256.Sum256([]byte(r))
+		sum := hex.EncodeToString(h[:])
+		// generate ordered id
+		return fmt.Sprintf("%d-%s", f.Line(p), sum)
+	}
+	return ""
 }
 
 // Loc returns full filepath
 // for specified token.Pos in token.FileSet
 func (l *Locator) Loc(p token.Pos) string {
-	return l.root.File(p).Name()
+	// check if such file exists
+	if f := l.root.File(p); f != nil {
+		return f.Name()
+	}
+	return ""
 }
 
 // Locator returns child locator if any

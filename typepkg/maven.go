@@ -1,6 +1,9 @@
 package typepkg
 
-import "go/types"
+import (
+	"fmt"
+	"go/types"
+)
 
 // MavenGoTypes defines maven default "go/types" implementation
 // that uses types.Sizes Sizeof in order to get type info
@@ -11,17 +14,21 @@ type MavenGoTypes struct {
 
 // NewWhistleblowerGoTypes creates instance of ExtractorGoTypes
 // and requires compiler and arch for types.Sizes initialization
-func NewMavenGoTypes(compiler, arch string, caches ...int64) MavenGoTypes {
+func NewMavenGoTypes(compiler, arch string, caches ...int64) (MavenGoTypes, error) {
 	// go through all passed caches
 	// and fill them to cache map
 	cm := make(map[uint]int64, len(caches))
 	for i, cache := range caches {
 		cm[uint(i+1)] = cache
 	}
-	return MavenGoTypes{
-		sizes:  types.SizesFor(compiler, arch),
-		caches: cm,
+	// try to get size for compiler and arch
+	if sizes := types.SizesFor(compiler, arch); sizes != nil {
+		return MavenGoTypes{
+			sizes:  sizes,
+			caches: cm,
+		}, nil
 	}
+	return MavenGoTypes{}, fmt.Errorf("unsuported compiler %q arch %q combination", compiler, arch)
 }
 
 // SysWord MavenGoTypes implementation
