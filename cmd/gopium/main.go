@@ -157,13 +157,13 @@ Notes:
 			if app, err := runners.NewCliApp(
 				tcompiler, tarch,
 				tcpulines,
-				args[1], // package_name
+				args[1], // package name
 				ppath,
 				pbenvs, pbflags,
-				args[0], // walker_name
+				args[0], // walker
 				wregex,
 				wdeep, wbackref,
-				args[2:], // strategy_name slice
+				args[2:], // strategies slice
 				tgroup,
 				tenable, tforce, tdiscrete,
 				pindent,
@@ -210,7 +210,11 @@ For now only 3 lines of cache are supported by strategies.
 		"package_path",
 		"p",
 		"",
-		"Go package path, path to root of the package is expected.",
+		`
+Go package path, relative path to root of the package is expected.
+To obtain fill path, package path would be concatenated with current GOPATH env var.
+In case package_path is empty, package name would be used instead.
+		`,
 	)
 	// set package_build_envs flag
 	cli.Flags().StringSliceVarP(

@@ -5,6 +5,7 @@ import (
 	"encoding/hex"
 	"fmt"
 	"go/token"
+	"sync"
 
 	"1pkg/gopium"
 )
@@ -14,6 +15,7 @@ import (
 // some operations on top of it
 type Locator struct {
 	root  *token.FileSet
+	mutex sync.Mutex
 	extra map[string]*token.FileSet
 }
 
@@ -58,12 +60,18 @@ func (l *Locator) Locator(loc string) (gopium.Locator, bool) {
 // either set new fset for location
 // or returns child fset if any
 func (l *Locator) Fset(loc string, fset *token.FileSet) (*token.FileSet, bool) {
+	// lock concurrent map access
+	defer l.mutex.Unlock()
+	l.mutex.Lock()
+	// if fset isn't nil
 	if fset == nil {
+		// write it to exta
 		if fset, ok := l.extra[loc]; ok {
 			return fset, true
 		}
 		return l.root, false
 	}
+	// otherwise read if from exta
 	l.extra[loc] = fset
 	return fset, true
 }
