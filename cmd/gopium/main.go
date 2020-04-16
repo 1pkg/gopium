@@ -18,29 +18,35 @@ var (
 	// cli command iteself
 	cli *cobra.Command
 	// target platform vars
-	tcompiler, tarch string
-	tcpulines        []int
+	tcompiler string
+	tarch     string
+	tcpulines []int
 	// package parser vars
-	ppath           string
-	pbenvs, pbflags []string
+	ppath   string
+	pbenvs  []string
+	pbflags []string
 	// walker vars
-	wregex          string
-	wdeep, wbackref bool
+	wregex   string
+	wdeep    bool
+	wbackref bool
 	// tag vars
-	tgroup                     string
-	tenable, tforce, tdiscrete bool
+	tgroup    string
+	tenable   bool
+	tforce    bool
+	tdiscrete bool
 	// printer vars
-	pindent, ptabwidth int
-	pusespace          bool
+	pindent   int
+	ptabwidth int
+	pusespace bool
 	// global vars
 	timeout int
-	// global running context
+	// global context
 	gctx    context.Context
 	gcancel func()
 )
 
 // init cli command runner
-// and global running context
+// and global context
 func init() {
 	// set root cli command app
 	cli = &cobra.Command{
@@ -155,20 +161,31 @@ Notes:
 		Args: cobra.MinimumNArgs(3),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			if app, err := runners.NewCliApp(
-				tcompiler, tarch,
+				// target platform vars
+				tcompiler,
+				tarch,
 				tcpulines,
+				// package parser vars
 				args[1], // package name
 				ppath,
-				pbenvs, pbflags,
+				pbenvs,
+				pbflags,
+				// walker vars
 				args[0], // walker
 				wregex,
-				wdeep, wbackref,
+				wdeep,
+				wbackref,
 				args[2:], // strategies slice
+				// tag vars
 				tgroup,
-				tenable, tforce, tdiscrete,
+				tenable,
+				tforce,
+				tdiscrete,
+				// printer vars
 				pindent,
 				ptabwidth,
 				pusespace,
+				// global vars
 				timeout,
 			); err == nil {
 				return app.Run(cmd.Context())
@@ -209,11 +226,11 @@ For now only 3 lines of cache are supported by strategies.
 		&ppath,
 		"package_path",
 		"p",
-		"",
+		"src/{{package}}",
 		`
 Go package path, relative path to root of the package is expected.
 To obtain fill path, package path would be concatenated with current GOPATH env var.
-In case package_path is empty, package name would be used instead.
+Template {{package}} part will be replaced with package name.
 		`,
 	)
 	// set package_build_envs flag

@@ -8,7 +8,8 @@ import (
 
 // LocatorMock defines mock locator implementation
 type LocatorMock struct {
-	IDVal, LocVal string
+	IDVal  string
+	LocVal string
 }
 
 // ID mock implementation

@@ -7,7 +7,8 @@ import (
 	"go/parser"
 	"go/token"
 	"go/types"
-	"path"
+	"path/filepath"
+	"strings"
 
 	"1pkg/gopium"
 
@@ -20,6 +21,7 @@ import (
 type ParserXToolPackagesAst struct {
 	Pattern    string
 	Path       string
+	Root       string
 	ModeTypes  packages.LoadMode
 	ModeAst    parser.Mode
 	BuildEnv   []string
@@ -30,10 +32,11 @@ type ParserXToolPackagesAst struct {
 func (p ParserXToolPackagesAst) ParseTypes(ctx context.Context) (*types.Package, gopium.Locator, error) {
 	// create packages.Config obj
 	fset := token.NewFileSet()
+	dir := filepath.Join(p.Root, p.Path)
 	cfg := &packages.Config{
 		Fset:       fset,
 		Context:    ctx,
-		Dir:        p.Path,
+		Dir:        dir,
 		Mode:       p.ModeTypes,
 		Env:        p.BuildEnv,
 		BuildFlags: p.BuildFlags,
@@ -47,9 +50,15 @@ func (p ParserXToolPackagesAst) ParseTypes(ctx context.Context) (*types.Package,
 	}
 	// check parse results
 	// it should be equal to
-	// package pattern
-	if len(pkgs) != 1 || pkgs[0].String() != p.Pattern {
-		return nil, nil, fmt.Errorf("package %q wasn't found", p.Pattern)
+	// package pattern or
+	// all except first components of path
+	pkg := p.Path
+	if list := strings.Split(p.Path, string(filepath.Separator)); len(list) > 0 {
+		pkg = filepath.Join(list[1:]...)
+	}
+	if len(pkgs) != 1 ||
+		(pkgs[0].String() != p.Pattern && pkgs[0].String() != pkg) {
+		return nil, nil, fmt.Errorf("package %q wasn't found at %q", p.Pattern, dir)
 	}
 	return pkgs[0].Types, NewLocator(fset), nil
 }
@@ -58,9 +67,10 @@ func (p ParserXToolPackagesAst) ParseTypes(ctx context.Context) (*types.Package,
 func (p ParserXToolPackagesAst) ParseAst(ctx context.Context) (*ast.Package, gopium.Locator, error) {
 	// use parser.ParseDir
 	fset := token.NewFileSet()
+	dir := filepath.Join(p.Root, p.Path)
 	pkgs, err := parser.ParseDir(
 		fset,
-		p.Path,
+		dir,
 		nil,
 		p.ModeAst,
 	)
@@ -70,14 +80,14 @@ func (p ParserXToolPackagesAst) ParseAst(ctx context.Context) (*ast.Package, gop
 	}
 	// check parse results
 	// it should be equal to
-	// package pattern
-	if pkg, ok := pkgs[p.Pattern]; ok {
+	// package pattern or
+	// last component of path
+	if pkg, ok := pkgs[p.Pattern]; len(pkgs) == 1 && ok {
 		return pkg, NewLocator(fset), nil
 	}
-	// or last component of full package name
-	pkg := path.Base(p.Path)
-	if pkg, ok := pkgs[pkg]; ok {
+	pkg := filepath.Base(p.Path)
+	if pkg, ok := pkgs[pkg]; len(pkgs) == 1 && ok {
 		return pkg, NewLocator(fset), nil
 	}
-	return nil, nil, fmt.Errorf("package %q wasn't found", p.Pattern)
+	return nil, nil, fmt.Errorf("package %q wasn't found at %q", p.Pattern, dir)
 }
