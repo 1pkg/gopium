@@ -5,8 +5,9 @@ import "go/types"
 // TypeMock defines mock type
 // data transfer object
 type TypeMock struct {
-	Name        string
-	Size, Align int64
+	Name  string
+	Size  int64
+	Align int64
 }
 
 // MavenMock defines mock maven implementation

@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"go/build"
 	"go/parser"
-	"path/filepath"
 	"regexp"
+	"strings"
 	"time"
 
 	"1pkg/gopium"
@@ -31,17 +31,31 @@ type CliApp struct {
 // NewCliApp helps to spawn new cli application runner
 // from list of received parameters or returns error
 func NewCliApp(
-	compiler, arch string,
+	// target platform vars
+	compiler string,
+	arch string,
 	cpucaches []int,
-	pkg, path string,
-	benvs, bflags []string,
-	walker, regex string,
-	deep, backref bool,
+	// package parser vars
+	pkg string,
+	path string,
+	benvs []string,
+	bflags []string,
+	// walker vars
+	walker string,
+	regex string,
+	deep bool,
+	backref bool,
 	stgs []string,
+	// tag vars
 	group string,
-	tenable, tforce, tdiscrete bool,
-	indent, tabwidth int,
+	tenable bool,
+	tforce bool,
+	tdiscrete bool,
+	// printer vars
+	indent int,
+	tabwidth int,
 	usespace bool,
+	// global vars
 	timeout int,
 ) (*CliApp, error) {
 	// cast caches to int64
@@ -54,16 +68,13 @@ func NewCliApp(
 	if err != nil {
 		return nil, fmt.Errorf("can't set up maven %v", err)
 	}
+	// replace package template
+	path = strings.Replace(path, "{{package}}", pkg, 1)
 	// set up parser
-	absp := filepath.Join(build.Default.GOPATH, path)
-	// in case full path to package hasn't been provided
-	// try to build it from package name
-	if absp == build.Default.GOPATH {
-		absp = filepath.Join(build.Default.GOPATH, "src", pkg)
-	}
 	p := typepkg.ParserXToolPackagesAst{
 		Pattern: pkg,
-		Path:    absp,
+		Root:    build.Default.GOPATH,
+		Path:    path,
 		//nolint
 		ModeTypes:  packages.LoadAllSyntax,
 		ModeAst:    parser.ParseComments | parser.AllErrors,
