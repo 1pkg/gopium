@@ -21,16 +21,16 @@ type exp struct {
 }
 
 // Apply nlex implementation
-func (stg exp) Apply(ctx context.Context, o gopium.Struct) (r gopium.Struct, err error) {
+func (stg exp) Apply(ctx context.Context, o gopium.Struct) (gopium.Struct, error) {
 	// copy original structure to result
-	r = o
+	r := o
 	// then execute exported sorting
 	sort.SliceStable(r.Fields, func(i, j int) bool {
 		if r.Fields[i].Exported == r.Fields[j].Exported {
 			return false
 		}
 		// sort depends on type of ordering
-		return r.Fields[i].Exported && !stg.asc
+		return (r.Fields[i].Exported && stg.asc) || !(r.Fields[i].Exported || stg.asc)
 	})
-	return
+	return r, ctx.Err()
 }

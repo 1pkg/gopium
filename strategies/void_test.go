@@ -21,10 +21,6 @@ func TestVoid(t *testing.T) {
 		"empty struct should be applied to empty struct": {
 			ctx: context.Background(),
 		},
-		"empty struct should be applied to empty struct on canceled context": {
-			ctx: cctx,
-			err: cctx.Err(),
-		},
 		"non empty struct should be applied to empty struct": {
 			ctx: context.Background(),
 			o: gopium.Struct{
@@ -70,30 +66,6 @@ func TestVoid(t *testing.T) {
 					},
 				},
 			},
-		},
-		"complex struct should be applied to empty struct on canceled context": {
-			ctx: cctx,
-			o: gopium.Struct{
-				Name: "test",
-				Doc:  []string{"test"},
-				Fields: []gopium.Field{
-					{
-						Name: "test1",
-						Type: "int",
-						Size: 8,
-					},
-					{
-						Name: "test2",
-						Type: "string",
-						Doc:  []string{"test"},
-					},
-					{
-						Name: "test2",
-						Type: "float64",
-					},
-				},
-			},
-			err: cctx.Err(),
 		},
 	}
 	for name, tcase := range table {

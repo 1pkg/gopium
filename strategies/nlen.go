@@ -21,9 +21,9 @@ type nlen struct {
 }
 
 // Apply nlen implementation
-func (stg nlen) Apply(ctx context.Context, o gopium.Struct) (r gopium.Struct, err error) {
+func (stg nlen) Apply(ctx context.Context, o gopium.Struct) (gopium.Struct, error) {
 	// copy original structure to result
-	r = o
+	r := o
 	// then execute len sorting
 	sort.SliceStable(r.Fields, func(i, j int) bool {
 		// sort depends on type of ordering
@@ -33,5 +33,5 @@ func (stg nlen) Apply(ctx context.Context, o gopium.Struct) (r gopium.Struct, er
 			return len(r.Fields[i].Name) > len(r.Fields[j].Name)
 		}
 	})
-	return
+	return r, ctx.Err()
 }

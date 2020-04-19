@@ -21,10 +21,6 @@ func TestNope(t *testing.T) {
 		"empty struct should be applied to itself": {
 			ctx: context.Background(),
 		},
-		"empty struct should be applied to itself on canceled context": {
-			ctx: cctx,
-			err: cctx.Err(),
-		},
 		"non empty struct should be applied to itself": {
 			ctx: context.Background(),
 			o: gopium.Struct{
@@ -106,50 +102,6 @@ func TestNope(t *testing.T) {
 					},
 				},
 			},
-		},
-		"complex struct should be applied to itself on canceled context": {
-			ctx: cctx,
-			o: gopium.Struct{
-				Name: "test",
-				Doc:  []string{"test"},
-				Fields: []gopium.Field{
-					{
-						Name: "test1",
-						Type: "int",
-						Size: 8,
-					},
-					{
-						Name: "test2",
-						Type: "string",
-						Doc:  []string{"test"},
-					},
-					{
-						Name: "test2",
-						Type: "float64",
-					},
-				},
-			},
-			r: gopium.Struct{
-				Name: "test",
-				Doc:  []string{"test"},
-				Fields: []gopium.Field{
-					{
-						Name: "test1",
-						Type: "int",
-						Size: 8,
-					},
-					{
-						Name: "test2",
-						Type: "string",
-						Doc:  []string{"test"},
-					},
-					{
-						Name: "test2",
-						Type: "float64",
-					},
-				},
-			},
-			err: cctx.Err(),
 		},
 	}
 	for name, tcase := range table {
