@@ -220,7 +220,7 @@ func TestBuilder(t *testing.T) {
 	}
 }
 
-func TestPipe(t *testing.T) {
+func TestPipeBuilder(t *testing.T) {
 	// prepare
 	table := map[string]struct {
 		stgs []gopium.Strategy
@@ -254,7 +254,7 @@ func TestPipe(t *testing.T) {
 	}
 }
 
-func TestTag(t *testing.T) {
+func TestTagBuilder(t *testing.T) {
 	// prepare
 	table := map[string]struct {
 		group    string

@@ -23,7 +23,7 @@ type unpack struct{}
 func (stg unpack) Apply(ctx context.Context, o gopium.Struct) (gopium.Struct, error) {
 	// execute pack strategy
 	r, err := pck.Apply(ctx, o)
-	// check that struct has some fields
+	// check that struct has fields
 	if err != nil || len(r.Fields) == 0 {
 		return o, err
 	}

@@ -159,7 +159,7 @@ func comploc(loc gopium.Locator, cat string, h collections.Hierarchic) wcomp {
 }
 
 // compwnote helps to create wcomp
-// which adaptes wcomp by adding
+// which adapts wcomp by adding
 // check that structure or any structure field
 // has any notes inside
 func compwnote(comp wcomp) wcomp {
