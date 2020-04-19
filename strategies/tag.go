@@ -26,9 +26,9 @@ type tag struct {
 }
 
 // Apply tag implementation
-func (stg tag) Apply(ctx context.Context, o gopium.Struct) (r gopium.Struct, err error) {
+func (stg tag) Apply(ctx context.Context, o gopium.Struct) (gopium.Struct, error) {
 	// copy original structure to result
-	r = o
+	r := o
 	// iterate through all fields
 	for i := range r.Fields {
 		f := &r.Fields[i]
@@ -70,5 +70,5 @@ func (stg tag) Apply(ctx context.Context, o gopium.Struct) (r gopium.Struct, err
 		}
 		f.Tag = fmt.Sprintf("`%s`", f.Tag)
 	}
-	return
+	return r, ctx.Err()
 }

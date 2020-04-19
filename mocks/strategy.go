@@ -6,13 +6,13 @@ import (
 	"1pkg/gopium"
 )
 
-// StrategyMock defines mock strategy implementation
-type StrategyMock struct {
+// Strategy defines mock strategy implementation
+type Strategy struct {
 	R   gopium.Struct
 	Err error
 }
 
 // Apply mock implementation
-func (stg StrategyMock) Apply(context.Context, gopium.Struct) (gopium.Struct, error) {
+func (stg Strategy) Apply(context.Context, gopium.Struct) (gopium.Struct, error) {
 	return stg.R, stg.Err
 }

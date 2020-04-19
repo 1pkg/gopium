@@ -7,21 +7,21 @@ import (
 	"1pkg/gopium"
 )
 
-// StructMock defines mock gopium struct
+// Struct defines mock gopium struct
 // data transfer object with deep flag
-type StructMock struct {
+type Struct struct {
 	gopium.Struct
 	Deep bool
 }
 
-// WalkerMock defines mock walker implementation
-type WalkerMock struct {
-	Structs []StructMock
+// Walker defines mock walker implementation
+type Walker struct {
+	Structs []Struct
 	Err     error
 }
 
 // VisitTop mock implementation
-func (w WalkerMock) Visit(
+func (w Walker) Visit(
 	ctx context.Context,
 	regex *regexp.Regexp,
 	stg gopium.Strategy,
