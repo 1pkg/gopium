@@ -120,10 +120,10 @@ Gopium supports next strategies:
  - explicit_padings_type_natural (explicitly aligns each structure field to max type alignment padding by adding
 	missing paddings for each field)
 
- - doc_fields_annotate (adds size doc annotation for each structure field and aggregated size annotation
-	for whole structure)
- - comment_fields_annotate (adds size comment annotation for each structure field and aggregated size annotation
-	for whole structure)
+ - doc_fields_annotate (adds align and size doc annotation for each structure field)
+ - comment_fields_annotate adds align and size comment annotation for each structure field)
+ - doc_struct_annotate (adds aggregated align and size doc annotation for whole structure)
+ - comment_struct_annotate (adds aggregated align and size comment annotation for whole structure)
  - doc_struct_stamp (adds doc gopium stamp to structure)
  - comment_struct_stamp (adds comment gopium stamp to structure)
 

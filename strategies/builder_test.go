@@ -181,12 +181,20 @@ func TestBuilder(t *testing.T) {
 			stg:  sepl3b.Curator(b.curator),
 		},
 		"`doc_fields_annotate` name should lead to relevant strategy": {
-			name: NoteDoc,
-			stg:  notedoc,
+			name: FNoteDoc,
+			stg:  fnotedoc,
 		},
 		"`comment_fields_annotate` name should lead to relevant strategy": {
-			name: NoteCom,
-			stg:  notecom,
+			name: FNoteCom,
+			stg:  fnotecom,
+		},
+		"`doc_struct_annotate` name should lead to relevant strategy": {
+			name: StNoteDoc,
+			stg:  stnotedoc,
+		},
+		"`comment_struct_annotate` name should lead to relevant strategy": {
+			name: StNoteCom,
+			stg:  stnotecom,
 		},
 		"`doc_struct_stamp` name should lead to relevant strategy": {
 			name: StampDoc,

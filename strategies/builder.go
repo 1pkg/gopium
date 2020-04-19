@@ -57,10 +57,12 @@ const (
 	SepL2B  gopium.StrategyName = "separate_padding_cpu_l2_bottom"
 	SepL3B  gopium.StrategyName = "separate_padding_cpu_l3_bottom"
 	// doc and comment annotations
-	NoteDoc  gopium.StrategyName = "doc_fields_annotate"
-	NoteCom  gopium.StrategyName = "comment_fields_annotate"
-	StampDoc gopium.StrategyName = "doc_struct_stamp"
-	StampCom gopium.StrategyName = "comment_struct_stamp"
+	FNoteDoc  gopium.StrategyName = "doc_fields_annotate"
+	FNoteCom  gopium.StrategyName = "comment_fields_annotate"
+	StNoteDoc gopium.StrategyName = "doc_struct_annotate"
+	StNoteCom gopium.StrategyName = "comment_struct_annotate"
+	StampDoc  gopium.StrategyName = "doc_struct_stamp"
+	StampCom  gopium.StrategyName = "comment_struct_stamp"
 )
 
 // Builder defines types gopium.StrategyBuilder implementation
@@ -166,10 +168,14 @@ func (b Builder) Build(name gopium.StrategyName) (gopium.Strategy, error) {
 	case SepL3B:
 		return sepl3b.Curator(b.curator), nil
 	// doc and comment annotations
-	case NoteDoc:
-		return notedoc, nil
-	case NoteCom:
-		return notecom, nil
+	case FNoteDoc:
+		return fnotedoc, nil
+	case FNoteCom:
+		return fnotecom, nil
+	case StNoteDoc:
+		return stnotedoc, nil
+	case StNoteCom:
+		return stnotecom, nil
 	case StampDoc:
 		return stampdoc, nil
 	case StampCom:
