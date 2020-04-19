@@ -2,7 +2,7 @@ package strategies
 
 import (
 	"context"
-	"sort"
+	"math"
 
 	"1pkg/gopium"
 )
@@ -20,32 +20,23 @@ var (
 type unpack struct{}
 
 // Apply unpack implementation
-func (stg unpack) Apply(ctx context.Context, o gopium.Struct) (r gopium.Struct, err error) {
-	// copy original structure to result
-	r = o
-	// execute memory sorting
-	sort.SliceStable(r.Fields, func(i, j int) bool {
-		// combine sorting strategy
-		// in chess order
-		if i%2 == 0 {
-			// first compare aligns of two fields
-			// lesser aligmnet means upper position
-			if r.Fields[i].Align != r.Fields[j].Align {
-				return r.Fields[i].Align < r.Fields[j].Align
-			}
-			// then compare sizes of two fields
-			// lesser size means upper position
-			return r.Fields[i].Size < r.Fields[j].Size
-		} else {
-			// first compare aligns of two fields
-			// bigger aligmnet means upper position
-			if r.Fields[i].Align != r.Fields[j].Align {
-				return r.Fields[i].Align > r.Fields[j].Align
-			}
-			// then compare sizes of two fields
-			// bigger size means upper position
-			return r.Fields[i].Size > r.Fields[j].Size
+func (stg unpack) Apply(ctx context.Context, o gopium.Struct) (gopium.Struct, error) {
+	// execute pack strategy
+	r, err := pck.Apply(ctx, o)
+	// check that struct has some fields
+	if err != nil || len(r.Fields) == 0 {
+		return o, err
+	}
+	// slice fields by half ceil
+	mid := int(math.Ceil(float64(len(r.Fields)) / 2.0))
+	left, right := r.Fields[:mid], r.Fields[mid:]
+	r.Fields = make([]gopium.Field, 0, len(r.Fields))
+	// combine fields in chess order
+	for li, ri := 0, len(right)-1; li < mid; li, ri = li+1, ri-1 {
+		if ri >= 0 {
+			r.Fields = append(r.Fields, right[ri])
 		}
-	})
-	return
+		r.Fields = append(r.Fields, left[li])
+	}
+	return r, ctx.Err()
 }
