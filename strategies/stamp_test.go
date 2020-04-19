@@ -24,13 +24,6 @@ func TestStampDoc(t *testing.T) {
 				Doc: []string{"// struct has been auto curated - 🌺 gopium @1pkg"},
 			},
 		},
-		"empty struct should be applied to itself with relevant doc on canceled context": {
-			ctx: cctx,
-			r: gopium.Struct{
-				Doc: []string{"// struct has been auto curated - 🌺 gopium @1pkg"},
-			},
-			err: cctx.Err(),
-		},
 		"non empty struct should be applied to itself with relevant doc": {
 			ctx: context.Background(),
 			o: gopium.Struct{
@@ -115,50 +108,6 @@ func TestStampDoc(t *testing.T) {
 				},
 			},
 		},
-		"complex struct should be applied to itself with relevant doc on canceled context": {
-			ctx: cctx,
-			o: gopium.Struct{
-				Name: "test",
-				Doc:  []string{"test"},
-				Fields: []gopium.Field{
-					{
-						Name: "test1",
-						Type: "int",
-						Size: 8,
-					},
-					{
-						Name: "test2",
-						Type: "string",
-						Doc:  []string{"test"},
-					},
-					{
-						Name: "test2",
-						Type: "float64",
-					},
-				},
-			},
-			r: gopium.Struct{
-				Name: "test",
-				Doc:  []string{"test", "// struct has been auto curated - 🌺 gopium @1pkg"},
-				Fields: []gopium.Field{
-					{
-						Name: "test1",
-						Type: "int",
-						Size: 8,
-					},
-					{
-						Name: "test2",
-						Type: "string",
-						Doc:  []string{"test"},
-					},
-					{
-						Name: "test2",
-						Type: "float64",
-					},
-				},
-			},
-			err: cctx.Err(),
-		},
 	}
 	for name, tcase := range table {
 		t.Run(name, func(t *testing.T) {
@@ -190,13 +139,6 @@ func TestStampCom(t *testing.T) {
 			r: gopium.Struct{
 				Comment: []string{"// struct has been auto curated - 🌺 gopium @1pkg"},
 			},
-		},
-		"empty struct should be applied to itself with relevant comment on canceled context": {
-			ctx: cctx,
-			r: gopium.Struct{
-				Comment: []string{"// struct has been auto curated - 🌺 gopium @1pkg"},
-			},
-			err: cctx.Err(),
 		},
 		"non empty struct should be applied to itself with relevant Comment": {
 			ctx: context.Background(),
@@ -281,50 +223,6 @@ func TestStampCom(t *testing.T) {
 					},
 				},
 			},
-		},
-		"complex struct should be applied to itself with relevant comment on canceled context": {
-			ctx: cctx,
-			o: gopium.Struct{
-				Name:    "test",
-				Comment: []string{"test"},
-				Fields: []gopium.Field{
-					{
-						Name: "test1",
-						Type: "int",
-						Size: 8,
-					},
-					{
-						Name:    "test2",
-						Type:    "string",
-						Comment: []string{"test"},
-					},
-					{
-						Name: "test2",
-						Type: "float64",
-					},
-				},
-			},
-			r: gopium.Struct{
-				Name:    "test",
-				Comment: []string{"test", "// struct has been auto curated - 🌺 gopium @1pkg"},
-				Fields: []gopium.Field{
-					{
-						Name: "test1",
-						Type: "int",
-						Size: 8,
-					},
-					{
-						Name:    "test2",
-						Type:    "string",
-						Comment: []string{"test"},
-					},
-					{
-						Name: "test2",
-						Type: "float64",
-					},
-				},
-			},
-			err: cctx.Err(),
 		},
 	}
 	for name, tcase := range table {

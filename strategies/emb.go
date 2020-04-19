@@ -21,16 +21,16 @@ type emb struct {
 }
 
 // Apply emb implementation
-func (stg emb) Apply(ctx context.Context, o gopium.Struct) (r gopium.Struct, err error) {
+func (stg emb) Apply(ctx context.Context, o gopium.Struct) (gopium.Struct, error) {
 	// copy original structure to result
-	r = o
+	r := o
 	// then execute embedded sorting
 	sort.SliceStable(r.Fields, func(i, j int) bool {
 		if r.Fields[i].Embedded == r.Fields[j].Embedded {
 			return false
 		}
 		// sort depends on type of ordering
-		return r.Fields[i].Embedded && !stg.asc
+		return (r.Fields[i].Embedded && stg.asc) || !(r.Fields[i].Embedded || stg.asc)
 	})
-	return
+	return r, ctx.Err()
 }
