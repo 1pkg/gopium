@@ -8,19 +8,19 @@ import (
 	"1pkg/gopium"
 )
 
-// ParserMock defines mock parser implementation
-type ParserMock struct {
+// Parser defines mock parser implementation
+type Parser struct {
 	Types *types.Package
 	Ast   *ast.Package
 	Err   error
 }
 
 // ParseTypes mock implementation
-func (p ParserMock) ParseTypes(context.Context) (*types.Package, gopium.Locator, error) {
-	return p.Types, LocatorMock{}, p.Err
+func (p Parser) ParseTypes(context.Context) (*types.Package, gopium.Locator, error) {
+	return p.Types, Locator{}, p.Err
 }
 
 // ParseAst mock implementation
-func (p ParserMock) ParseAst(context.Context) (*ast.Package, gopium.Locator, error) {
-	return p.Ast, LocatorMock{}, p.Err
+func (p Parser) ParseAst(context.Context) (*ast.Package, gopium.Locator, error) {
+	return p.Ast, Locator{}, p.Err
 }

@@ -12,19 +12,29 @@ import (
 type pipe []gopium.Strategy
 
 // Apply pipe implementation
-func (stgs pipe) Apply(ctx context.Context, o gopium.Struct) (r gopium.Struct, err error) {
+func (stgs pipe) Apply(ctx context.Context, o gopium.Struct) (gopium.Struct, error) {
+	// copy original structure to result
+	r := o
 	// go through all inner strategies
 	// and apply them one by one
 	for _, stg := range stgs {
-		r, err = stg.Apply(ctx, o)
+		// manage context actions
+		// in case of cancelation
+		// stop execution
+		select {
+		case <-ctx.Done():
+			return o, ctx.Err()
+		default:
+		}
+		r, err := stg.Apply(ctx, o)
 		// in case of any error
 		// return immediately
 		if err != nil {
-			return
+			return o, err
 		}
 		// copy result back to
 		// original structure
 		o = r
 	}
-	return
+	return r, ctx.Err()
 }

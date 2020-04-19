@@ -20,12 +20,12 @@ type stamp struct {
 }
 
 // Apply stamp implementation
-func (stg stamp) Apply(ctx context.Context, o gopium.Struct) (r gopium.Struct, err error) {
+func (stg stamp) Apply(ctx context.Context, o gopium.Struct) (gopium.Struct, error) {
 	// copy original structure to result
-	r = o
+	r := o
 	// create stamp
 	stamp := fmt.Sprintf(
-		"// struct has been auto curated by gopium - %s",
+		"// struct has been auto curated - %s",
 		gopium.STAMP,
 	)
 	// add stamp to structure doc or comment
@@ -34,5 +34,5 @@ func (stg stamp) Apply(ctx context.Context, o gopium.Struct) (r gopium.Struct, e
 	} else {
 		r.Comment = append(r.Comment, stamp)
 	}
-	return
+	return r, ctx.Err()
 }

@@ -23,9 +23,9 @@ type note struct {
 }
 
 // Apply note implementation
-func (stg note) Apply(ctx context.Context, o gopium.Struct) (r gopium.Struct, err error) {
+func (stg note) Apply(ctx context.Context, o gopium.Struct) (gopium.Struct, error) {
 	// copy original structure to result
-	r = o
+	r := o
 	// note each field with size comment
 	var size, align int64
 	for i := range r.Fields {
@@ -58,5 +58,5 @@ func (stg note) Apply(ctx context.Context, o gopium.Struct) (r gopium.Struct, er
 	} else {
 		r.Comment = append(r.Comment, note)
 	}
-	return
+	return r, ctx.Err()
 }

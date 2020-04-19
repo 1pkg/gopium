@@ -2,33 +2,33 @@ package mocks
 
 import "go/types"
 
-// TypeMock defines mock type
+// Type defines mock type
 // data transfer object
-type TypeMock struct {
+type Type struct {
 	Name  string
 	Size  int64
 	Align int64
 }
 
 // MavenMock defines mock maven implementation
-type MavenMock struct {
-	Types                   map[string]TypeMock
+type Maven struct {
+	Types                   map[string]Type
 	SysCacheVals            []int64
 	SysWordVal, SysAlignVal int64
 }
 
 // SysWord mock implementation
-func (m MavenMock) SysWord() int64 {
+func (m Maven) SysWord() int64 {
 	return m.SysWordVal
 }
 
 // SysAlign mock implementation
-func (m MavenMock) SysAlign() int64 {
+func (m Maven) SysAlign() int64 {
 	return m.SysAlignVal
 }
 
 // SysCache mock implementation
-func (m MavenMock) SysCache(level uint) int64 {
+func (m Maven) SysCache(level uint) int64 {
 	// check if we have it in vals
 	if int(level) < len(m.SysCacheVals) {
 		return m.SysCacheVals[level]
@@ -38,7 +38,7 @@ func (m MavenMock) SysCache(level uint) int64 {
 }
 
 // Name mock implementation
-func (m MavenMock) Name(t types.Type) string {
+func (m Maven) Name(t types.Type) string {
 	// check if we have it in vals
 	if t, ok := m.Types[t.String()]; ok {
 		return t.Name
@@ -48,7 +48,7 @@ func (m MavenMock) Name(t types.Type) string {
 }
 
 // Size mock implementation
-func (m MavenMock) Size(t types.Type) int64 {
+func (m Maven) Size(t types.Type) int64 {
 	// check if we have it in vals
 	if t, ok := m.Types[t.String()]; ok {
 		return t.Size
@@ -58,7 +58,7 @@ func (m MavenMock) Size(t types.Type) int64 {
 }
 
 // Align mock implementation
-func (m MavenMock) Align(t types.Type) int64 {
+func (m Maven) Align(t types.Type) int64 {
 	// check if we have it in vals
 	if t, ok := m.Types[t.String()]; ok {
 		return t.Align
