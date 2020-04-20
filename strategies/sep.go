@@ -37,9 +37,9 @@ func (stg sep) Curator(curator gopium.Curator) sep {
 }
 
 // Apply sep implementation
-func (stg sep) Apply(ctx context.Context, o gopium.Struct) (r gopium.Struct, err error) {
+func (stg sep) Apply(ctx context.Context, o gopium.Struct) (gopium.Struct, error) {
 	// copy original structure to result
-	r = o
+	r := o
 	// get separator size
 	sep := stg.curator.SysAlign()
 	// if we wanna use
@@ -47,11 +47,15 @@ func (stg sep) Apply(ctx context.Context, o gopium.Struct) (r gopium.Struct, err
 	if !stg.sys {
 		sep = stg.curator.SysCache(stg.line)
 	}
-	// add field before or after
-	if stg.top {
-		r.Fields = append([]gopium.Field{gopium.PadField(sep)}, r.Fields...)
-	} else {
-		r.Fields = append(r.Fields, gopium.PadField(sep))
+	// if struct has feilds and separator size is valid
+	if flen := len(r.Fields); flen > 0 && sep > 0 {
+		// add field before or after
+		// structure fields list
+		if stg.top {
+			r.Fields = append([]gopium.Field{gopium.PadField(sep)}, r.Fields...)
+		} else {
+			r.Fields = append(r.Fields, gopium.PadField(sep))
+		}
 	}
-	return
+	return r, ctx.Err()
 }

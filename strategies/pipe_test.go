@@ -15,7 +15,7 @@ func TestPipe(t *testing.T) {
 	cctx, cancel := context.WithCancel(context.Background())
 	cancel()
 	table := map[string]struct {
-		stgs []gopium.Strategy
+		pipe pipe
 		ctx  context.Context
 		o    gopium.Struct
 		r    gopium.Struct
@@ -68,7 +68,7 @@ func TestPipe(t *testing.T) {
 			err: cctx.Err(),
 		},
 		"non empty struct should be applied accordingly to pipe": {
-			stgs: []gopium.Strategy{fnotecom, fnotedoc},
+			pipe: pipe([]gopium.Strategy{fnotecom, fnotedoc}),
 			ctx:  context.Background(),
 			o: gopium.Struct{
 				Name: "test",
@@ -92,7 +92,7 @@ func TestPipe(t *testing.T) {
 			},
 		},
 		"non empty struct should be applied to itself on canceled context": {
-			stgs: []gopium.Strategy{fnotecom, fnotedoc},
+			pipe: pipe([]gopium.Strategy{fnotecom, fnotedoc}),
 			ctx:  cctx,
 			o: gopium.Struct{
 				Name: "test",
@@ -115,11 +115,11 @@ func TestPipe(t *testing.T) {
 			err: cctx.Err(),
 		},
 		"non empty struct should be applied to success pipe result on pipe error": {
-			stgs: []gopium.Strategy{
+			pipe: pipe([]gopium.Strategy{
 				fnotecom,
 				mocks.Strategy{Err: errors.New("test error")},
 				fnotedoc,
-			},
+			}),
 			ctx: context.Background(),
 			o: gopium.Struct{
 				Name: "test",
@@ -146,8 +146,7 @@ func TestPipe(t *testing.T) {
 	for name, tcase := range table {
 		t.Run(name, func(t *testing.T) {
 			// exec
-			p := pipe(tcase.stgs)
-			r, err := p.Apply(tcase.ctx, tcase.o)
+			r, err := tcase.pipe.Apply(tcase.ctx, tcase.o)
 			// check
 			if !reflect.DeepEqual(r, tcase.r) {
 				t.Errorf("actual %v doesn't equal to expected %v", r, tcase.r)

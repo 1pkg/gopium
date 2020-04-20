@@ -26,15 +26,15 @@ func (stgs pipe) Apply(ctx context.Context, o gopium.Struct) (gopium.Struct, err
 			return o, ctx.Err()
 		default:
 		}
-		r, err := stg.Apply(ctx, o)
+		rst, err := stg.Apply(ctx, r)
 		// in case of any error
 		// return immediately
 		if err != nil {
-			return o, err
+			return r, err
 		}
 		// copy result back to
-		// original structure
-		o = r
+		// result structure
+		r = rst
 	}
 	return r, ctx.Err()
 }

@@ -23,20 +23,22 @@ type unpack struct{}
 func (stg unpack) Apply(ctx context.Context, o gopium.Struct) (gopium.Struct, error) {
 	// execute pack strategy
 	r, err := pck.Apply(ctx, o)
-	// check that struct has fields
-	if err != nil || len(r.Fields) == 0 {
+	if err != nil {
 		return o, err
 	}
-	// slice fields by half ceil
-	mid := int(math.Ceil(float64(len(r.Fields)) / 2.0))
-	left, right := r.Fields[:mid], r.Fields[mid:]
-	r.Fields = make([]gopium.Field, 0, len(r.Fields))
-	// combine fields in chess order
-	for li, ri := 0, len(right)-1; li < mid; li, ri = li+1, ri-1 {
-		if ri >= 0 {
-			r.Fields = append(r.Fields, right[ri])
+	// check that struct has fields
+	if flen := len(r.Fields); flen > 0 {
+		// slice fields by half ceil
+		mid := int(math.Ceil(float64(flen) / 2.0))
+		left, right := r.Fields[:mid], r.Fields[mid:]
+		r.Fields = make([]gopium.Field, 0, flen)
+		// combine fields in chess order
+		for li, ri := 0, len(right)-1; li < mid; li, ri = li+1, ri-1 {
+			if ri >= 0 {
+				r.Fields = append(r.Fields, right[ri])
+			}
+			r.Fields = append(r.Fields, left[li])
 		}
-		r.Fields = append(r.Fields, left[li])
 	}
 	return r, ctx.Err()
 }
