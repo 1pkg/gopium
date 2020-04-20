@@ -29,9 +29,11 @@ func (m Maven) SysAlign() int64 {
 
 // SysCache mock implementation
 func (m Maven) SysCache(level uint) int64 {
+	// decrement level to match index
+	l := int(level) - 1
 	// check if we have it in vals
-	if int(level) < len(m.SysCacheVals) {
-		return m.SysCacheVals[level]
+	if l >= 0 && l < len(m.SysCacheVals) {
+		return m.SysCacheVals[l]
 	}
 	// otherwise return default val
 	return 0

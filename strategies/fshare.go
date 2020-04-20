@@ -29,23 +29,26 @@ func (stg fshare) Curator(curator gopium.Curator) fshare {
 }
 
 // Apply fshare implementation
-func (stg fshare) Apply(ctx context.Context, o gopium.Struct) (r gopium.Struct, err error) {
+func (stg fshare) Apply(ctx context.Context, o gopium.Struct) (gopium.Struct, error) {
 	// copy original structure to result
-	r = o
-	// setup resulted fields slice
-	cachel := stg.curator.SysCache(stg.line)
-	fields := make([]gopium.Field, 0, len(r.Fields))
-	// go through all fields
-	for _, f := range r.Fields {
-		fields = append(fields, f)
-		// if padding not equals zero
-		// append padding
-		if pad := f.Size % cachel; pad != 0 {
-			pad = cachel - pad
-			fields = append(fields, gopium.PadField(pad))
+	r := o
+	// check that struct has fields
+	// and cache line size is valid
+	if flen, cachel := len(r.Fields), stg.curator.SysCache(stg.line); flen > 0 && cachel > 0 {
+		// setup resulted fields slice
+		fields := make([]gopium.Field, 0, flen)
+		// go through all fields
+		for _, f := range r.Fields {
+			fields = append(fields, f)
+			// if padding not equals zero
+			// append padding
+			if pad := f.Size % cachel; pad > 0 {
+				pad = cachel - pad
+				fields = append(fields, gopium.PadField(pad))
+			}
 		}
+		// update resulted fields
+		r.Fields = fields
 	}
-	// update resulted fields
-	r.Fields = fields
-	return
+	return r, ctx.Err()
 }

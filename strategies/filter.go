@@ -43,8 +43,8 @@ func (stg filter) Apply(ctx context.Context, o gopium.Struct) (gopium.Struct, er
 	// copy original structure to result
 	r := o
 	// prepare filtered fields slice
-	if len(r.Fields) > 0 {
-		fields := make([]gopium.Field, 0, len(r.Fields))
+	if flen := len(r.Fields); flen > 0 {
+		fields := make([]gopium.Field, 0, flen)
 		// then go though all original fields
 		for _, f := range r.Fields {
 			// check if field name matches regex

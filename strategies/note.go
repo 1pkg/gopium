@@ -47,6 +47,7 @@ func (stg note) Apply(ctx context.Context, o gopium.Struct) (gopium.Struct, erro
 				f.Comment = append(f.Comment, note)
 			}
 		}
+		// calculate total size and align
 		size += f.Size
 		if align < f.Align {
 			align = f.Align
