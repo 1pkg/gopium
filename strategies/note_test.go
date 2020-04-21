@@ -8,22 +8,25 @@ import (
 	"1pkg/gopium"
 )
 
-func TestFNoteDoc(t *testing.T) {
+func TestNote(t *testing.T) {
 	// prepare
 	cctx, cancel := context.WithCancel(context.Background())
 	cancel()
 	table := map[string]struct {
-		ctx context.Context
-		o   gopium.Struct
-		r   gopium.Struct
-		err error
+		note note
+		ctx  context.Context
+		o    gopium.Struct
+		r    gopium.Struct
+		err  error
 	}{
-		"empty struct should be applied to itself with relevant doc": {
-			ctx: context.Background(),
-			r:   gopium.Struct{},
+		"empty struct should be applied to itself fields": {
+			note: fnotedoc,
+			ctx:  context.Background(),
+			r:    gopium.Struct{},
 		},
-		"non empty struct should be applied to itself with relevant doc": {
-			ctx: context.Background(),
+		"non empty struct should be applied to itself with relevant doc fields": {
+			note: fnotedoc,
+			ctx:  context.Background(),
 			o: gopium.Struct{
 				Name: "test",
 				Fields: []gopium.Field{
@@ -42,8 +45,9 @@ func TestFNoteDoc(t *testing.T) {
 				},
 			},
 		},
-		"non empty struct should be applied to itself with relevant doc on canceled context": {
-			ctx: cctx,
+		"non empty struct should be applied to itself with relevant comment on canceled context fields": {
+			note: fnotecom,
+			ctx:  cctx,
 			o: gopium.Struct{
 				Name: "test",
 				Fields: []gopium.Field{
@@ -56,15 +60,66 @@ func TestFNoteDoc(t *testing.T) {
 				Name: "test",
 				Fields: []gopium.Field{
 					{
-						Name: "test",
-						Doc:  []string{"// field size: 0 bytes; field align: 0 bytes; - 🌺 gopium @1pkg"},
+						Name:    "test",
+						Comment: []string{"// field size: 0 bytes; field align: 0 bytes; - 🌺 gopium @1pkg"},
 					},
 				},
 			},
 			err: cctx.Err(),
 		},
-		"complex struct should be applied to itself with relevant doc": {
-			ctx: context.Background(),
+		"empty struct should be applied to itself with relevant doc struct": {
+			note: stnotedoc,
+			ctx:  context.Background(),
+			r: gopium.Struct{
+				Doc: []string{"// struct size: 0 bytes; struct align: 0 bytes; - 🌺 gopium @1pkg"},
+			},
+		},
+		"non empty struct should be applied to itself with relevant doc struct": {
+			note: stnotedoc,
+			ctx:  context.Background(),
+			o: gopium.Struct{
+				Name: "test",
+				Fields: []gopium.Field{
+					{
+						Name: "test",
+					},
+				},
+			},
+			r: gopium.Struct{
+				Name: "test",
+				Doc:  []string{"// struct size: 0 bytes; struct align: 0 bytes; - 🌺 gopium @1pkg"},
+				Fields: []gopium.Field{
+					{
+						Name: "test",
+					},
+				},
+			},
+		},
+		"non empty struct should be applied to itself with relevant comment on canceled context struct": {
+			note: stnotecom,
+			ctx:  cctx,
+			o: gopium.Struct{
+				Name: "test",
+				Fields: []gopium.Field{
+					{
+						Name: "test",
+					},
+				},
+			},
+			r: gopium.Struct{
+				Name:    "test",
+				Comment: []string{"// struct size: 0 bytes; struct align: 0 bytes; - 🌺 gopium @1pkg"},
+				Fields: []gopium.Field{
+					{
+						Name: "test",
+					},
+				},
+			},
+			err: cctx.Err(),
+		},
+		"complex struct should be applied to itself with relevant doc fields": {
+			note: fnotedoc,
+			ctx:  context.Background(),
 			o: gopium.Struct{
 				Name: "test",
 				Doc:  []string{"test"},
@@ -114,201 +169,9 @@ func TestFNoteDoc(t *testing.T) {
 				},
 			},
 		},
-	}
-	for name, tcase := range table {
-		t.Run(name, func(t *testing.T) {
-			// exec
-			r, err := fnotedoc.Apply(tcase.ctx, tcase.o)
-			// check
-			if !reflect.DeepEqual(r, tcase.r) {
-				t.Errorf("actual %v doesn't equal to expected %v", r, tcase.r)
-			}
-			if !reflect.DeepEqual(err, tcase.err) {
-				t.Errorf("actual %v doesn't equal to expected %v", err, tcase.err)
-			}
-		})
-	}
-}
-
-func TestStNoteDoc(t *testing.T) {
-	// prepare
-	cctx, cancel := context.WithCancel(context.Background())
-	cancel()
-	table := map[string]struct {
-		ctx context.Context
-		o   gopium.Struct
-		r   gopium.Struct
-		err error
-	}{
-		"empty struct should be applied to itself with relevant doc": {
-			ctx: context.Background(),
-			r: gopium.Struct{
-				Doc: []string{"// struct size: 0 bytes; struct align: 0 bytes; - 🌺 gopium @1pkg"},
-			},
-		},
-		"non empty struct should be applied to itself with relevant doc": {
-			ctx: context.Background(),
-			o: gopium.Struct{
-				Name: "test",
-				Fields: []gopium.Field{
-					{
-						Name: "test",
-					},
-				},
-			},
-			r: gopium.Struct{
-				Name: "test",
-				Doc:  []string{"// struct size: 0 bytes; struct align: 0 bytes; - 🌺 gopium @1pkg"},
-				Fields: []gopium.Field{
-					{
-						Name: "test",
-					},
-				},
-			},
-		},
-		"non empty struct should be applied to itself with relevant doc on canceled context": {
-			ctx: cctx,
-			o: gopium.Struct{
-				Name: "test",
-				Fields: []gopium.Field{
-					{
-						Name: "test",
-					},
-				},
-			},
-			r: gopium.Struct{
-				Name: "test",
-				Doc:  []string{"// struct size: 0 bytes; struct align: 0 bytes; - 🌺 gopium @1pkg"},
-				Fields: []gopium.Field{
-					{
-						Name: "test",
-					},
-				},
-			},
-			err: cctx.Err(),
-		},
-		"complex struct should be applied to itself with relevant doc": {
-			ctx: context.Background(),
-			o: gopium.Struct{
-				Name: "test",
-				Doc:  []string{"test"},
-				Fields: []gopium.Field{
-					{
-						Name:  "test1",
-						Type:  "int",
-						Size:  8,
-						Align: 4,
-					},
-					{
-						Name: "test2",
-						Type: "string",
-						Doc:  []string{"test"},
-					},
-					{
-						Name:  "test2",
-						Type:  "float64",
-						Size:  8,
-						Align: 8,
-					},
-				},
-			},
-			r: gopium.Struct{
-				Name: "test",
-				Doc:  []string{"test", "// struct size: 16 bytes; struct align: 8 bytes; - 🌺 gopium @1pkg"},
-				Fields: []gopium.Field{
-					{
-						Name:  "test1",
-						Type:  "int",
-						Size:  8,
-						Align: 4,
-					},
-					{
-						Name: "test2",
-						Type: "string",
-						Doc:  []string{"test"},
-					},
-					{
-						Name:  "test2",
-						Type:  "float64",
-						Size:  8,
-						Align: 8,
-					},
-				},
-			},
-		},
-	}
-	for name, tcase := range table {
-		t.Run(name, func(t *testing.T) {
-			// exec
-			r, err := stnotedoc.Apply(tcase.ctx, tcase.o)
-			// check
-			if !reflect.DeepEqual(r, tcase.r) {
-				t.Errorf("actual %v doesn't equal to expected %v", r, tcase.r)
-			}
-			if !reflect.DeepEqual(err, tcase.err) {
-				t.Errorf("actual %v doesn't equal to expected %v", err, tcase.err)
-			}
-		})
-	}
-}
-
-func TestFNoteCom(t *testing.T) {
-	// prepare
-	cctx, cancel := context.WithCancel(context.Background())
-	cancel()
-	table := map[string]struct {
-		ctx context.Context
-		o   gopium.Struct
-		r   gopium.Struct
-		err error
-	}{
-		"empty struct should be applied to itself with relevant comment": {
-			ctx: context.Background(),
-			r:   gopium.Struct{},
-		},
-		"non empty struct should be applied to itself with relevant comment": {
-			ctx: context.Background(),
-			o: gopium.Struct{
-				Name: "test",
-				Fields: []gopium.Field{
-					{
-						Name: "test",
-					},
-				},
-			},
-			r: gopium.Struct{
-				Name: "test",
-				Fields: []gopium.Field{
-					{
-						Name:    "test",
-						Comment: []string{"// field size: 0 bytes; field align: 0 bytes; - 🌺 gopium @1pkg"},
-					},
-				},
-			},
-		},
-		"non empty struct should be applied to itself with relevant comment on canceled context": {
-			ctx: cctx,
-			o: gopium.Struct{
-				Name: "test",
-				Fields: []gopium.Field{
-					{
-						Name: "test",
-					},
-				},
-			},
-			r: gopium.Struct{
-				Name: "test",
-				Fields: []gopium.Field{
-					{
-						Name:    "test",
-						Comment: []string{"// field size: 0 bytes; field align: 0 bytes; - 🌺 gopium @1pkg"},
-					},
-				},
-			},
-			err: cctx.Err(),
-		},
-		"complex struct should be applied to itself with relevant comment": {
-			ctx: context.Background(),
+		"complex struct should be applied to itself with relevant comment fields": {
+			note: fnotecom,
+			ctx:  context.Background(),
 			o: gopium.Struct{
 				Name:    "test",
 				Comment: []string{"test"},
@@ -358,81 +221,59 @@ func TestFNoteCom(t *testing.T) {
 				},
 			},
 		},
-	}
-	for name, tcase := range table {
-		t.Run(name, func(t *testing.T) {
-			// exec
-			r, err := fnotecom.Apply(tcase.ctx, tcase.o)
-			// check
-			if !reflect.DeepEqual(r, tcase.r) {
-				t.Errorf("actual %v doesn't equal to expected %v", r, tcase.r)
-			}
-			if !reflect.DeepEqual(err, tcase.err) {
-				t.Errorf("actual %v doesn't equal to expected %v", err, tcase.err)
-			}
-		})
-	}
-}
-
-func TestStNoteCom(t *testing.T) {
-	// prepare
-	cctx, cancel := context.WithCancel(context.Background())
-	cancel()
-	table := map[string]struct {
-		ctx context.Context
-		o   gopium.Struct
-		r   gopium.Struct
-		err error
-	}{
-		"empty struct should be applied to itself with relevant comment": {
-			ctx: context.Background(),
-			r: gopium.Struct{
-				Comment: []string{"// struct size: 0 bytes; struct align: 0 bytes; - 🌺 gopium @1pkg"},
-			},
-		},
-		"non empty struct should be applied to itself with relevant comment": {
-			ctx: context.Background(),
+		"complex struct should be applied to itself with relevant doc struct": {
+			note: stnotedoc,
+			ctx:  context.Background(),
 			o: gopium.Struct{
 				Name: "test",
+				Doc:  []string{"test"},
 				Fields: []gopium.Field{
 					{
-						Name: "test",
+						Name:  "test1",
+						Type:  "int",
+						Size:  8,
+						Align: 4,
+					},
+					{
+						Name: "test2",
+						Type: "string",
+						Doc:  []string{"test"},
+					},
+					{
+						Name:  "test2",
+						Type:  "float64",
+						Size:  8,
+						Align: 8,
 					},
 				},
 			},
 			r: gopium.Struct{
-				Name:    "test",
-				Comment: []string{"// struct size: 0 bytes; struct align: 0 bytes; - 🌺 gopium @1pkg"},
-				Fields: []gopium.Field{
-					{
-						Name: "test",
-					},
-				},
-			},
-		},
-		"non empty struct should be applied to itself with relevant comment on canceled context": {
-			ctx: cctx,
-			o: gopium.Struct{
 				Name: "test",
+				Doc:  []string{"test", "// struct size: 16 bytes; struct align: 8 bytes; - 🌺 gopium @1pkg"},
 				Fields: []gopium.Field{
 					{
-						Name: "test",
+						Name:  "test1",
+						Type:  "int",
+						Size:  8,
+						Align: 4,
+					},
+					{
+						Name: "test2",
+						Type: "string",
+						Doc:  []string{"test"},
+					},
+					{
+						Name:  "test2",
+						Type:  "float64",
+						Size:  8,
+						Align: 8,
 					},
 				},
 			},
-			r: gopium.Struct{
-				Name:    "test",
-				Comment: []string{"// struct size: 0 bytes; struct align: 0 bytes; - 🌺 gopium @1pkg"},
-				Fields: []gopium.Field{
-					{
-						Name: "test",
-					},
-				},
-			},
-			err: cctx.Err(),
 		},
-		"complex struct should be applied to itself with relevant comment": {
-			ctx: context.Background(),
+		"complex struct should be applied to itself with relevant comment struct": {
+			note: stnotecom,
+			ctx:  context.Background(),
 			o: gopium.Struct{
 				Name:    "test",
 				Comment: []string{"test"},
@@ -484,7 +325,7 @@ func TestStNoteCom(t *testing.T) {
 	for name, tcase := range table {
 		t.Run(name, func(t *testing.T) {
 			// exec
-			r, err := stnotecom.Apply(tcase.ctx, tcase.o)
+			r, err := tcase.note.Apply(tcase.ctx, tcase.o)
 			// check
 			if !reflect.DeepEqual(r, tcase.r) {
 				t.Errorf("actual %v doesn't equal to expected %v", r, tcase.r)

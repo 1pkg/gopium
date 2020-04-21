@@ -8,21 +8,24 @@ import (
 	"1pkg/gopium"
 )
 
-func TestNLexAsc(t *testing.T) {
+func TestNLex(t *testing.T) {
 	// prepare
 	cctx, cancel := context.WithCancel(context.Background())
 	cancel()
 	table := map[string]struct {
-		ctx context.Context
-		o   gopium.Struct
-		r   gopium.Struct
-		err error
+		nlex nlex
+		ctx  context.Context
+		o    gopium.Struct
+		r    gopium.Struct
+		err  error
 	}{
 		"empty struct should be applied to empty struct": {
-			ctx: context.Background(),
+			nlex: nlexasc,
+			ctx:  context.Background(),
 		},
 		"non empty struct should be applied to itself": {
-			ctx: context.Background(),
+			nlex: nlexasc,
+			ctx:  context.Background(),
 			o: gopium.Struct{
 				Name: "test",
 				Fields: []gopium.Field{
@@ -41,7 +44,8 @@ func TestNLexAsc(t *testing.T) {
 			},
 		},
 		"non empty struct should be applied to itself on canceled context": {
-			ctx: cctx,
+			nlex: nlexdesc,
+			ctx:  cctx,
 			o: gopium.Struct{
 				Name: "test",
 				Fields: []gopium.Field{
@@ -61,7 +65,8 @@ func TestNLexAsc(t *testing.T) {
 			err: cctx.Err(),
 		},
 		"asc name lex struct should be applied to itself": {
-			ctx: context.Background(),
+			nlex: nlexasc,
+			ctx:  context.Background(),
 			o: gopium.Struct{
 				Name: "test",
 				Fields: []gopium.Field{
@@ -92,7 +97,8 @@ func TestNLexAsc(t *testing.T) {
 			},
 		},
 		"desc name lex struct should be applied to sorted struct": {
-			ctx: context.Background(),
+			nlex: nlexasc,
+			ctx:  context.Background(),
 			o: gopium.Struct{
 				Name: "test",
 				Fields: []gopium.Field{
@@ -122,8 +128,9 @@ func TestNLexAsc(t *testing.T) {
 				},
 			},
 		},
-		"mixed name lex struct should be applied to sorted struct": {
-			ctx: context.Background(),
+		"mixed name lex struct should be applied to sorted struct asc": {
+			nlex: nlexasc,
+			ctx:  context.Background(),
 			o: gopium.Struct{
 				Name: "test",
 				Fields: []gopium.Field{
@@ -176,77 +183,10 @@ func TestNLexAsc(t *testing.T) {
 					},
 				},
 			},
-		},
-	}
-	for name, tcase := range table {
-		t.Run(name, func(t *testing.T) {
-			// exec
-			r, err := nlexasc.Apply(tcase.ctx, tcase.o)
-			// check
-			if !reflect.DeepEqual(r, tcase.r) {
-				t.Errorf("actual %v doesn't equal to expected %v", r, tcase.r)
-			}
-			if !reflect.DeepEqual(err, tcase.err) {
-				t.Errorf("actual %v doesn't equal to expected %v", err, tcase.err)
-			}
-		})
-	}
-}
-
-func TestNLexDesc(t *testing.T) {
-	// prepare
-	cctx, cancel := context.WithCancel(context.Background())
-	cancel()
-	table := map[string]struct {
-		ctx context.Context
-		o   gopium.Struct
-		r   gopium.Struct
-		err error
-	}{
-		"empty struct should be applied to empty struct": {
-			ctx: context.Background(),
-		},
-		"non empty struct should be applied to itself": {
-			ctx: context.Background(),
-			o: gopium.Struct{
-				Name: "test",
-				Fields: []gopium.Field{
-					{
-						Name: "test",
-					},
-				},
-			},
-			r: gopium.Struct{
-				Name: "test",
-				Fields: []gopium.Field{
-					{
-						Name: "test",
-					},
-				},
-			},
-		},
-		"non empty struct should be applied to itself on canceled context": {
-			ctx: cctx,
-			o: gopium.Struct{
-				Name: "test",
-				Fields: []gopium.Field{
-					{
-						Name: "test",
-					},
-				},
-			},
-			r: gopium.Struct{
-				Name: "test",
-				Fields: []gopium.Field{
-					{
-						Name: "test",
-					},
-				},
-			},
-			err: cctx.Err(),
 		},
 		"asc name lex struct should be applied to sorted struct": {
-			ctx: context.Background(),
+			nlex: nlexdesc,
+			ctx:  context.Background(),
 			o: gopium.Struct{
 				Name: "test",
 				Fields: []gopium.Field{
@@ -277,7 +217,8 @@ func TestNLexDesc(t *testing.T) {
 			},
 		},
 		"desc name lex struct should be applied to itself": {
-			ctx: context.Background(),
+			nlex: nlexdesc,
+			ctx:  context.Background(),
 			o: gopium.Struct{
 				Name: "test",
 				Fields: []gopium.Field{
@@ -307,8 +248,9 @@ func TestNLexDesc(t *testing.T) {
 				},
 			},
 		},
-		"mixed name lex struct should be applied to sorted struct": {
-			ctx: context.Background(),
+		"mixed name lex struct should be applied to sorted struct desc": {
+			nlex: nlexdesc,
+			ctx:  context.Background(),
 			o: gopium.Struct{
 				Name: "test",
 				Fields: []gopium.Field{
@@ -366,7 +308,7 @@ func TestNLexDesc(t *testing.T) {
 	for name, tcase := range table {
 		t.Run(name, func(t *testing.T) {
 			// exec
-			r, err := nlexdesc.Apply(tcase.ctx, tcase.o)
+			r, err := tcase.nlex.Apply(tcase.ctx, tcase.o)
 			// check
 			if !reflect.DeepEqual(r, tcase.r) {
 				t.Errorf("actual %v doesn't equal to expected %v", r, tcase.r)

@@ -8,21 +8,24 @@ import (
 	"1pkg/gopium"
 )
 
-func TestNLenAsc(t *testing.T) {
+func TestNLen(t *testing.T) {
 	// prepare
 	cctx, cancel := context.WithCancel(context.Background())
 	cancel()
 	table := map[string]struct {
-		ctx context.Context
-		o   gopium.Struct
-		r   gopium.Struct
-		err error
+		nlen nlen
+		ctx  context.Context
+		o    gopium.Struct
+		r    gopium.Struct
+		err  error
 	}{
 		"empty struct should be applied to empty struct": {
-			ctx: context.Background(),
+			nlen: nlenasc,
+			ctx:  context.Background(),
 		},
 		"non empty struct should be applied to itself": {
-			ctx: context.Background(),
+			nlen: nlenasc,
+			ctx:  context.Background(),
 			o: gopium.Struct{
 				Name: "test",
 				Fields: []gopium.Field{
@@ -41,7 +44,8 @@ func TestNLenAsc(t *testing.T) {
 			},
 		},
 		"non empty struct should be applied to itself on canceled context": {
-			ctx: cctx,
+			nlen: nlendesc,
+			ctx:  cctx,
 			o: gopium.Struct{
 				Name: "test",
 				Fields: []gopium.Field{
@@ -61,7 +65,8 @@ func TestNLenAsc(t *testing.T) {
 			err: cctx.Err(),
 		},
 		"asc name len struct should be applied to itself": {
-			ctx: context.Background(),
+			nlen: nlenasc,
+			ctx:  context.Background(),
 			o: gopium.Struct{
 				Name: "test",
 				Fields: []gopium.Field{
@@ -92,7 +97,8 @@ func TestNLenAsc(t *testing.T) {
 			},
 		},
 		"desc name len struct should be applied to sorted struct": {
-			ctx: context.Background(),
+			nlen: nlenasc,
+			ctx:  context.Background(),
 			o: gopium.Struct{
 				Name: "test",
 				Fields: []gopium.Field{
@@ -122,8 +128,9 @@ func TestNLenAsc(t *testing.T) {
 				},
 			},
 		},
-		"mixed name len struct should be applied to sorted struct": {
-			ctx: context.Background(),
+		"mixed name len struct should be applied to sorted struct asc": {
+			nlen: nlenasc,
+			ctx:  context.Background(),
 			o: gopium.Struct{
 				Name: "test",
 				Fields: []gopium.Field{
@@ -176,77 +183,10 @@ func TestNLenAsc(t *testing.T) {
 					},
 				},
 			},
-		},
-	}
-	for name, tcase := range table {
-		t.Run(name, func(t *testing.T) {
-			// exec
-			r, err := nlenasc.Apply(tcase.ctx, tcase.o)
-			// check
-			if !reflect.DeepEqual(r, tcase.r) {
-				t.Errorf("actual %v doesn't equal to expected %v", r, tcase.r)
-			}
-			if !reflect.DeepEqual(err, tcase.err) {
-				t.Errorf("actual %v doesn't equal to expected %v", err, tcase.err)
-			}
-		})
-	}
-}
-
-func TestNLenDesc(t *testing.T) {
-	// prepare
-	cctx, cancel := context.WithCancel(context.Background())
-	cancel()
-	table := map[string]struct {
-		ctx context.Context
-		o   gopium.Struct
-		r   gopium.Struct
-		err error
-	}{
-		"empty struct should be applied to empty struct": {
-			ctx: context.Background(),
-		},
-		"non empty struct should be applied to itself": {
-			ctx: context.Background(),
-			o: gopium.Struct{
-				Name: "test",
-				Fields: []gopium.Field{
-					{
-						Name: "test",
-					},
-				},
-			},
-			r: gopium.Struct{
-				Name: "test",
-				Fields: []gopium.Field{
-					{
-						Name: "test",
-					},
-				},
-			},
-		},
-		"non empty struct should be applied to itself on canceled context": {
-			ctx: cctx,
-			o: gopium.Struct{
-				Name: "test",
-				Fields: []gopium.Field{
-					{
-						Name: "test",
-					},
-				},
-			},
-			r: gopium.Struct{
-				Name: "test",
-				Fields: []gopium.Field{
-					{
-						Name: "test",
-					},
-				},
-			},
-			err: cctx.Err(),
 		},
 		"asc name len struct should be applied to sorted struct": {
-			ctx: context.Background(),
+			nlen: nlendesc,
+			ctx:  context.Background(),
 			o: gopium.Struct{
 				Name: "test",
 				Fields: []gopium.Field{
@@ -277,7 +217,8 @@ func TestNLenDesc(t *testing.T) {
 			},
 		},
 		"desc name len struct should be applied to itself": {
-			ctx: context.Background(),
+			nlen: nlendesc,
+			ctx:  context.Background(),
 			o: gopium.Struct{
 				Name: "test",
 				Fields: []gopium.Field{
@@ -307,7 +248,7 @@ func TestNLenDesc(t *testing.T) {
 				},
 			},
 		},
-		"mixed name len struct should be applied to sorted struct": {
+		"mixed name len struct should be applied to sorted struct desc": {
 			ctx: context.Background(),
 			o: gopium.Struct{
 				Name: "test",
@@ -366,7 +307,7 @@ func TestNLenDesc(t *testing.T) {
 	for name, tcase := range table {
 		t.Run(name, func(t *testing.T) {
 			// exec
-			r, err := nlendesc.Apply(tcase.ctx, tcase.o)
+			r, err := tcase.nlen.Apply(tcase.ctx, tcase.o)
 			// check
 			if !reflect.DeepEqual(r, tcase.r) {
 				t.Errorf("actual %v doesn't equal to expected %v", r, tcase.r)
