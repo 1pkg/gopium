@@ -235,6 +235,45 @@ func TestPad(t *testing.T) {
 				},
 			},
 		},
+		"mixed struct should be applied to explicit pad aligned no additional aligment": {
+			pad:     padsys,
+			curator: mocks.Maven{SysAlignVal: 4},
+			ctx:     context.Background(),
+			o: gopium.Struct{
+				Name: "test",
+				Fields: []gopium.Field{
+					{
+						Name: "test1",
+						Size: 24,
+					},
+					{
+						Name: "test2",
+						Size: 12,
+					},
+					{
+						Name: "test3",
+						Size: 36,
+					},
+				},
+			},
+			r: gopium.Struct{
+				Name: "test",
+				Fields: []gopium.Field{
+					{
+						Name: "test1",
+						Size: 24,
+					},
+					{
+						Name: "test2",
+						Size: 12,
+					},
+					{
+						Name: "test3",
+						Size: 36,
+					},
+				},
+			},
+		},
 	}
 	for name, tcase := range table {
 		t.Run(name, func(t *testing.T) {

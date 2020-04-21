@@ -8,21 +8,24 @@ import (
 	"1pkg/gopium"
 )
 
-func TestTLenAsc(t *testing.T) {
+func TestTLen(t *testing.T) {
 	// prepare
 	cctx, cancel := context.WithCancel(context.Background())
 	cancel()
 	table := map[string]struct {
-		ctx context.Context
-		o   gopium.Struct
-		r   gopium.Struct
-		err error
+		tlen tlen
+		ctx  context.Context
+		o    gopium.Struct
+		r    gopium.Struct
+		err  error
 	}{
 		"empty struct should be applied to empty struct": {
-			ctx: context.Background(),
+			tlen: tlenasc,
+			ctx:  context.Background(),
 		},
 		"non empty struct should be applied to itself": {
-			ctx: context.Background(),
+			tlen: tlenasc,
+			ctx:  context.Background(),
 			o: gopium.Struct{
 				Name: "test",
 				Fields: []gopium.Field{
@@ -43,7 +46,8 @@ func TestTLenAsc(t *testing.T) {
 			},
 		},
 		"non empty struct should be applied to itself on canceled context": {
-			ctx: cctx,
+			tlen: tlendesc,
+			ctx:  cctx,
 			o: gopium.Struct{
 				Name: "test",
 				Fields: []gopium.Field{
@@ -65,7 +69,8 @@ func TestTLenAsc(t *testing.T) {
 			err: cctx.Err(),
 		},
 		"asc type len struct should be applied to itself": {
-			ctx: context.Background(),
+			tlen: tlenasc,
+			ctx:  context.Background(),
 			o: gopium.Struct{
 				Name: "test",
 				Fields: []gopium.Field{
@@ -102,7 +107,8 @@ func TestTLenAsc(t *testing.T) {
 			},
 		},
 		"desc type len struct should be applied to sorted struct": {
-			ctx: context.Background(),
+			tlen: tlenasc,
+			ctx:  context.Background(),
 			o: gopium.Struct{
 				Name: "test",
 				Fields: []gopium.Field{
@@ -138,8 +144,9 @@ func TestTLenAsc(t *testing.T) {
 				},
 			},
 		},
-		"mixed type len struct should be applied to sorted struct": {
-			ctx: context.Background(),
+		"mixed type len struct should be applied to sorted struct asc": {
+			tlen: tlenasc,
+			ctx:  context.Background(),
 			o: gopium.Struct{
 				Name: "test",
 				Fields: []gopium.Field{
@@ -198,81 +205,10 @@ func TestTLenAsc(t *testing.T) {
 					},
 				},
 			},
-		},
-	}
-	for name, tcase := range table {
-		t.Run(name, func(t *testing.T) {
-			// exec
-			r, err := tlenasc.Apply(tcase.ctx, tcase.o)
-			// check
-			if !reflect.DeepEqual(r, tcase.r) {
-				t.Errorf("actual %v doesn't equal to expected %v", r, tcase.r)
-			}
-			if !reflect.DeepEqual(err, tcase.err) {
-				t.Errorf("actual %v doesn't equal to expected %v", err, tcase.err)
-			}
-		})
-	}
-}
-
-func TestTLenDesc(t *testing.T) {
-	// prepare
-	cctx, cancel := context.WithCancel(context.Background())
-	cancel()
-	table := map[string]struct {
-		ctx context.Context
-		o   gopium.Struct
-		r   gopium.Struct
-		err error
-	}{
-		"empty struct should be applied to empty struct": {
-			ctx: context.Background(),
-		},
-		"non empty struct should be applied to itself": {
-			ctx: context.Background(),
-			o: gopium.Struct{
-				Name: "test",
-				Fields: []gopium.Field{
-					{
-						Name: "test",
-						Type: "test",
-					},
-				},
-			},
-			r: gopium.Struct{
-				Name: "test",
-				Fields: []gopium.Field{
-					{
-						Name: "test",
-						Type: "test",
-					},
-				},
-			},
-		},
-		"non empty struct should be applied to itself on canceled context": {
-			ctx: cctx,
-			o: gopium.Struct{
-				Name: "test",
-				Fields: []gopium.Field{
-					{
-						Name: "test",
-						Type: "test",
-					},
-				},
-			},
-			r: gopium.Struct{
-				Name: "test",
-				Fields: []gopium.Field{
-					{
-						Name: "test",
-						Type: "test",
-					},
-				},
-			},
-			err: cctx.Err(),
 		},
 		"asc type len struct should be applied to sorted struct": {
-			ctx: context.Background(),
+			tlen: tlendesc,
+			ctx:  context.Background(),
 			o: gopium.Struct{
 				Name: "test",
 				Fields: []gopium.Field{
@@ -309,7 +245,8 @@ func TestTLenDesc(t *testing.T) {
 			},
 		},
 		"desc type len struct should be applied to itself": {
-			ctx: context.Background(),
+			tlen: tlendesc,
+			ctx:  context.Background(),
 			o: gopium.Struct{
 				Name: "test",
 				Fields: []gopium.Field{
@@ -345,8 +282,9 @@ func TestTLenDesc(t *testing.T) {
 				},
 			},
 		},
-		"mixed type len struct should be applied to sorted struct": {
-			ctx: context.Background(),
+		"mixed type len struct should be applied to sorted struct desc": {
+			tlen: tlendesc,
+			ctx:  context.Background(),
 			o: gopium.Struct{
 				Name: "test",
 				Fields: []gopium.Field{
@@ -410,7 +348,7 @@ func TestTLenDesc(t *testing.T) {
 	for name, tcase := range table {
 		t.Run(name, func(t *testing.T) {
 			// exec
-			r, err := tlendesc.Apply(tcase.ctx, tcase.o)
+			r, err := tcase.tlen.Apply(tcase.ctx, tcase.o)
 			// check
 			if !reflect.DeepEqual(r, tcase.r) {
 				t.Errorf("actual %v doesn't equal to expected %v", r, tcase.r)
