@@ -245,12 +245,12 @@ func tagsync(ts *ast.TypeSpec, st gopium.Struct) error {
 	flen := len(st.Fields)
 	// go through all original structure fields
 	for index, field := range tts.Fields.List {
-		if index < flen {
+		if flen > index {
 			// update ast tag
 			f := st.Fields[index]
 			field.Tag = &ast.BasicLit{
 				Kind:  token.STRING,
-				Value: f.Tag,
+				Value: fmt.Sprintf("`%s`", f.Tag),
 			}
 		}
 	}
