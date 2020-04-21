@@ -21,8 +21,10 @@ var (
 // that adds or updates fields tags annotation
 // that could be processed by group strategy
 type tag struct {
-	tag, group      string
-	force, discrete bool
+	tag      string
+	group    string
+	force    bool
+	discrete bool
 }
 
 // Apply tag implementation
@@ -47,7 +49,7 @@ func (stg tag) Apply(ctx context.Context, o gopium.Struct) (gopium.Struct, error
 				group = stg.group
 			}
 			// append index of field to it
-			group = fmt.Sprintf("%s-%d", group, i)
+			group = fmt.Sprintf("%s-%d", group, i+1)
 			gtag = fmt.Sprintf("group:%s;%s", group, stg.tag)
 		}
 		// in case gopium tag already exists
@@ -68,7 +70,6 @@ func (stg tag) Apply(ctx context.Context, o gopium.Struct) (gopium.Struct, error
 		default:
 			f.Tag = fulltag
 		}
-		f.Tag = fmt.Sprintf("`%s`", f.Tag)
 	}
 	return r, ctx.Err()
 }
