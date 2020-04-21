@@ -65,7 +65,7 @@ func (stg tag) Apply(ctx context.Context, o gopium.Struct) (gopium.Struct, error
 			f.Tag = strings.Replace(f.Tag, tag, gtag, 1)
 		case ok:
 			break
-		case len(f.Tag) != 0:
+		case f.Tag != "":
 			f.Tag += " " + fulltag
 		default:
 			f.Tag = fulltag

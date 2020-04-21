@@ -12,7 +12,7 @@ type MavenGoTypes struct {
 	caches map[uint]int64
 }
 
-// NewWhistleblowerGoTypes creates instance of ExtractorGoTypes
+// NewMavenGoTypes creates instance of MavenGoTypes
 // and requires compiler and arch for types.Sizes initialization
 func NewMavenGoTypes(compiler, arch string, caches ...int64) (MavenGoTypes, error) {
 	// go through all passed caches

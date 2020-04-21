@@ -18,31 +18,31 @@ func Stdout(string, string) (io.Writer, error) {
 	return os.Stdout, nil
 }
 
-// TempFile defines Writer implementation
+// FileJson defines Writer implementation
 // which creates json file
 func FileJson(id, loc string) (io.Writer, error) {
 	return file(id, loc, "json")
 }
 
-// TempFile defines Writer implementation
+// FileXml defines Writer implementation
 // which creates xml file
 func FileXml(id, loc string) (io.Writer, error) {
 	return file(id, loc, "xml")
 }
 
-// TempFile defines Writer implementation
+// FileCsv defines Writer implementation
 // which creates csv file
 func FileCsv(id, loc string) (io.Writer, error) {
 	return file(id, loc, "csv")
 }
 
-// TempFile defines Writer implementation
+// FileGo defines Writer implementation
 // which creates go file
 func FileGo(id, loc string) (io.Writer, error) {
 	return file(id, loc, "go")
 }
 
-// TempFile defines Writer implementation
+// FileGopium defines Writer implementation
 // which creates gopium file
 func FileGopium(id, loc string) (io.Writer, error) {
 	return file(id, loc, "gopium")

@@ -9,7 +9,7 @@ import (
 	"1pkg/gopium/astutil"
 )
 
-// AstPrintGen generates go printer ast print instance
+// GoPrinter generates go printer ast print instance
 // with specified tabwidth and space mode
 func GoPrinter(indent, tabwidth int, usespace bool) astutil.Print {
 	// prepare printer with params

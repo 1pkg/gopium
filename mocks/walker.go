@@ -20,7 +20,7 @@ type Walker struct {
 	Err     error
 }
 
-// VisitTop mock implementation
+// Visit mock implementation
 func (w Walker) Visit(
 	ctx context.Context,
 	regex *regexp.Regexp,

@@ -29,9 +29,8 @@ func (stg nlen) Apply(ctx context.Context, o gopium.Struct) (gopium.Struct, erro
 		// sort depends on type of ordering
 		if stg.asc {
 			return len(r.Fields[i].Name) < len(r.Fields[j].Name)
-		} else {
-			return len(r.Fields[i].Name) > len(r.Fields[j].Name)
 		}
+		return len(r.Fields[i].Name) > len(r.Fields[j].Name)
 	})
 	return r, ctx.Err()
 }

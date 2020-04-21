@@ -10,7 +10,7 @@ type Type struct {
 	Align int64
 }
 
-// MavenMock defines mock maven implementation
+// Maven defines mock maven implementation
 type Maven struct {
 	Types                   map[string]Type
 	SysCacheVals            []int64

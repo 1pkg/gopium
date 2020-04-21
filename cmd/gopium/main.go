@@ -160,7 +160,8 @@ Notes:
 		`,
 		Args: cobra.MinimumNArgs(3),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			if app, err := runners.NewCliApp(
+			// create app instance
+			app, err := runners.NewCliApp(
 				// target platform vars
 				tcompiler,
 				tarch,
@@ -187,11 +188,12 @@ Notes:
 				pusespace,
 				// global vars
 				timeout,
-			); err == nil {
-				return app.Run(cmd.Context())
-			} else {
+			)
+			if err != nil {
 				return err
 			}
+			// execute app
+			return app.Run(cmd.Context())
 		},
 	}
 	// set target_compiler flag

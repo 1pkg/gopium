@@ -99,8 +99,8 @@ func (stg group) Apply(ctx context.Context, o gopium.Struct) (r gopium.Struct, e
 	})
 	// combine all results to single result struct
 	r.Fields = nil
-	for _, container := range containers {
-		r.Fields = append(r.Fields, container.r.Fields...)
+	for i := range containers {
+		r.Fields = append(r.Fields, containers[i].r.Fields...)
 	}
 	return
 }
@@ -128,7 +128,8 @@ func (stg group) parse(st gopium.Struct) ([]container, error) {
 		}
 		// otherwise parse the tag
 		tokens := strings.Split(tag, ";")
-		if len(tokens) == 1 {
+		switch tlen := len(tokens); tlen {
+		case 1:
 			stgs := tokens[0]
 			// check that strategies list is consistent
 			if gstg, ok := gstrategiesnames[tdef]; ok && gstg != stgs {
@@ -137,7 +138,7 @@ func (stg group) parse(st gopium.Struct) ([]container, error) {
 			// collect strategies and fields
 			gstrategiesnames[tdef] = stgs
 			gfields[tdef] = append(gfields[tdef], f)
-		} else if len(tokens) == 2 {
+		case 2:
 			group := tokens[0]
 			stgs := tokens[1]
 			// check that tag contains group anchor
@@ -153,7 +154,7 @@ func (stg group) parse(st gopium.Struct) ([]container, error) {
 			// collect strategies and fields
 			gstrategiesnames[group] = stgs
 			gfields[group] = append(gfields[group], f)
-		} else {
+		default:
 			// return parsing error msg
 			return nil, fmt.Errorf("tag %q can't be parsed neither as `default` nor named group", tag)
 		}
