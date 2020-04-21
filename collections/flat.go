@@ -31,15 +31,17 @@ func (f Flat) Sorted() []gopium.Struct {
 		var sumi, sumj string
 		// in case of any pattern error
 		// just apply natural sort
+		// otherwise sort it by id
 		_, erri := fmt.Sscanf(ids[i], "%d-%s", &idi, &sumi)
 		_, errj := fmt.Sscanf(ids[j], "%d-%s", &idj, &sumj)
-		if erri != nil && errj != nil {
+		switch {
+		case erri != nil && errj != nil:
 			return ids[i] < ids[j]
-		} else if erri != nil {
+		case erri != nil:
 			return false
-		} else if errj != nil {
+		case errj != nil:
 			return true
-		} else {
+		default:
 			return idi < idj
 		}
 	})

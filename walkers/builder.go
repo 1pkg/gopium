@@ -30,11 +30,11 @@ type Builder struct {
 
 // NewBuilder creates instance of Builder
 // and requires parser and exposer to pass it to related walkers
-func NewBuilder(parser gopium.Parser, exposer gopium.Exposer, print astutil.Print) Builder {
+func NewBuilder(parser gopium.Parser, exposer gopium.Exposer, printer astutil.Print) Builder {
 	return Builder{
 		parser:  parser,
 		exposer: exposer,
-		print:   print,
+		print:   printer,
 	}
 }
 

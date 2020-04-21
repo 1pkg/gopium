@@ -16,7 +16,7 @@ import (
 // formatting original ast.TypeSpec with gopium.Struct
 type StructToAst func(*ast.TypeSpec, gopium.Struct) error
 
-// FSPTN implements StructToAst and combines:
+// FSPT implements StructToAst and combines:
 // - flatten helper
 // - fpadfilter helper
 // - shuffle helper

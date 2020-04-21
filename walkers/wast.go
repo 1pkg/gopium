@@ -45,10 +45,10 @@ type wast struct {
 }
 
 // With erich wast walker with parser, exposer, and ref instance
-func (w wast) With(parser gopium.Parser, exposer gopium.Exposer, print astutil.Print) wast {
+func (w wast) With(parser gopium.Parser, exposer gopium.Exposer, printer astutil.Print) wast {
 	w.parser = parser
 	w.exposer = exposer
-	w.print = print
+	w.print = printer
 	return w
 }
 

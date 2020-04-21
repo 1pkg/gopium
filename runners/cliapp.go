@@ -32,27 +32,27 @@ type CliApp struct {
 // from list of received parameters or returns error
 func NewCliApp(
 	// target platform vars
-	compiler string,
+	compiler,
 	arch string,
 	cpucaches []int,
 	// package parser vars
-	pkg string,
+	pkg,
 	path string,
-	benvs []string,
+	benvs,
 	bflags []string,
 	// walker vars
-	walker string,
+	walker,
 	regex string,
-	deep bool,
+	deep,
 	backref bool,
 	stgs []string,
 	// tag vars
 	group string,
-	tenable bool,
-	tforce bool,
+	tenable,
+	tforce,
 	tdiscrete bool,
 	// printer vars
-	indent int,
+	indent,
 	tabwidth int,
 	usespace bool,
 	// global vars
@@ -72,10 +72,9 @@ func NewCliApp(
 	path = strings.Replace(path, "{{package}}", pkg, 1)
 	// set up parser
 	p := typepkg.ParserXToolPackagesAst{
-		Pattern: pkg,
-		Root:    build.Default.GOPATH,
-		Path:    path,
-		//nolint
+		Pattern:    pkg,
+		Root:       build.Default.GOPATH,
+		Path:       path,
 		ModeTypes:  packages.LoadAllSyntax,
 		ModeAst:    parser.ParseComments | parser.AllErrors,
 		BuildEnv:   benvs,
@@ -122,7 +121,7 @@ func NewCliApp(
 }
 
 // Run CliApp implementation
-func (cli CliApp) Run(ctx context.Context) error {
+func (cli *CliApp) Run(ctx context.Context) error {
 	// build strategy
 	stg, err := cli.coord.strategy(cli.sbuilder, cli.snames)
 	if err != nil {

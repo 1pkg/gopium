@@ -17,13 +17,13 @@ type Locator interface {
 	Root() *token.FileSet
 }
 
-// Parser defines abstraction for
+// TypeParser defines abstraction for
 // types packages parsing processor
 type TypeParser interface {
 	ParseTypes(context.Context) (*types.Package, Locator, error)
 }
 
-// Parser defines abstraction for
+// AstParser defines abstraction for
 // ast packages parsing processor
 type AstParser interface {
 	ParseAst(context.Context) (*ast.Package, Locator, error)

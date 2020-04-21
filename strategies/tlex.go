@@ -29,9 +29,8 @@ func (stg tlex) Apply(ctx context.Context, o gopium.Struct) (gopium.Struct, erro
 		// sort depends on type of ordering
 		if stg.asc {
 			return r.Fields[i].Type < r.Fields[j].Type
-		} else {
-			return r.Fields[i].Type > r.Fields[j].Type
 		}
+		return r.Fields[i].Type > r.Fields[j].Type
 	})
 	return r, ctx.Err()
 }
