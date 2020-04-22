@@ -44,7 +44,7 @@ func TestTag(t *testing.T) {
 				},
 			},
 		},
-		"non empty struct should be applied to itself with relevant doc on canceled context": {
+		"non empty struct should be applied to itself with relevant tag on canceled context": {
 			tag: tag{tag: "test"},
 			ctx: cctx,
 			o: gopium.Struct{

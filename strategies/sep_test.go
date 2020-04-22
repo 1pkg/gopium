@@ -14,22 +14,22 @@ func TestSep(t *testing.T) {
 	cctx, cancel := context.WithCancel(context.Background())
 	cancel()
 	table := map[string]struct {
-		sep     sep
-		curator gopium.Curator
-		ctx     context.Context
-		o       gopium.Struct
-		r       gopium.Struct
-		err     error
+		sep sep
+		c   gopium.Curator
+		ctx context.Context
+		o   gopium.Struct
+		r   gopium.Struct
+		err error
 	}{
 		"empty struct should be applied to empty struct": {
-			sep:     sepl1b,
-			curator: mocks.Maven{SysCacheVals: []int64{32}},
-			ctx:     context.Background(),
+			sep: sepl1b,
+			c:   mocks.Maven{SysCacheVals: []int64{32}},
+			ctx: context.Background(),
 		},
 		"non empty struct should be applied to cache line separator aligned struct": {
-			sep:     sepl2b,
-			curator: mocks.Maven{SysCacheVals: []int64{16, 16, 16}},
-			ctx:     context.Background(),
+			sep: sepl2b,
+			c:   mocks.Maven{SysCacheVals: []int64{16, 16, 16}},
+			ctx: context.Background(),
 			o: gopium.Struct{
 				Name: "test",
 				Fields: []gopium.Field{
@@ -51,9 +51,9 @@ func TestSep(t *testing.T) {
 			},
 		},
 		"non empty struct should be applied to cache line separator aligned on canceled context": {
-			sep:     sepl3b,
-			curator: mocks.Maven{SysCacheVals: []int64{16, 16, 16}},
-			ctx:     cctx,
+			sep: sepl3b,
+			c:   mocks.Maven{SysCacheVals: []int64{16, 16, 16}},
+			ctx: cctx,
 			o: gopium.Struct{
 				Name: "test",
 				Fields: []gopium.Field{
@@ -76,9 +76,9 @@ func TestSep(t *testing.T) {
 			err: cctx.Err(),
 		},
 		"mixed struct should be applied to sys separator aligned struct at top": {
-			sep:     sepsyst,
-			curator: mocks.Maven{SysAlignVal: 24, SysCacheVals: []int64{16, 32, 64}},
-			ctx:     context.Background(),
+			sep: sepsyst,
+			c:   mocks.Maven{SysAlignVal: 24, SysCacheVals: []int64{16, 32, 64}},
+			ctx: context.Background(),
 			o: gopium.Struct{
 				Name: "test",
 				Fields: []gopium.Field{
@@ -124,9 +124,9 @@ func TestSep(t *testing.T) {
 			},
 		},
 		"mixed struct should be applied to sys separator aligned struct at bottom": {
-			sep:     sepsysb,
-			curator: mocks.Maven{SysAlignVal: 24, SysCacheVals: []int64{16, 32, 64}},
-			ctx:     context.Background(),
+			sep: sepsysb,
+			c:   mocks.Maven{SysAlignVal: 24, SysCacheVals: []int64{16, 32, 64}},
+			ctx: context.Background(),
 			o: gopium.Struct{
 				Name: "test",
 				Fields: []gopium.Field{
@@ -172,9 +172,9 @@ func TestSep(t *testing.T) {
 			},
 		},
 		"mixed struct should be applied to cache line separator aligned struct at top": {
-			sep:     sepl3t,
-			curator: mocks.Maven{SysAlignVal: 24, SysCacheVals: []int64{16, 32, 64}},
-			ctx:     context.Background(),
+			sep: sepl3t,
+			c:   mocks.Maven{SysAlignVal: 24, SysCacheVals: []int64{16, 32, 64}},
+			ctx: context.Background(),
 			o: gopium.Struct{
 				Name: "test",
 				Fields: []gopium.Field{
@@ -231,7 +231,7 @@ func TestSep(t *testing.T) {
 	for name, tcase := range table {
 		t.Run(name, func(t *testing.T) {
 			// exec
-			sep := tcase.sep.Curator(tcase.curator)
+			sep := tcase.sep.Curator(tcase.c)
 			r, err := sep.Apply(tcase.ctx, tcase.o)
 			// check
 			if !reflect.DeepEqual(r, tcase.r) {

@@ -51,9 +51,9 @@ func (stg group) Builder(builder Builder) group {
 }
 
 // Apply group implementation
-func (stg group) Apply(ctx context.Context, o gopium.Struct) (r gopium.Struct, err error) {
+func (stg group) Apply(ctx context.Context, o gopium.Struct) (gopium.Struct, error) {
 	// copy original structure to result
-	r = o
+	r := o
 	// parse tag annotation
 	// into containers groups
 	containers, err := stg.parse(r)
@@ -64,14 +64,14 @@ func (stg group) Apply(ctx context.Context, o gopium.Struct) (r gopium.Struct, e
 	}
 	// create sync error group
 	// with cancelation context
-	group, _ := errgroup.WithContext(ctx)
+	group, gctx := errgroup.WithContext(ctx)
 	// go through all containers and apply
 	// all strategies concurently on inner structs
 	for i := range containers {
 		container := &containers[i]
 		group.Go(func() error {
 			// apply strategy on struct
-			res, err := container.stg.Apply(ctx, container.o)
+			rst, err := container.stg.Apply(gctx, container.o)
 			// in case of any error
 			// just return error back
 			if err != nil {
@@ -79,11 +79,11 @@ func (stg group) Apply(ctx context.Context, o gopium.Struct) (r gopium.Struct, e
 			}
 			// in case of success
 			// update result on container
-			container.r = res
+			container.r = rst
 			// if we faced default group
 			// update result comment and doc
 			if container.grp == tdef {
-				r = res
+				r = rst
 			}
 			return nil
 		})
@@ -91,7 +91,7 @@ func (stg group) Apply(ctx context.Context, o gopium.Struct) (r gopium.Struct, e
 	// wait until all strategies
 	// have been applied and resolved
 	if err = group.Wait(); err != nil {
-		return o, nil
+		return o, err
 	}
 	// sort result containers lexicographicaly
 	sort.SliceStable(containers, func(i, j int) bool {
@@ -102,14 +102,14 @@ func (stg group) Apply(ctx context.Context, o gopium.Struct) (r gopium.Struct, e
 	for i := range containers {
 		r.Fields = append(r.Fields, containers[i].r.Fields...)
 	}
-	return
+	return r, ctx.Err()
 }
 
 // parse helps to parse structure fields tags
-// into groups container or throw parse error
+// into groups container or returns parse error
 // - `gopium:"stg,stg,stg"` parsed to `default` group
 // - `gopium:"group:def;stg,stg,stg"` parsed to named group
-// - otherwise throw a parse error
+// - otherwise a parse error returned
 func (stg group) parse(st gopium.Struct) ([]container, error) {
 	// setup temporary groups maps
 	// for fields and strategies
@@ -126,6 +126,8 @@ func (stg group) parse(st gopium.Struct) ([]container, error) {
 			gfields[tskip] = append(gfields[tskip], f)
 			continue
 		}
+		// trim all excess separators
+		tag = strings.Trim(tag, ";")
 		// otherwise parse the tag
 		tokens := strings.Split(tag, ";")
 		switch tlen := len(tokens); tlen {
@@ -133,7 +135,12 @@ func (stg group) parse(st gopium.Struct) ([]container, error) {
 			stgs := tokens[0]
 			// check that strategies list is consistent
 			if gstg, ok := gstrategiesnames[tdef]; ok && gstg != stgs {
-				return nil, fmt.Errorf("inconsistent strategies list %q for field %q", stgs, f.Name)
+				return nil, fmt.Errorf(
+					"inconsistent strategies list %q for field %q in group %q",
+					stgs,
+					f.Name,
+					tdef,
+				)
 			}
 			// collect strategies and fields
 			gstrategiesnames[tdef] = stgs
@@ -143,28 +150,33 @@ func (stg group) parse(st gopium.Struct) ([]container, error) {
 			stgs := tokens[1]
 			// check that tag contains group anchor
 			if !strings.Contains(group, "group:") {
-				return nil, fmt.Errorf("tag %q can't be parsed named group `group:` anchor wasn't found", tag)
+				return nil, fmt.Errorf("tag %q can't be parsed, named group `group:` anchor wasn't found", f.Tag)
 			}
 			// remove group anchor
 			group = strings.Replace(group, "group:", "", 1)
 			// check that strategies list is consistent
 			if gstg, ok := gstrategiesnames[group]; ok && gstg != stgs {
-				return nil, fmt.Errorf("inconsistent strategies list %q for field %q", stgs, f.Name)
+				return nil, fmt.Errorf(
+					"inconsistent strategies list %q for field %q in group %q",
+					stgs,
+					f.Name,
+					group,
+				)
 			}
 			// collect strategies and fields
 			gstrategiesnames[group] = stgs
 			gfields[group] = append(gfields[group], f)
 		default:
 			// return parsing error msg
-			return nil, fmt.Errorf("tag %q can't be parsed neither as `default` nor named group", tag)
+			return nil, fmt.Errorf("tag %q can't be parsed, neither as `default` nor named group", f.Tag)
 		}
 	}
 	// go through all collected group strategies names
 	// and build pipe strategy from them
 	for grp, gstgs := range gstrategiesnames {
 		// prepare strategy pipe
-		p := pipe{}
 		names := strings.Split(gstgs, ",")
+		p := make(pipe, 0, len(names))
 		// go through list of strategy name
 		for _, name := range names {
 			// try to build new strategy by name
@@ -181,7 +193,7 @@ func (stg group) parse(st gopium.Struct) ([]container, error) {
 		gstrategies[grp] = p
 	}
 	// setup result containers
-	containers := make([]container, len(gfields))
+	containers := make([]container, 0, len(gfields))
 	// go through all collected group fields
 	for grp, fields := range gfields {
 		// prepare new empty group container

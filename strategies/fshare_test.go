@@ -14,22 +14,22 @@ func TestFshare(t *testing.T) {
 	cctx, cancel := context.WithCancel(context.Background())
 	cancel()
 	table := map[string]struct {
-		fshare  fshare
-		curator gopium.Curator
-		ctx     context.Context
-		o       gopium.Struct
-		r       gopium.Struct
-		err     error
+		fshare fshare
+		c      gopium.Curator
+		ctx    context.Context
+		o      gopium.Struct
+		r      gopium.Struct
+		err    error
 	}{
 		"empty struct should be applied to empty struct": {
-			fshare:  fsharel1,
-			curator: mocks.Maven{SysCacheVals: []int64{32}},
-			ctx:     context.Background(),
+			fshare: fsharel1,
+			c:      mocks.Maven{SysCacheVals: []int64{32}},
+			ctx:    context.Background(),
 		},
 		"non empty struct should be applied to fshare aligned struct": {
-			fshare:  fsharel2,
-			curator: mocks.Maven{SysCacheVals: []int64{16, 16, 16}},
-			ctx:     context.Background(),
+			fshare: fsharel2,
+			c:      mocks.Maven{SysCacheVals: []int64{16, 16, 16}},
+			ctx:    context.Background(),
 			o: gopium.Struct{
 				Name: "test",
 				Fields: []gopium.Field{
@@ -51,9 +51,9 @@ func TestFshare(t *testing.T) {
 			},
 		},
 		"non empty struct should be applied to fshare aligned struct on canceled context": {
-			fshare:  fsharel3,
-			curator: mocks.Maven{SysCacheVals: []int64{16, 16, 16}},
-			ctx:     cctx,
+			fshare: fsharel3,
+			c:      mocks.Maven{SysCacheVals: []int64{16, 16, 16}},
+			ctx:    cctx,
 			o: gopium.Struct{
 				Name: "test",
 				Fields: []gopium.Field{
@@ -76,9 +76,9 @@ func TestFshare(t *testing.T) {
 			err: cctx.Err(),
 		},
 		"mixed struct should be applied to fshare aligned struct": {
-			fshare:  fsharel3,
-			curator: mocks.Maven{SysCacheVals: []int64{16, 32, 64}},
-			ctx:     context.Background(),
+			fshare: fsharel3,
+			c:      mocks.Maven{SysCacheVals: []int64{16, 32, 64}},
+			ctx:    context.Background(),
 			o: gopium.Struct{
 				Name: "test",
 				Fields: []gopium.Field{
@@ -127,9 +127,9 @@ func TestFshare(t *testing.T) {
 			},
 		},
 		"mixed prealigned struct should be applied to fshare aligned struct": {
-			fshare:  fsharel1,
-			curator: mocks.Maven{SysCacheVals: []int64{16, 32, 64}},
-			ctx:     context.Background(),
+			fshare: fsharel1,
+			c:      mocks.Maven{SysCacheVals: []int64{16, 32, 64}},
+			ctx:    context.Background(),
 			o: gopium.Struct{
 				Name: "test",
 				Fields: []gopium.Field{
@@ -171,7 +171,7 @@ func TestFshare(t *testing.T) {
 	for name, tcase := range table {
 		t.Run(name, func(t *testing.T) {
 			// exec
-			fshare := tcase.fshare.Curator(tcase.curator)
+			fshare := tcase.fshare.Curator(tcase.c)
 			r, err := fshare.Apply(tcase.ctx, tcase.o)
 			// check
 			if !reflect.DeepEqual(r, tcase.r) {
