@@ -29,11 +29,6 @@ var (
 	wregex   string
 	wdeep    bool
 	wbackref bool
-	// tag vars
-	tgroup    string
-	tenable   bool
-	tforce    bool
-	tdiscrete bool
 	// printer vars
 	pindent   int
 	ptabwidth int
@@ -120,6 +115,12 @@ Gopium supports next strategies:
  - explicit_padings_type_natural (explicitly aligns each structure field to max type alignment padding by adding
 	missing paddings for each field)
 
+ - add_tag_group_soft (adds gopium fields tags annotation if no previous annotation found)
+ - add_tag_group_force (adds gopium fields tags annotation if previous annotation found overwrites it)
+ - add_tag_group_discrete (discretely adds gopium fields tags annotation if no previous annotation found)
+ - add_tag_group_force_discrete (discretely adds gopium fields tags annotation if previous annotation found overwrites it)
+ - remove_tag_group (removes gopium fields tags annotation)
+
  - doc_fields_annotate (adds align and size doc annotation for each structure field)
  - comment_fields_annotate adds align and size comment annotation for each structure field)
  - doc_struct_annotate (adds aggregated align and size doc annotation for whole structure)
@@ -146,7 +147,6 @@ Gopium supports next strategies:
  - filter_not_embedded (filters out all structure not embedded fields)
  - filter_exported (filters out all structure exported fields)
  - filter_not_exported (filters out all structure not exported fields)
- - remove_tag_group (removes gopium fields tags annotation)
 
  - nope (does nothing by returning original structure)
  - void (does nothing by returning void struct)
@@ -177,11 +177,6 @@ Notes:
 				wdeep,
 				wbackref,
 				args[2:], // strategies slice
-				// tag vars
-				tgroup,
-				tenable,
-				tforce,
-				tdiscrete,
 				// printer vars
 				pindent,
 				ptabwidth,
@@ -284,52 +279,11 @@ Gopium walker backref flag, flag that defines type of names referencing.
 By default any previous visited types have affect on future relevant visits.
 		`,
 	)
-	// set tag_group flag
-	cli.Flags().StringVarP(
-		&tgroup,
-		"tag_group",
-		"g",
-		"",
-		`
-Gopium tag group name, name that defines group inside of gopium tag.
-Used only if tag_enable is set to true.
-		`,
-	)
-	// set tag_enable flag
-	cli.Flags().BoolVarP(
-		&tenable,
-		"tag_enable",
-		"E",
-		false,
-		"Gopium tag enable flag, flag that defines if running strategies modifies structs tags.",
-	)
-	// set tag_force flag
-	cli.Flags().BoolVarP(
-		&tforce,
-		"tag_force",
-		"F",
-		false,
-		`
-Gopium tag force flag, flag that defines if existed gopium tag could be overwritten.
-Used only if tag_enable is set to true.
-		`,
-	)
-	// set tag_discrete flag
-	cli.Flags().BoolVarP(
-		&tdiscrete,
-		"tag_discrete",
-		"D",
-		false,
-		`
-Gopium tag discrete flag, flag that defines if incremental suffix for tag group name should be applied.
-Used only if tag_enable is set to true.
-		`,
-	)
 	// set printer_indent flag
 	cli.Flags().IntVarP(
 		&pindent,
 		"printer_indent",
-		"I",
+		"i",
 		0,
 		"Gopium printer width of tab, defines the least code indent.",
 	)
@@ -337,7 +291,7 @@ Used only if tag_enable is set to true.
 	cli.Flags().IntVarP(
 		&ptabwidth,
 		"printer_tab_width",
-		"W",
+		"w",
 		8,
 		"Gopium printer width of tab, defines width of tab in spaces for printer.",
 	)
@@ -345,7 +299,7 @@ Used only if tag_enable is set to true.
 	cli.Flags().BoolVarP(
 		&pusespace,
 		"printer_use_space",
-		"S",
+		"s",
 		false,
 		"Gopium printer use space flag, flag that defines if all formatting should be done by spaces.",
 	)

@@ -20,7 +20,7 @@ const (
 
 // list of group presets
 var (
-	grp = group{}
+	ptgrp = group{}
 )
 
 // group defines strategy implementation

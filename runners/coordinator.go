@@ -7,7 +7,6 @@ import (
 	"time"
 
 	"1pkg/gopium"
-	"1pkg/gopium/strategies"
 )
 
 // coordinator defines helper
@@ -16,35 +15,21 @@ import (
 // - walker building
 // - visiting
 type coordinator struct {
-	wregex    *regexp.Regexp
-	wdeep     bool
-	wbackref  bool
-	tgroup    string
-	tenable   bool
-	tforce    bool
-	tdiscrete bool
-	gtimeout  time.Duration
+	wregex   *regexp.Regexp
+	wdeep    bool
+	wbackref bool
+	gtimeout time.Duration
 }
 
 // strategy builds strategy instance
 // by using builder and strategies names
 func (coord coordinator) strategy(b gopium.StrategyBuilder, snames []gopium.StrategyName) (gopium.Strategy, error) {
-	// build strategies
-	// and pipe them
-	stgs := make([]gopium.Strategy, 0, len(snames))
-	for _, sname := range snames {
-		stg, err := b.Build(sname)
-		if err != nil {
-			return nil, fmt.Errorf("can't build such strategy %q %v", sname, err)
-		}
-		stgs = append(stgs, stg)
+	// build strategy
+	stg, err := b.Build(snames...)
+	if err != nil {
+		return nil, fmt.Errorf("can't build such strategy %v %v", snames, err)
 	}
-	// append tag strategy if enabled
-	if coord.tenable {
-		tag := strategies.Tag(coord.tgroup, coord.tforce, coord.tdiscrete, snames...)
-		stgs = append(stgs, tag)
-	}
-	return strategies.Pipe(stgs...), nil
+	return stg, nil
 }
 
 // walker builds walker instance

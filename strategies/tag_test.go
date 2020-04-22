@@ -20,11 +20,11 @@ func TestTag(t *testing.T) {
 		err error
 	}{
 		"empty struct should be applied to itself": {
-			tag: tag{},
+			tag: tags,
 			ctx: context.Background(),
 		},
 		"non empty struct should be applied to itself with relevant tag": {
-			tag: tag{tag: "test"},
+			tag: tags.Names(gopium.StrategyName("test")),
 			ctx: context.Background(),
 			o: gopium.Struct{
 				Name: "test",
@@ -45,7 +45,7 @@ func TestTag(t *testing.T) {
 			},
 		},
 		"non empty struct should be applied to itself with relevant tag on canceled context": {
-			tag: tag{tag: "test"},
+			tag: tags.Names(gopium.StrategyName("test")),
 			ctx: cctx,
 			o: gopium.Struct{
 				Name: "test",
@@ -67,7 +67,7 @@ func TestTag(t *testing.T) {
 			err: cctx.Err(),
 		},
 		"non empty struct should be applied to itself valid tag shouldn't be overwritten": {
-			tag: tag{tag: "test"},
+			tag: tags.Names(gopium.StrategyName("test")),
 			ctx: context.Background(),
 			o: gopium.Struct{
 				Name: "test",
@@ -88,8 +88,8 @@ func TestTag(t *testing.T) {
 				},
 			},
 		},
-		"non empty struct should be applied to itself new tag shouldn be appended": {
-			tag: tag{tag: "test"},
+		"non empty struct should be applied to itself new tag should be appended": {
+			tag: tags.Names(gopium.StrategyName("test")),
 			ctx: context.Background(),
 			o: gopium.Struct{
 				Name: "test",
@@ -111,7 +111,7 @@ func TestTag(t *testing.T) {
 			},
 		},
 		"non empty struct should be applied to itself with relevant tag should be overwritten": {
-			tag: tag{tag: "test", force: true},
+			tag: tagf.Names(gopium.StrategyName("test")),
 			ctx: context.Background(),
 			o: gopium.Struct{
 				Name: "test",
@@ -132,8 +132,8 @@ func TestTag(t *testing.T) {
 				},
 			},
 		},
-		"complex struct should be applied to itself with relevant tags": {
-			tag: tag{tag: "test", force: true},
+		"complex struct should be applied to itself with relevant tags on force": {
+			tag: tagf.Names(gopium.StrategyName("test")),
 			ctx: context.Background(),
 			o: gopium.Struct{
 				Name: "test",
@@ -178,13 +178,8 @@ func TestTag(t *testing.T) {
 					},
 				},
 			},
-		},
-		"complex struct should be applied to itself with relevant tags with grop prefix": {
-			tag: tag{
-				tag:   "test",
-				group: "group",
-				force: true,
-			},
+		}, "complex struct should be applied to itself with relevant tags on soft discrete": {
+			tag: tagsd.Names(gopium.StrategyName("test")),
 			ctx: context.Background(),
 			o: gopium.Struct{
 				Name: "test",
@@ -214,28 +209,24 @@ func TestTag(t *testing.T) {
 						Name: "test1",
 						Type: "int",
 						Size: 8,
-						Tag:  `json:"test" gopium:"group:group;test"`,
+						Tag:  `json:"test" gopium:"group:default-1;test"`,
 					},
 					{
 						Name: "test2",
 						Type: "string",
 						Doc:  []string{"test"},
-						Tag:  `gopium:"group:group;test"`,
+						Tag:  `gopium:"string"`,
 					},
 					{
 						Name: "test2",
 						Type: "float64",
-						Tag:  `gopium:"group:group;test"`,
+						Tag:  `gopium:"group:default-3;test"`,
 					},
 				},
 			},
 		},
-		"complex struct should be applied to itself with relevant tags on discrete": {
-			tag: tag{
-				tag:      "test",
-				force:    true,
-				discrete: true,
-			},
+		"complex struct should be applied to itself with relevant tags on force discrete": {
+			tag: tagfd.Names(gopium.StrategyName("test")),
 			ctx: context.Background(),
 			o: gopium.Struct{
 				Name: "test",
@@ -244,11 +235,13 @@ func TestTag(t *testing.T) {
 						Name: "test1",
 						Type: "int",
 						Size: 8,
+						Tag:  `json:"test"`,
 					},
 					{
 						Name: "test2",
 						Type: "string",
 						Doc:  []string{"test"},
+						Tag:  `gopium:"string"`,
 					},
 					{
 						Name: "test2",
@@ -263,7 +256,7 @@ func TestTag(t *testing.T) {
 						Name: "test1",
 						Type: "int",
 						Size: 8,
-						Tag:  `gopium:"group:default-1;test"`,
+						Tag:  `json:"test" gopium:"group:default-1;test"`,
 					},
 					{
 						Name: "test2",
@@ -275,56 +268,6 @@ func TestTag(t *testing.T) {
 						Name: "test2",
 						Type: "float64",
 						Tag:  `gopium:"group:default-3;test"`,
-					},
-				},
-			},
-		},
-		"complex struct should be applied to itself with relevant tags on discrete with prefix group": {
-			tag: tag{
-				tag:      "test",
-				group:    "group",
-				force:    true,
-				discrete: true,
-			},
-			ctx: context.Background(),
-			o: gopium.Struct{
-				Name: "test",
-				Fields: []gopium.Field{
-					{
-						Name: "test1",
-						Type: "int",
-						Size: 8,
-					},
-					{
-						Name: "test2",
-						Type: "string",
-						Doc:  []string{"test"},
-					},
-					{
-						Name: "test2",
-						Type: "float64",
-					},
-				},
-			},
-			r: gopium.Struct{
-				Name: "test",
-				Fields: []gopium.Field{
-					{
-						Name: "test1",
-						Type: "int",
-						Size: 8,
-						Tag:  `gopium:"group:group-1;test"`,
-					},
-					{
-						Name: "test2",
-						Type: "string",
-						Doc:  []string{"test"},
-						Tag:  `gopium:"group:group-2;test"`,
-					},
-					{
-						Name: "test2",
-						Type: "float64",
-						Tag:  `gopium:"group:group-3;test"`,
 					},
 				},
 			},
