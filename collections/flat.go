@@ -14,7 +14,7 @@ type Flat map[string]gopium.Struct
 // Sorted converts flat collection
 // to sorted slice of structs
 // note: it's possible due to next:
-// generated id would be ordered inside same loc
+// generated ids are ordered inside same loc
 func (f Flat) Sorted() []gopium.Struct {
 	// preapare ids and sorted slice
 	ids := make([]string, 0, len(f))

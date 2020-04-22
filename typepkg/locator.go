@@ -33,7 +33,7 @@ func NewLocator(fset *token.FileSet) *Locator {
 
 // ID calculates sha256 hash hex string
 // for specified token.Pos in token.FileSet
-// note: generated id would be ordered inside same loc
+// note: generated ids are ordered inside same loc
 func (l *Locator) ID(p token.Pos) string {
 	// check if such file exists
 	if f := l.root.File(p); f != nil {

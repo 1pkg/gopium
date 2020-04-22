@@ -64,7 +64,7 @@ Gopium is the tool which was designed to automate and simplify non trivial actio
  - other relevant activities
 
 In order to use gopium cli you need to provide at least package name (full package name is expected),
-list of strategies which would be applied one by one and single walker.
+list of strategies which is applied one by one and single walker.
 Outcome of execution is fully defined by list of strategies and walker combination.
 List of strategies modifies structs inside the package, walker facilitates and insures,
 that outcome is written to one of supported destinations.
@@ -231,8 +231,8 @@ For now only 3 lines of cache are supported by strategies.
 		"src/{{package}}",
 		`
 Go package path, relative path to root of the package is expected.
-To obtain fill path, package path would be concatenated with current GOPATH env var.
-Template {{package}} part will be replaced with package name.
+To obtain fill path, package path is concatenated with current GOPATH env var.
+Template {{package}} part is replaced with package name.
 		`,
 	)
 	// set package_build_envs flag
@@ -258,7 +258,7 @@ Template {{package}} part will be replaced with package name.
 		"r",
 		".*",
 		`
-Gopium walker regexp, regexp that defines which structures would be visited.
+Gopium walker regexp, regexp that defines which structures are subjects for visiting.
 Visiting is done only if structure name matches the regexp.
 		`,
 	)
@@ -301,7 +301,7 @@ Used only if tag_enable is set to true.
 		"tag_enable",
 		"E",
 		false,
-		"Gopium tag enable flag, flag that defines if running strategies would modify structs tags.",
+		"Gopium tag enable flag, flag that defines if running strategies modifies structs tags.",
 	)
 	// set tag_force flag
 	cli.Flags().BoolVarP(
@@ -310,7 +310,7 @@ Used only if tag_enable is set to true.
 		"F",
 		false,
 		`
-Gopium tag force flag, flag that defines if existed gopium tag would be overwritten.
+Gopium tag force flag, flag that defines if existed gopium tag could be overwritten.
 Used only if tag_enable is set to true.
 		`,
 	)
@@ -321,7 +321,7 @@ Used only if tag_enable is set to true.
 		"D",
 		false,
 		`
-Gopium tag discrete flag, flag that defines if incremental suffix for tag group name would be applied.
+Gopium tag discrete flag, flag that defines if incremental suffix for tag group name should be applied.
 Used only if tag_enable is set to true.
 		`,
 	)

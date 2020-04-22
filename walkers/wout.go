@@ -6,7 +6,8 @@ import (
 	"regexp"
 
 	"1pkg/gopium"
-	"1pkg/gopium/fmtio"
+	"1pkg/gopium/gfmtio/gfmt"
+	"1pkg/gopium/gfmtio/gio"
 
 	"golang.org/x/sync/errgroup"
 )
@@ -14,28 +15,28 @@ import (
 // list of wout presets
 var (
 	jsonstd = wout{
-		fmt:    fmtio.PrettyJson,
-		writer: fmtio.Stdout,
+		fmt:    gfmt.PrettyJson,
+		writer: gio.Stdout,
 	}
 	xmlstd = wout{
-		fmt:    fmtio.PrettyXml,
-		writer: fmtio.Stdout,
+		fmt:    gfmt.PrettyXml,
+		writer: gio.Stdout,
 	}
 	csvstd = wout{
-		fmt:    fmtio.PrettyCsv,
-		writer: fmtio.Stdout,
+		fmt:    gfmt.PrettyCsv,
+		writer: gio.Stdout,
 	}
 	jsontf = wout{
-		fmt:    fmtio.PrettyJson,
-		writer: fmtio.FileJson,
+		fmt:    gfmt.PrettyJson,
+		writer: gio.FileJson,
 	}
 	xmltf = wout{
-		fmt:    fmtio.PrettyXml,
-		writer: fmtio.FileXml,
+		fmt:    gfmt.PrettyXml,
+		writer: gio.FileXml,
 	}
 	csvtf = wout{
-		fmt:    fmtio.PrettyCsv,
-		writer: fmtio.FileCsv,
+		fmt:    gfmt.PrettyCsv,
+		writer: gio.FileCsv,
 	}
 )
 
@@ -46,8 +47,8 @@ var (
 type wout struct {
 	parser  gopium.TypeParser
 	exposer gopium.Exposer
-	fmt     fmtio.StructToBytes
-	writer  fmtio.Writer
+	fmt     gfmt.StructToBytes
+	writer  gio.Writer
 }
 
 // With erich wout walker with parser, exposer, and ref instance
@@ -124,14 +125,14 @@ func (w wout) Visit(
 		visited := applied
 		// run error group write call
 		group.Go(func() error {
-			// in case any error happened just return error
-			// it cancels context automatically
+			// in case any error happened
+			// just return error back
 			if visited.Error != nil {
 				return visited.Error
 			}
 			// just process with write call
-			// in case any error happened just return error
-			// it cancels context automatically
+			// in case any error happened
+			// just return error back
 			return w.write(visited.ID, visited.Loc, visited.Result)
 		})
 	}
@@ -148,7 +149,7 @@ func (w wout) write(id, loc string, st gopium.Struct) error {
 	// apply formatter
 	buf, err := w.fmt(st)
 	// in case any error happened
-	// in formatter and return error
+	// in formatter return error back
 	if err != nil {
 		return err
 	}
@@ -157,9 +158,11 @@ func (w wout) write(id, loc string, st gopium.Struct) error {
 	if err != nil {
 		return err
 	}
-	// apply writer
-	_, err = writer.Write(buf)
+	// write results and close writer
 	// in case any error happened
 	// in writer return error
-	return err
+	if _, err := writer.Write(buf); err != nil {
+		return err
+	}
+	return writer.Close()
 }
