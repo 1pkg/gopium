@@ -46,11 +46,6 @@ func NewCliApp(
 	deep,
 	backref bool,
 	stgs []string,
-	// tag vars
-	group string,
-	tenable,
-	tforce,
-	tdiscrete bool,
 	// printer vars
 	indent,
 	tabwidth int,
@@ -91,14 +86,10 @@ func NewCliApp(
 	gtimeout := time.Duration(timeout) * time.Second
 	// set up coordinator
 	coord := coordinator{
-		wregex:    wregex,
-		wdeep:     deep,
-		wbackref:  backref,
-		tgroup:    group,
-		tenable:   tenable,
-		tforce:    tforce,
-		tdiscrete: tdiscrete,
-		gtimeout:  gtimeout,
+		wregex:   wregex,
+		wdeep:    deep,
+		wbackref: backref,
+		gtimeout: gtimeout,
 	}
 	// set walker and strategy builders
 	wbuilder := walkers.NewBuilder(p, m, pr)

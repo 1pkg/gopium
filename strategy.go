@@ -16,5 +16,5 @@ type StrategyName string
 // StrategyBuilder defines strategy builder abstraction
 // that helps to create strategy by strategy name
 type StrategyBuilder interface {
-	Build(StrategyName) (Strategy, error)
+	Build(...StrategyName) (Strategy, error)
 }

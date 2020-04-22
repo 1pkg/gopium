@@ -437,7 +437,7 @@ func TestGroup(t *testing.T) {
 	for name, tcase := range table {
 		t.Run(name, func(t *testing.T) {
 			// exec
-			grp := grp.Builder(tcase.b)
+			grp := ptgrp.Builder(tcase.b)
 			r, err := grp.Apply(tcase.ctx, tcase.o)
 			// check
 			if !reflect.DeepEqual(r, tcase.r) {
