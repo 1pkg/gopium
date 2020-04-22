@@ -10,7 +10,7 @@ import (
 	"1pkg/gopium/astutil/apply"
 	"1pkg/gopium/astutil/persist"
 	"1pkg/gopium/collections"
-	"1pkg/gopium/fmtio"
+	"1pkg/gopium/gfmtio/gio"
 )
 
 // list of wast presets
@@ -18,17 +18,17 @@ var (
 	fsptnstd = wast{
 		apply:   apply.SFN,
 		persist: persist.AsyncFiles,
-		writer:  fmtio.Stdout,
+		writer:  gio.Stdout,
 	}
 	fsptngo = wast{
 		apply:   apply.SFN,
 		persist: persist.AsyncFiles,
-		writer:  fmtio.FileGo,
+		writer:  gio.FileGo,
 	}
 	fsptngopium = wast{
 		apply:   apply.SFN,
 		persist: persist.AsyncFiles,
-		writer:  fmtio.FileGopium,
+		writer:  gio.FileGopium,
 	}
 )
 
@@ -41,7 +41,7 @@ type wast struct {
 	apply   astutil.Apply
 	print   astutil.Print
 	persist astutil.Persist
-	writer  fmtio.Writer
+	writer  gio.Writer
 }
 
 // With erich wast walker with parser, exposer, and ref instance
@@ -107,13 +107,18 @@ func (w wast) Visit(
 		deep,
 		backref,
 	)
+	// prepare separate cancelation
+	// context for visiting
+	gctx, cancel := context.WithCancel(ctx)
+	defer cancel()
 	// run visiting in separate goroutine
-	go gvisit(ctx, pkg.Scope())
+	go gvisit(gctx, pkg.Scope())
 	// prepare struct storage
 	h := make(collections.Hierarchic)
 	for applied := range ch {
-		// in case any error happened just return error
-		// it cancels context automatically
+		// in case any error happened
+		// just return error back
+		// it auto cancels context
 		if applied.Error != nil {
 			return applied.Error
 		}
@@ -135,12 +140,15 @@ func (w wast) write(ctx context.Context, h collections.Hierarchic) error {
 		return err
 	}
 	// run ast apply with strategy result
-	// to update ast.Package on the parsed ast.Package
-	// in case any error happened just return error back
+	// to update ast.Package
+	// in case any error happened
+	// just return error back
 	pkg, err = w.apply(ctx, pkg, loc, h)
 	if err != nil {
 		return err
 	}
 	// run persist helper
+	// in case any error happened
+	// just return error back
 	return w.persist(ctx, w.writer, w.print, pkg, loc)
 }

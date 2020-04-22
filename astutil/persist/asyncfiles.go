@@ -6,7 +6,7 @@ import (
 
 	"1pkg/gopium"
 	"1pkg/gopium/astutil"
-	"1pkg/gopium/fmtio"
+	"1pkg/gopium/gfmtio/gio"
 
 	"golang.org/x/sync/errgroup"
 )
@@ -15,7 +15,7 @@ import (
 // writer by using print function
 func AsyncFiles(
 	ctx context.Context,
-	w fmtio.Writer,
+	w gio.Writer,
 	p astutil.Print,
 	pkg *ast.Package,
 	loc gopium.Locator,
@@ -49,8 +49,8 @@ func AsyncFiles(
 			}
 			// generate relevant writer
 			writer, err := w(name, name)
-			// in case any error happened just return error
-			// it cancels context automatically
+			// in case any error happened
+			// just return error back
 			if err != nil {
 				return err
 			}
@@ -58,9 +58,15 @@ func AsyncFiles(
 			fset, _ := loc.Fset(name, nil)
 			// write updated ast file to related os file
 			// use original file set to keep format
-			// in case any error happened just return error
-			// it cancels context automatically
-			return p(writer, fset, file)
+			// in case any error happened
+			// just return error back
+			if err := p(writer, fset, file); err != nil {
+				return err
+			}
+			// flush writter result
+			// in case any error happened
+			// just return error back
+			return writer.Close()
 		})
 	}
 	// wait until all writers

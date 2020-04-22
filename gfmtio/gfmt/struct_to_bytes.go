@@ -1,4 +1,4 @@
-package fmtio
+package gfmt
 
 import (
 	"bytes"

@@ -88,28 +88,28 @@ func TestRealReferenceMixed(t *testing.T) {
 	r.Alloc("key")
 	r.Alloc("test-key")
 	r.Alloc("test")
-	// would be resolved on set
+	// resolved on set
 	go func() {
 		val := r.Get("key")
 		if val != 10 || atomic.LoadInt32(&stage) != 1 {
 			t.Errorf("actual %v doesn't equal to %v", val, 10)
 		}
 	}()
-	// would be resolved on set
+	// resolved on set
 	go func() {
 		val := r.Get("key")
 		if val != 10 || atomic.LoadInt32(&stage) != 1 {
 			t.Errorf("actual %v doesn't equal to %v", val, 10)
 		}
 	}()
-	// would be resolved on set
+	// resolved on set
 	go func() {
 		val := r.Get("key")
 		if val != 10 || atomic.LoadInt32(&stage) != 1 {
 			t.Errorf("actual %v doesn't equal to %v", val, 10)
 		}
 	}()
-	// would be resolved on update
+	// resolved on update
 	go func() {
 		val := r.Get("test-key")
 		if val != 10 || atomic.LoadInt32(&stage) != 2 {
@@ -120,14 +120,14 @@ func TestRealReferenceMixed(t *testing.T) {
 			t.Errorf("actual %v doesn't equal to %v", val, 100)
 		}
 	}()
-	// would be resolved on prune
+	// resolved on prune
 	go func() {
 		val := r.Get("test")
 		if val != -1 || atomic.LoadInt32(&stage) != 3 {
 			t.Errorf("actual %v doesn't equal to %v", val, -1)
 		}
 	}()
-	// would be resolved immediately
+	// resolved immediately
 	go func() {
 		val := r.Get("test-100")
 		if val != -1 || atomic.LoadInt32(&stage) != 0 {
