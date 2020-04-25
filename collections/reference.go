@@ -19,7 +19,7 @@ func NewReference(null bool) *Reference {
 	if null {
 		return nil
 	}
-	// othewise return real reference instance
+	// othewise return actual reference instance
 	return &Reference{
 		vals:    make(map[string]int64),
 		signals: make(map[string]chan struct{}),

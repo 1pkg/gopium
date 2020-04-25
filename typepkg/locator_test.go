@@ -11,17 +11,20 @@ func TestNewLocatorRoot(t *testing.T) {
 	fset := token.NewFileSet()
 	fset.AddFile("test", 1, 10)
 	table := map[string]struct {
-		fset    *token.FileSet
+		ifset   *token.FileSet
+		ofset   *token.FileSet
 		locator *Locator
 	}{
 		"nil fset should create default locator": {
+			ofset: token.NewFileSet(),
 			locator: &Locator{
 				root:  token.NewFileSet(),
 				extra: make(map[string]*token.FileSet),
 			},
 		},
 		"non nil fset should create custom locator": {
-			fset: fset,
+			ifset: fset,
+			ofset: fset,
 			locator: &Locator{
 				root:  fset,
 				extra: make(map[string]*token.FileSet),
@@ -31,17 +34,13 @@ func TestNewLocatorRoot(t *testing.T) {
 	for name, tcase := range table {
 		t.Run(name, func(t *testing.T) {
 			// exec
-			locator := NewLocator(tcase.fset)
+			locator := NewLocator(tcase.ifset)
 			root := locator.Root()
-			fset := tcase.fset
-			if fset == nil {
-				fset = token.NewFileSet()
-			}
 			// check
 			if !reflect.DeepEqual(locator, tcase.locator) {
 				t.Errorf("actual %v doesn't equal to expected %v", locator, tcase.locator)
 			}
-			if !reflect.DeepEqual(root, fset) {
+			if !reflect.DeepEqual(root, tcase.ofset) {
 				t.Errorf("actual %v doesn't equal to expected %v", root, fset)
 			}
 		})
@@ -61,8 +60,9 @@ func TestLocatorIDLoc(t *testing.T) {
 	f3.AddLine(10)
 	locator := NewLocator(fset)
 	table := map[string]struct {
-		pos     token.Pos
-		id, loc string
+		pos token.Pos
+		id  string
+		loc string
 	}{
 		"token pos 1 should be located in correct file": {
 			pos: token.Pos(1),
