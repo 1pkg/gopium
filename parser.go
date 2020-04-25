@@ -7,8 +7,8 @@ import (
 	"go/types"
 )
 
-// Locator defines abstraction that helps
-// encapsulate pkgs token.FileSet related operations
+// Locator defines abstraction that helps to
+// encapsulate pkgs file set related operations
 type Locator interface {
 	ID(token.Pos) string
 	Loc(token.Pos) string
@@ -29,7 +29,8 @@ type AstParser interface {
 	ParseAst(context.Context) (*ast.Package, Locator, error)
 }
 
-// Parser defines abstraction for packages parsing processor
+// Parser defines abstraction that
+// aggregates ast and type parsers abstractions
 type Parser interface {
 	TypeParser
 	AstParser

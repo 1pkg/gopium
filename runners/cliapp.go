@@ -87,13 +87,17 @@ func NewCliApp(
 	// set up coordinator
 	coord := coordinator{
 		wregex:   wregex,
-		wdeep:    deep,
-		wbackref: backref,
 		gtimeout: gtimeout,
 	}
 	// set walker and strategy builders
-	wbuilder := walkers.NewBuilder(p, m, pr)
-	sbuilder := strategies.NewBuilder(m)
+	wbuilder := walkers.Builder{
+		Parser:  p,
+		Exposer: m,
+		Print:   pr,
+		Deep:    deep,
+		Bref:    backref,
+	}
+	sbuilder := strategies.Builder{Curator: m}
 	// cast strategies strings to strategy names
 	snames := make([]gopium.StrategyName, 0, len(stgs))
 	for _, strategy := range stgs {

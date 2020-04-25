@@ -12,9 +12,10 @@ type Type struct {
 
 // Maven defines mock maven implementation
 type Maven struct {
-	Types                   map[string]Type
-	SysCacheVals            []int64
-	SysWordVal, SysAlignVal int64
+	Types        map[string]Type
+	SysCacheVals []int64
+	SysWordVal   int64
+	SysAlignVal  int64
 }
 
 // SysWord mock implementation

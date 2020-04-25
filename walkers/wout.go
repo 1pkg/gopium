@@ -26,50 +26,48 @@ var (
 		fmt:    gfmt.PrettyCsv,
 		writer: gio.Stdout,
 	}
-	jsontf = wout{
+	jsonfiles = wout{
 		fmt:    gfmt.PrettyJson,
 		writer: gio.FileJson,
 	}
-	xmltf = wout{
+	xmlfiles = wout{
 		fmt:    gfmt.PrettyXml,
 		writer: gio.FileXml,
 	}
-	csvtf = wout{
+	csvfiles = wout{
 		fmt:    gfmt.PrettyCsv,
 		writer: gio.FileCsv,
 	}
 )
 
 // wout defines packages walker out implementation
-// that uses pkgs.TypeParser to parse packages types data
-// fmts.TypeFormat to format strategy result
-// and io.Writer to write output
 type wout struct {
+	// inner visiting parameters
+	fmt    gfmt.StructToBytes
+	writer gio.Writer
+	// external visiting parameters
 	parser  gopium.TypeParser
 	exposer gopium.Exposer
-	fmt     gfmt.StructToBytes
-	writer  gio.Writer
+	deep    bool
+	bref    bool
 }
 
-// With erich wout walker with parser, exposer, and ref instance
-func (w wout) With(parser gopium.Parser, exposer gopium.Exposer) wout {
-	w.parser = parser
-	w.exposer = exposer
+// With erich wast walker with external visiting parameters
+// parser, exposer instances and additional visiting flags
+func (w wout) With(pars gopium.Parser, exp gopium.Exposer, deep bool, bref bool) wout {
+	w.parser = pars
+	w.exposer = exp
+	w.deep = deep
+	w.bref = bref
 	return w
 }
 
-// Visit wout implementation
-// uses visit function helper
+// Visit wout implementation uses visit function helper
 // to go through all structs decls inside the package
-// and apply strategy to them to get results
-// then use fmts.TypeFormat to format strategy results
-// and use io.Writer to write results to output
-func (w wout) Visit(
-	ctx context.Context,
-	regex *regexp.Regexp,
-	stg gopium.Strategy,
-	deep, backref bool,
-) error {
+// and applies strategy to them to get results,
+// then uses struct to bytes to format strategy results
+// and use writer to write results to output
+func (w wout) Visit(ctx context.Context, regex *regexp.Regexp, stg gopium.Strategy) error {
 	// check that parser wasn't set correctly
 	if w.parser == nil {
 		return errors.New("parser wasn't set")
@@ -96,15 +94,8 @@ func (w wout) Visit(
 	// using gopium.Visit helper
 	// and run it on pkg scope
 	ch := make(appliedCh)
-	gvisit := visit(
-		regex,
-		stg,
-		w.exposer,
-		loc,
-		ch,
-		deep,
-		backref,
-	)
+	gvisit := with(w.exposer, loc, w.bref).
+		visit(regex, stg, ch, w.deep)
 	// create sync error group
 	// with cancelation context
 	group, gctx := errgroup.WithContext(ctx)
@@ -141,10 +132,9 @@ func (w wout) Visit(
 	return group.Wait()
 }
 
-// write wout helps apply
-// fmts.TypeFormat to format strategy result
-// and use io.Writer to write result to output
-// or return error in any other case
+// write wout helps to apply struct to bytes
+// to format strategy result and writer
+// to write result to output
 func (w wout) write(id, loc string, st gopium.Struct) error {
 	// apply formatter
 	buf, err := w.fmt(st)

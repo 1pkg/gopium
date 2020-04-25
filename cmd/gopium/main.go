@@ -65,15 +65,16 @@ List of strategies modifies structs inside the package, walker facilitates and i
 that outcome is written to one of supported destinations.
 
 Gopium supports next walkers: 
+ - ast_std (prints result as go code to stdout)
+ - ast_go (directly syncs result as go code in orinal file)
+ - ast_gopium (directly syncs result as go code in copy package)
+
  - json_std (prints json encoded result to stdout)
  - xml_std (prints xml encoded result to stdout)
  - csv_std (prints csv encoded result to stdout)
  - json_files (prints json encoded result to files inside package directory)
  - xml_files (prints xml encoded result to files inside package directory)
  - csv_files (prints csv encoded result to files inside package directory)
- - ast_std (prints result as go code to stdout)
- - ast_go (directly syncs result as go code in orinal file)
- - ast_gopium (directly syncs result as go code in copy package)
 
 Gopium supports next strategies: 
  - process_tag_group (uses gopium fields tags annotation in order to process different set of strategies

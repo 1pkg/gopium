@@ -11,7 +11,7 @@ import (
 
 func TestBuilder(t *testing.T) {
 	// prepare
-	b := NewBuilder(mocks.Maven{})
+	b := Builder{Curator: mocks.Maven{}}
 	table := map[string]struct {
 		names []gopium.StrategyName
 		stg   gopium.Strategy
@@ -29,70 +29,70 @@ func TestBuilder(t *testing.T) {
 		// explicit sys/type pads
 		"`explicit_padings_system_alignment` name should lead to relevant strategy": {
 			names: []gopium.StrategyName{PadSys},
-			stg:   pipe([]gopium.Strategy{padsys.Curator(b.curator)}),
+			stg:   pipe([]gopium.Strategy{padsys.Curator(b.Curator)}),
 		},
 		"`explicit_padings_type_natural` name should lead to relevant strategy": {
 			names: []gopium.StrategyName{PadTnat},
-			stg:   pipe([]gopium.Strategy{padtnat.Curator(b.curator)}),
+			stg:   pipe([]gopium.Strategy{padtnat.Curator(b.Curator)}),
 		},
 		// false sharing guards
 		"`false_sharing_cpu_l1` name should lead to relevant strategy": {
 			names: []gopium.StrategyName{FShareL1},
-			stg:   pipe([]gopium.Strategy{fsharel1.Curator(b.curator)}),
+			stg:   pipe([]gopium.Strategy{fsharel1.Curator(b.Curator)}),
 		},
 		"`false_sharing_cpu_l2` name should lead to relevant strategy": {
 			names: []gopium.StrategyName{FShareL2},
-			stg:   pipe([]gopium.Strategy{fsharel2.Curator(b.curator)}),
+			stg:   pipe([]gopium.Strategy{fsharel2.Curator(b.Curator)}),
 		},
 		"`false_sharing_cpu_l3` name should lead to relevant strategy": {
 			names: []gopium.StrategyName{FShareL3},
-			stg:   pipe([]gopium.Strategy{fsharel3.Curator(b.curator)}),
+			stg:   pipe([]gopium.Strategy{fsharel3.Curator(b.Curator)}),
 		},
 		// cache line pad roundings
 		"`cache_rounding_cpu_l1` name should lead to relevant strategy": {
 			names: []gopium.StrategyName{CacheL1},
-			stg:   pipe([]gopium.Strategy{cachel1.Curator(b.curator)}),
+			stg:   pipe([]gopium.Strategy{cachel1.Curator(b.Curator)}),
 		},
 		"`cache_rounding_cpu_l2` name should lead to relevant strategy": {
 			names: []gopium.StrategyName{CacheL2},
-			stg:   pipe([]gopium.Strategy{cachel2.Curator(b.curator)}),
+			stg:   pipe([]gopium.Strategy{cachel2.Curator(b.Curator)}),
 		},
 		"`cache_rounding_cpu_l3` name should lead to relevant strategy": {
 			names: []gopium.StrategyName{CacheL3},
-			stg:   pipe([]gopium.Strategy{cachel3.Curator(b.curator)}),
+			stg:   pipe([]gopium.Strategy{cachel3.Curator(b.Curator)}),
 		},
 		// top, bottom separate pads
 		"`separate_padding_system_alignment_top` name should lead to relevant strategy": {
 			names: []gopium.StrategyName{SepSysT},
-			stg:   pipe([]gopium.Strategy{sepsyst.Curator(b.curator)}),
+			stg:   pipe([]gopium.Strategy{sepsyst.Curator(b.Curator)}),
 		},
 		"`separate_padding_cpu_l1_top` name should lead to relevant strategy": {
 			names: []gopium.StrategyName{SepL1T},
-			stg:   pipe([]gopium.Strategy{sepl1t.Curator(b.curator)}),
+			stg:   pipe([]gopium.Strategy{sepl1t.Curator(b.Curator)}),
 		},
 		"`separate_padding_cpu_l2_top` name should lead to relevant strategy": {
 			names: []gopium.StrategyName{SepL2T},
-			stg:   pipe([]gopium.Strategy{sepl2t.Curator(b.curator)}),
+			stg:   pipe([]gopium.Strategy{sepl2t.Curator(b.Curator)}),
 		},
 		"`separate_padding_cpu_l3_top` name should lead to relevant strategy": {
 			names: []gopium.StrategyName{SepL3T},
-			stg:   pipe([]gopium.Strategy{sepl3t.Curator(b.curator)}),
+			stg:   pipe([]gopium.Strategy{sepl3t.Curator(b.Curator)}),
 		},
 		"`separate_padding_system_alignment_bottom` name should lead to relevant strategy": {
 			names: []gopium.StrategyName{SepSysB},
-			stg:   pipe([]gopium.Strategy{sepsysb.Curator(b.curator)}),
+			stg:   pipe([]gopium.Strategy{sepsysb.Curator(b.Curator)}),
 		},
 		"`separate_padding_cpu_l1_bottom` name should lead to relevant strategy": {
 			names: []gopium.StrategyName{SepL1B},
-			stg:   pipe([]gopium.Strategy{sepl1b.Curator(b.curator)}),
+			stg:   pipe([]gopium.Strategy{sepl1b.Curator(b.Curator)}),
 		},
 		"`separate_padding_cpu_l2_bottom` name should lead to relevant strategy": {
 			names: []gopium.StrategyName{SepL2B},
-			stg:   pipe([]gopium.Strategy{sepl2b.Curator(b.curator)}),
+			stg:   pipe([]gopium.Strategy{sepl2b.Curator(b.Curator)}),
 		},
 		"`separate_padding_cpu_l3_bottom` name should lead to relevant strategy": {
 			names: []gopium.StrategyName{SepL3B},
-			stg:   pipe([]gopium.Strategy{sepl3b.Curator(b.curator)}),
+			stg:   pipe([]gopium.Strategy{sepl3b.Curator(b.Curator)}),
 		},
 		// tag processors and modifiers
 		"`process_tag_group` name should lead to relevant strategy": {

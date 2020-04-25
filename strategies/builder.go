@@ -71,13 +71,7 @@ const (
 // Builder defines types gopium.StrategyBuilder implementation
 // that uses gopium.Curator as an exposer and related strategies
 type Builder struct {
-	curator gopium.Curator
-}
-
-// NewBuilder creates instance of Builder
-// and requires gopium.Maven to pass it to related strategies
-func NewBuilder(curator gopium.Curator) Builder {
-	return Builder{curator: curator}
+	Curator gopium.Curator
 }
 
 // Build Builder implementation
@@ -95,40 +89,40 @@ func (b Builder) Build(names ...gopium.StrategyName) (gopium.Strategy, error) {
 			stg = unpck
 		// explicit sys/type pads
 		case PadSys:
-			stg = padsys.Curator(b.curator)
+			stg = padsys.Curator(b.Curator)
 		case PadTnat:
-			stg = padtnat.Curator(b.curator)
+			stg = padtnat.Curator(b.Curator)
 		// false sharing guards
 		case FShareL1:
-			stg = fsharel1.Curator(b.curator)
+			stg = fsharel1.Curator(b.Curator)
 		case FShareL2:
-			stg = fsharel2.Curator(b.curator)
+			stg = fsharel2.Curator(b.Curator)
 		case FShareL3:
-			stg = fsharel3.Curator(b.curator)
+			stg = fsharel3.Curator(b.Curator)
 		// cache line pad roundings
 		case CacheL1:
-			stg = cachel1.Curator(b.curator)
+			stg = cachel1.Curator(b.Curator)
 		case CacheL2:
-			stg = cachel2.Curator(b.curator)
+			stg = cachel2.Curator(b.Curator)
 		case CacheL3:
-			stg = cachel3.Curator(b.curator)
+			stg = cachel3.Curator(b.Curator)
 		// top, bottom separate pads
 		case SepSysT:
-			stg = sepsyst.Curator(b.curator)
+			stg = sepsyst.Curator(b.Curator)
 		case SepL1T:
-			stg = sepl1t.Curator(b.curator)
+			stg = sepl1t.Curator(b.Curator)
 		case SepL2T:
-			stg = sepl2t.Curator(b.curator)
+			stg = sepl2t.Curator(b.Curator)
 		case SepL3T:
-			stg = sepl3t.Curator(b.curator)
+			stg = sepl3t.Curator(b.Curator)
 		case SepSysB:
-			stg = sepsysb.Curator(b.curator)
+			stg = sepsysb.Curator(b.Curator)
 		case SepL1B:
-			stg = sepl1b.Curator(b.curator)
+			stg = sepl1b.Curator(b.Curator)
 		case SepL2B:
-			stg = sepl2b.Curator(b.curator)
+			stg = sepl2b.Curator(b.Curator)
 		case SepL3B:
-			stg = sepl3b.Curator(b.curator)
+			stg = sepl3b.Curator(b.Curator)
 		// tag processors and modifiers
 		case PTGrp:
 			stg = ptgrp.Builder(b)
