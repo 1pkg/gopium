@@ -3,7 +3,7 @@ package gopium
 import "go/types"
 
 // Curator defines system level info curator abstraction
-// to expose system word, aligment and cache level sizes
+// to expose system word, aligment and cache levels sizes
 type Curator interface {
 	SysWord() int64
 	SysAlign() int64
@@ -18,8 +18,8 @@ type Exposer interface {
 	Align(types.Type) int64
 }
 
-// Maven defines Curator abstraction
-// and Exposer abstraction aggregation
+// Maven defines abstraction that
+// aggregates curator and exposer abstractions
 type Maven interface {
 	Curator
 	Exposer

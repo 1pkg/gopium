@@ -6,10 +6,10 @@ import (
 )
 
 // Walker defines hierarchical walker abstraction
-// that applies some strategy to tree structures
-// and modifies tree or creates other side effects
+// that applies some strategy to code tree structures
+// and modifies them or creates other related side effects
 type Walker interface {
-	Visit(context.Context, *regexp.Regexp, Strategy, bool, bool) error
+	Visit(context.Context, *regexp.Regexp, Strategy) error
 }
 
 // WalkerName defines registered walker name abstraction
@@ -17,7 +17,7 @@ type Walker interface {
 type WalkerName string
 
 // WalkerBuilder defines walker builder abstraction
-// that helps to create walker by walker name
+// that helps to create single walker by walker name
 type WalkerBuilder interface {
 	Build(WalkerName) (Walker, error)
 }

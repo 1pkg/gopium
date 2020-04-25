@@ -22,11 +22,11 @@ func TestGroup(t *testing.T) {
 		err error
 	}{
 		"empty struct should be applied to itself": {
-			b:   NewBuilder(mocks.Maven{}),
+			b:   Builder{Curator: mocks.Maven{}},
 			ctx: context.Background(),
 		},
 		"non empty struct without tag should be applied to itself": {
-			b:   NewBuilder(mocks.Maven{}),
+			b:   Builder{Curator: mocks.Maven{}},
 			ctx: context.Background(),
 			o: gopium.Struct{
 				Name: "test",
@@ -46,7 +46,7 @@ func TestGroup(t *testing.T) {
 			},
 		},
 		"non empty struct with irrelevant tag should be applied to itself": {
-			b:   NewBuilder(mocks.Maven{}),
+			b:   Builder{Curator: mocks.Maven{}},
 			ctx: context.Background(),
 			o: gopium.Struct{
 				Name: "test",
@@ -68,7 +68,7 @@ func TestGroup(t *testing.T) {
 			},
 		},
 		"non empty struct with valid tag should be applied to itself with relevant doc": {
-			b:   NewBuilder(mocks.Maven{}),
+			b:   Builder{Curator: mocks.Maven{}},
 			ctx: context.Background(),
 			o: gopium.Struct{
 				Name: "test",
@@ -95,7 +95,7 @@ func TestGroup(t *testing.T) {
 			},
 		},
 		"non empty struct with valid tag should be applied to itself with relevant doc on canceled context": {
-			b:   NewBuilder(mocks.Maven{}),
+			b:   Builder{Curator: mocks.Maven{}},
 			ctx: cctx,
 			o: gopium.Struct{
 				Name: "test",
@@ -122,7 +122,7 @@ func TestGroup(t *testing.T) {
 			err: cctx.Err(),
 		},
 		"non empty struct with valid group tag should be applied to itself with relevant doc": {
-			b:   NewBuilder(mocks.Maven{}),
+			b:   Builder{Curator: mocks.Maven{}},
 			ctx: context.Background(),
 			o: gopium.Struct{
 				Name: "test",
@@ -149,7 +149,7 @@ func TestGroup(t *testing.T) {
 			},
 		},
 		"non empty struct with valid group tag should be applied to itself with relevant doc with excess separators": {
-			b:   NewBuilder(mocks.Maven{}),
+			b:   Builder{Curator: mocks.Maven{}},
 			ctx: context.Background(),
 			o: gopium.Struct{
 				Name: "test",
@@ -176,7 +176,7 @@ func TestGroup(t *testing.T) {
 			},
 		},
 		"non empty struct with invalid tag should be applied to itself with error": {
-			b:   NewBuilder(mocks.Maven{}),
+			b:   Builder{Curator: mocks.Maven{}},
 			ctx: context.Background(),
 			o: gopium.Struct{
 				Name: "test",
@@ -203,7 +203,7 @@ func TestGroup(t *testing.T) {
 			err: errors.New("tag \"gopium:\\\"group:def;doc_fields_annotate;test\\\"\" can't be parsed, neither as `default` nor named group"),
 		},
 		"non empty struct with invalid reverted tag should be applied to itself with error": {
-			b:   NewBuilder(mocks.Maven{}),
+			b:   Builder{Curator: mocks.Maven{}},
 			ctx: context.Background(),
 			o: gopium.Struct{
 				Name: "test",
@@ -230,7 +230,7 @@ func TestGroup(t *testing.T) {
 			err: errors.New("tag \"gopium:\\\"doc_fields_annotate;group:def\\\"\" can't be parsed, named group `group:` anchor wasn't found"),
 		},
 		"mixed struct with inconsistent tags should be applied to itself with error": {
-			b:   NewBuilder(mocks.Maven{}),
+			b:   Builder{Curator: mocks.Maven{}},
 			ctx: context.Background(),
 			o: gopium.Struct{
 				Name: "test",
@@ -269,7 +269,7 @@ func TestGroup(t *testing.T) {
 			err: errors.New(`inconsistent strategies list "comment_fields_annotate" for field "test" in group "default"`),
 		},
 		"mixed struct with inconsistent group tags should be applied to itself with error": {
-			b:   NewBuilder(mocks.Maven{}),
+			b:   Builder{Curator: mocks.Maven{}},
 			ctx: context.Background(),
 			o: gopium.Struct{
 				Name: "test",
@@ -308,7 +308,7 @@ func TestGroup(t *testing.T) {
 			err: errors.New(`inconsistent strategies list "comment_fields_annotate" for field "test" in group "def"`),
 		},
 		"mixed struct with non existent strategies should be applied to itself with error": {
-			b:   NewBuilder(mocks.Maven{}),
+			b:   Builder{Curator: mocks.Maven{}},
 			ctx: context.Background(),
 			o: gopium.Struct{
 				Name: "test",
@@ -347,10 +347,10 @@ func TestGroup(t *testing.T) {
 			err: errors.New(`strategy "test" wasn't found`),
 		},
 		"mixed struct should be applied to itself accordingly to tags": {
-			b: NewBuilder(mocks.Maven{
+			b: Builder{Curator: mocks.Maven{
 				SysAlignVal:  12,
 				SysCacheVals: []int64{24},
-			}),
+			}},
 			ctx: context.Background(),
 			o: gopium.Struct{
 				Name:    "test",

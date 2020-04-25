@@ -16,8 +16,6 @@ import (
 // - visiting
 type coordinator struct {
 	wregex   *regexp.Regexp
-	wdeep    bool
-	wbackref bool
 	gtimeout time.Duration
 }
 
@@ -52,13 +50,7 @@ func (coord coordinator) visit(ctx context.Context, w gopium.Walker, stg gopium.
 		ctx = nctx
 	}
 	// exec visit on walker with strategy
-	if err := w.Visit(
-		ctx,
-		coord.wregex,
-		stg,
-		coord.wdeep,
-		coord.wbackref,
-	); err != nil {
+	if err := w.Visit(ctx, coord.wregex, stg); err != nil {
 		return fmt.Errorf("strategy error happened %v", err)
 	}
 	return nil
