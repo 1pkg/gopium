@@ -8,6 +8,7 @@ import (
 )
 
 func TestHierarchicPushCatMixed(t *testing.T) {
+	// prepare
 	h := Hierarchic{}
 	// check non existed cat
 	cat, ok := h.Cat("cat")

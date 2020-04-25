@@ -17,7 +17,7 @@ func TestNewReference(t *testing.T) {
 			input:  true,
 			output: nil,
 		},
-		"not null new reference should return real ref": {
+		"not null new reference should return actual ref": {
 			input: false,
 			output: &Reference{
 				vals:    make(map[string]int64),
@@ -71,7 +71,7 @@ func TestNilReferenceMixed(t *testing.T) {
 	}
 }
 
-func TestRealReferenceMixed(t *testing.T) {
+func TestActualReferenceMixed(t *testing.T) {
 	// stage 0 set up
 	var stage int32
 	r := NewReference(false)
