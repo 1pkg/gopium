@@ -347,10 +347,7 @@ func TestGroup(t *testing.T) {
 			err: errors.New(`strategy "test" wasn't found`),
 		},
 		"mixed struct should be applied to itself accordingly to tags": {
-			b: Builder{Curator: mocks.Maven{
-				SysAlignVal:  12,
-				SysCacheVals: []int64{24},
-			}},
+			b:   Builder{Curator: mocks.Maven{SAlign: 12, SCache: []int64{24}}},
 			ctx: context.Background(),
 			o: gopium.Struct{
 				Name:    "test",

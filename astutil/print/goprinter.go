@@ -11,7 +11,7 @@ import (
 
 // GoPrinter generates go printer ast print instance
 // with specified tabwidth and space mode
-func GoPrinter(indent, tabwidth int, usespace bool) astutil.Print {
+func GoPrinter(indent int, tabwidth int, usespace bool) astutil.Print {
 	// prepare printer with params
 	p := &printer.Config{Indent: indent, Tabwidth: tabwidth}
 	if usespace {

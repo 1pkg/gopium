@@ -23,12 +23,12 @@ func TestCache(t *testing.T) {
 	}{
 		"empty struct should be applied to empty struct": {
 			cache:   cachel1,
-			curator: mocks.Maven{SysCacheVals: []int64{32}},
+			curator: mocks.Maven{SCache: []int64{32}},
 			ctx:     context.Background(),
 		},
 		"non empty struct should be applied to cache aligned struct": {
 			cache:   cachel2,
-			curator: mocks.Maven{SysCacheVals: []int64{16, 16, 16}},
+			curator: mocks.Maven{SCache: []int64{16, 16, 16}},
 			ctx:     context.Background(),
 			o: gopium.Struct{
 				Name: "test",
@@ -52,7 +52,7 @@ func TestCache(t *testing.T) {
 		},
 		"non empty struct should be applied to cache aligned struct on canceled context": {
 			cache:   cachel3,
-			curator: mocks.Maven{SysCacheVals: []int64{16, 16, 16}},
+			curator: mocks.Maven{SCache: []int64{16, 16, 16}},
 			ctx:     cctx,
 			o: gopium.Struct{
 				Name: "test",
@@ -77,7 +77,7 @@ func TestCache(t *testing.T) {
 		},
 		"mixed struct should be applied to cache aligned struct": {
 			cache:   cachel3,
-			curator: mocks.Maven{SysCacheVals: []int64{16, 32, 64}},
+			curator: mocks.Maven{SCache: []int64{16, 32, 64}},
 			ctx:     context.Background(),
 			o: gopium.Struct{
 				Name: "test",
@@ -125,7 +125,7 @@ func TestCache(t *testing.T) {
 		},
 		"mixed prealigned struct should be applied to same cache aligned struct": {
 			cache:   cachel2,
-			curator: mocks.Maven{SysCacheVals: []int64{16, 32, 64}},
+			curator: mocks.Maven{SCache: []int64{16, 32, 64}},
 			ctx:     context.Background(),
 			o: gopium.Struct{
 				Name: "test",

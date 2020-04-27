@@ -12,20 +12,20 @@ type Type struct {
 
 // Maven defines mock maven implementation
 type Maven struct {
-	Types        map[string]Type
-	SysCacheVals []int64
-	SysWordVal   int64
-	SysAlignVal  int64
+	Types  map[string]Type
+	SCache []int64
+	SWord  int64
+	SAlign int64
 }
 
 // SysWord mock implementation
 func (m Maven) SysWord() int64 {
-	return m.SysWordVal
+	return m.SWord
 }
 
 // SysAlign mock implementation
 func (m Maven) SysAlign() int64 {
-	return m.SysAlignVal
+	return m.SAlign
 }
 
 // SysCache mock implementation
@@ -33,8 +33,8 @@ func (m Maven) SysCache(level uint) int64 {
 	// decrement level to match index
 	l := int(level) - 1
 	// check if we have it in vals
-	if l >= 0 && l < len(m.SysCacheVals) {
-		return m.SysCacheVals[l]
+	if l >= 0 && l < len(m.SCache) {
+		return m.SCache[l]
 	}
 	// otherwise return default val
 	return 0

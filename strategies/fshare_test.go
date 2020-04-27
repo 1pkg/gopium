@@ -23,12 +23,12 @@ func TestFshare(t *testing.T) {
 	}{
 		"empty struct should be applied to empty struct": {
 			fshare: fsharel1,
-			c:      mocks.Maven{SysCacheVals: []int64{32}},
+			c:      mocks.Maven{SCache: []int64{32}},
 			ctx:    context.Background(),
 		},
 		"non empty struct should be applied to fshare aligned struct": {
 			fshare: fsharel2,
-			c:      mocks.Maven{SysCacheVals: []int64{16, 16, 16}},
+			c:      mocks.Maven{SCache: []int64{16, 16, 16}},
 			ctx:    context.Background(),
 			o: gopium.Struct{
 				Name: "test",
@@ -52,7 +52,7 @@ func TestFshare(t *testing.T) {
 		},
 		"non empty struct should be applied to fshare aligned struct on canceled context": {
 			fshare: fsharel3,
-			c:      mocks.Maven{SysCacheVals: []int64{16, 16, 16}},
+			c:      mocks.Maven{SCache: []int64{16, 16, 16}},
 			ctx:    cctx,
 			o: gopium.Struct{
 				Name: "test",
@@ -77,7 +77,7 @@ func TestFshare(t *testing.T) {
 		},
 		"mixed struct should be applied to fshare aligned struct": {
 			fshare: fsharel3,
-			c:      mocks.Maven{SysCacheVals: []int64{16, 32, 64}},
+			c:      mocks.Maven{SCache: []int64{16, 32, 64}},
 			ctx:    context.Background(),
 			o: gopium.Struct{
 				Name: "test",
@@ -128,7 +128,7 @@ func TestFshare(t *testing.T) {
 		},
 		"mixed prealigned struct should be applied to fshare aligned struct": {
 			fshare: fsharel1,
-			c:      mocks.Maven{SysCacheVals: []int64{16, 32, 64}},
+			c:      mocks.Maven{SCache: []int64{16, 32, 64}},
 			ctx:    context.Background(),
 			o: gopium.Struct{
 				Name: "test",

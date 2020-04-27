@@ -23,12 +23,12 @@ func TestSep(t *testing.T) {
 	}{
 		"empty struct should be applied to empty struct": {
 			sep: sepl1b,
-			c:   mocks.Maven{SysCacheVals: []int64{32}},
+			c:   mocks.Maven{SCache: []int64{32}},
 			ctx: context.Background(),
 		},
 		"non empty struct should be applied to cache line separator aligned struct": {
 			sep: sepl2b,
-			c:   mocks.Maven{SysCacheVals: []int64{16, 16, 16}},
+			c:   mocks.Maven{SCache: []int64{16, 16, 16}},
 			ctx: context.Background(),
 			o: gopium.Struct{
 				Name: "test",
@@ -52,7 +52,7 @@ func TestSep(t *testing.T) {
 		},
 		"non empty struct should be applied to cache line separator aligned on canceled context": {
 			sep: sepl3b,
-			c:   mocks.Maven{SysCacheVals: []int64{16, 16, 16}},
+			c:   mocks.Maven{SCache: []int64{16, 16, 16}},
 			ctx: cctx,
 			o: gopium.Struct{
 				Name: "test",
@@ -77,7 +77,7 @@ func TestSep(t *testing.T) {
 		},
 		"mixed struct should be applied to sys separator aligned struct at top": {
 			sep: sepsyst,
-			c:   mocks.Maven{SysAlignVal: 24, SysCacheVals: []int64{16, 32, 64}},
+			c:   mocks.Maven{SAlign: 24, SCache: []int64{16, 32, 64}},
 			ctx: context.Background(),
 			o: gopium.Struct{
 				Name: "test",
@@ -125,7 +125,7 @@ func TestSep(t *testing.T) {
 		},
 		"mixed struct should be applied to sys separator aligned struct at bottom": {
 			sep: sepsysb,
-			c:   mocks.Maven{SysAlignVal: 24, SysCacheVals: []int64{16, 32, 64}},
+			c:   mocks.Maven{SAlign: 24, SCache: []int64{16, 32, 64}},
 			ctx: context.Background(),
 			o: gopium.Struct{
 				Name: "test",
@@ -173,7 +173,7 @@ func TestSep(t *testing.T) {
 		},
 		"mixed struct should be applied to cache line separator aligned struct at top": {
 			sep: sepl3t,
-			c:   mocks.Maven{SysAlignVal: 24, SysCacheVals: []int64{16, 32, 64}},
+			c:   mocks.Maven{SAlign: 24, SCache: []int64{16, 32, 64}},
 			ctx: context.Background(),
 			o: gopium.Struct{
 				Name: "test",
