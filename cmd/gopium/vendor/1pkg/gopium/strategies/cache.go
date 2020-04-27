@@ -28,22 +28,23 @@ func (stg cache) Curator(curator gopium.Curator) cache {
 }
 
 // Apply cache implementation
-func (stg cache) Apply(ctx context.Context, o gopium.Struct) (r gopium.Struct, err error) {
+func (stg cache) Apply(ctx context.Context, o gopium.Struct) (gopium.Struct, error) {
 	// copy original structure to result
-	r = o
+	r := o
 	// calculate size of whole structure
 	var size int64
 	for _, f := range r.Fields {
 		size += f.Size
 	}
-	// get number of padding bytes
-	// to fill cpu cache line
-	// if padding not equals zero
-	// append padding
-	cache := stg.curator.SysCache(stg.line)
-	if pad := size % cache; pad != 0 {
-		pad = cache - pad
-		r.Fields = append(r.Fields, gopium.PadField(pad))
+	// check if cache line size is valid
+	if cachel := stg.curator.SysCache(stg.line); cachel > 0 {
+		// get number of padding bytes
+		// to fill cpu cache line
+		// if padding is valid append it
+		if pad := size % cachel; pad > 0 {
+			pad = cachel - pad
+			r.Fields = append(r.Fields, gopium.PadField(pad))
+		}
 	}
-	return
+	return r, ctx.Err()
 }

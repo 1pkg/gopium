@@ -13,67 +13,70 @@ import (
 // applied encapsulates visited by strategy
 // structs results: id, loc, origin, result structs and error
 type applied struct {
-	ID, Loc        string
-	Origin, Result gopium.Struct
-	Error          error
+	ID     string
+	Loc    string
+	Origin gopium.Struct
+	Result gopium.Struct
+	Error  error
 }
 
 // appliedCh defines abstraction that helps
 // keep applied stream results
 type appliedCh chan applied
 
-// visitFunc defines abstraction that helps
-// visit and filtered structures on the scope
+// govisit defines abstraction that helps
+// visit filtered structures on the scope
 type govisit func(context.Context, *types.Scope)
 
-// Visit helps to implement Walker VisitTop and VisitDeep methods
-// depends on deep flag (different tree levels)
-// it creates visitFunc instance that
-// goes through all struct decls inside the scope
-// convert them to inner gopium format
-// and applies the strategy if struct name matches regex
-// then it push result of the strategy to the chan
-func visit(
-	regex *regexp.Regexp,
-	stg gopium.Strategy,
-	exposer gopium.Exposer,
-	loc gopium.Locator,
-	ch appliedCh,
-	deep, backref bool,
-) govisit {
+// prepare defines abstraction that helps
+// setup visiting maven for future visit action
+type prepare func() (*maven, context.CancelFunc)
+
+// with helps to create prepare func
+// with exposer, locator and backref
+func with(exp gopium.Exposer, loc gopium.Locator, bref bool) prepare {
+	return func() (*maven, context.CancelFunc) {
+		// create visiting maven with reference
+		// and return it back,
+		// with ref prune cancelation func
+		ref := collections.NewReference(!bref)
+		return &maven{exp: exp, loc: loc, ref: ref}, ref.Prune
+	}
+}
+
+// visit helps to implement Walker Visit method
+// depends on deep flag (different tree levels),
+// it creates govisit func instance that
+// goes through all struct decls inside the scope,
+// converts them to inner gopium format
+// and applies the strategy if struct name matches regex,
+// then it push result of the strategy to the provided chan
+func (p prepare) visit(regex *regexp.Regexp, stg gopium.Strategy, ch appliedCh, deep bool) govisit {
 	// return govisit func applied
 	// visiting implementation
 	// that goes through all structures
 	// with names that match regex
 	// and applies strategy to them
-	return func(ctx context.Context, scope *types.Scope) {
-		// setup visiting maven and reference
-		m := &maven{exposer: exposer, locator: loc}
-		ref := collections.NewReference(!backref)
-		defer ref.Prune()
+	return func(ctx context.Context, s *types.Scope) {
+		// prepare visiting maven
+		m, cancel := p()
+		defer cancel()
 		// determinate which function
 		// should be applied for visiting
 		// depends on deep flag
 		if deep {
-			vdeep(ctx, scope, regex, stg, m, ref, ch)
+			vdeep(ctx, s, regex, stg, m, ch)
 		} else {
-			vscope(ctx, scope, regex, stg, m, ref, ch)
+			vscope(ctx, s, regex, stg, m, ch)
 		}
 	}
 }
 
 // vdeep defines deep visiting helper
-// that goes through all structures on all scopes concurently
-// with names that match regex and applies strategy to them
-func vdeep(
-	ctx context.Context,
-	scope *types.Scope,
-	regex *regexp.Regexp,
-	stg gopium.Strategy,
-	maven *maven,
-	ref *collections.Reference,
-	ch appliedCh,
-) {
+// that goes through all structures on all scopes concurently,
+// if their names match regex then applies strategy to them
+// uses vscope helper to visit single scope
+func vdeep(ctx context.Context, s *types.Scope, r *regexp.Regexp, stg gopium.Strategy, m *maven, ch appliedCh) {
 	// wait until all visits finished
 	// and then close the channel
 	defer close(ch)
@@ -84,7 +87,7 @@ func vdeep(
 	// all scope one by one
 	// and runs vscope on them
 	var indeep govisit
-	indeep = func(ctx context.Context, scope *types.Scope) {
+	indeep = func(ctx context.Context, s *types.Scope) {
 		// manage context actions
 		// in case of cancelation
 		// break from further traverse
@@ -103,15 +106,7 @@ func vdeep(
 			// setup chan for current scope
 			nch := make(appliedCh)
 			// run vscope on current scope
-			go vscope(
-				ctx,
-				scope,
-				regex,
-				stg,
-				maven,
-				ref,
-				nch,
-			)
+			go vscope(ctx, s, r, stg, m, nch)
 			// redirect results of vscope
 			// to final applied chanel
 			for applied := range nch {
@@ -119,31 +114,24 @@ func vdeep(
 			}
 		}()
 		// traverse through children scopes
-		for i := 0; i < scope.NumChildren(); i++ {
+		nc := s.NumChildren()
+		for i := 0; i < nc; i++ {
 			// visit children scopes iteratively
 			// using child context and scope
-			go indeep(ctx, scope.Child(i))
+			go indeep(ctx, s.Child(i))
 		}
 	}
 	// start indeep chain
-	indeep(ctx, scope)
+	indeep(ctx, s)
 	// sync all visiting to finish
 	// the same time
 	wg.Wait()
 }
 
-// vscope defines top visiting helper
-// that goes through structures on the scope
-// with names that match regex and applies strategy to them
-func vscope(
-	ctx context.Context,
-	scope *types.Scope,
-	regex *regexp.Regexp,
-	stg gopium.Strategy,
-	maven *maven,
-	ref *collections.Reference,
-	ch appliedCh,
-) {
+// vscope defines visiting helper
+// that goes through structures on the single scope concurently,
+// if their names match regex then applies strategy to them
+func vscope(ctx context.Context, s *types.Scope, r *regexp.Regexp, stg gopium.Strategy, m *maven, ch appliedCh) {
 	// wait until all visits finished
 	// and then close the channel
 	defer close(ch)
@@ -151,22 +139,22 @@ func vscope(
 	var wg sync.WaitGroup
 loop:
 	// go through all names inside the package scope
-	for _, name := range scope.Names() {
+	for _, name := range s.Names() {
 		// check if object name doesn't matches regex
-		if !regex.MatchString(name) {
+		if !r.MatchString(name) {
 			continue
 		}
 		// in case it does and object is
 		// a type name and it's not an alias for struct
 		// then apply strategy to it
-		if tn, ok := scope.Lookup(name).(*types.TypeName); ok && !tn.IsAlias() {
+		if tn, ok := s.Lookup(name).(*types.TypeName); ok && !tn.IsAlias() {
 			// if underlying type is struct
 			if st, ok := tn.Type().Underlying().(*types.Struct); ok {
 				// structure id
 				var id, loc string
 				// in case id of structure
 				// has been already visited
-				if id, loc, ok = maven.has(tn); ok {
+				if id, loc, ok = m.has(tn); ok {
 					continue
 				}
 				// manage context actions
@@ -182,7 +170,7 @@ loop:
 				// increment wait group visits counter
 				wg.Add(1)
 				// prepare struct ref notifier
-				notif := stRef(ref, id)
+				notif := m.refst(id)
 				// concurently visit the structure
 				// and apply strategy to it
 				go func(id, loc, name string, st *types.Struct, notif func(gopium.Struct)) {
@@ -190,7 +178,7 @@ loop:
 					defer wg.Done()
 					// convert original struct
 					// to inner gopium format
-					o := maven.enum(name, st, ref)
+					o := m.enum(name, st)
 					// apply provided strategy
 					r, err := stg.Apply(ctx, o)
 					// notify ref with result structure

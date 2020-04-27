@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"go/build"
 	"go/parser"
-	"path/filepath"
 	"regexp"
+	"strings"
 	"time"
 
 	"1pkg/gopium"
@@ -26,23 +26,31 @@ type CliApp struct {
 	sbuilder gopium.StrategyBuilder
 	wname    gopium.WalkerName
 	snames   []gopium.StrategyName
-	timeout  time.Duration
 }
 
 // NewCliApp helps to spawn new cli application runner
 // from list of received parameters or returns error
 func NewCliApp(
-	compiler, arch string,
+	// target platform vars
+	compiler,
+	arch string,
 	cpucaches []int,
-	pkg, path string,
-	benvs, bflags []string,
-	walker, regex string,
-	deep, backref bool,
+	// package parser vars
+	pkg,
+	path string,
+	benvs,
+	bflags []string,
+	// walker vars
+	walker,
+	regex string,
+	deep,
+	backref bool,
 	stgs []string,
-	group string,
-	tenable, tforce, tdiscrete bool,
-	indent, tabwidth int,
+	// printer vars
+	indent,
+	tabwidth int,
 	usespace bool,
+	// global vars
 	timeout int,
 ) (*CliApp, error) {
 	// cast caches to int64
@@ -51,18 +59,17 @@ func NewCliApp(
 		caches = append(caches, int64(cache))
 	}
 	// set up maven
-	m := typepkg.NewMavenGoTypes(compiler, arch, caches...)
-	// set up parser
-	absp := filepath.Join(build.Default.GOPATH, path)
-	// in case full path to package hasn't been provided
-	// try to build it from package name
-	if absp == build.Default.GOPATH {
-		absp = filepath.Join(build.Default.GOPATH, "src", pkg)
+	m, err := typepkg.NewMavenGoTypes(compiler, arch, caches...)
+	if err != nil {
+		return nil, fmt.Errorf("can't set up maven %v", err)
 	}
+	// replace package template
+	path = strings.Replace(path, "{{package}}", pkg, 1)
+	// set up parser
 	p := typepkg.ParserXToolPackagesAst{
-		Pattern: pkg,
-		AbsDir:  absp,
-		//nolint
+		Pattern:    pkg,
+		Root:       build.Default.GOPATH,
+		Path:       path,
 		ModeTypes:  packages.LoadAllSyntax,
 		ModeAst:    parser.ParseComments | parser.AllErrors,
 		BuildEnv:   benvs,
@@ -75,19 +82,22 @@ func NewCliApp(
 	if err != nil {
 		return nil, fmt.Errorf("can't compile such regexp %q %v", wregex, err)
 	}
+	// cast timeout to second duration
+	gtimeout := time.Duration(timeout) * time.Second
 	// set up coordinator
 	coord := coordinator{
-		wregex:    wregex,
-		wdeep:     deep,
-		wbackref:  backref,
-		tgroup:    group,
-		tenable:   tenable,
-		tforce:    tforce,
-		tdiscrete: tdiscrete,
+		wregex:   wregex,
+		gtimeout: gtimeout,
 	}
 	// set walker and strategy builders
-	wbuilder := walkers.NewBuilder(p, m, pr)
-	sbuilder := strategies.NewBuilder(m)
+	wbuilder := walkers.Builder{
+		Parser:  p,
+		Exposer: m,
+		Print:   pr,
+		Deep:    deep,
+		Bref:    backref,
+	}
+	sbuilder := strategies.Builder{Curator: m}
 	// cast strategies strings to strategy names
 	snames := make([]gopium.StrategyName, 0, len(stgs))
 	for _, strategy := range stgs {
@@ -95,8 +105,6 @@ func NewCliApp(
 	}
 	// cast walker string to walker name
 	wname := gopium.WalkerName(walker)
-	// cast timeout to second duration
-	tm := time.Duration(timeout) * time.Second
 	// combine cli runner
 	return &CliApp{
 		coord:    coord,
@@ -104,18 +112,11 @@ func NewCliApp(
 		sbuilder: sbuilder,
 		wname:    wname,
 		snames:   snames,
-		timeout:  tm,
 	}, nil
 }
 
 // Run CliApp implementation
-func (cli CliApp) Run(ctx context.Context) error {
-	// set up timeout context
-	if cli.timeout > 0 {
-		nctx, cancel := context.WithTimeout(ctx, cli.timeout)
-		defer cancel()
-		ctx = nctx
-	}
+func (cli *CliApp) Run(ctx context.Context) error {
 	// build strategy
 	stg, err := cli.coord.strategy(cli.sbuilder, cli.snames)
 	if err != nil {

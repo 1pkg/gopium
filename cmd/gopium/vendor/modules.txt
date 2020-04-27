@@ -5,7 +5,8 @@
 1pkg/gopium/astutil/persist
 1pkg/gopium/astutil/print
 1pkg/gopium/collections
-1pkg/gopium/fmtio
+1pkg/gopium/gfmtio/gfmt
+1pkg/gopium/gfmtio/gio
 1pkg/gopium/runners
 1pkg/gopium/strategies
 1pkg/gopium/typepkg

@@ -16,6 +16,6 @@ var (
 type nope struct{}
 
 // Apply nope implementation
-func (stg nope) Apply(ctx context.Context, o gopium.Struct) (r gopium.Struct, err error) {
-	return o, nil
+func (stg nope) Apply(ctx context.Context, o gopium.Struct) (gopium.Struct, error) {
+	return o, ctx.Err()
 }

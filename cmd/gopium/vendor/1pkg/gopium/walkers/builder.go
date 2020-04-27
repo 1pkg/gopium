@@ -9,85 +9,99 @@ import (
 
 // list of registered types walkers
 const (
+	// wast walkers
+	AstStd    gopium.WalkerName = "ast_std"
+	AstGo     gopium.WalkerName = "ast_go"
+	AstGopium gopium.WalkerName = "ast_gopium"
+	// wout walkers
 	JsonStd   gopium.WalkerName = "json_std"
 	XmlStd    gopium.WalkerName = "xml_std"
 	CsvStd    gopium.WalkerName = "csv_std"
 	JsonFiles gopium.WalkerName = "json_files"
 	XmlFiles  gopium.WalkerName = "xml_files"
 	CsvFiles  gopium.WalkerName = "csv_files"
-	AstStd    gopium.WalkerName = "ast_std"
-	AstGo     gopium.WalkerName = "ast_go"
-	AstGopium gopium.WalkerName = "ast_gopium"
 )
 
 // Builder defines types gopium.WalkerBuilder implementation
 // that uses parser and exposer to pass it to related walkers
 type Builder struct {
-	parser  gopium.Parser
-	exposer gopium.Exposer
-	print   astutil.Print
-}
-
-// NewBuilder creates instance of Builder
-// and requires parser and exposer to pass it to related walkers
-func NewBuilder(parser gopium.Parser, exposer gopium.Exposer, print astutil.Print) Builder {
-	return Builder{
-		parser:  parser,
-		exposer: exposer,
-		print:   print,
-	}
+	Parser  gopium.Parser
+	Exposer gopium.Exposer
+	Print   astutil.Print
+	Deep    bool
+	Bref    bool
 }
 
 // Build Builder implementation
 func (b Builder) Build(name gopium.WalkerName) (gopium.Walker, error) {
 	switch name {
+	// wast walkers
+	case AstStd:
+		return aststd.With(
+			b.Parser,
+			b.Exposer,
+			b.Print,
+			b.Deep,
+			b.Bref,
+		), nil
+	case AstGo:
+		return astgo.With(
+			b.Parser,
+			b.Exposer,
+			b.Print,
+			b.Deep,
+			b.Bref,
+		), nil
+	case AstGopium:
+		return astgopium.With(
+			b.Parser,
+			b.Exposer,
+			b.Print,
+			b.Deep,
+			b.Bref,
+		), nil
+	// wout walkers
 	case JsonStd:
 		return jsonstd.With(
-			b.parser,
-			b.exposer,
+			b.Parser,
+			b.Exposer,
+			b.Deep,
+			b.Bref,
 		), nil
 	case XmlStd:
 		return xmlstd.With(
-			b.parser,
-			b.exposer,
+			b.Parser,
+			b.Exposer,
+			b.Deep,
+			b.Bref,
 		), nil
 	case CsvStd:
 		return csvstd.With(
-			b.parser,
-			b.exposer,
+			b.Parser,
+			b.Exposer,
+			b.Deep,
+			b.Bref,
 		), nil
 	case JsonFiles:
-		return jsontf.With(
-			b.parser,
-			b.exposer,
+		return jsonfiles.With(
+			b.Parser,
+			b.Exposer,
+			b.Deep,
+			b.Bref,
 		), nil
 	case XmlFiles:
-		return xmltf.With(
-			b.parser,
-			b.exposer,
+		return xmlfiles.With(
+			b.Parser,
+			b.Exposer,
+			b.Deep,
+			b.Bref,
 		), nil
 	case CsvFiles:
-		return csvtf.With(
-			b.parser,
-			b.exposer,
-		), nil
-	case AstStd:
-		return fsptnstd.With(
-			b.parser,
-			b.exposer,
-			b.print,
-		), nil
-	case AstGo:
-		return fsptngo.With(
-			b.parser,
-			b.exposer,
-			b.print,
-		), nil
-	case AstGopium:
-		return fsptngopium.With(
-			b.parser,
-			b.exposer,
-			b.print,
+		return csvfiles.With(
+			b.Parser,
+			b.Exposer,
+			b.Deep,
+			b.Bref,
 		), nil
 	default:
 		return nil, fmt.Errorf("walker %q wasn't found", name)

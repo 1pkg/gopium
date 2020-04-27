@@ -28,31 +28,49 @@ func (stg pad) Curator(curator gopium.Curator) pad {
 }
 
 // Apply pad implementation
-func (stg pad) Apply(ctx context.Context, o gopium.Struct) (r gopium.Struct, err error) {
+func (stg pad) Apply(ctx context.Context, o gopium.Struct) (gopium.Struct, error) {
 	// copy original structure to result
-	r = o
-	// setup resulted fields slice
-	var offset, alignment int64 = 0, stg.curator.SysAlign()
-	fields := make([]gopium.Field, 0, len(r.Fields))
-	// go through all fields
-	for _, f := range r.Fields {
-		// if we wanna use
-		// non max system align
-		if !stg.sys {
-			alignment = f.Align
+	r := o
+	// preset all vars and check that structure has fields
+	if flen, offset, malign, align := len(r.Fields), int64(0), int64(0), stg.curator.SysAlign(); flen > 0 {
+		// setup resulted fields slice
+		fields := make([]gopium.Field, 0, flen)
+		// go through all fields
+		for _, f := range r.Fields {
+			// if we wanna use
+			// non max system align
+			if !stg.sys {
+				align = f.Align
+			}
+			// save max align size
+			if align > malign {
+				malign = align
+			}
+			// check that align size is valid
+			if align > 0 {
+				// calculate align with padding
+				alpad := gopium.Align(offset, align)
+				// if padding not equals zero append padding
+				if pad := alpad - offset; pad > 0 {
+					fields = append(fields, gopium.PadField(pad))
+				}
+				// increment structure offset
+				offset = alpad + f.Size
+				fields = append(fields, f)
+			}
 		}
-		// calculate align with padding
-		alpad := gopium.Align(offset, alignment)
-		// if padding not equals zero
-		// append padding
-		if pad := alpad - offset; pad != 0 {
-			fields = append(fields, gopium.PadField(pad))
+		// check if max align size is valid
+		// and append final padding to structure
+		if malign > 0 {
+			// calculate align with padding
+			alpad := gopium.Align(offset, malign)
+			// if padding not equals zero append padding
+			if pad := alpad - offset; pad > 0 {
+				fields = append(fields, gopium.PadField(pad))
+			}
 		}
-		// increment structure offset
-		offset = alpad + f.Size
-		fields = append(fields, f)
+		// update resulted fields
+		r.Fields = fields
 	}
-	// update resulted fields
-	r.Fields = fields
-	return
+	return r, ctx.Err()
 }

@@ -21,17 +21,16 @@ type nlex struct {
 }
 
 // Apply nlex implementation
-func (stg nlex) Apply(ctx context.Context, o gopium.Struct) (r gopium.Struct, err error) {
+func (stg nlex) Apply(ctx context.Context, o gopium.Struct) (gopium.Struct, error) {
 	// copy original structure to result
-	r = o
+	r := o
 	// then execute lexicographical sorting
 	sort.SliceStable(r.Fields, func(i, j int) bool {
 		// sort depends on type of ordering
 		if stg.asc {
 			return r.Fields[i].Name < r.Fields[j].Name
-		} else {
-			return r.Fields[i].Name > r.Fields[j].Name
 		}
+		return r.Fields[i].Name > r.Fields[j].Name
 	})
-	return
+	return r, ctx.Err()
 }

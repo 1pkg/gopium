@@ -2,9 +2,9 @@ package gopium
 
 import "context"
 
-// Strategy defines action abstraction
-// that applies some strategy payload on types.Struct
-// and returns origin, resulted struct objects or error
+// Strategy defines custom action abstraction
+// that applies some action payload on struct
+// and returns resulted struct object or error
 type Strategy interface {
 	Apply(context.Context, Struct) (Struct, error)
 }
@@ -14,7 +14,7 @@ type Strategy interface {
 type StrategyName string
 
 // StrategyBuilder defines strategy builder abstraction
-// that helps to create strategy by strategy name
+// that helps to create single strategy by strategies names
 type StrategyBuilder interface {
-	Build(StrategyName) (Strategy, error)
+	Build(...StrategyName) (Strategy, error)
 }

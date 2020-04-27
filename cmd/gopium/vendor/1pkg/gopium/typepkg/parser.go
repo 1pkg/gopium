@@ -7,7 +7,8 @@ import (
 	"go/parser"
 	"go/token"
 	"go/types"
-	"path"
+	"path/filepath"
+	"strings"
 
 	"1pkg/gopium"
 
@@ -19,7 +20,8 @@ import (
 // and uses "go/parser" parser.ParseDir to collect ast package
 type ParserXToolPackagesAst struct {
 	Pattern    string
-	AbsDir     string
+	Path       string
+	Root       string
 	ModeTypes  packages.LoadMode
 	ModeAst    parser.Mode
 	BuildEnv   []string
@@ -30,10 +32,11 @@ type ParserXToolPackagesAst struct {
 func (p ParserXToolPackagesAst) ParseTypes(ctx context.Context) (*types.Package, gopium.Locator, error) {
 	// create packages.Config obj
 	fset := token.NewFileSet()
+	dir := filepath.Join(p.Root, p.Path)
 	cfg := &packages.Config{
 		Fset:       fset,
 		Context:    ctx,
-		Dir:        p.AbsDir,
+		Dir:        dir,
 		Mode:       p.ModeTypes,
 		Env:        p.BuildEnv,
 		BuildFlags: p.BuildFlags,
@@ -47,23 +50,35 @@ func (p ParserXToolPackagesAst) ParseTypes(ctx context.Context) (*types.Package,
 	}
 	// check parse results
 	// it should be equal to
-	// package pattern or last
-	// component of the path
-	bpkg := path.Base(p.AbsDir)
+	// package pattern or
+	// all except first components of path
+	pkg := p.Path
+	if list := strings.Split(p.Path, string(filepath.Separator)); len(list) > 0 {
+		pkg = filepath.Join(list[1:]...)
+	}
 	if len(pkgs) != 1 ||
-		(pkgs[0].String() != p.Pattern && pkgs[0].String() != bpkg) {
-		return nil, nil, fmt.Errorf("package %q wasn't found", p.Pattern)
+		(pkgs[0].String() != p.Pattern && pkgs[0].String() != pkg) {
+		return nil, nil, fmt.Errorf("package %q wasn't found at %q", p.Pattern, dir)
 	}
 	return pkgs[0].Types, NewLocator(fset), nil
 }
 
 // ParseAst ParserXToolPackagesAst implementation
 func (p ParserXToolPackagesAst) ParseAst(ctx context.Context) (*ast.Package, gopium.Locator, error) {
+	// manage context actions
+	// in case of cancelation
+	// stop parse and return error back
+	select {
+	case <-ctx.Done():
+		return nil, nil, ctx.Err()
+	default:
+	}
 	// use parser.ParseDir
 	fset := token.NewFileSet()
+	dir := filepath.Join(p.Root, p.Path)
 	pkgs, err := parser.ParseDir(
 		fset,
-		p.AbsDir,
+		dir,
 		nil,
 		p.ModeAst,
 	)
@@ -73,14 +88,14 @@ func (p ParserXToolPackagesAst) ParseAst(ctx context.Context) (*ast.Package, gop
 	}
 	// check parse results
 	// it should be equal to
-	// package pattern or last
-	// component of the path
-	if pkg, ok := pkgs[p.Pattern]; ok {
+	// package pattern or
+	// last component of path
+	if pkg, ok := pkgs[p.Pattern]; len(pkgs) == 1 && ok {
 		return pkg, NewLocator(fset), nil
 	}
-	bpkg := path.Base(p.AbsDir)
-	if pkg, ok := pkgs[bpkg]; ok {
+	pkg := filepath.Base(p.Path)
+	if pkg, ok := pkgs[pkg]; len(pkgs) == 1 && ok {
 		return pkg, NewLocator(fset), nil
 	}
-	return nil, nil, fmt.Errorf("package %q wasn't found", p.Pattern)
+	return nil, nil, fmt.Errorf("package %q wasn't found at %q", p.Pattern, dir)
 }
