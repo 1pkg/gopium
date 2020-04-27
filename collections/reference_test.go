@@ -20,7 +20,7 @@ func TestNewReference(t *testing.T) {
 		"not null new reference should return actual ref": {
 			input: false,
 			output: &Reference{
-				vals:    make(map[string]int64),
+				vals:    make(map[string]interface{}),
 				signals: make(map[string]chan struct{}),
 			},
 		},
@@ -42,32 +42,32 @@ func TestNilReferenceMixed(t *testing.T) {
 	defer r.Prune()
 	// nil ref should alway do default
 	val := r.Get("key")
-	if val != -1 {
-		t.Errorf("actual %v doesn't equal to %v", val, -1)
+	if val != struct{}{} {
+		t.Errorf("actual %v doesn't equal to %v", val, struct{}{})
 	}
 	// nil ref should alway do default
 	r.Set("key", 10)
 	val = r.Get("key")
-	if val != -1 {
-		t.Errorf("actual %v doesn't equal to %v", val, -1)
+	if val != struct{}{} {
+		t.Errorf("actual %v doesn't equal to %v", val, struct{}{})
 	}
 	// nil ref should alway do default
 	r.Alloc("key")
 	val = r.Get("key")
-	if val != -1 {
-		t.Errorf("actual %v doesn't equal to %v", val, -1)
+	if val != struct{}{} {
+		t.Errorf("actual %v doesn't equal to %v", val, struct{}{})
 	}
 	// nil ref should alway do default
 	r.Set("key", 10)
 	val = r.Get("key")
-	if val != -1 {
-		t.Errorf("actual %v doesn't equal to %v", val, -1)
+	if val != struct{}{} {
+		t.Errorf("actual %v doesn't equal to %v", val, struct{}{})
 	}
 	// nil ref should alway do default
 	r.Prune()
 	val = r.Get("key")
-	if val != -1 {
-		t.Errorf("actual %v doesn't equal to %v", val, -1)
+	if val != struct{}{} {
+		t.Errorf("actual %v doesn't equal to %v", val, struct{}{})
 	}
 }
 
@@ -77,13 +77,13 @@ func TestActualReferenceMixed(t *testing.T) {
 	r := NewReference(false)
 	defer r.Prune()
 	val := r.Get("key")
-	if val != -1 {
-		t.Errorf("actual %v doesn't equal to %v", val, -1)
+	if val != struct{}{} {
+		t.Errorf("actual %v doesn't equal to %v", val, struct{}{})
 	}
 	r.Set("key", 100)
 	val = r.Get("key")
-	if val != -1 {
-		t.Errorf("actual %v doesn't equal to %v", val, -1)
+	if val != struct{}{} {
+		t.Errorf("actual %v doesn't equal to %v", val, struct{}{})
 	}
 	r.Alloc("key")
 	r.Alloc("test-key")
@@ -123,15 +123,15 @@ func TestActualReferenceMixed(t *testing.T) {
 	// resolved on prune
 	go func() {
 		val := r.Get("test")
-		if val != -1 || atomic.LoadInt32(&stage) != 3 {
-			t.Errorf("actual %v doesn't equal to %v", val, -1)
+		if val != struct{}{} || atomic.LoadInt32(&stage) != 3 {
+			t.Errorf("actual %v doesn't equal to %v", val, struct{}{})
 		}
 	}()
 	// resolved immediately
 	go func() {
-		val := r.Get("test-100")
-		if val != -1 || atomic.LoadInt32(&stage) != 0 {
-			t.Errorf("actual %v doesn't equal to %v", val, -1)
+		val := r.Get("teststruct{}{}00")
+		if val != struct{}{} || atomic.LoadInt32(&stage) != 0 {
+			t.Errorf("actual %v doesn't equal to %v", val, struct{}{})
 		}
 	}()
 	// stage 1 set
@@ -163,7 +163,7 @@ func TestActualReferenceMixed(t *testing.T) {
 	time.Sleep(time.Millisecond)
 	atomic.AddInt32(&stage, 1)
 	val = r.Get("key")
-	if val != -1 {
-		t.Errorf("actual %v doesn't equal to %v", val, -1)
+	if val != struct{}{} {
+		t.Errorf("actual %v doesn't equal to %v", val, struct{}{})
 	}
 }

@@ -23,12 +23,12 @@ func TestPad(t *testing.T) {
 	}{
 		"empty struct should be applied to empty struct": {
 			pad: padsys,
-			c:   mocks.Maven{SysAlignVal: 16},
+			c:   mocks.Maven{SAlign: 16},
 			ctx: context.Background(),
 		},
 		"non empty struct should be applied to explicit pad aligned struct": {
 			pad: padsys,
-			c:   mocks.Maven{SysAlignVal: 6},
+			c:   mocks.Maven{SAlign: 6},
 			ctx: context.Background(),
 			o: gopium.Struct{
 				Name: "test",
@@ -52,7 +52,7 @@ func TestPad(t *testing.T) {
 		},
 		"non empty struct should be applied to explicit pad aligned struct on canceled context": {
 			pad: padtnat,
-			c:   mocks.Maven{SysAlignVal: 12},
+			c:   mocks.Maven{SAlign: 12},
 			ctx: cctx,
 			o: gopium.Struct{
 				Name: "test",
@@ -79,7 +79,7 @@ func TestPad(t *testing.T) {
 		},
 		"mixed struct should be applied to explicit pad aligned struct on type natural pad": {
 			pad: padtnat,
-			c:   mocks.Maven{SysAlignVal: 24},
+			c:   mocks.Maven{SAlign: 24},
 			ctx: context.Background(),
 			o: gopium.Struct{
 				Name: "test",
@@ -136,7 +136,7 @@ func TestPad(t *testing.T) {
 		},
 		"mixed struct should be applied to explicit pad aligned on same sys pad": {
 			pad: padsys,
-			c:   mocks.Maven{SysAlignVal: 9},
+			c:   mocks.Maven{SAlign: 9},
 			ctx: context.Background(),
 			o: gopium.Struct{
 				Name: "test",
@@ -186,7 +186,7 @@ func TestPad(t *testing.T) {
 		},
 		"mixed struct should be applied to explicit pad aligned on bigger sys pad": {
 			pad: padsys,
-			c:   mocks.Maven{SysAlignVal: 12},
+			c:   mocks.Maven{SAlign: 12},
 			ctx: context.Background(),
 			o: gopium.Struct{
 				Name: "test",
@@ -237,7 +237,7 @@ func TestPad(t *testing.T) {
 		},
 		"mixed struct should be applied to explicit pad aligned no additional aligment": {
 			pad: padsys,
-			c:   mocks.Maven{SysAlignVal: 4},
+			c:   mocks.Maven{SAlign: 4},
 			ctx: context.Background(),
 			o: gopium.Struct{
 				Name: "test",

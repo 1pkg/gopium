@@ -6,20 +6,36 @@ import (
 	"1pkg/gopium"
 )
 
+// Pos defines mock pos
+// data transfer object
+type Pos struct {
+	ID  string
+	Loc string
+}
+
 // Locator defines mock locator implementation
 type Locator struct {
-	IDVal  string
-	LocVal string
+	Poses map[token.Pos]Pos
 }
 
 // ID mock implementation
-func (l Locator) ID(token.Pos) string {
-	return l.IDVal
+func (l Locator) ID(pos token.Pos) string {
+	// check if we have it in vals
+	if t, ok := l.Poses[pos]; ok {
+		return t.ID
+	}
+	// otherwise return default val
+	return ""
 }
 
 // Loc mock implementation
-func (l Locator) Loc(token.Pos) string {
-	return l.LocVal
+func (l Locator) Loc(pos token.Pos) string {
+	// check if we have it in vals
+	if t, ok := l.Poses[pos]; ok {
+		return t.Loc
+	}
+	// otherwise return default val
+	return ""
 }
 
 // Locator mock implementation
