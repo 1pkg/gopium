@@ -14,21 +14,37 @@ const tagname = "gopium"
 
 // list of tag presets
 var (
-	tagrm = tag{force: true}
+	tags  = tag{force: false, discrete: false}
+	tagf  = tag{force: true, discrete: false}
+	tagsd = tag{force: false, discrete: true}
+	tagfd = tag{force: true, discrete: true}
 )
 
 // tag defines strategy implementation
 // that adds or updates fields tags annotation
 // that could be processed by group strategy
 type tag struct {
-	tag, group      string
-	force, discrete bool
+	tag      string
+	force    bool
+	discrete bool
+}
+
+// Names erich tag strategy with strategy names tag
+func (stg tag) Names(names ...gopium.StrategyName) tag {
+	// convert strategies names to strings
+	strs := make([]string, 0, len(names))
+	for _, name := range names {
+		strs = append(strs, string(name))
+	}
+	// concat them by comma
+	stg.tag = strings.Join(strs, ",")
+	return stg
 }
 
 // Apply tag implementation
-func (stg tag) Apply(ctx context.Context, o gopium.Struct) (r gopium.Struct, err error) {
+func (stg tag) Apply(ctx context.Context, o gopium.Struct) (gopium.Struct, error) {
 	// copy original structure to result
-	r = o
+	r := o
 	// iterate through all fields
 	for i := range r.Fields {
 		f := &r.Fields[i]
@@ -36,18 +52,11 @@ func (stg tag) Apply(ctx context.Context, o gopium.Struct) (r gopium.Struct, err
 		tag, ok := reflect.StructTag(f.Tag).Lookup(tagname)
 		// build group tag
 		gtag := stg.tag
-		if stg.group != "" {
-			gtag = fmt.Sprintf("group:%s;%s", stg.group, stg.tag)
-		}
 		// if we wanna build discrete groups
 		if stg.discrete {
 			// use default group tag
-			group := tdef
-			if stg.group != "" {
-				group = stg.group
-			}
-			// append index of field to it
-			group = fmt.Sprintf("%s-%d", group, i)
+			// and append index of field to it
+			group := fmt.Sprintf("%s-%d", tdef, i+1)
 			gtag = fmt.Sprintf("group:%s;%s", group, stg.tag)
 		}
 		// in case gopium tag already exists
@@ -63,12 +72,11 @@ func (stg tag) Apply(ctx context.Context, o gopium.Struct) (r gopium.Struct, err
 			f.Tag = strings.Replace(f.Tag, tag, gtag, 1)
 		case ok:
 			break
-		case len(f.Tag) != 0:
+		case f.Tag != "":
 			f.Tag += " " + fulltag
 		default:
 			f.Tag = fulltag
 		}
-		f.Tag = fmt.Sprintf("`%s`", f.Tag)
 	}
-	return
+	return r, ctx.Err()
 }

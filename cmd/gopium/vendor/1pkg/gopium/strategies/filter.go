@@ -10,23 +10,23 @@ import (
 // list of filter presets
 var (
 	// to make bools addressable
-	t = true
-	f = false
+	tvar = true
+	fvar = false
 	// list of filter presets
 	fpad = filter{
 		nregex: regexp.MustCompile(`^_$`),
 	}
 	femb = filter{
-		emb: &t,
+		emb: &tvar,
 	}
 	fnotemb = filter{
-		emb: &f,
+		emb: &fvar,
 	}
 	fexp = filter{
-		exp: &t,
+		exp: &tvar,
 	}
 	fnotexp = filter{
-		exp: &f,
+		exp: &fvar,
 	}
 )
 
@@ -39,33 +39,35 @@ type filter struct {
 }
 
 // Apply filter implementation
-func (stg filter) Apply(ctx context.Context, o gopium.Struct) (r gopium.Struct, err error) {
+func (stg filter) Apply(ctx context.Context, o gopium.Struct) (gopium.Struct, error) {
 	// copy original structure to result
-	r = o
+	r := o
 	// prepare filtered fields slice
-	fields := make([]gopium.Field, 0, len(r.Fields))
-	// then go though all original fields
-	for _, f := range r.Fields {
-		// check if field name matches regex
-		if stg.nregex != nil && stg.nregex.MatchString(f.Name) {
-			continue
+	if flen := len(r.Fields); flen > 0 {
+		fields := make([]gopium.Field, 0, flen)
+		// then go though all original fields
+		for _, f := range r.Fields {
+			// check if field name matches regex
+			if stg.nregex != nil && stg.nregex.MatchString(f.Name) {
+				continue
+			}
+			// check if field type matches regex
+			if stg.tregex != nil && stg.tregex.MatchString(f.Type) {
+				continue
+			}
+			// check if field embedded matches condition
+			if stg.emb != nil && *stg.emb == f.Embedded {
+				continue
+			}
+			// check if field exported matches condition
+			if stg.exp != nil && *stg.exp == f.Exported {
+				continue
+			}
+			// if it doesn't append it to fields
+			fields = append(fields, f)
 		}
-		// check if field type matches regex
-		if stg.tregex != nil && stg.tregex.MatchString(f.Type) {
-			continue
-		}
-		// check if field embedded matches condition
-		if stg.emb != nil && *stg.emb == f.Embedded {
-			continue
-		}
-		// check if field exported matches condition
-		if stg.exp != nil && *stg.exp == f.Exported {
-			continue
-		}
-		// if it doesn't append it to fields
-		fields = append(fields, f)
+		// update result fields
+		r.Fields = fields
 	}
-	// update result fields
-	r.Fields = fields
-	return
+	return r, ctx.Err()
 }

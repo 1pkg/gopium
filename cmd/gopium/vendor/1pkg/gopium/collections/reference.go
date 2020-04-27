@@ -6,7 +6,7 @@ import "sync"
 // that helps to set, and get wait for
 // key value pairs
 type Reference struct {
-	vals    map[string]int64
+	vals    map[string]interface{}
 	signals map[string]chan struct{}
 	mutex   sync.Mutex
 }
@@ -19,23 +19,22 @@ func NewReference(null bool) *Reference {
 	if null {
 		return nil
 	}
-	// othewise return real reference instance
+	// othewise return actual reference instance
 	return &Reference{
-		vals:    make(map[string]int64),
+		vals:    make(map[string]interface{}),
 		signals: make(map[string]chan struct{}),
-		mutex:   sync.Mutex{},
 	}
 }
 
 // Get retrieves value for given key from the reference,
 // in case value hasn't been set yet
 // it waits until value is set
-func (r *Reference) Get(key string) int64 {
+func (r *Reference) Get(key string) interface{} {
 	// in case of nil reference
 	// just skip it and
-	// return def size
+	// return def val
 	if r == nil {
-		return -1
+		return struct{}{}
 	}
 	// grab signal with locking
 	r.mutex.Lock()
@@ -43,9 +42,9 @@ func (r *Reference) Get(key string) int64 {
 	r.mutex.Unlock()
 	// in case there is no slot
 	// has been reserved
-	// return def size
+	// return def val
 	if !ok {
-		return -1
+		return struct{}{}
 	}
 	// othewise wait for signal
 	<-sig
@@ -57,13 +56,13 @@ func (r *Reference) Get(key string) int64 {
 		return val
 	}
 	// in case no value has been set
-	// return def size
-	return -1
+	// return def val
+	return struct{}{}
 }
 
 // Set update value for given key,
 // if slot for that value has been preallocated
-func (r *Reference) Set(key string, val int64) {
+func (r *Reference) Set(key string, val interface{}) {
 	// in case of nil reference
 	// just skip it
 	if r == nil {
@@ -129,4 +128,7 @@ func (r *Reference) Prune() {
 			close(ch)
 		}
 	}
+	// reset vals and signals
+	r.vals = make(map[string]interface{})
+	r.signals = make(map[string]chan struct{})
 }

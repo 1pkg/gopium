@@ -8,23 +8,33 @@ import (
 	"1pkg/gopium/collections"
 )
 
+// sizealign defines data transfer
+// object that holds type pair
+// of size and align vals
+type sizealign struct {
+	size  int64
+	align int64
+}
+
 // maven defines visiting helper
-// that aggregates has and enum facilities
+// that aggregates some useful
+// operations on underlying facilities
 type maven struct {
-	exposer gopium.Exposer
-	locator gopium.Locator
-	store   sync.Map
+	exp   gopium.Exposer
+	loc   gopium.Locator
+	store sync.Map
+	ref   *collections.Reference
 }
 
 // has defines struct store id helper
-// that uses gopium.Locator to build id
+// that uses locator to build id
 // for a structure and check that
 // builded id has not been stored already
-func (m *maven) has(tn *types.TypeName) (id, loc string, ok bool) {
+func (m *maven) has(tn *types.TypeName) (id string, loc string, ok bool) {
 	// build id for the structure
-	id = m.locator.ID(tn.Pos())
+	id = m.loc.ID(tn.Pos())
 	// build loc for the structure
-	loc = m.locator.Loc(tn.Pos())
+	loc = m.loc.Loc(tn.Pos())
 	// in case id of structure
 	// has been already stored
 	if _, ok := m.store.Load(id); ok {
@@ -37,11 +47,12 @@ func (m *maven) has(tn *types.TypeName) (id, loc string, ok bool) {
 
 // enum defines struct enumerating converting helper
 // that goes through all structure fields
-// and uses gopium.Exposer to expose gopium.Field DTO
+// and uses exposer to expose field DTO
 // for each field and puts them back
-// to resulted gopium.Struct object
-func (m *maven) enum(name string, st *types.Struct, ref *collections.Reference) (r gopium.Struct) {
+// to resulted struct object
+func (m *maven) enum(name string, st *types.Struct) gopium.Struct {
 	// set structure name
+	r := gopium.Struct{}
 	r.Name = name
 	// get number of struct fields
 	nf := st.NumFields()
@@ -50,53 +61,86 @@ func (m *maven) enum(name string, st *types.Struct, ref *collections.Reference) 
 	for i := 0; i < nf; i++ {
 		// get field
 		f := st.Field(i)
+		// get size and align for field
+		sa := m.refsa(f.Type())
 		// fill field structure
 		r.Fields = append(r.Fields, gopium.Field{
 			Name:     f.Name(),
-			Type:     m.exposer.Name(f.Type()),
-			Size:     m.refsize(f.Type(), ref),
-			Align:    m.exposer.Align(f.Type()),
+			Type:     m.exp.Name(f.Type()),
+			Size:     sa.size,
+			Align:    sa.align,
 			Tag:      st.Tag(i),
 			Exported: f.Exported(),
 			Embedded: f.Embedded(),
 		})
 	}
-	return
+	return r
 }
 
-// refsize defines size getter with reference helper
-// that uses reference if it has been provided
-// or uses gopium.Exposer to expose type size
-func (m *maven) refsize(t types.Type, ref *collections.Reference) int64 {
-	// in case we have reference
-	if ref != nil {
-		// for refsize only named structures
-		// and arrays should be calculated
-		// not with default exposer size
-		switch tp := t.(type) {
-		case *types.Array:
-			// note: copied from `go/types/sizes.go`
-			n := tp.Len()
-			if n <= 0 {
-				return 0
-			}
-			// n > 0
-			a := m.exposer.Align(tp.Elem())
-			z := m.refsize(tp.Elem(), ref)
-			return gopium.Align(z, a)*(n-1) + z
-		case *types.Named:
-			// in case it's not a struct skip it
-			if _, ok := tp.Underlying().(*types.Struct); ok {
-				break
-			}
-			// get id for named structures
-			id := m.locator.ID(tp.Obj().Pos())
-			// get size of the structure from ref
-			if size := ref.Get(id); size >= 0 {
-				return size
-			}
+// refsa defines size and align getter
+// with reference helper that uses reference
+// if it has been provided
+// or uses exposer to expose type size
+func (m *maven) refsa(t types.Type) sizealign {
+	// in case we don't have a reference
+	// just use default exposer size
+	if m.ref == nil {
+		return sizealign{
+			size:  m.exp.Size(t),
+			align: m.exp.Align(t),
+		}
+	}
+	// for refsize only named structures
+	// and arrays should be calculated
+	// not with default exposer size
+	switch tp := t.(type) {
+	case *types.Array:
+		// note: copied from `go/types/sizes.go`
+		n := tp.Len()
+		if n <= 0 {
+			return sizealign{}
+		}
+		// n > 0
+		sa := m.refsa(tp.Elem())
+		sa.size = gopium.Align(sa.size, sa.align)*(n-1) + sa.size
+		return sa
+	case *types.Named:
+		// in case it's not a struct skip it
+		if _, ok := tp.Underlying().(*types.Struct); !ok {
+			break
+		}
+		// get id for named structures
+		id := m.loc.ID(tp.Obj().Pos())
+		// get size of the structure from ref
+		if sa, ok := m.ref.Get(id).(sizealign); ok {
+			return sa
 		}
 	}
 	// just use default exposer size
-	return m.exposer.Size(t)
+	return sizealign{
+		size:  m.exp.Size(t),
+		align: m.exp.Align(t),
+	}
+}
+
+// refst helps to create struct
+// size refence for provided key
+// by preallocating the key and then
+// pushing total struct size to ref with closure
+func (m *maven) refst(name string) func(gopium.Struct) {
+	// preallocate the key
+	m.ref.Alloc(name)
+	// return the pushing closure
+	return func(st gopium.Struct) {
+		// calculate total struct size
+		var size, align int64 = 0, 1
+		for _, f := range st.Fields {
+			if f.Align > align {
+				align = f.Align
+			}
+			size += f.Size
+		}
+		// set ref key size and align
+		m.ref.Set(name, sizealign{size: size, align: align})
+	}
 }

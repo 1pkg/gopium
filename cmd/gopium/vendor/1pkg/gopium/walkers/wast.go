@@ -10,60 +10,58 @@ import (
 	"1pkg/gopium/astutil/apply"
 	"1pkg/gopium/astutil/persist"
 	"1pkg/gopium/collections"
-	"1pkg/gopium/fmtio"
+	"1pkg/gopium/gfmtio/gio"
 )
 
 // list of wast presets
 var (
-	fsptnstd = wast{
+	aststd = wast{
 		apply:   apply.SFN,
 		persist: persist.AsyncFiles,
-		writer:  fmtio.Stdout,
+		writer:  gio.Stdout,
 	}
-	fsptngo = wast{
+	astgo = wast{
 		apply:   apply.SFN,
 		persist: persist.AsyncFiles,
-		writer:  fmtio.FileGo,
+		writer:  gio.FileGo,
 	}
-	fsptngopium = wast{
+	astgopium = wast{
 		apply:   apply.SFN,
 		persist: persist.AsyncFiles,
-		writer:  fmtio.FileGopium,
+		writer:  gio.FileGopium,
 	}
 )
 
-// wast defines packages walker sync ast implementation
-// that uses pkgs.Parser to parse packages types data
-// astutil to update ast to results from strategy
+// wast defines packages walker ast sync implementation
 type wast struct {
+	// inner visiting parameters
+	apply   astutil.Apply
+	persist astutil.Persist
+	writer  gio.Writer
+	// external visiting parameters
 	parser  gopium.Parser
 	exposer gopium.Exposer
-	apply   astutil.Apply
 	print   astutil.Print
-	persist astutil.Persist
-	writer  fmtio.Writer
+	deep    bool
+	bref    bool
 }
 
-// With erich wast walker with parser, exposer, and ref instance
-func (w wast) With(parser gopium.Parser, exposer gopium.Exposer, print astutil.Print) wast {
-	w.parser = parser
-	w.exposer = exposer
-	w.print = print
+// With erich wast walker with external visiting parameters
+// parser, exposer, printer instances and additional visiting flags
+func (w wast) With(pars gopium.Parser, exp gopium.Exposer, pr astutil.Print, deep bool, bref bool) wast {
+	w.parser = pars
+	w.exposer = exp
+	w.print = pr
+	w.deep = deep
+	w.bref = bref
 	return w
 }
 
-// Visit wast implementation
-// uses visit function helper
+// Visit wast implementation uses visit function helper
 // to go through all structs decls inside the package
-// and apply strategy to them to get results
-// then overrides os.Files with updated ast
-// builded from strategy results
-func (w wast) Visit(
-	ctx context.Context,
-	regex *regexp.Regexp,
-	stg gopium.Strategy,
-	deep, backref bool,
-) error {
+// and applies strategy to them to get results,
+// then overrides ast files with astutil helpers
+func (w wast) Visit(ctx context.Context, regex *regexp.Regexp, stg gopium.Strategy) error {
 	// check that parser wasn't set correctly
 	if w.parser == nil {
 		return errors.New("parser wasn't set")
@@ -98,22 +96,20 @@ func (w wast) Visit(
 	// using visit helper
 	// and run it on pkg scope
 	ch := make(appliedCh)
-	gvisit := visit(
-		regex,
-		stg,
-		w.exposer,
-		loc,
-		ch,
-		deep,
-		backref,
-	)
+	gvisit := with(w.exposer, loc, w.bref).
+		visit(regex, stg, ch, w.deep)
+	// prepare separate cancelation
+	// context for visiting
+	gctx, cancel := context.WithCancel(ctx)
+	defer cancel()
 	// run visiting in separate goroutine
-	go gvisit(ctx, pkg.Scope())
+	go gvisit(gctx, pkg.Scope())
 	// prepare struct storage
 	h := make(collections.Hierarchic)
 	for applied := range ch {
-		// in case any error happened just return error
-		// it cancels context automatically
+		// in case any error happened
+		// just return error back
+		// it auto cancels context
 		if applied.Error != nil {
 			return applied.Error
 		}
@@ -125,9 +121,8 @@ func (w wast) Visit(
 	return w.write(ctx, h)
 }
 
-// write wast helps apply
-// sync and persist to format strategy results
-// by updating os.Files
+// write wast helps to sync
+// and persist strategy results to ast files
 func (w wast) write(ctx context.Context, h collections.Hierarchic) error {
 	// use parser to parse ast pkg data
 	pkg, loc, err := w.parser.ParseAst(ctx)
@@ -135,12 +130,15 @@ func (w wast) write(ctx context.Context, h collections.Hierarchic) error {
 		return err
 	}
 	// run ast apply with strategy result
-	// to update ast.Package on the parsed ast.Package
-	// in case any error happened just return error back
+	// to update ast.Package
+	// in case any error happened
+	// just return error back
 	pkg, err = w.apply(ctx, pkg, loc, h)
 	if err != nil {
 		return err
 	}
 	// run persist helper
+	// in case any error happened
+	// just return error back
 	return w.persist(ctx, w.writer, w.print, pkg, loc)
 }

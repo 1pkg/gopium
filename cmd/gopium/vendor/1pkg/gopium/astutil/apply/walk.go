@@ -55,12 +55,14 @@ func walk(
 						// check that structure
 						// should be visited
 						// skip irrelevant structs
-						// check if walk should be broken
-						if st, skip, brk := wcomp(ts); skip {
+						// check if walk should be stopped
+						st, skip, brk := wcomp(ts)
+						switch {
+						case skip:
 							return true
-						} else if brk {
+						case brk:
 							err = errors.New("walk has been stoped")
-						} else {
+						default:
 							// apply action to ast
 							err = wact(ts, st)
 						}

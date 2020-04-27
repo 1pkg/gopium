@@ -4,7 +4,7 @@ import "1pkg/gopium"
 
 // Hierarchic defines strucs hierarchical collection
 // which is categorized by pair of loc and id
-type Hierarchic map[string]map[string]gopium.Struct
+type Hierarchic map[string]Flat
 
 // Push adds struct to hierarchic collection
 func (h Hierarchic) Push(key, cat string, st gopium.Struct) {

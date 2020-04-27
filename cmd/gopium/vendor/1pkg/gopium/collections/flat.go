@@ -14,7 +14,7 @@ type Flat map[string]gopium.Struct
 // Sorted converts flat collection
 // to sorted slice of structs
 // note: it's possible due to next:
-// generated id would be ordered inside same loc
+// generated ids are ordered inside same loc
 func (f Flat) Sorted() []gopium.Struct {
 	// preapare ids and sorted slice
 	ids := make([]string, 0, len(f))
@@ -29,9 +29,21 @@ func (f Flat) Sorted() []gopium.Struct {
 		// so we need to parse and compare it
 		var idi, idj int
 		var sumi, sumj string
-		fmt.Sscanf(ids[i], "%d-%s", &idi, &sumi)
-		fmt.Sscanf(ids[j], "%d-%s", &idj, &sumj)
-		return idi < idj
+		// in case of any pattern error
+		// just apply natural sort
+		// otherwise sort it by id
+		_, erri := fmt.Sscanf(ids[i], "%d-%s", &idi, &sumi)
+		_, errj := fmt.Sscanf(ids[j], "%d-%s", &idj, &sumj)
+		switch {
+		case erri != nil && errj != nil:
+			return ids[i] < ids[j]
+		case erri != nil:
+			return false
+		case errj != nil:
+			return true
+		default:
+			return idi < idj
+		}
 	})
 	// collect all structs in asc order
 	for _, id := range ids {

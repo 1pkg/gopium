@@ -16,6 +16,6 @@ var (
 type void struct{}
 
 // Apply void implementation
-func (stg void) Apply(ctx context.Context, o gopium.Struct) (r gopium.Struct, err error) {
-	return gopium.Struct{}, nil
+func (stg void) Apply(ctx context.Context, o gopium.Struct) (gopium.Struct, error) {
+	return gopium.Struct{}, ctx.Err()
 }

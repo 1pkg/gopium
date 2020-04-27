@@ -1,4 +1,4 @@
-package fmtio
+package gfmt
 
 import (
 	"errors"
@@ -16,7 +16,7 @@ import (
 // formatting original ast.TypeSpec with gopium.Struct
 type StructToAst func(*ast.TypeSpec, gopium.Struct) error
 
-// FSPTN implements StructToAst and combines:
+// FSPT implements StructToAst and combines:
 // - flatten helper
 // - fpadfilter helper
 // - shuffle helper
@@ -245,12 +245,15 @@ func tagsync(ts *ast.TypeSpec, st gopium.Struct) error {
 	flen := len(st.Fields)
 	// go through all original structure fields
 	for index, field := range tts.Fields.List {
-		if index < flen {
-			// update ast tag
+		if flen > index {
+			// check if field tag exists
 			f := st.Fields[index]
-			field.Tag = &ast.BasicLit{
-				Kind:  token.STRING,
-				Value: f.Tag,
+			if f.Tag != "" {
+				// update ast tag
+				field.Tag = &ast.BasicLit{
+					Kind:  token.STRING,
+					Value: fmt.Sprintf("`%s`", f.Tag),
+				}
 			}
 		}
 	}

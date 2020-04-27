@@ -20,9 +20,9 @@ var (
 type pack struct{}
 
 // Apply pack implementation
-func (stg pack) Apply(ctx context.Context, o gopium.Struct) (r gopium.Struct, err error) {
+func (stg pack) Apply(ctx context.Context, o gopium.Struct) (gopium.Struct, error) {
 	// copy original structure to result
-	r = o
+	r := o
 	// execute memory sorting
 	sort.SliceStable(r.Fields, func(i, j int) bool {
 		// first compare aligns of two fields
@@ -34,5 +34,5 @@ func (stg pack) Apply(ctx context.Context, o gopium.Struct) (r gopium.Struct, er
 		// bigger size means upper position
 		return r.Fields[i].Size > r.Fields[j].Size
 	})
-	return
+	return r, ctx.Err()
 }
