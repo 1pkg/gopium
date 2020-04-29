@@ -8,7 +8,7 @@ import (
 
 	"1pkg/gopium"
 	"1pkg/gopium/collections"
-	"1pkg/gopium/mocks"
+	"1pkg/gopium/tests/mocks"
 )
 
 func TestMavenHas(t *testing.T) {

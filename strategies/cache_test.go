@@ -6,7 +6,7 @@ import (
 	"testing"
 
 	"1pkg/gopium"
-	"1pkg/gopium/mocks"
+	"1pkg/gopium/tests/mocks"
 )
 
 func TestCache(t *testing.T) {

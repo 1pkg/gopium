@@ -4,6 +4,7 @@ import (
 	"context"
 	"go/parser"
 	"path/filepath"
+	"sync"
 	"testing"
 
 	"golang.org/x/tools/go/packages"
@@ -11,6 +12,7 @@ import (
 
 func TestParserXToolPackagesAstTypesMixed(t *testing.T) {
 	// prepare
+	var wg sync.WaitGroup
 	pdir, err := filepath.Abs("./..")
 	if err != nil {
 		t.Fatalf("actual %v doesn't equal to %v", err, nil)
@@ -81,30 +83,40 @@ func TestParserXToolPackagesAstTypesMixed(t *testing.T) {
 		},
 	}
 	for name, tcase := range table {
-		t.Run(name, func(t *testing.T) {
-			// exec
-			pkg, loc, err := tcase.p.ParseTypes(tcase.ctx)
-			// check
-			if tcase.pkg && pkg == nil {
-				t.Errorf("actual %v doesn't equal to expected not %v", pkg, nil)
-			}
-			if !tcase.pkg && pkg != nil {
-				t.Errorf("actual %v doesn't equal to expected %v", pkg, nil)
-			}
-			if tcase.loc && loc == nil {
-				t.Errorf("actual %v doesn't equal to expected not %v", loc, nil)
-			}
-			if !tcase.loc && loc != nil {
-				t.Errorf("actual %v doesn't equal to expected %v", loc, nil)
-			}
-			if tcase.err && err == nil {
-				t.Errorf("actual %v doesn't equal to expected not %v", err, nil)
-			}
-			if !tcase.err && err != nil {
-				t.Errorf("actual %v doesn't equal to expected %v", err, nil)
-			}
-		})
+		// run all parser tests
+		// in separate goroutine
+		wg.Add(1)
+		name := name
+		tcase := tcase
+		go func(t *testing.T) {
+			defer wg.Done()
+			t.Run(name, func(t *testing.T) {
+				// exec
+				pkg, loc, err := tcase.p.ParseTypes(tcase.ctx)
+				// check
+				if tcase.pkg && pkg == nil {
+					t.Errorf("actual %v doesn't equal to expected not %v", pkg, nil)
+				}
+				if !tcase.pkg && pkg != nil {
+					t.Errorf("actual %v doesn't equal to expected %v", pkg, nil)
+				}
+				if tcase.loc && loc == nil {
+					t.Errorf("actual %v doesn't equal to expected not %v", loc, nil)
+				}
+				if !tcase.loc && loc != nil {
+					t.Errorf("actual %v doesn't equal to expected %v", loc, nil)
+				}
+				if tcase.err && err == nil {
+					t.Errorf("actual %v doesn't equal to expected not %v", err, nil)
+				}
+				if !tcase.err && err != nil {
+					t.Errorf("actual %v doesn't equal to expected %v", err, nil)
+				}
+			})
+		}(t)
 	}
+	// wait util tests finish
+	wg.Wait()
 }
 
 func TestParserXToolPackagesAstAstMixed(t *testing.T) {
