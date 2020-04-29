@@ -39,7 +39,6 @@ func TestNewReference(t *testing.T) {
 
 func TestNilReferenceMixed(t *testing.T) {
 	var r *Reference
-	defer r.Prune()
 	// nil ref should alway do default
 	val := r.Get("key")
 	if val != struct{}{} {
@@ -75,7 +74,6 @@ func TestActualReferenceMixed(t *testing.T) {
 	// stage 0 set up
 	var stage int32
 	r := NewReference(false)
-	defer r.Prune()
 	val := r.Get("key")
 	if val != struct{}{} {
 		t.Errorf("actual %v doesn't equal to %v", val, struct{}{})

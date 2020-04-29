@@ -93,8 +93,6 @@ func TestVscope(t *testing.T) {
 	cctx, cancel := context.WithCancel(context.Background())
 	cancel()
 	var wg sync.WaitGroup
-	ref := collections.NewReference(false)
-	defer ref.Prune()
 	stg, err := strategies.Builder{}.Build(strategies.Nope)
 	if err != nil {
 		t.Fatalf("actual %v doesn't equal to %v", err, nil)
@@ -419,6 +417,7 @@ func TestVscope(t *testing.T) {
 				if err != nil {
 					t.Fatal(err)
 				}
+				ref := collections.NewReference(false)
 				m := &maven{exp: m, loc: loc, ref: ref}
 				ch := make(appliedCh)
 				// check
