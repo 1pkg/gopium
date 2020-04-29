@@ -132,6 +132,7 @@ func (m *maven) refst(name string) func(gopium.Struct) {
 	m.ref.Alloc(name)
 	// return the pushing closure
 	return func(st gopium.Struct) {
+		// TODO need to calculate size with explicit paddings here
 		// calculate total struct size
 		var size, align int64 = 0, 1
 		for _, f := range st.Fields {

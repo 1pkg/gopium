@@ -88,6 +88,9 @@ func vdeep(ctx context.Context, s *types.Scope, r *regexp.Regexp, stg gopium.Str
 	// and runs vscope on them
 	var indeep govisit
 	indeep = func(ctx context.Context, s *types.Scope) {
+		// decrement wait group visits counter
+		// after scope visiting is done
+		defer wg.Done()
 		// manage context actions
 		// in case of cancelation
 		// break from further traverse
@@ -96,33 +99,34 @@ func vdeep(ctx context.Context, s *types.Scope, r *regexp.Regexp, stg gopium.Str
 			return
 		default:
 		}
-		// increment wait group visits counter
-		wg.Add(1)
-		// concurently visit current scope
-		go func() {
-			// decrement wait group visits counter
-			// after scope visiting is done
-			defer wg.Done()
-			// setup chan for current scope
-			nch := make(appliedCh)
-			// run vscope on current scope
-			go vscope(ctx, s, r, stg, m, nch)
-			// redirect results of vscope
-			// to final applied chanel
-			for applied := range nch {
-				ch <- applied
-			}
-		}()
+		// synchronously visit current scope
+		// setup chan for current scope
+		nch := make(appliedCh)
+		// run vscope on current scope
+		go vscope(ctx, s, r, stg, m, nch)
+		// redirect results of vscope
+		// to final applied chanel
+		for applied := range nch {
+			ch <- applied
+		}
 		// traverse through children scopes
 		nc := s.NumChildren()
 		for i := 0; i < nc; i++ {
+			// increment wait group
+			// visits counter for
+			// each child visiting
+			wg.Add(1)
 			// visit children scopes iteratively
 			// using child context and scope
 			go indeep(ctx, s.Child(i))
 		}
 	}
+	// increment wait group
+	// visits counter for
+	// root visiting
+	wg.Add(1)
 	// start indeep chain
-	indeep(ctx, s)
+	go indeep(ctx, s)
 	// sync all visiting to finish
 	// the same time
 	wg.Wait()
@@ -135,11 +139,14 @@ func vscope(ctx context.Context, s *types.Scope, r *regexp.Regexp, stg gopium.St
 	// wait until all visits finished
 	// and then close the channel
 	defer close(ch)
-	// wait group visits counter
-	var wg sync.WaitGroup
-loop:
 	// go through all names inside the package scope
-	for _, name := range s.Names() {
+	// and collect all visiting closure
+	// we can't call them directly in order to backref
+	// work correctly, as we need in first iteration to
+	// enumerate all structs on the scope first
+	names := s.Names()
+	vclos := make([]func(), 0, len(names))
+	for _, name := range names {
 		// check if object name doesn't matches regex
 		if !r.MatchString(name) {
 			continue
@@ -150,50 +157,75 @@ loop:
 		if tn, ok := s.Lookup(name).(*types.TypeName); ok && !tn.IsAlias() {
 			// if underlying type is struct
 			if st, ok := tn.Type().Underlying().(*types.Struct); ok {
-				// structure id
-				var id, loc string
+				// manage context actions
+				// in case of cancelation
+				// stop the execution
+				// it closes applied channel
+				select {
+				case <-ctx.Done():
+					// push error to the chan
+					ch <- applied{Error: ctx.Err()}
+					return
+				default:
+				}
+				// structure's name, id and loc
+				var name, id, loc string = name, "", ""
 				// in case id of structure
 				// has been already visited
 				if id, loc, ok = m.has(tn); ok {
 					continue
 				}
-				// manage context actions
-				// in case of cancelation break from
-				// further traverse
-				select {
-				case <-ctx.Done():
-					// push error to the chan
-					ch <- applied{Error: ctx.Err()}
-					break loop
-				default:
-				}
-				// increment wait group visits counter
-				wg.Add(1)
-				// prepare struct ref notifier
+				// create struct ref notifier
 				notif := m.refst(id)
-				// concurently visit the structure
-				// and apply strategy to it
-				go func(id, loc, name string, st *types.Struct, notif func(gopium.Struct)) {
-					// decrement wait group visits counter
-					defer wg.Done()
-					// convert original struct
-					// to inner gopium format
-					o := m.enum(name, st)
-					// apply provided strategy
-					r, err := stg.Apply(ctx, o)
-					// notify ref with result structure
-					notif(r)
-					// and push results to the chan
-					ch <- applied{
-						ID:     id,
-						Loc:    loc,
-						Origin: o,
-						Result: r,
-						Error:  err,
-					}
-				}(id, loc, name, st, notif)
+				// collect the structure's visiting
+				// closure that applies strategy to it
+				vclos = append(vclos,
+					func() {
+						// convert original struct
+						// to inner gopium format
+						o := m.enum(name, st)
+						// apply provided strategy
+						r, err := stg.Apply(ctx, o)
+						// notify ref with result structure
+						notif(r)
+						// and push results to the chan
+						ch <- applied{
+							ID:     id,
+							Loc:    loc,
+							Origin: o,
+							Result: r,
+							Error:  err,
+						}
+					},
+				)
 			}
 		}
+	}
+	// wait group visits counter
+	var wg sync.WaitGroup
+	for i := range vclos {
+		// manage context actions
+		// in case of cancelation
+		// stop the execution
+		// it closes applied channel
+		select {
+		case <-ctx.Done():
+			// push error to the chan
+			ch <- applied{Error: ctx.Err()}
+			return
+		default:
+		}
+		// increment wait group
+		// visits counter
+		wg.Add(1)
+		// concurently run collected
+		// captured visiting closure
+		// from the list with group context
+		closure := vclos[i]
+		go func() {
+			defer wg.Done()
+			closure()
+		}()
 	}
 	// wait until all visits finished
 	wg.Wait()

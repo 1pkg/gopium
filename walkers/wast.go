@@ -118,7 +118,7 @@ func (w wast) Visit(ctx context.Context, regex *regexp.Regexp, stg gopium.Strate
 	}
 	// run sync write
 	// with collected strategies results
-	return w.write(ctx, h)
+	return w.write(gctx, h)
 }
 
 // write wast helps to sync
