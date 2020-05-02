@@ -157,17 +157,6 @@ func vscope(ctx context.Context, s *types.Scope, r *regexp.Regexp, stg gopium.St
 		if tn, ok := s.Lookup(name).(*types.TypeName); ok && !tn.IsAlias() {
 			// if underlying type is struct
 			if st, ok := tn.Type().Underlying().(*types.Struct); ok {
-				// manage context actions
-				// in case of cancelation
-				// stop the execution
-				// it closes applied channel
-				select {
-				case <-ctx.Done():
-					// push error to the chan
-					ch <- applied{Error: ctx.Err()}
-					return
-				default:
-				}
 				// structure's name, id and loc
 				var name, id, loc string = name, "", ""
 				// in case id of structure
