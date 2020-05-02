@@ -42,8 +42,8 @@ func TestFile(t *testing.T) {
 	}
 	for name, tcase := range table {
 		t.Run(name, func(t *testing.T) {
-			defer os.Remove(tcase.full)
 			// exec
+			defer os.Remove(tcase.full)
 			wc, err := file(tcase.name, tcase.path, tcase.ext)
 			// check
 			if !reflect.DeepEqual(err, tcase.err) {
