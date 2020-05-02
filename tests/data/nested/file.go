@@ -25,8 +25,7 @@ func scope1() error {
 	type B struct {
 		b
 	}
-	type b1 b
-	type b2 struct {
+	type b1 struct {
 		A
 		b float64
 	}
@@ -59,11 +58,7 @@ func scope2() struct{A complex64, B int64, C float64} {
 	return struct{A complex64, B int64, C float64} {}
 }
 
-func scope5() interface{} {
-	type c1 C
-	table := []struct{A string}{{A: "test"}}
-	return table[0]
-}
+scope5 := func() {}
 
 type Z struct {
 	a bool
