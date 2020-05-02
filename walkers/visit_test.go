@@ -6,7 +6,6 @@ import (
 	"go/types"
 	"reflect"
 	"regexp"
-	"sync"
 	"testing"
 
 	"1pkg/gopium"
@@ -93,7 +92,6 @@ func TestVscope(t *testing.T) {
 	// prepare
 	cctx, cancel := context.WithCancel(context.Background())
 	cancel()
-	var wg sync.WaitGroup
 	b := strategies.Builder{}
 	np, err := b.Build(strategies.Nope)
 	if err != nil {
@@ -546,62 +544,51 @@ func TestVscope(t *testing.T) {
 		},
 	}
 	for name, tcase := range table {
-		// run all parser tests
-		// in separate goroutine
-		wg.Add(1)
-		name := name
-		tcase := tcase
-		go func(t *testing.T) {
-			defer wg.Done()
-			t.Run(name, func(t *testing.T) {
-				// exec
-				pkg, loc, err := tcase.p.ParseTypes(context.Background())
-				if err != nil {
-					t.Fatal(err)
-				}
-				ref := collections.NewReference(false)
-				m := &maven{exp: m, loc: loc, ref: ref}
-				if tcase.loc != nil {
-					m.loc = tcase.loc
-				}
-				ch := make(appliedCh)
-				// check
-				go vscope(tcase.ctx, pkg.Scope(), tcase.r, tcase.stg, m, ch)
-				for applied := range ch {
-					// if error occured check it
-					if applied.Error != nil {
-						if !reflect.DeepEqual(applied.Error, tcase.err) {
-							t.Errorf("actual %v doesn't equal to expected %v", applied.Error, tcase.err)
-						}
-						return
+		t.Run(name, func(t *testing.T) {
+			// exec
+			pkg, loc, err := tcase.p.ParseTypes(context.Background())
+			if err != nil {
+				t.Fatal(err)
+			}
+			ref := collections.NewReference(false)
+			m := &maven{exp: m, loc: loc, ref: ref}
+			if tcase.loc != nil {
+				m.loc = tcase.loc
+			}
+			ch := make(appliedCh)
+			// check
+			go vscope(tcase.ctx, pkg.Scope(), tcase.r, tcase.stg, m, ch)
+			for applied := range ch {
+				// if error occured check it
+				if applied.Error != nil {
+					if !reflect.DeepEqual(applied.Error, tcase.err) {
+						t.Errorf("actual %v doesn't equal to expected %v", applied.Error, tcase.err)
 					}
-					// otherwise check all struct
-					// against structs map
-					if st, ok := tcase.sts[applied.ID]; ok {
-						if !reflect.DeepEqual(applied.Result, st) {
-							t.Errorf("actual %v doesn't equal to expected %v", applied.Result, st)
-						}
-						delete(tcase.sts, applied.ID)
-					} else {
-						t.Errorf("actual %v doesn't equal to expected %v", applied.ID, "")
+					return
+				}
+				// otherwise check all struct
+				// against structs map
+				if st, ok := tcase.sts[applied.ID]; ok {
+					if !reflect.DeepEqual(applied.Result, st) {
+						t.Errorf("actual %v doesn't equal to expected %v", applied.Result, st)
 					}
+					delete(tcase.sts, applied.ID)
+				} else {
+					t.Errorf("actual %v doesn't equal to expected %v", applied.ID, "")
 				}
-				// check that map has been drained
-				if stsl := len(tcase.sts); stsl > 0 {
-					t.Errorf("actual %v doesn't equal to expected %v", stsl, 0)
-				}
-			})
-		}(t)
+			}
+			// check that map has been drained
+			if stsl := len(tcase.sts); stsl > 0 {
+				t.Errorf("actual %v doesn't equal to expected %v", tcase.sts, make(map[string]gopium.Struct))
+			}
+		})
 	}
-	// wait util tests finish
-	wg.Wait()
 }
 
 func TestVdeep(t *testing.T) {
 	// prepare
 	cctx, cancel := context.WithCancel(context.Background())
 	cancel()
-	var wg sync.WaitGroup
 	b := strategies.Builder{}
 	np, err := b.Build(strategies.Nope)
 	if err != nil {
@@ -1142,53 +1129,43 @@ func TestVdeep(t *testing.T) {
 		},
 	}
 	for name, tcase := range table {
-		// run all parser tests
-		// in separate goroutine
-		wg.Add(1)
-		name := name
-		tcase := tcase
-		go func(t *testing.T) {
-			defer wg.Done()
-			t.Run(name, func(t *testing.T) {
-				// exec
-				pkg, loc, err := tcase.p.ParseTypes(context.Background())
-				if err != nil {
-					t.Fatal(err)
-				}
-				ref := collections.NewReference(false)
-				m := &maven{exp: m, loc: loc, ref: ref}
-				if tcase.loc != nil {
-					m.loc = tcase.loc
-				}
-				ch := make(appliedCh)
-				// check
-				go vdeep(tcase.ctx, pkg.Scope(), tcase.r, tcase.stg, m, ch)
-				for applied := range ch {
-					// if error occured check it
-					if applied.Error != nil {
-						if !reflect.DeepEqual(applied.Error, tcase.err) {
-							t.Errorf("actual %v doesn't equal to expected %v", applied.Error, tcase.err)
-						}
-						return
+		t.Run(name, func(t *testing.T) {
+			// exec
+			pkg, loc, err := tcase.p.ParseTypes(context.Background())
+			if err != nil {
+				t.Fatal(err)
+			}
+			ref := collections.NewReference(false)
+			m := &maven{exp: m, loc: loc, ref: ref}
+			if tcase.loc != nil {
+				m.loc = tcase.loc
+			}
+			ch := make(appliedCh)
+			// check
+			go vdeep(tcase.ctx, pkg.Scope(), tcase.r, tcase.stg, m, ch)
+			for applied := range ch {
+				// if error occured check it
+				if applied.Error != nil {
+					if !reflect.DeepEqual(applied.Error, tcase.err) {
+						t.Errorf("actual %v doesn't equal to expected %v", applied.Error, tcase.err)
 					}
-					// otherwise check all struct
-					// against structs map
-					if st, ok := tcase.sts[applied.ID]; ok {
-						if !reflect.DeepEqual(applied.Result, st) {
-							t.Errorf("actual %v doesn't equal to expected %v", applied.Result, st)
-						}
-						delete(tcase.sts, applied.ID)
-					} else {
-						t.Errorf("actual %v doesn't equal to expected %v", applied.ID, "")
+					return
+				}
+				// otherwise check all struct
+				// against structs map
+				if st, ok := tcase.sts[applied.ID]; ok {
+					if !reflect.DeepEqual(applied.Result, st) {
+						t.Errorf("actual %v doesn't equal to expected %v", applied.Result, st)
 					}
+					delete(tcase.sts, applied.ID)
+				} else {
+					t.Errorf("actual %v doesn't equal to expected %v", applied.ID, "")
 				}
-				// check that map has been drained
-				if stsl := len(tcase.sts); stsl > 0 {
-					t.Errorf("actual %v doesn't equal to expected %v", tcase.sts, nil)
-				}
-			})
-		}(t)
+			}
+			// check that map has been drained
+			if stsl := len(tcase.sts); stsl > 0 {
+				t.Errorf("actual %v doesn't equal to expected %v", tcase.sts, make(map[string]gopium.Struct))
+			}
+		})
 	}
-	// wait util tests finish
-	wg.Wait()
 }
