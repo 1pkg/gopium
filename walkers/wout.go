@@ -2,7 +2,6 @@ package walkers
 
 import (
 	"context"
-	"errors"
 	"regexp"
 
 	"1pkg/gopium"
@@ -68,22 +67,6 @@ func (w wout) With(pars gopium.Parser, exp gopium.Exposer, deep bool, bref bool)
 // then uses struct to bytes to format strategy results
 // and use writer to write results to output
 func (w wout) Visit(ctx context.Context, regex *regexp.Regexp, stg gopium.Strategy) error {
-	// check that parser wasn't set correctly
-	if w.parser == nil {
-		return errors.New("parser wasn't set")
-	}
-	// check that exposer wasn't set correctly
-	if w.exposer == nil {
-		return errors.New("exposer wasn't set")
-	}
-	// check that formatter wasn't set correctly
-	if w.fmt == nil {
-		return errors.New("formatter wasn't set")
-	}
-	// check that writer wasn't set correctly
-	if w.writer == nil {
-		return errors.New("writer wasn't set")
-	}
 	// use parser to parse types pkg data
 	// we don't care about fset
 	pkg, loc, err := w.parser.ParseTypes(ctx)
