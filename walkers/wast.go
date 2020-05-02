@@ -2,7 +2,6 @@ package walkers
 
 import (
 	"context"
-	"errors"
 	"regexp"
 
 	"1pkg/gopium"
@@ -62,30 +61,6 @@ func (w wast) With(pars gopium.Parser, exp gopium.Exposer, pr astutil.Print, dee
 // and applies strategy to them to get results,
 // then overrides ast files with astutil helpers
 func (w wast) Visit(ctx context.Context, regex *regexp.Regexp, stg gopium.Strategy) error {
-	// check that parser wasn't set correctly
-	if w.parser == nil {
-		return errors.New("parser wasn't set")
-	}
-	// check that exposer wasn't set correctly
-	if w.exposer == nil {
-		return errors.New("exposer wasn't set")
-	}
-	// check that apply wasn't set correctly
-	if w.apply == nil {
-		return errors.New("apply wasn't set")
-	}
-	// check that print wasn't set correctly
-	if w.print == nil {
-		return errors.New("print wasn't set")
-	}
-	// check that persist wasn't set correctly
-	if w.persist == nil {
-		return errors.New("persist wasn't set")
-	}
-	// check that writer wasn't set correctly
-	if w.writer == nil {
-		return errors.New("writer wasn't set")
-	}
 	// use parser to parse types pkg data
 	// we don't care about fset
 	pkg, loc, err := w.parser.ParseTypes(ctx)
