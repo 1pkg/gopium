@@ -295,8 +295,8 @@ func TestMavenRefst(t *testing.T) {
 	if !reflect.DeepEqual(sa1, sizealign{size: 8, align: 8}) {
 		t.Errorf("actual %v doesn't equal to expected %v", sa1, sizealign{size: 8, align: 8})
 	}
-	if !reflect.DeepEqual(sa2, sizealign{size: 12, align: 6}) {
-		t.Errorf("actual %v doesn't equal to expected %v", sa2, sizealign{size: 12, align: 6})
+	if !reflect.DeepEqual(sa2, sizealign{size: 18, align: 6}) {
+		t.Errorf("actual %v doesn't equal to expected %v", sa2, sizealign{size: 18, align: 6})
 	}
 	f2(gopium.Struct{
 		Fields: []gopium.Field{
@@ -308,7 +308,7 @@ func TestMavenRefst(t *testing.T) {
 	if !reflect.DeepEqual(sa1, sizealign{size: 8, align: 8}) {
 		t.Errorf("actual %v doesn't equal to expected %v", sa1, sizealign{size: 8, align: 8})
 	}
-	if !reflect.DeepEqual(sa2, sizealign{size: 10, align: 4}) {
-		t.Errorf("actual %v doesn't equal to expected %v", sa2, sizealign{size: 10, align: 4})
+	if !reflect.DeepEqual(sa2, sizealign{size: 12, align: 4}) {
+		t.Errorf("actual %v doesn't equal to expected %v", sa2, sizealign{size: 12, align: 4})
 	}
 }
