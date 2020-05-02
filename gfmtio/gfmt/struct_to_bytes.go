@@ -18,24 +18,14 @@ type StructToBytes func(gopium.Struct) ([]byte, error)
 // PrettyJson defines StructToBytes implementation
 // which uses json.Marshal with json.Indent to serialize struct
 func PrettyJson(st gopium.Struct) ([]byte, error) {
-	// just use json.Marshal
-	r, err := json.Marshal(st)
-	if err != nil {
-		return nil, err
-	}
-	// and make indent pretier
-	var buf bytes.Buffer
-	err = json.Indent(&buf, r, "", "\t")
-	if err != nil {
-		return nil, err
-	}
-	return buf.Bytes(), nil
+	// just use json marshal with indent
+	return json.MarshalIndent(st, "", "\t")
 }
 
 // PrettyXml defines StructToBytes implementation
 // which uses xml.MarshalIndent to serialize struct
 func PrettyXml(st gopium.Struct) ([]byte, error) {
-	// just use xml.MarshalIndent
+	// just use xml marshal with indent
 	return xml.MarshalIndent(st, "", "\t")
 }
 
@@ -46,7 +36,7 @@ func PrettyCsv(st gopium.Struct) ([]byte, error) {
 	var buf bytes.Buffer
 	w := csv.NewWriter(&buf)
 	// write header
-	w.Write([]string{
+	if err := w.Write([]string{
 		"Struct Name",
 		"Struct Doc",
 		"Struct Comment",
@@ -59,11 +49,14 @@ func PrettyCsv(st gopium.Struct) ([]byte, error) {
 		"Field Embedded",
 		"Field Doc",
 		"Field Comment",
-	})
+	}); err != nil {
+		// this should never happen/covered
+		return nil, err
+	}
 	// go through all fields
 	// and write then one by one
 	for _, f := range st.Fields {
-		err := w.Write([]string{
+		if err := w.Write([]string{
 			st.Name,
 			strings.Join(st.Doc, " "),
 			strings.Join(st.Comment, " "),
@@ -76,8 +69,8 @@ func PrettyCsv(st gopium.Struct) ([]byte, error) {
 			strconv.FormatBool(f.Embedded),
 			strings.Join(f.Doc, " "),
 			strings.Join(f.Comment, " "),
-		})
-		if err != nil {
+		}); err != nil {
+			// this should never happen/covered
 			return nil, err
 		}
 	}
@@ -85,6 +78,7 @@ func PrettyCsv(st gopium.Struct) ([]byte, error) {
 	w.Flush()
 	// check flush error
 	if err := w.Error(); err != nil {
+		// this should never happen/covered
 		return nil, err
 	}
 	// and return buf result
