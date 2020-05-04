@@ -7,15 +7,15 @@ import (
 	"1pkg/gopium"
 	"1pkg/gopium/astutil"
 	"1pkg/gopium/collections"
-	"1pkg/gopium/gfmtio/gfmt"
+	"1pkg/gopium/fmtio"
 )
 
 // SFN implements apply and combines:
-// - sync with gfmt.FSPT helper
+// - sync with fmtio FSPT helper
 // - filter helper
 // - note helper
 var SFN = combine(
-	sync(gfmt.FSPT),
+	sync(fmtio.FSPT),
 	filter,
 	note,
 )

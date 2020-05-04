@@ -1,22 +1,23 @@
-package gfmt
+package fmtio
 
 import (
-	"1pkg/gopium"
 	"reflect"
 	"strings"
 	"testing"
+
+	"1pkg/gopium"
 )
 
-func TestStructToBytes(t *testing.T) {
+func TestBytes(t *testing.T) {
 	// prepare
 	table := map[string]struct {
-		fmt StructToBytes
+		fmt Bytes
 		st  gopium.Struct
 		r   []byte
 		err error
 	}{
-		"pretty json should return valid result for empty struct": {
-			fmt: PrettyJson,
+		"json should return valid result for empty struct": {
+			fmt: Json,
 			st:  gopium.Struct{},
 			r: []byte(`
 {
@@ -27,8 +28,8 @@ func TestStructToBytes(t *testing.T) {
 }
 `),
 		},
-		"pretty json should return valid result for non empty struct": {
-			fmt: PrettyJson,
+		"json should return valid result for non empty struct": {
+			fmt: Json,
 			st: gopium.Struct{
 				Name:    "Test",
 				Doc:     []string{"doctest"},
@@ -93,8 +94,8 @@ func TestStructToBytes(t *testing.T) {
 }
 `),
 		},
-		"pretty xml should return valid result for empty struct": {
-			fmt: PrettyXml,
+		"xml should return valid result for empty struct": {
+			fmt: Xml,
 			st:  gopium.Struct{},
 			r: []byte(`
 <Struct>
@@ -102,8 +103,8 @@ func TestStructToBytes(t *testing.T) {
 </Struct>
 `),
 		},
-		"pretty xml should return valid result for non empty struct": {
-			fmt: PrettyXml,
+		"xml should return valid result for non empty struct": {
+			fmt: Xml,
 			st: gopium.Struct{
 				Name:    "Test",
 				Doc:     []string{"doctest"},
@@ -156,15 +157,15 @@ func TestStructToBytes(t *testing.T) {
 </Struct>
 `),
 		},
-		"pretty csv should return valid result for empty struct": {
-			fmt: PrettyCsv,
+		"csv should return valid result for empty struct": {
+			fmt: Csv,
 			st:  gopium.Struct{},
 			r: []byte(`
 Struct Name,Struct Doc,Struct Comment,Field Name,Field Type,Field Size,Field Align,Field Tag,Field Exported,Field Embedded,Field Doc,Field Comment
 `),
 		},
-		"pretty csv should return valid result for non empty struct": {
-			fmt: PrettyCsv,
+		"csv should return valid result for non empty struct": {
+			fmt: Csv,
 			st: gopium.Struct{
 				Name:    "Test",
 				Doc:     []string{"doctest"},

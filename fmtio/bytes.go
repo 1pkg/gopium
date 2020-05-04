@@ -1,4 +1,4 @@
-package gfmt
+package fmtio
 
 import (
 	"bytes"
@@ -11,27 +11,27 @@ import (
 	"1pkg/gopium"
 )
 
-// StructToBytes defines abstraction for
-// formatting gopium.Struct to byte slice
-type StructToBytes func(gopium.Struct) ([]byte, error)
+// Bytes defines abstraction for
+// formatting gopium struct to byte slice
+type Bytes func(gopium.Struct) ([]byte, error)
 
-// PrettyJson defines StructToBytes implementation
+// Json defines bytes implementation
 // which uses json.Marshal with json.Indent to serialize struct
-func PrettyJson(st gopium.Struct) ([]byte, error) {
+func Json(st gopium.Struct) ([]byte, error) {
 	// just use json marshal with indent
 	return json.MarshalIndent(st, "", "\t")
 }
 
-// PrettyXml defines StructToBytes implementation
+// Xml defines bytes implementation
 // which uses xml.MarshalIndent to serialize struct
-func PrettyXml(st gopium.Struct) ([]byte, error) {
+func Xml(st gopium.Struct) ([]byte, error) {
 	// just use xml marshal with indent
 	return xml.MarshalIndent(st, "", "\t")
 }
 
-// PrettyCsv defines StructToBytes implementation
+// Csv defines bytes implementation
 // that serializes struct to csv format
-func PrettyCsv(st gopium.Struct) ([]byte, error) {
+func Csv(st gopium.Struct) ([]byte, error) {
 	// prepare buf and csv writer
 	var buf bytes.Buffer
 	w := csv.NewWriter(&buf)
