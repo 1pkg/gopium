@@ -16,18 +16,15 @@ import (
 var (
 	aststd = wast{
 		apply:   apply.SFN,
-		persist: persist.AsyncFiles,
-		writer:  fmtio.Stdout,
+		persist: persist.Apart(fmtio.Stdout),
 	}
 	astgo = wast{
 		apply:   apply.SFN,
-		persist: persist.AsyncFiles,
-		writer:  fmtio.File("go"),
+		persist: persist.Apart(fmtio.File("go")),
 	}
 	astgopium = wast{
 		apply:   apply.SFN,
-		persist: persist.AsyncFiles,
-		writer:  fmtio.File("gopium"),
+		persist: persist.Apart(fmtio.File("gopium")),
 	}
 )
 
@@ -36,7 +33,6 @@ type wast struct {
 	// inner visiting parameters
 	apply   astutil.Apply
 	persist astutil.Persist
-	writer  fmtio.Writer
 	// external visiting parameters
 	parser  gopium.Parser
 	exposer gopium.Exposer
@@ -115,5 +111,5 @@ func (w wast) write(ctx context.Context, h collections.Hierarchic) error {
 	// run persist helper
 	// in case any error happened
 	// just return error back
-	return w.persist(ctx, w.writer, w.print, pkg, loc)
+	return w.persist(ctx, w.print, pkg, loc)
 }

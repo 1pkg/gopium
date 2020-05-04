@@ -8,12 +8,13 @@ import (
 
 	"1pkg/gopium"
 	"1pkg/gopium/collections"
-	"1pkg/gopium/fmtio"
 )
 
 // Apply defines abstraction for
-// applying custom action on original ast.Package
-// with gopium.Struct map
+// applying custom action
+// on original ast package
+// accordingly to gopium
+// hierarchic collection
 type Apply func(
 	context.Context,
 	*ast.Package,
@@ -26,12 +27,6 @@ type Apply func(
 type Print func(io.Writer, *token.FileSet, ast.Node) error
 
 // Persist defines abstraction for
-// persisting ast package to fmtio writer
-// by using ast print function
-type Persist func(
-	context.Context,
-	fmtio.Writer,
-	Print,
-	*ast.Package,
-	gopium.Locator,
-) error
+// persisting ast package
+// with ast print function
+type Persist func(context.Context, Print, *ast.Package, gopium.Locator) error

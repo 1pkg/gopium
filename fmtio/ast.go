@@ -1,11 +1,9 @@
 package fmtio
 
 import (
-	"errors"
 	"fmt"
 	"go/ast"
 	"go/token"
-	"regexp"
 	"sort"
 	"strconv"
 
@@ -37,6 +35,10 @@ var FSPT = combine(
 // ast helpers to single ast func
 func combine(funcs ...Ast) Ast {
 	return func(ts *ast.TypeSpec, st gopium.Struct) error {
+		// check that we are working with ast struct type
+		if _, ok := ts.Type.(*ast.StructType); !ok {
+			return fmt.Errorf("type %q is not valid structure", ts.Name.Name)
+		}
 		// go through all provided funcs
 		for _, fun := range funcs {
 			// exec single func
@@ -51,23 +53,15 @@ func combine(funcs ...Ast) Ast {
 	}
 }
 
-// flatten helps to make *ast.StructType
+// flatten helps to make ast struct type
 // fields list flat by splitting each
 // concatenated fields to separate line
 func flatten(ts *ast.TypeSpec, st gopium.Struct) error {
-	// check that we are working with ast.StructType
-	tts, ok := ts.Type.(*ast.StructType)
-	if !ok {
-		return errors.New("flatten could only be applied to ast.StructType")
-	}
 	// prepare result slice
+	tts := ts.Type.(*ast.StructType)
 	fields := make([]*ast.Field, 0, tts.Fields.NumFields())
 	// iterate over fields list
 	for _, field := range tts.Fields.List {
-		// check that structure is valid
-		if field == nil || len(field.Names) == 0 {
-			return errors.New("flatten could only be applied to valid structure")
-		}
 		// for each concatenated name
 		// create separate line
 		for _, name := range field.Names {
@@ -78,6 +72,11 @@ func flatten(ts *ast.TypeSpec, st gopium.Struct) error {
 			// put it to result slice
 			fields = append(fields, &f)
 		}
+		// embedded fields should
+		// be still collected
+		if len(field.Names) == 0 {
+			fields = append(fields, field)
+		}
 	}
 	// update structure fields list
 	tts.Fields.List = fields
@@ -85,77 +84,70 @@ func flatten(ts *ast.TypeSpec, st gopium.Struct) error {
 }
 
 // fpadfilter helps to filter fields and pads
-// from fields list for original *ast.TypeSpec
-// accordingly to result gopium.Struct
+// from fields list for original ast type spec
+// accordingly to result gopium struct
 func fpadfilter(ts *ast.TypeSpec, st gopium.Struct) error {
-	// check that we are working with ast.StructType
-	tts, ok := ts.Type.(*ast.StructType)
-	if !ok {
-		return errors.New("fpadfilter could only be applied to ast.StructType")
-	}
 	// collect unique fields
+	tts := ts.Type.(*ast.StructType)
 	fields := make(map[string]struct{}, len(st.Fields))
 	for _, f := range st.Fields {
 		fields[f.Name] = struct{}{}
 	}
 	// prepare resulted fields slice
-	astfields := make([]*ast.Field, 0, len(tts.Fields.List))
+	nfields := make([]*ast.Field, 0, len(tts.Fields.List))
 	// go through original ast fields list
 	for _, f := range tts.Fields.List {
-		// in case structure isn't flat return error
-		if f == nil || len(f.Names) != 1 {
-			return errors.New("fpadfilter could only be applied to flatten structures")
+		// in case field is
+		// flat proccess it
+		if len(f.Names) == 1 {
+			// if pad field was detected
+			// filter it out
+			if f.Names[0].Name == "_" {
+				continue
+			}
+			// if field isn't inside
+			// filter it out
+			if _, ok := fields[f.Names[0].Name]; !ok {
+				continue
+			}
+			// otherwise collect field
+			nfields = append(nfields, f)
 		}
-		// if pad field was detected
-		// filter it out
-		if f.Names[0].Name == "_" {
-			continue
+		// embedded fields should
+		// be still collected
+		if len(f.Names) == 0 {
+			nfields = append(nfields, f)
 		}
-		// if field isn't inside
-		// filter it out
-		if _, ok := fields[f.Names[0].Name]; !ok {
-			continue
-		}
-		// otherwise collect field
-		astfields = append(astfields, f)
 	}
 	// update original ast fields list
-	tts.Fields.List = astfields
+	tts.Fields.List = nfields
 	return nil
 }
 
 // shuffle helps to sort fields list
 // for original *ast.TypeSpec accordingly to result gopium.Struct
 func shuffle(ts *ast.TypeSpec, st gopium.Struct) error {
-	// check that we are working with ast.StructType
-	tts, ok := ts.Type.(*ast.StructType)
-	if !ok {
-		return errors.New("shuffle could only be applied to ast.StructType")
-	}
 	// collect fields indexes
+	tts := ts.Type.(*ast.StructType)
 	fields := make(map[string]int, len(st.Fields))
 	for i, f := range st.Fields {
 		fields[f.Name] = i
 	}
-	// err holds inner sorting error
-	var err error
 	// shuffle fields list
 	sort.SliceStable(tts.Fields.List, func(i, j int) bool {
-		// in case structure isn't flat save error
-		// and keep the same order
+		// in case structure isn't
+		// flat keep the same order
 		fni, fnj := tts.Fields.List[i], tts.Fields.List[j]
 		if fni == nil || fnj == nil || len(fni.Names) != 1 || len(fnj.Names) != 1 {
-			err = errors.New("annotate could only be applied to flatten structures")
 			return false
 		}
 		// we can safely pick only first name
-		// as structure is flat
-		// get ast's i-th and j-th structure fields
+		// as structure is flat and get
+		// ast's i-th and j-th structure fields
 		ni, nj := fni.Names[0].Name, fnj.Names[0].Name
-		// in case structure isn't filtered save error
-		// and keep the same order
+		// in case structure isn't
+		// filtered keep the same order
 		if ni == "_" || nj == "_" {
-			err = errors.New("shuffle could only be applied to fpadfiltered structures")
 			return false
 		}
 		// prepare comparison indexes
@@ -175,32 +167,20 @@ func shuffle(ts *ast.TypeSpec, st gopium.Struct) error {
 		// compare comparison indexes
 		return fi < fj
 	})
-	// no error can happen
-	return err
+	return nil
 }
 
 // padsync helps to sync fields padding list
 // for original *ast.TypeSpec accordingly to result gopium.Struct
 func padsync(ts *ast.TypeSpec, st gopium.Struct) error {
-	// check that we are working with ast.StructType
-	tts, ok := ts.Type.(*ast.StructType)
-	if !ok {
-		return errors.New("padsync could only be applied to ast.StructType")
-	}
-	// prepare pad type expression regex
-	regex := regexp.MustCompile(`\[.*\]byte`)
 	// prepare resulted fields slice
+	tts := ts.Type.(*ast.StructType)
 	fields := make([]*ast.Field, len(st.Fields))
 	copy(fields, tts.Fields.List)
 	for index, f := range st.Fields {
 		// skip non pad fields
 		if f.Name != "_" {
 			continue
-		}
-		// in case pad type is unexpected
-		// return error
-		if !regex.MatchString(f.Type) {
-			return fmt.Errorf("padsync unexpected pad type expression %s", f.Type)
 		}
 		// transform size to string format
 		// and add pad field to struct
@@ -238,23 +218,16 @@ func padsync(ts *ast.TypeSpec, st gopium.Struct) error {
 // tagsync helps to sync field tags between
 // original *ast.TypeSpec result gopium.Struct
 func tagsync(ts *ast.TypeSpec, st gopium.Struct) error {
-	// check that we are working with ast.StructType
-	tts, ok := ts.Type.(*ast.StructType)
-	if !ok {
-		return errors.New("tagsync could only be applied to ast.StructType")
-	}
-	flen := len(st.Fields)
 	// go through all original structure fields
+	tts := ts.Type.(*ast.StructType)
 	for index, field := range tts.Fields.List {
-		if flen > index {
-			// check if field tag exists
-			f := st.Fields[index]
-			if f.Tag != "" {
-				// update ast tag
-				field.Tag = &ast.BasicLit{
-					Kind:  token.STRING,
-					Value: fmt.Sprintf("`%s`", f.Tag),
-				}
+		// check if field tag exists
+		f := st.Fields[index]
+		if f.Tag != "" {
+			// update ast tag
+			field.Tag = &ast.BasicLit{
+				Kind:  token.STRING,
+				Value: fmt.Sprintf("`%s`", f.Tag),
 			}
 		}
 	}
@@ -270,23 +243,18 @@ func tagsync(ts *ast.TypeSpec, st gopium.Struct) error {
 // we can just recalculate local pos which leads
 // to almost identical result
 func reindex(ts *ast.TypeSpec, st gopium.Struct) error {
-	// check that we are working with ast.StructType
-	tts, ok := ts.Type.(*ast.StructType)
-	if !ok {
-		return errors.New("reindex could only be applied to ast.StructType")
-	}
 	// set initial pos to zero inside a structure
 	pos := token.Pos(0)
 	// go through all structure fields
+	tts := ts.Type.(*ast.StructType)
 	for _, field := range tts.Fields.List {
-		// in case structure isn't flat return error
-		if field == nil || len(field.Names) != 1 {
-			return errors.New("reindex could only be applied to flatten structures")
+		// in case field isn't flat skip it
+		if len(field.Names) == 1 {
+			// set field to current pos
+			field.Names[0].NamePos = pos
+			// just increment pos
+			pos += token.Pos(1)
 		}
-		// set field to current pos
-		field.Names[0].NamePos = pos
-		// just increment pos
-		pos += token.Pos(1)
 	}
 	return nil
 }

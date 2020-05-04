@@ -11,11 +11,11 @@ import (
 )
 
 // SFN implements apply and combines:
-// - sync with fmtio FSPT helper
+// - syncfmt with fmtio FSPT helper
 // - filter helper
 // - note helper
 var SFN = combine(
-	sync(fmtio.FSPT),
+	syncfmt(fmtio.FSPT),
 	filter,
 	note,
 )
