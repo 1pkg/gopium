@@ -12,17 +12,14 @@ import (
 	"golang.org/x/tools/go/packages"
 )
 
-// p cache parser singleton
-var p cache.Parser
-
 // NewParser creates parser for single tests data
 func NewParser(pkg string) gopium.Parser {
-	parser := typepkg.ParserXToolPackagesAst{
+	p := typepkg.ParserXToolPackagesAst{
 		Path:       fmt.Sprintf("%s/%s", "src/1pkg/gopium/tests/data", pkg),
 		Root:       build.Default.GOPATH,
 		ModeTypes:  packages.LoadAllSyntax,
 		ModeAst:    parser.ParseComments | parser.AllErrors,
 		BuildFlags: []string{"-tags=tests_data"},
 	}
-	return p.With(parser)
+	return cache.Parser{Parser: p}
 }

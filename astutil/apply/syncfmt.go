@@ -10,10 +10,10 @@ import (
 	"1pkg/gopium/fmtio"
 )
 
-// sync helps to update ast.Package
+// syncfmt helps to update ast package
 // accordingly to gopium struct result
 // using custom fmtio ast formatter
-func sync(sta fmtio.Ast) astutil.Apply {
+func syncfmt(sta fmtio.Ast) astutil.Apply {
 	return func(
 		ctx context.Context,
 		pkg *ast.Package,

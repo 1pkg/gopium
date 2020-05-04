@@ -117,7 +117,7 @@ func TestWout(t *testing.T) {
 		"single struct pkg should visit nothing on parser error": {
 			ctx: context.Background(),
 			r:   regexp.MustCompile(`.*`),
-			p:   mocks.Parser{Err: errors.New("test-1")},
+			p:   mocks.Parser{Terr: errors.New("test-1")},
 			fmt: mocks.Bytes{}.Bytes,
 			stg: np,
 			sts: make(map[string][]byte),

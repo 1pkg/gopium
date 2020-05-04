@@ -297,11 +297,11 @@ func TestVscope(t *testing.T) {
 			loc: mocks.Locator{
 				Poses: map[token.Pos]mocks.Pos{
 					token.Pos(1799681): {ID: "test-1", Loc: "test"},
-					token.Pos(1799770): {ID: "test-2", Loc: "test"},
-					token.Pos(1799803): {ID: "test-1", Loc: "test"},
-					token.Pos(1799861): {ID: "test-2", Loc: "test"},
-					token.Pos(1799913): {ID: "test-1", Loc: "test"},
-					token.Pos(1800011): {ID: "test-1", Loc: "test"},
+					token.Pos(1799769): {ID: "test-2", Loc: "test"},
+					token.Pos(1799802): {ID: "test-1", Loc: "test"},
+					token.Pos(1799860): {ID: "test-2", Loc: "test"},
+					token.Pos(1799915): {ID: "test-1", Loc: "test"},
+					token.Pos(1800016): {ID: "test-1", Loc: "test"},
 				},
 			},
 			stg: np,
@@ -794,11 +794,11 @@ func TestVdeep(t *testing.T) {
 			loc: mocks.Locator{
 				Poses: map[token.Pos]mocks.Pos{
 					token.Pos(1799681): {ID: "test-1", Loc: "test"},
-					token.Pos(1799770): {ID: "test-2", Loc: "test"},
-					token.Pos(1799803): {ID: "test-1", Loc: "test"},
-					token.Pos(1799861): {ID: "test-2", Loc: "test"},
-					token.Pos(1799913): {ID: "test-1", Loc: "test"},
-					token.Pos(1800011): {ID: "test-1", Loc: "test"},
+					token.Pos(1799769): {ID: "test-2", Loc: "test"},
+					token.Pos(1799802): {ID: "test-1", Loc: "test"},
+					token.Pos(1799860): {ID: "test-2", Loc: "test"},
+					token.Pos(1799915): {ID: "test-1", Loc: "test"},
+					token.Pos(1800016): {ID: "test-1", Loc: "test"},
 				},
 			},
 			stg: np,

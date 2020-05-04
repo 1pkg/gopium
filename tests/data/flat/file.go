@@ -3,15 +3,15 @@
 package flat
 
 import (
-	"strings"
 	"errors"
+	"strings"
 )
 
 type A struct {
 	a int64
 }
 
-var a1 string =  strings.Join([]string{"a", "b", "c"}, "|")
+var a1 string = strings.Join([]string{"a", "b", "c"}, "|")
 
 type b struct {
 	A
@@ -27,15 +27,15 @@ type C struct {
 }
 
 type c1 C
-table := []struct{A string}{{A: "test"}}
 
+// table := []struct{A string}{{A: "test"}}
 type D struct {
 	t [13]byte
 	b bool
 	_ int64
 }
 
-ggg := func (interface{}){}
+// ggg := func (interface{}){}
 type AW func() error
 
 type AZ struct {
@@ -43,3 +43,5 @@ type AZ struct {
 	D D
 	z bool
 }
+
+var Err error = errors.New("test")

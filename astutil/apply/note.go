@@ -9,6 +9,7 @@ import (
 	"go/printer"
 	"go/token"
 	"sort"
+	"sync"
 
 	"1pkg/gopium"
 	"1pkg/gopium/collections"
@@ -31,6 +32,8 @@ func note(
 ) (*ast.Package, error) {
 	// create sync error group
 	// with cancelation context
+	// and sync map to store updated files
+	var files sync.Map
 	group, gctx := errgroup.WithContext(ctx)
 	// concurently go through package files
 	for name, file := range pkg.Files {
@@ -157,11 +160,20 @@ func note(
 				}
 				return file.Comments[i].Pos() < file.Comments[j].Pos()
 			})
-			// update result package file
-			pkg.Files[name] = file
+			// save update file to result map
+			files.Store(name, file)
 			return nil
 		})
 	}
 	// wait until walk is done
-	return pkg, group.Wait()
+	// in case of any error
+	// just return it back
+	if err := group.Wait(); err != nil {
+		return pkg, err
+	}
+	files.Range(func(key interface{}, val interface{}) bool {
+		pkg.Files[key.(string)] = val.(*ast.File)
+		return true
+	})
+	return pkg, nil
 }

@@ -58,7 +58,7 @@ func scope2() struct{A complex64, B int64, C float64} {
 	return struct{A complex64, B int64, C float64} {}
 }
 
-scope5 := func() {}
+var scope5 = func() {}
 
 type Z struct {
 	a bool
