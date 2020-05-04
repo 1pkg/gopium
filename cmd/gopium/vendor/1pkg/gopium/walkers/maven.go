@@ -132,15 +132,38 @@ func (m *maven) refst(name string) func(gopium.Struct) {
 	m.ref.Alloc(name)
 	// return the pushing closure
 	return func(st gopium.Struct) {
-		// calculate total struct size
-		var size, align int64 = 0, 1
+		// preset defaults
+		var stsize, stalign, offset int64 = 0, 1, 0
+		// calculate total struct size and align
 		for _, f := range st.Fields {
-			if f.Align > align {
-				align = f.Align
+			// update struct align size
+			if f.Align > stalign {
+				stalign = f.Align
 			}
-			size += f.Size
+			// check that align size is valid
+			if f.Align > 0 {
+				// calculate align with padding
+				alpad := gopium.Align(offset, f.Align)
+				// if padding is valid append it
+				if pad := alpad - offset; pad > 0 {
+					stsize += pad
+				}
+				// increment structure offset
+				offset = alpad + f.Size
+			}
+			stsize += f.Size
+		}
+		// check if struct align size is valid
+		// and append final padding to structure
+		if stalign > 0 {
+			// calculate align with padding
+			alpad := gopium.Align(offset, stalign)
+			// if padding is valid append it
+			if pad := alpad - offset; pad > 0 {
+				stsize += pad
+			}
 		}
 		// set ref key size and align
-		m.ref.Set(name, sizealign{size: size, align: align})
+		m.ref.Set(name, sizealign{size: stsize, align: stalign})
 	}
 }

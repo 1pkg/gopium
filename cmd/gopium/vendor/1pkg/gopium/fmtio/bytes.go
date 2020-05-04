@@ -1,4 +1,4 @@
-package gfmt
+package fmtio
 
 import (
 	"bytes"
@@ -11,42 +11,32 @@ import (
 	"1pkg/gopium"
 )
 
-// StructToBytes defines abstraction for
-// formatting gopium.Struct to byte slice
-type StructToBytes func(gopium.Struct) ([]byte, error)
+// Bytes defines abstraction for
+// formatting gopium struct to byte slice
+type Bytes func(gopium.Struct) ([]byte, error)
 
-// PrettyJson defines StructToBytes implementation
+// Json defines bytes implementation
 // which uses json.Marshal with json.Indent to serialize struct
-func PrettyJson(st gopium.Struct) ([]byte, error) {
-	// just use json.Marshal
-	r, err := json.Marshal(st)
-	if err != nil {
-		return nil, err
-	}
-	// and make indent pretier
-	var buf bytes.Buffer
-	err = json.Indent(&buf, r, "", "\t")
-	if err != nil {
-		return nil, err
-	}
-	return buf.Bytes(), nil
+func Json(st gopium.Struct) ([]byte, error) {
+	// just use json marshal with indent
+	return json.MarshalIndent(st, "", "\t")
 }
 
-// PrettyXml defines StructToBytes implementation
+// Xml defines bytes implementation
 // which uses xml.MarshalIndent to serialize struct
-func PrettyXml(st gopium.Struct) ([]byte, error) {
-	// just use xml.MarshalIndent
+func Xml(st gopium.Struct) ([]byte, error) {
+	// just use xml marshal with indent
 	return xml.MarshalIndent(st, "", "\t")
 }
 
-// PrettyCsv defines StructToBytes implementation
+// Csv defines bytes implementation
 // that serializes struct to csv format
-func PrettyCsv(st gopium.Struct) ([]byte, error) {
+func Csv(st gopium.Struct) ([]byte, error) {
 	// prepare buf and csv writer
 	var buf bytes.Buffer
 	w := csv.NewWriter(&buf)
 	// write header
-	w.Write([]string{
+	if err := w.Write([]string{
 		"Struct Name",
 		"Struct Doc",
 		"Struct Comment",
@@ -59,11 +49,14 @@ func PrettyCsv(st gopium.Struct) ([]byte, error) {
 		"Field Embedded",
 		"Field Doc",
 		"Field Comment",
-	})
+	}); err != nil {
+		// this should never happen/covered
+		return nil, err
+	}
 	// go through all fields
 	// and write then one by one
 	for _, f := range st.Fields {
-		err := w.Write([]string{
+		if err := w.Write([]string{
 			st.Name,
 			strings.Join(st.Doc, " "),
 			strings.Join(st.Comment, " "),
@@ -76,8 +69,8 @@ func PrettyCsv(st gopium.Struct) ([]byte, error) {
 			strconv.FormatBool(f.Embedded),
 			strings.Join(f.Doc, " "),
 			strings.Join(f.Comment, " "),
-		})
-		if err != nil {
+		}); err != nil {
+			// this should never happen/covered
 			return nil, err
 		}
 	}
@@ -85,6 +78,7 @@ func PrettyCsv(st gopium.Struct) ([]byte, error) {
 	w.Flush()
 	// check flush error
 	if err := w.Error(); err != nil {
+		// this should never happen/covered
 		return nil, err
 	}
 	// and return buf result

@@ -8,7 +8,7 @@ import (
 
 	"1pkg/gopium"
 	"1pkg/gopium/collections"
-	"1pkg/gopium/gfmtio/gio"
+	"1pkg/gopium/fmtio"
 )
 
 // Apply defines abstraction for
@@ -22,15 +22,15 @@ type Apply func(
 ) (*ast.Package, error)
 
 // Print defines abstraction for
-// ast node printing function to io.Writer
+// ast node printing function to io writer
 type Print func(io.Writer, *token.FileSet, ast.Node) error
 
 // Persist defines abstraction for
-// persisting ast package with gio.Writer
+// persisting ast package to fmtio writer
 // by using ast print function
 type Persist func(
 	context.Context,
-	gio.Writer,
+	fmtio.Writer,
 	Print,
 	*ast.Package,
 	gopium.Locator,
