@@ -6,16 +6,16 @@ import (
 
 	"1pkg/gopium"
 	"1pkg/gopium/astutil"
-	"1pkg/gopium/gfmtio/gio"
+	"1pkg/gopium/fmtio"
 
 	"golang.org/x/sync/errgroup"
 )
 
 // AsyncFiles async pesists ast package to
-// writer by using print function
+// fmtio writer by using print function
 func AsyncFiles(
 	ctx context.Context,
-	w gio.Writer,
+	w fmtio.Writer,
 	p astutil.Print,
 	pkg *ast.Package,
 	loc gopium.Locator,

@@ -2,7 +2,6 @@ package walkers
 
 import (
 	"context"
-	"errors"
 	"regexp"
 
 	"1pkg/gopium"
@@ -10,7 +9,7 @@ import (
 	"1pkg/gopium/astutil/apply"
 	"1pkg/gopium/astutil/persist"
 	"1pkg/gopium/collections"
-	"1pkg/gopium/gfmtio/gio"
+	"1pkg/gopium/fmtio"
 )
 
 // list of wast presets
@@ -18,17 +17,17 @@ var (
 	aststd = wast{
 		apply:   apply.SFN,
 		persist: persist.AsyncFiles,
-		writer:  gio.Stdout,
+		writer:  fmtio.Stdout,
 	}
 	astgo = wast{
 		apply:   apply.SFN,
 		persist: persist.AsyncFiles,
-		writer:  gio.FileGo,
+		writer:  fmtio.File("go"),
 	}
 	astgopium = wast{
 		apply:   apply.SFN,
 		persist: persist.AsyncFiles,
-		writer:  gio.FileGopium,
+		writer:  fmtio.File("gopium"),
 	}
 )
 
@@ -37,7 +36,7 @@ type wast struct {
 	// inner visiting parameters
 	apply   astutil.Apply
 	persist astutil.Persist
-	writer  gio.Writer
+	writer  fmtio.Writer
 	// external visiting parameters
 	parser  gopium.Parser
 	exposer gopium.Exposer
@@ -62,30 +61,6 @@ func (w wast) With(pars gopium.Parser, exp gopium.Exposer, pr astutil.Print, dee
 // and applies strategy to them to get results,
 // then overrides ast files with astutil helpers
 func (w wast) Visit(ctx context.Context, regex *regexp.Regexp, stg gopium.Strategy) error {
-	// check that parser wasn't set correctly
-	if w.parser == nil {
-		return errors.New("parser wasn't set")
-	}
-	// check that exposer wasn't set correctly
-	if w.exposer == nil {
-		return errors.New("exposer wasn't set")
-	}
-	// check that apply wasn't set correctly
-	if w.apply == nil {
-		return errors.New("apply wasn't set")
-	}
-	// check that print wasn't set correctly
-	if w.print == nil {
-		return errors.New("print wasn't set")
-	}
-	// check that persist wasn't set correctly
-	if w.persist == nil {
-		return errors.New("persist wasn't set")
-	}
-	// check that writer wasn't set correctly
-	if w.writer == nil {
-		return errors.New("writer wasn't set")
-	}
 	// use parser to parse types pkg data
 	// we don't care about fset
 	pkg, loc, err := w.parser.ParseTypes(ctx)
@@ -118,7 +93,7 @@ func (w wast) Visit(ctx context.Context, regex *regexp.Regexp, stg gopium.Strate
 	}
 	// run sync write
 	// with collected strategies results
-	return w.write(ctx, h)
+	return w.write(gctx, h)
 }
 
 // write wast helps to sync

@@ -15,9 +15,11 @@ import (
 	"golang.org/x/tools/go/packages"
 )
 
-// ParserXToolPackagesAst defines packages Parser default implementation
-// that uses "golang.org/x/tools/go/packages" packages.Load with cfg to collect package types
-// and uses "go/parser" parser.ParseDir to collect ast package
+// ParserXToolPackagesAst defines
+// gopium parser default implementation
+// that uses "golang.org/x/tools/go/packages"
+// to collect package types
+// and "go/parser" to collect ast package
 type ParserXToolPackagesAst struct {
 	Pattern    string
 	Path       string

@@ -40,8 +40,7 @@ func (stg fshare) Apply(ctx context.Context, o gopium.Struct) (gopium.Struct, er
 		// go through all fields
 		for _, f := range r.Fields {
 			fields = append(fields, f)
-			// if padding not equals zero
-			// append padding
+			// if padding size is valid
 			if pad := f.Size % cachel; pad > 0 {
 				pad = cachel - pad
 				fields = append(fields, gopium.PadField(pad))
