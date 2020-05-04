@@ -5,8 +5,7 @@ import (
 	"regexp"
 
 	"1pkg/gopium"
-	"1pkg/gopium/gfmtio/gfmt"
-	"1pkg/gopium/gfmtio/gio"
+	"1pkg/gopium/fmtio"
 
 	"golang.org/x/sync/errgroup"
 )
@@ -14,36 +13,36 @@ import (
 // list of wout presets
 var (
 	jsonstd = wout{
-		fmt:    gfmt.PrettyJson,
-		writer: gio.Stdout,
+		fmt:    fmtio.Json,
+		writer: fmtio.Stdout,
 	}
 	xmlstd = wout{
-		fmt:    gfmt.PrettyXml,
-		writer: gio.Stdout,
+		fmt:    fmtio.Xml,
+		writer: fmtio.Stdout,
 	}
 	csvstd = wout{
-		fmt:    gfmt.PrettyCsv,
-		writer: gio.Stdout,
+		fmt:    fmtio.Csv,
+		writer: fmtio.Stdout,
 	}
 	jsonfiles = wout{
-		fmt:    gfmt.PrettyJson,
-		writer: gio.FileJson,
+		fmt:    fmtio.Json,
+		writer: fmtio.File("json"),
 	}
 	xmlfiles = wout{
-		fmt:    gfmt.PrettyXml,
-		writer: gio.FileXml,
+		fmt:    fmtio.Xml,
+		writer: fmtio.File("xml"),
 	}
 	csvfiles = wout{
-		fmt:    gfmt.PrettyCsv,
-		writer: gio.FileCsv,
+		fmt:    fmtio.Csv,
+		writer: fmtio.File("csv"),
 	}
 )
 
 // wout defines packages walker out implementation
 type wout struct {
 	// inner visiting parameters
-	fmt    gfmt.StructToBytes
-	writer gio.Writer
+	fmt    fmtio.Bytes
+	writer fmtio.Writer
 	// external visiting parameters
 	parser  gopium.TypeParser
 	exposer gopium.Exposer
@@ -53,7 +52,7 @@ type wout struct {
 
 // With erich wast walker with external visiting parameters
 // parser, exposer instances and additional visiting flags
-func (w wout) With(pars gopium.Parser, exp gopium.Exposer, deep bool, bref bool) wout {
+func (w wout) With(pars gopium.TypeParser, exp gopium.Exposer, deep bool, bref bool) wout {
 	w.parser = pars
 	w.exposer = exp
 	w.deep = deep
@@ -118,7 +117,7 @@ func (w wout) Visit(ctx context.Context, regex *regexp.Regexp, stg gopium.Strate
 // write wout helps to apply struct to bytes
 // to format strategy result and writer
 // to write result to output
-func (w wout) write(id, loc string, st gopium.Struct) error {
+func (w wout) write(id string, loc string, st gopium.Struct) error {
 	// apply formatter
 	buf, err := w.fmt(st)
 	// in case any error happened

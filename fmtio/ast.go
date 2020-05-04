@@ -1,4 +1,4 @@
-package gfmt
+package fmtio
 
 import (
 	"errors"
@@ -12,11 +12,12 @@ import (
 	"1pkg/gopium"
 )
 
-// StructToAst defines abstraction for
-// formatting original ast.TypeSpec with gopium.Struct
-type StructToAst func(*ast.TypeSpec, gopium.Struct) error
+// Ast defines abstraction for
+// formatting original ast type spec
+// accordingly to gopium struct
+type Ast func(*ast.TypeSpec, gopium.Struct) error
 
-// FSPT implements StructToAst and combines:
+// FSPT implements ast and combines:
 // - flatten helper
 // - fpadfilter helper
 // - shuffle helper
@@ -33,8 +34,8 @@ var FSPT = combine(
 )
 
 // combine helps to pipe several
-// ast helpers to single StructToAst func
-func combine(funcs ...StructToAst) StructToAst {
+// ast helpers to single ast func
+func combine(funcs ...Ast) Ast {
 	return func(ts *ast.TypeSpec, st gopium.Struct) error {
 		// go through all provided funcs
 		for _, fun := range funcs {

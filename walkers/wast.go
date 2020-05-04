@@ -9,7 +9,7 @@ import (
 	"1pkg/gopium/astutil/apply"
 	"1pkg/gopium/astutil/persist"
 	"1pkg/gopium/collections"
-	"1pkg/gopium/gfmtio/gio"
+	"1pkg/gopium/fmtio"
 )
 
 // list of wast presets
@@ -17,17 +17,17 @@ var (
 	aststd = wast{
 		apply:   apply.SFN,
 		persist: persist.AsyncFiles,
-		writer:  gio.Stdout,
+		writer:  fmtio.Stdout,
 	}
 	astgo = wast{
 		apply:   apply.SFN,
 		persist: persist.AsyncFiles,
-		writer:  gio.FileGo,
+		writer:  fmtio.File("go"),
 	}
 	astgopium = wast{
 		apply:   apply.SFN,
 		persist: persist.AsyncFiles,
-		writer:  gio.FileGopium,
+		writer:  fmtio.File("gopium"),
 	}
 )
 
@@ -36,7 +36,7 @@ type wast struct {
 	// inner visiting parameters
 	apply   astutil.Apply
 	persist astutil.Persist
-	writer  gio.Writer
+	writer  fmtio.Writer
 	// external visiting parameters
 	parser  gopium.Parser
 	exposer gopium.Exposer

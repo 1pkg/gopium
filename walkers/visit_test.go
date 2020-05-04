@@ -556,8 +556,8 @@ func TestVscope(t *testing.T) {
 				m.loc = tcase.loc
 			}
 			ch := make(appliedCh)
-			// check
 			go vscope(tcase.ctx, pkg.Scope(), tcase.r, tcase.stg, m, ch)
+			// check
 			for applied := range ch {
 				// if error occured check it
 				if applied.Error != nil {
@@ -570,7 +570,7 @@ func TestVscope(t *testing.T) {
 				// against structs map
 				if st, ok := tcase.sts[applied.ID]; ok {
 					if !reflect.DeepEqual(applied.Result, st) {
-						t.Errorf("actual %v doesn't equal to expected %v", applied.Result, st)
+						t.Errorf("id %v actual %v doesn't equal to expected %v", applied.ID, applied.Result, st)
 					}
 					delete(tcase.sts, applied.ID)
 				} else {
@@ -578,7 +578,7 @@ func TestVscope(t *testing.T) {
 				}
 			}
 			// check that map has been drained
-			if stsl := len(tcase.sts); stsl > 0 {
+			if !reflect.DeepEqual(tcase.sts, make(map[string]gopium.Struct)) {
 				t.Errorf("actual %v doesn't equal to expected %v", tcase.sts, make(map[string]gopium.Struct))
 			}
 		})
@@ -1141,8 +1141,8 @@ func TestVdeep(t *testing.T) {
 				m.loc = tcase.loc
 			}
 			ch := make(appliedCh)
-			// check
 			go vdeep(tcase.ctx, pkg.Scope(), tcase.r, tcase.stg, m, ch)
+			// check
 			for applied := range ch {
 				// if error occured check it
 				if applied.Error != nil {
@@ -1155,7 +1155,7 @@ func TestVdeep(t *testing.T) {
 				// against structs map
 				if st, ok := tcase.sts[applied.ID]; ok {
 					if !reflect.DeepEqual(applied.Result, st) {
-						t.Errorf("actual %v doesn't equal to expected %v", applied.Result, st)
+						t.Errorf("id %v actual %v doesn't equal to expected %v", applied.ID, applied.Result, st)
 					}
 					delete(tcase.sts, applied.ID)
 				} else {
@@ -1163,7 +1163,7 @@ func TestVdeep(t *testing.T) {
 				}
 			}
 			// check that map has been drained
-			if stsl := len(tcase.sts); stsl > 0 {
+			if !reflect.DeepEqual(tcase.sts, make(map[string]gopium.Struct)) {
 				t.Errorf("actual %v doesn't equal to expected %v", tcase.sts, make(map[string]gopium.Struct))
 			}
 		})

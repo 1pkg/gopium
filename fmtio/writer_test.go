@@ -1,4 +1,4 @@
-package gio
+package fmtio
 
 import (
 	"os"
@@ -20,6 +20,8 @@ func TestWriter(t *testing.T) {
 		loc  string
 		full string
 		err  error
+		werr error
+		cerr error
 	}{
 		"stdout should return stdout back": {
 			w:    Stdout,
@@ -28,34 +30,40 @@ func TestWriter(t *testing.T) {
 			full: "",
 		},
 		"filejson should create valid json file": {
-			w:    FileJson,
+			w:    File("json"),
 			id:   "test",
 			loc:  pdir,
 			full: path.Join(filepath.Dir(pdir), "test.json"),
 		},
 		"filexml should create valid xml file": {
-			w:    FileXml,
+			w:    File("xml"),
 			id:   "test",
 			loc:  pdir,
 			full: path.Join(filepath.Dir(pdir), "test.xml"),
 		},
 		"filecs should create valid csv file": {
-			w:    FileCsv,
+			w:    File("csv"),
 			id:   "test",
 			loc:  pdir,
 			full: path.Join(filepath.Dir(pdir), "test.csv"),
 		},
 		"filego should create valid go file": {
-			w:    FileGo,
+			w:    File("go"),
 			id:   "test",
 			loc:  pdir,
 			full: path.Join(filepath.Dir(pdir), "test.go"),
 		},
 		"filegopium should create valid gopium file": {
-			w:    FileGopium,
+			w:    File("gopium"),
 			id:   "test",
 			loc:  pdir,
 			full: path.Join(filepath.Dir(pdir), "test.gopium"),
+		},
+		"should create same file with long id param": {
+			w:    File("test"),
+			id:   "test/test/test.test",
+			loc:  pdir,
+			full: path.Join(filepath.Dir(pdir), "test.test"),
 		},
 	}
 	for name, tcase := range table {
@@ -65,6 +73,8 @@ func TestWriter(t *testing.T) {
 				defer os.Remove(tcase.full)
 			}
 			wc, err := tcase.w(tcase.id, tcase.loc)
+			n, werr := wc.Write([]byte(``))
+			cerr := wc.Close()
 			// check
 			if !reflect.DeepEqual(err, tcase.err) {
 				t.Errorf("actual %v doesn't equal to expected %v", err, tcase.err)
@@ -74,6 +84,15 @@ func TestWriter(t *testing.T) {
 			}
 			if _, err := os.Stat(tcase.full); tcase.full != "" && err != nil {
 				t.Errorf("actual %v doesn't equal to expected %v", err, nil)
+			}
+			if !reflect.DeepEqual(werr, tcase.werr) {
+				t.Errorf("actual %v doesn't equal to expected %v", werr, tcase.werr)
+			}
+			if !reflect.DeepEqual(n, 0) {
+				t.Errorf("actual %v doesn't equal to expected %v", n, 0)
+			}
+			if !reflect.DeepEqual(cerr, tcase.cerr) {
+				t.Errorf("actual %v doesn't equal to expected %v", werr, tcase.werr)
 			}
 		})
 	}
