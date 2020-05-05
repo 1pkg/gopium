@@ -28,7 +28,7 @@ func TestBuilder(t *testing.T) {
 			w: aststd.With(
 				b.Parser,
 				b.Exposer,
-				b.Print,
+				b.Printer,
 				b.Deep,
 				b.Bref,
 			),
@@ -38,7 +38,7 @@ func TestBuilder(t *testing.T) {
 			w: astgo.With(
 				b.Parser,
 				b.Exposer,
-				b.Print,
+				b.Printer,
 				b.Deep,
 				b.Bref,
 			),
@@ -48,7 +48,7 @@ func TestBuilder(t *testing.T) {
 			w: astgopium.With(
 				b.Parser,
 				b.Exposer,
-				b.Print,
+				b.Printer,
 				b.Deep,
 				b.Bref,
 			),

@@ -10,13 +10,12 @@ import (
 	"testing"
 
 	"1pkg/gopium"
-	"1pkg/gopium/astutil/print"
 	"1pkg/gopium/tests/mocks"
 )
 
 func TestAst(t *testing.T) {
 	// prepare
-	p := print.GoPrinter(0, 4, false)
+	p := Goprint(0, 4, false)
 	table := map[string]struct {
 		f   Ast
 		ts  *ast.TypeSpec

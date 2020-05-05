@@ -3,6 +3,7 @@ package walkers
 import (
 	"context"
 	"errors"
+	"go/build"
 	"go/types"
 	"reflect"
 	"regexp"
@@ -12,7 +13,7 @@ import (
 	"1pkg/gopium"
 	"1pkg/gopium/astutil"
 	"1pkg/gopium/astutil/apply"
-	"1pkg/gopium/astutil/print"
+	"1pkg/gopium/fmtio"
 	"1pkg/gopium/strategies"
 	"1pkg/gopium/tests/data"
 	"1pkg/gopium/tests/mocks"
@@ -36,13 +37,13 @@ func TestWast(t *testing.T) {
 	if err != nil {
 		t.Fatalf("actual %v doesn't equal to %v", err, nil)
 	}
-	p := print.GoPrinter(0, 4, false)
+	p := fmtio.Goprint(0, 4, false)
 	table := map[string]struct {
 		ctx  context.Context
 		r    *regexp.Regexp
 		p    gopium.Parser
 		a    astutil.Apply
-		prs  astutil.Persist
+		w    fmtio.Writer
 		stg  gopium.Strategy
 		deep bool
 		bref bool
@@ -127,7 +128,7 @@ type Single struct {
 			r:   regexp.MustCompile(`.*`),
 			p:   data.NewParser("single"),
 			a:   apply.SFN,
-			prs: (&mocks.Persist{Err: errors.New("test-4")}).Persist,
+			w:   (&mocks.Writer{Err: errors.New("test-4")}).Writer,
 			stg: np,
 			sts: make(map[string][]byte),
 			err: errors.New("test-4"),
@@ -357,20 +358,22 @@ type (
 	for name, tcase := range table {
 		t.Run(name, func(t *testing.T) {
 			// exec
-			prs := &mocks.Persist{}
+			w := &mocks.Writer{}
 			wast := wast{
-				apply:   tcase.a,
-				persist: prs.Persist,
+				apply:  tcase.a,
+				writer: w.Writer,
 			}.With(tcase.p, m, p, tcase.deep, tcase.bref)
-			if tcase.prs != nil {
-				wast.persist = tcase.prs
+			if tcase.w != nil {
+				wast.writer = tcase.w
 			}
 			err := wast.Visit(tcase.ctx, tcase.r, tcase.stg)
 			// check
 			if !reflect.DeepEqual(err, tcase.err) {
 				t.Errorf("actual %v doesn't equal to expected %v", err, tcase.err)
 			}
-			for id, buf := range prs.Buffers {
+			for id, buf := range w.Buffers {
+				// remove gopath from collected id
+				id = strings.Replace(id, build.Default.GOPATH, "", 1)
 				// check all struct
 				// against bytes map
 				if st, ok := tcase.sts[id]; ok {
