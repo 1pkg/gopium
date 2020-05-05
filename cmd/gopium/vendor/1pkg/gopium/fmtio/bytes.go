@@ -1,10 +1,11 @@
 package fmtio
 
 import (
-	"bytes"
 	"encoding/csv"
 	"encoding/json"
 	"encoding/xml"
+	"io"
+	"io/ioutil"
 	"strconv"
 	"strings"
 
@@ -31,56 +32,51 @@ func Xml(st gopium.Struct) ([]byte, error) {
 
 // Csv defines bytes implementation
 // that serializes struct to csv format
-func Csv(st gopium.Struct) ([]byte, error) {
-	// prepare buf and csv writer
-	var buf bytes.Buffer
-	w := csv.NewWriter(&buf)
-	// write header
-	if err := w.Write([]string{
-		"Struct Name",
-		"Struct Doc",
-		"Struct Comment",
-		"Field Name",
-		"Field Type",
-		"Field Size",
-		"Field Align",
-		"Field Tag",
-		"Field Exported",
-		"Field Embedded",
-		"Field Doc",
-		"Field Comment",
-	}); err != nil {
-		// this should never happen/covered
-		return nil, err
-	}
-	// go through all fields
-	// and write then one by one
-	for _, f := range st.Fields {
-		if err := w.Write([]string{
-			st.Name,
-			strings.Join(st.Doc, " "),
-			strings.Join(st.Comment, " "),
-			f.Name,
-			f.Type,
-			strconv.Itoa(int(f.Size)),
-			strconv.Itoa(int(f.Align)),
-			f.Tag,
-			strconv.FormatBool(f.Exported),
-			strconv.FormatBool(f.Embedded),
-			strings.Join(f.Doc, " "),
-			strings.Join(f.Comment, " "),
-		}); err != nil {
+func Csv(rw io.ReadWriter) Bytes {
+	return func(st gopium.Struct) ([]byte, error) {
+		// prepare csv writer
+		w := csv.NewWriter(rw)
+		// write header
+		_ = w.Write([]string{
+			"Struct Name",
+			"Struct Doc",
+			"Struct Comment",
+			"Field Name",
+			"Field Type",
+			"Field Size",
+			"Field Align",
+			"Field Tag",
+			"Field Exported",
+			"Field Embedded",
+			"Field Doc",
+			"Field Comment",
+		})
+		// go through all fields
+		// and write then one by one
+		for _, f := range st.Fields {
+			_ = w.Write([]string{
+				st.Name,
+				strings.Join(st.Doc, " "),
+				strings.Join(st.Comment, " "),
+				f.Name,
+				f.Type,
+				strconv.Itoa(int(f.Size)),
+				strconv.Itoa(int(f.Align)),
+				f.Tag,
+				strconv.FormatBool(f.Exported),
+				strconv.FormatBool(f.Embedded),
+				strings.Join(f.Doc, " "),
+				strings.Join(f.Comment, " "),
+			})
+		}
+		// flush to buf
+		w.Flush()
+		// check flush error
+		if err := w.Error(); err != nil {
 			// this should never happen/covered
 			return nil, err
 		}
+		// and return buf result
+		return ioutil.ReadAll(rw)
 	}
-	// flush to buf
-	w.Flush()
-	// check flush error
-	if err := w.Error(); err != nil {
-		// this should never happen/covered
-		return nil, err
-	}
-	// and return buf result
-	return buf.Bytes(), nil
 }

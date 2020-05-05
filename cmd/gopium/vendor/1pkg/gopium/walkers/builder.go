@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"1pkg/gopium"
-	"1pkg/gopium/astutil"
+	"1pkg/gopium/fmtio"
 )
 
 // list of registered types walkers
@@ -27,7 +27,7 @@ const (
 type Builder struct {
 	Parser  gopium.Parser
 	Exposer gopium.Exposer
-	Print   astutil.Print
+	Printer fmtio.Printer
 	Deep    bool
 	Bref    bool
 }
@@ -40,7 +40,7 @@ func (b Builder) Build(name gopium.WalkerName) (gopium.Walker, error) {
 		return aststd.With(
 			b.Parser,
 			b.Exposer,
-			b.Print,
+			b.Printer,
 			b.Deep,
 			b.Bref,
 		), nil
@@ -48,7 +48,7 @@ func (b Builder) Build(name gopium.WalkerName) (gopium.Walker, error) {
 		return astgo.With(
 			b.Parser,
 			b.Exposer,
-			b.Print,
+			b.Printer,
 			b.Deep,
 			b.Bref,
 		), nil
@@ -56,7 +56,7 @@ func (b Builder) Build(name gopium.WalkerName) (gopium.Walker, error) {
 		return astgopium.With(
 			b.Parser,
 			b.Exposer,
-			b.Print,
+			b.Printer,
 			b.Deep,
 			b.Bref,
 		), nil

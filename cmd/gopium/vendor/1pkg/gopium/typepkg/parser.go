@@ -32,6 +32,14 @@ type ParserXToolPackagesAst struct {
 
 // ParseTypes ParserXToolPackagesAst implementation
 func (p ParserXToolPackagesAst) ParseTypes(ctx context.Context) (*types.Package, gopium.Locator, error) {
+	// manage context actions
+	// in case of cancelation
+	// stop parse and return error back
+	select {
+	case <-ctx.Done():
+		return nil, nil, ctx.Err()
+	default:
+	}
 	// create packages.Config obj
 	fset := token.NewFileSet()
 	dir := filepath.Join(p.Root, p.Path)
