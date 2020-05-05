@@ -21,7 +21,7 @@ var (
 		writer: fmtio.Stdout,
 	}
 	csvstd = wout{
-		fmt:    fmtio.Csv,
+		fmt:    fmtio.Csv(fmtio.Buffer()),
 		writer: fmtio.Stdout,
 	}
 	jsonfiles = wout{
@@ -33,7 +33,7 @@ var (
 		writer: fmtio.File("xml"),
 	}
 	csvfiles = wout{
-		fmt:    fmtio.Csv,
+		fmt:    fmtio.Csv(fmtio.Buffer()),
 		writer: fmtio.File("csv"),
 	}
 )
@@ -52,8 +52,8 @@ type wout struct {
 
 // With erich wast walker with external visiting parameters
 // parser, exposer instances and additional visiting flags
-func (w wout) With(pars gopium.TypeParser, exp gopium.Exposer, deep bool, bref bool) wout {
-	w.parser = pars
+func (w wout) With(p gopium.TypeParser, exp gopium.Exposer, deep bool, bref bool) wout {
+	w.parser = p
 	w.exposer = exp
 	w.deep = deep
 	w.bref = bref
