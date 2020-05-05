@@ -97,8 +97,7 @@ func fpadfilter(ts *ast.TypeSpec, st gopium.Struct) error {
 	nfields := make([]*ast.Field, 0, len(tts.Fields.List))
 	// go through original ast fields list
 	for _, f := range tts.Fields.List {
-		// in case field is
-		// flat proccess it
+		// start with non embedded fields
 		if len(f.Names) == 1 {
 			// if pad field was detected
 			// filter it out
@@ -125,30 +124,32 @@ func fpadfilter(ts *ast.TypeSpec, st gopium.Struct) error {
 }
 
 // shuffle helps to sort fields list
-// for original *ast.TypeSpec accordingly to result gopium.Struct
+// for ast type spec accordingly to result struct,
+//
+// note shuffle works properly on structs with
+// one or less embedded fields
 func shuffle(ts *ast.TypeSpec, st gopium.Struct) error {
 	// collect fields indexes
 	tts := ts.Type.(*ast.StructType)
 	fields := make(map[string]int, len(st.Fields))
+	// in case struct have two or more embedded fields
+	// this solution will not work as expected
 	for i, f := range st.Fields {
 		fields[f.Name] = i
 	}
 	// shuffle fields list
 	sort.SliceStable(tts.Fields.List, func(i, j int) bool {
-		// in case structure isn't
-		// flat keep the same order
-		fni, fnj := tts.Fields.List[i], tts.Fields.List[j]
-		if fni == nil || fnj == nil || len(fni.Names) != 1 || len(fnj.Names) != 1 {
-			return false
-		}
 		// we can safely pick only first name
-		// as structure is flat and get
-		// ast's i-th and j-th structure fields
-		ni, nj := fni.Names[0].Name, fnj.Names[0].Name
-		// in case structure isn't
-		// filtered keep the same order
-		if ni == "_" || nj == "_" {
-			return false
+		// for flat structure non embedded
+		// ast's i-th and j-th fields
+		// in case fields are embedded
+		// use empty name by default
+		var ni, nj string
+		if fni := tts.Fields.List[i]; len(fni.Names) == 1 {
+			ni = fni.Names[0].Name
+		}
+		if fnj := tts.Fields.List[j]; len(fnj.Names) == 1 {
+			nj = fnj.Names[0].Name
 		}
 		// prepare comparison indexes
 		// and search for them in resulted structure
@@ -171,7 +172,7 @@ func shuffle(ts *ast.TypeSpec, st gopium.Struct) error {
 }
 
 // padsync helps to sync fields padding list
-// for original *ast.TypeSpec accordingly to result gopium.Struct
+// for ast type spec accordingly to result struct
 func padsync(ts *ast.TypeSpec, st gopium.Struct) error {
 	// prepare resulted fields slice
 	tts := ts.Type.(*ast.StructType)
@@ -216,7 +217,7 @@ func padsync(ts *ast.TypeSpec, st gopium.Struct) error {
 }
 
 // tagsync helps to sync field tags between
-// original *ast.TypeSpec result gopium.Struct
+// ast type spec and result struct
 func tagsync(ts *ast.TypeSpec, st gopium.Struct) error {
 	// go through all original structure fields
 	tts := ts.Type.(*ast.StructType)
@@ -235,13 +236,15 @@ func tagsync(ts *ast.TypeSpec, st gopium.Struct) error {
 }
 
 // reindex helps to reindex fields local token pos
-// for original *ast.TypeSpec, by just incrementing
-// pos for each struct field, note this is not
-// full compliant ast implementation as we are losing
-// absolute pos for all other elements, but it's
-// too complex to recalculate all elements pos, so
-// we can just recalculate local pos which leads
-// to almost identical result
+// for original ast type spec, by just incrementing
+// pos for each struct field,
+//
+// note this is not full compliant ast implementation
+// as we are losing absolute pos for all other elements,
+//
+// but it's too complex to recalculate all elements pos,
+// so we can just recalculate local pos which leads to
+// almost identical result
 func reindex(ts *ast.TypeSpec, st gopium.Struct) error {
 	// set initial pos to zero inside a structure
 	pos := token.Pos(0)

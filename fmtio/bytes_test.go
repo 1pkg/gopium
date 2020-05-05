@@ -1,11 +1,13 @@
 package fmtio
 
 import (
+	"errors"
 	"reflect"
 	"strings"
 	"testing"
 
 	"1pkg/gopium"
+	"1pkg/gopium/tests/mocks"
 )
 
 func TestBytes(t *testing.T) {
@@ -158,14 +160,42 @@ func TestBytes(t *testing.T) {
 `),
 		},
 		"csv should return valid result for empty struct": {
-			fmt: Csv,
+			fmt: Csv(Buffer()),
 			st:  gopium.Struct{},
 			r: []byte(`
 Struct Name,Struct Doc,Struct Comment,Field Name,Field Type,Field Size,Field Align,Field Tag,Field Exported,Field Embedded,Field Doc,Field Comment
 `),
 		},
+		"csv should transfer writer error back": {
+			fmt: Csv(mocks.RWC{Werr: errors.New("test")}),
+			st: gopium.Struct{
+				Name:    "Test",
+				Doc:     []string{"doctest"},
+				Comment: []string{"comtest"},
+				Fields: []gopium.Field{
+					{
+						Name:     "test-1",
+						Type:     "string",
+						Size:     16,
+						Align:    8,
+						Tag:      "test-tag",
+						Exported: true,
+						Embedded: true,
+						Doc:      []string{"fdoctest"},
+						Comment:  []string{"fcomtest"},
+					},
+					{
+						Name:  "test-2",
+						Type:  "test_type",
+						Size:  12,
+						Align: 4,
+					},
+				},
+			},
+			err: errors.New("test"),
+		},
 		"csv should return valid result for non empty struct": {
-			fmt: Csv,
+			fmt: Csv(Buffer()),
 			st: gopium.Struct{
 				Name:    "Test",
 				Doc:     []string{"doctest"},
@@ -202,13 +232,14 @@ Test,doctest,comtest,test-2,test_type,12,4,,false,false,,
 			// exec
 			r, err := tcase.fmt(tcase.st)
 			// check
-			// format actual and expected identically
-			stract, strexp := strings.Trim(string(r), "\n"), strings.Trim(string(tcase.r), "\n")
-			if stract != strexp {
-				t.Errorf("actual %v doesn't equal to expected %v", stract, strexp)
-			}
 			if !reflect.DeepEqual(err, tcase.err) {
 				t.Errorf("actual %v doesn't equal to expected %v", err, tcase.err)
+			}
+			// format actual and expected identically
+			actual := strings.Trim(string(r), "\n")
+			expected := strings.Trim(string(tcase.r), "\n")
+			if err == nil && !reflect.DeepEqual(actual, expected) {
+				t.Errorf("actual %v doesn't equal to expected %v", actual, expected)
 			}
 		})
 	}
