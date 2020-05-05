@@ -1,8 +1,9 @@
 package mocks
 
 import (
+	"encoding/json"
+
 	"1pkg/gopium"
-	"1pkg/gopium/fmtio"
 )
 
 // Bytes defines mock fmtio bytes implementation
@@ -18,5 +19,5 @@ func (fmt Bytes) Bytes(st gopium.Struct) ([]byte, error) {
 		return nil, fmt.Err
 	}
 	// otherwise use json bytes impl
-	return fmtio.Json(st)
+	return json.MarshalIndent(st, "", "\t")
 }

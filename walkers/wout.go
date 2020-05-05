@@ -21,7 +21,7 @@ var (
 		writer: fmtio.Stdout,
 	}
 	csvstd = wout{
-		fmt:    fmtio.Csv,
+		fmt:    fmtio.Csv(fmtio.Buffer()),
 		writer: fmtio.Stdout,
 	}
 	jsonfiles = wout{
@@ -33,7 +33,7 @@ var (
 		writer: fmtio.File("xml"),
 	}
 	csvfiles = wout{
-		fmt:    fmtio.Csv,
+		fmt:    fmtio.Csv(fmtio.Buffer()),
 		writer: fmtio.File("csv"),
 	}
 )

@@ -1,6 +1,7 @@
 package fmtio
 
 import (
+	"bytes"
 	"fmt"
 	"io"
 	"os"
@@ -42,4 +43,9 @@ func File(ext string) Writer {
 		path := filepath.Dir(loc)
 		return os.Create(fmt.Sprintf("%s/%s.%s", path, bname, ext))
 	}
+}
+
+// Buffer defines buffer creator helper
+func Buffer() io.ReadWriter {
+	return &bytes.Buffer{}
 }
