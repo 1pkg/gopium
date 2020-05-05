@@ -3,8 +3,6 @@ package astutil
 import (
 	"context"
 	"go/ast"
-	"go/token"
-	"io"
 
 	"1pkg/gopium"
 	"1pkg/gopium/collections"
@@ -21,12 +19,3 @@ type Apply func(
 	gopium.Locator,
 	collections.Hierarchic,
 ) (*ast.Package, error)
-
-// Print defines abstraction for
-// ast node printing function to io writer
-type Print func(io.Writer, *token.FileSet, ast.Node) error
-
-// Persist defines abstraction for
-// persisting ast package
-// with ast print function
-type Persist func(context.Context, Print, *ast.Package, gopium.Locator) error

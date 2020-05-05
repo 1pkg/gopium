@@ -7,7 +7,6 @@ import (
 	"1pkg/gopium"
 	"1pkg/gopium/astutil"
 	"1pkg/gopium/astutil/apply"
-	"1pkg/gopium/astutil/persist"
 	"1pkg/gopium/collections"
 	"1pkg/gopium/fmtio"
 )
@@ -15,38 +14,38 @@ import (
 // list of wast presets
 var (
 	aststd = wast{
-		apply:   apply.SFN,
-		persist: persist.Apart(fmtio.Stdout),
+		apply:  apply.SFN,
+		writer: fmtio.Stdout,
 	}
 	astgo = wast{
-		apply:   apply.SFN,
-		persist: persist.Apart(fmtio.File("go")),
+		apply:  apply.SFN,
+		writer: fmtio.File("go"),
 	}
 	astgopium = wast{
-		apply:   apply.SFN,
-		persist: persist.Apart(fmtio.File("gopium")),
+		apply:  apply.SFN,
+		writer: fmtio.File("gopium"),
 	}
 )
 
 // wast defines packages walker ast sync implementation
 type wast struct {
 	// inner visiting parameters
-	apply   astutil.Apply
-	persist astutil.Persist
+	apply  astutil.Apply
+	writer fmtio.Writer
 	// external visiting parameters
 	parser  gopium.Parser
 	exposer gopium.Exposer
-	print   astutil.Print
+	printer fmtio.Printer
 	deep    bool
 	bref    bool
 }
 
 // With erich wast walker with external visiting parameters
 // parser, exposer, printer instances and additional visiting flags
-func (w wast) With(pars gopium.Parser, exp gopium.Exposer, pr astutil.Print, deep bool, bref bool) wast {
-	w.parser = pars
+func (w wast) With(p gopium.Parser, exp gopium.Exposer, pr fmtio.Printer, deep bool, bref bool) wast {
+	w.parser = p
 	w.exposer = exp
-	w.print = pr
+	w.printer = pr
 	w.deep = deep
 	w.bref = bref
 	return w
@@ -108,8 +107,9 @@ func (w wast) write(ctx context.Context, h collections.Hierarchic) error {
 	if err != nil {
 		return err
 	}
-	// run persist helper
+	// build and run persist helper
 	// in case any error happened
 	// just return error back
-	return w.persist(ctx, w.print, pkg, loc)
+	p := w.printer.Save(w.writer)
+	return p(ctx, pkg, loc)
 }

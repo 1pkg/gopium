@@ -1,21 +1,44 @@
-package persist
+package fmtio
 
 import (
 	"context"
 	"go/ast"
+	"go/printer"
+	"go/token"
+	"io"
 
 	"1pkg/gopium"
-	"1pkg/gopium/astutil"
-	"1pkg/gopium/fmtio"
 
 	"golang.org/x/sync/errgroup"
 )
 
-// Apart asynchronously pesists ast package
+// Printer defines abstraction for
+// ast node printing function to io writer
+type Printer func(io.Writer, *token.FileSet, ast.Node) error
+
+// Persist defines abstraction
+// for persisting ast package
+type Persister func(context.Context, *ast.Package, gopium.Locator) error
+
+// Goprint generates go printer ast print instance
+// with specified tabwidth and space mode
+func Goprint(indent int, tabwidth int, usespace bool) Printer {
+	// prepare printer with params
+	p := &printer.Config{Indent: indent, Tabwidth: tabwidth}
+	if usespace {
+		p.Mode = printer.UseSpaces
+	}
+	return func(w io.Writer, fset *token.FileSet, node ast.Node) error {
+		// use printer fprint
+		return p.Fprint(w, fset, node)
+	}
+}
+
+// Save asynchronously pesists ast package
 // one ast file by one ast file
-// to fmtio writer by using print function
-func Apart(w fmtio.Writer) astutil.Persist {
-	return func(ctx context.Context, p astutil.Print, pkg *ast.Package, loc gopium.Locator) error {
+// to fmtio writer by using printer
+func (p Printer) Save(w Writer) Persister {
+	return func(ctx context.Context, pkg *ast.Package, loc gopium.Locator) error {
 		// create sync error group
 		// with cancelation context
 		group, gctx := errgroup.WithContext(ctx)

@@ -1,7 +1,6 @@
 package walkers
 
 import (
-	"bytes"
 	"context"
 	"errors"
 	"reflect"
@@ -480,16 +479,7 @@ func TestWout(t *testing.T) {
 			if !reflect.DeepEqual(err, tcase.err) {
 				t.Errorf("actual %v doesn't equal to expected %v", err, tcase.err)
 			}
-			w.Buffers.Range(func(key interface{}, val interface{}) bool {
-				// convert k/v to expected types
-				id, ok := key.(string)
-				if !ok {
-					t.Errorf("actual %v doesn't equal to expected %v", ok, true)
-				}
-				buf, ok := val.(*bytes.Buffer)
-				if !ok {
-					t.Errorf("actual %v doesn't equal to expected %v", ok, true)
-				}
+			for id, buf := range w.Buffers {
 				// check all struct
 				// against bytes map
 				if st, ok := tcase.sts[id]; ok {
@@ -502,8 +492,7 @@ func TestWout(t *testing.T) {
 				} else {
 					t.Errorf("actual %v doesn't equal to expected %v", id, "")
 				}
-				return true
-			})
+			}
 			// check that map has been drained
 			if !reflect.DeepEqual(tcase.sts, make(map[string][]byte)) {
 				t.Errorf("actual %v doesn't equal to expected %v", tcase.sts, make(map[string][]byte))

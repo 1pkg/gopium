@@ -10,7 +10,7 @@ import (
 	"time"
 
 	"1pkg/gopium"
-	"1pkg/gopium/astutil/print"
+	"1pkg/gopium/fmtio"
 	"1pkg/gopium/strategies"
 	"1pkg/gopium/typepkg"
 	"1pkg/gopium/walkers"
@@ -76,7 +76,7 @@ func NewCliApp(
 		BuildFlags: bflags,
 	}
 	// set up printer
-	pr := print.GoPrinter(indent, tabwidth, usespace)
+	pr := fmtio.Goprint(indent, tabwidth, usespace)
 	// compile regexp
 	wregex, err := regexp.Compile(regex)
 	if err != nil {
@@ -93,7 +93,7 @@ func NewCliApp(
 	wbuilder := walkers.Builder{
 		Parser:  p,
 		Exposer: m,
-		Print:   pr,
+		Printer: pr,
 		Deep:    deep,
 		Bref:    backref,
 	}
