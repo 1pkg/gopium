@@ -16,10 +16,6 @@ import (
 // ast node printing function to io writer
 type Printer func(io.Writer, *token.FileSet, ast.Node) error
 
-// Persist defines abstraction
-// for persisting ast package
-type Persister func(context.Context, *ast.Package, gopium.Locator) error
-
 // Goprint generates go printer ast print instance
 // with specified tabwidth and space mode
 func Goprint(indent int, tabwidth int, usespace bool) Printer {
@@ -37,7 +33,7 @@ func Goprint(indent int, tabwidth int, usespace bool) Printer {
 // Save asynchronously pesists ast package
 // one ast file by one ast file
 // to fmtio writer by using printer
-func (p Printer) Save(w Writer) Persister {
+func (p Printer) Save(w Writer) func(ctx context.Context, pkg *ast.Package, loc gopium.Locator) error {
 	return func(ctx context.Context, pkg *ast.Package, loc gopium.Locator) error {
 		// create sync error group
 		// with cancelation context

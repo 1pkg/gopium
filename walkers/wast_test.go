@@ -12,7 +12,6 @@ import (
 
 	"1pkg/gopium"
 	"1pkg/gopium/astutil"
-	"1pkg/gopium/astutil/apply"
 	"1pkg/gopium/fmtio"
 	"1pkg/gopium/strategies"
 	"1pkg/gopium/tests/data"
@@ -54,7 +53,7 @@ func TestWast(t *testing.T) {
 			ctx: context.Background(),
 			r:   regexp.MustCompile(`.*`),
 			p:   data.NewParser("empty"),
-			a:   apply.SFN,
+			a:   astutil.FFN,
 			stg: np,
 			sts: map[string][]byte{
 				"/src/1pkg/gopium/tests/data/empty/file.go": []byte(`
@@ -68,7 +67,7 @@ package empty
 			ctx: context.Background(),
 			r:   regexp.MustCompile(`.*`),
 			p:   data.NewParser("single"),
-			a:   apply.SFN,
+			a:   astutil.FFN,
 			stg: np,
 			sts: map[string][]byte{
 				"/src/1pkg/gopium/tests/data/single/file.go": []byte(`
@@ -88,7 +87,7 @@ type Single struct {
 			ctx: cctx,
 			r:   regexp.MustCompile(`.*`),
 			p:   data.NewParser("single"),
-			a:   apply.SFN,
+			a:   astutil.FFN,
 			stg: np,
 			sts: make(map[string][]byte),
 			err: cctx.Err(),
@@ -97,7 +96,7 @@ type Single struct {
 			ctx: context.Background(),
 			r:   regexp.MustCompile(`.*`),
 			p:   mocks.Parser{Terr: errors.New("test-1")},
-			a:   apply.SFN,
+			a:   astutil.FFN,
 			stg: np,
 			sts: make(map[string][]byte),
 			err: errors.New("test-1"),
@@ -109,7 +108,7 @@ type Single struct {
 				Types: types.NewPackage("", ""),
 				Aerr:  errors.New("test-2"),
 			},
-			a:   apply.SFN,
+			a:   astutil.FFN,
 			stg: np,
 			sts: make(map[string][]byte),
 			err: errors.New("test-2"),
@@ -118,7 +117,7 @@ type Single struct {
 			ctx: context.Background(),
 			r:   regexp.MustCompile(`.*`),
 			p:   data.NewParser("single"),
-			a:   apply.SFN,
+			a:   astutil.FFN,
 			stg: mocks.Strategy{Err: errors.New("test-3")},
 			sts: make(map[string][]byte),
 			err: errors.New("test-3"),
@@ -127,7 +126,7 @@ type Single struct {
 			ctx: context.Background(),
 			r:   regexp.MustCompile(`.*`),
 			p:   data.NewParser("single"),
-			a:   apply.SFN,
+			a:   astutil.FFN,
 			w:   (&mocks.Writer{Err: errors.New("test-4")}).Writer,
 			stg: np,
 			sts: make(map[string][]byte),
@@ -146,7 +145,7 @@ type Single struct {
 			ctx:  context.Background(),
 			r:    regexp.MustCompile(`(A|Z)`),
 			p:    data.NewParser("multi"),
-			a:    apply.SFN,
+			a:    astutil.FFN,
 			stg:  pck,
 			deep: true,
 			sts: map[string][]byte{
@@ -252,7 +251,7 @@ type (
 			ctx:  context.Background(),
 			r:    regexp.MustCompile(`(A|Z)`),
 			p:    data.NewParser("multi"),
-			a:    apply.SFN,
+			a:    astutil.FFN,
 			stg:  pck,
 			bref: true,
 			sts: map[string][]byte{

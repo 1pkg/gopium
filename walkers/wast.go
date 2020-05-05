@@ -6,7 +6,6 @@ import (
 
 	"1pkg/gopium"
 	"1pkg/gopium/astutil"
-	"1pkg/gopium/astutil/apply"
 	"1pkg/gopium/collections"
 	"1pkg/gopium/fmtio"
 )
@@ -14,15 +13,15 @@ import (
 // list of wast presets
 var (
 	aststd = wast{
-		apply:  apply.SFN,
+		apply:  astutil.FFN,
 		writer: fmtio.Stdout,
 	}
 	astgo = wast{
-		apply:  apply.SFN,
+		apply:  astutil.FFN,
 		writer: fmtio.File("go"),
 	}
 	astgopium = wast{
-		apply:  apply.SFN,
+		apply:  astutil.FFN,
 		writer: fmtio.File("gopium"),
 	}
 )
