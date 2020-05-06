@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"go/ast"
+	"go/token"
 
 	"1pkg/gopium"
 	"1pkg/gopium/collections"
@@ -14,30 +15,24 @@ import (
 // wact defines action
 // for ast walk helper
 // that applies custom action
-// on ast.TypeSpec node
+// on ast type spec node
 type wact func(ts *ast.TypeSpec, st gopium.Struct) error
 
 // wcomp defines comparator
 // for ast walk helper
-// that checks if ast.TypeSpec node
+// that checks if ast type spec node
 // needs to be visitted and returns
-// relevant struct and visit flag
+// relevant gopium struct and flags
 type wcomp func(ts *ast.TypeSpec) (gopium.Struct, bool, bool)
 
-// walk helps to walk through ast.Node
-// on comparator function and
+// walk helps to walk through ast node
+// with comparator function and
 // apply some custom action on them
-// after it returns result or error
-func walk(
-	ctx context.Context,
-	node ast.Node,
-	wcomp wcomp,
-	wact wact,
-) (ast.Node, error) {
-	// tracks error inside astutil.Apply
+func walk(ctx context.Context, node ast.Node, wcomp wcomp, wact wact) (ast.Node, error) {
+	// tracks error inside astutil apply
 	var err error
-	// apply astutil.Apply to parsed ast.Package
-	// and update structure in ast
+	// apply astutil apply to parsed ast package
+	// and update structure in ast with wact
 	return astutil.Apply(node, func(c *astutil.Cursor) bool {
 		if gendecl, ok := c.Node().(*ast.GenDecl); ok {
 			for _, spec := range gendecl.Specs {
@@ -77,50 +72,61 @@ func walk(
 	}, nil), err
 }
 
-// walkPkg helps to walk through ast.Package
-func walkPkg(
-	ctx context.Context,
-	pkg *ast.Package,
-	wcomp wcomp,
-	wact wact,
-) (*ast.Package, error) {
-	// use underlying walk method
-	node, err := walk(ctx, pkg, wcomp, wact)
-	// in case we had error
-	// in astutil.Apply
-	// just return it back
-	if err != nil {
-		return nil, err
+// pressdoc helps to create wact
+// which presses comments from
+// gopium structure to ast file
+func pressdoc(file *ast.File) wact {
+	return func(ts *ast.TypeSpec, st gopium.Struct) error {
+		// prepare struct docs slice
+		stdocs := make([]*ast.Comment, 0, len(st.Doc))
+		// collect all docs from resulted structure
+		for _, doc := range st.Doc {
+			// doc position is position of name - len of `type` keyword
+			slash := ts.Name.Pos() - token.Pos(6)
+			sdoc := ast.Comment{Slash: slash, Text: doc}
+			stdocs = append(stdocs, &sdoc)
+		}
+		// update file comments list
+		file.Comments = append(file.Comments, &ast.CommentGroup{List: stdocs})
+		// prepare struct comments slice
+		stcoms := make([]*ast.Comment, 0, len(st.Comment))
+		// collect all comments from resulted structure
+		for _, com := range st.Comment {
+			// comment position is end of type decl
+			slash := ts.Type.End()
+			scom := ast.Comment{Slash: slash, Text: com}
+			stcoms = append(stcoms, &scom)
+		}
+		// update file comments list
+		file.Comments = append(file.Comments, &ast.CommentGroup{List: stcoms})
+		// go through all resulted structure fields
+		tts := ts.Type.(*ast.StructType)
+		for index, field := range st.Fields {
+			// get the field from ast
+			astfield := tts.Fields.List[index]
+			// collect all docs from resulted structure
+			fdocs := make([]*ast.Comment, 0, len(field.Doc))
+			for _, doc := range field.Doc {
+				// doc position is position of name - 1
+				slash := astfield.Pos() - token.Pos(1)
+				fdoc := ast.Comment{Slash: slash, Text: doc}
+				fdocs = append(fdocs, &fdoc)
+			}
+			// update file comments list
+			file.Comments = append(file.Comments, &ast.CommentGroup{List: fdocs})
+			// collect all comments from resulted structure
+			fcoms := make([]*ast.Comment, 0, len(field.Comment))
+			for _, com := range field.Comment {
+				// comment position is end of field type
+				slash := astfield.Type.End()
+				fcom := ast.Comment{Slash: slash, Text: com}
+				fcoms = append(fcoms, &fcom)
+			}
+			// update file comments list
+			file.Comments = append(file.Comments, &ast.CommentGroup{List: fcoms})
+		}
+		return nil
 	}
-	// check that updated type is correct
-	if pkg, ok := node.(*ast.Package); ok {
-		return pkg, nil
-	}
-	// in case updated type isn't expected
-	return nil, errors.New("can't update package ast")
-}
-
-// walkFile helps to walk through ast.File
-func walkFile(
-	ctx context.Context,
-	pkg *ast.File,
-	wcomp wcomp,
-	wact wact,
-) (*ast.File, error) {
-	// use underlying walk method
-	node, err := walk(ctx, pkg, wcomp, wact)
-	// in case we had error
-	// in astutil.Apply
-	// just return it back
-	if err != nil {
-		return nil, err
-	}
-	// check that updated type is correct
-	if pkg, ok := node.(*ast.File); ok {
-		return pkg, nil
-	}
-	// in case updated type isn't expected
-	return nil, errors.New("can't update file ast")
 }
 
 // compid helps to create wcomp
@@ -161,14 +167,14 @@ func comploc(loc gopium.Locator, cat string, h collections.Hierarchic) wcomp {
 }
 
 // compwnote helps to create wcomp
-// which adapts wcomp by adding
-// check that structure or any structure field
-// has any notes inside
+// which adapts wcomp impl by adding
+// check that structure or any structure's
+// field has any notes attached to them
 func compwnote(comp wcomp) wcomp {
 	return func(ts *ast.TypeSpec) (gopium.Struct, bool, bool) {
 		// use underlying comp func
 		st, skip, brk := comp(ts)
-		// check if we can process struct
+		// check if we should process struct
 		if !brk && !skip {
 			// if struct has any notes
 			if len(st.Doc) > 0 || len(st.Comment) > 0 {
@@ -181,7 +187,7 @@ func compwnote(comp wcomp) wcomp {
 				}
 			}
 			// in case struct has no inner
-			// notes, just skip it
+			// notes just skip it
 			return st, true, false
 		}
 		// otherwise return underlying
