@@ -54,14 +54,6 @@ func (p Printer) Save(w Writer) func(ctx context.Context, pkg *ast.Package, loc 
 			file := file
 			// run error group write call
 			group.Go(func() error {
-				// manage context actions
-				// in case of cancelation
-				// stop execution and return error
-				select {
-				case <-gctx.Done():
-					return gctx.Err()
-				default:
-				}
 				// generate relevant writer
 				writer, err := w(name, name)
 				// in case any error happened
