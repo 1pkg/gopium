@@ -19,12 +19,12 @@ func TestNote(t *testing.T) {
 		r    gopium.Struct
 		err  error
 	}{
-		"empty struct should be applied to itself fields": {
+		"empty struct should be applied to itself": {
 			note: fnotedoc,
 			ctx:  context.Background(),
 			r:    gopium.Struct{},
 		},
-		"non empty struct should be applied to itself with relevant doc fields": {
+		"non empty struct should be applied to itself with expected doc fields": {
 			note: fnotedoc,
 			ctx:  context.Background(),
 			o: gopium.Struct{
@@ -45,7 +45,7 @@ func TestNote(t *testing.T) {
 				},
 			},
 		},
-		"non empty struct should be applied to itself with relevant comment on canceled context fields": {
+		"non empty struct should be applied to itself with expected comment fields on canceled context": {
 			note: fnotecom,
 			ctx:  cctx,
 			o: gopium.Struct{
@@ -67,14 +67,14 @@ func TestNote(t *testing.T) {
 			},
 			err: cctx.Err(),
 		},
-		"empty struct should be applied to itself with relevant doc struct": {
+		"empty struct should be applied to itself with expected doc struct": {
 			note: stnotedoc,
 			ctx:  context.Background(),
 			r: gopium.Struct{
 				Doc: []string{"// struct size: 0 bytes; struct align: 0 bytes; - 🌺 gopium @1pkg"},
 			},
 		},
-		"non empty struct should be applied to itself with relevant doc struct": {
+		"non empty struct should be applied to itself with expected doc struct": {
 			note: stnotedoc,
 			ctx:  context.Background(),
 			o: gopium.Struct{
@@ -95,7 +95,7 @@ func TestNote(t *testing.T) {
 				},
 			},
 		},
-		"non empty struct should be applied to itself with relevant comment on canceled context struct": {
+		"non empty struct should be applied to itself with expected comment struct on canceled context": {
 			note: stnotecom,
 			ctx:  cctx,
 			o: gopium.Struct{
@@ -117,7 +117,7 @@ func TestNote(t *testing.T) {
 			},
 			err: cctx.Err(),
 		},
-		"complex struct should be applied to itself with relevant doc fields": {
+		"complex struct should be applied to itself with expected doc fields": {
 			note: fnotedoc,
 			ctx:  context.Background(),
 			o: gopium.Struct{
@@ -169,7 +169,7 @@ func TestNote(t *testing.T) {
 				},
 			},
 		},
-		"complex struct should be applied to itself with relevant comment fields": {
+		"complex struct should be applied to itself with expected comment fields": {
 			note: fnotecom,
 			ctx:  context.Background(),
 			o: gopium.Struct{
@@ -221,7 +221,7 @@ func TestNote(t *testing.T) {
 				},
 			},
 		},
-		"complex struct should be applied to itself with relevant doc struct": {
+		"complex struct should be applied to itself with expected doc struct": {
 			note: stnotedoc,
 			ctx:  context.Background(),
 			o: gopium.Struct{
@@ -271,7 +271,7 @@ func TestNote(t *testing.T) {
 				},
 			},
 		},
-		"complex struct should be applied to itself with relevant comment struct": {
+		"complex struct should be applied to itself with expected comment struct": {
 			note: stnotecom,
 			ctx:  context.Background(),
 			o: gopium.Struct{

@@ -10,103 +10,87 @@ import (
 func TestHierarchicPushCatMixed(t *testing.T) {
 	// prepare
 	h := Hierarchic{}
-	// check non existed cat
-	cat, ok := h.Cat("cat")
-	expected := Flat(nil)
-	if ok || !reflect.DeepEqual(cat, expected) {
-		t.Errorf("actual %v doesn't equal to %v", cat, expected)
+	h.Push("test-1", "test-1", gopium.Struct{Name: "test-1"})
+	h.Push("test-2", "test-2", gopium.Struct{Name: "test-2"})
+	h.Push("test-3", "test-2", gopium.Struct{Name: "test-3"})
+	table := map[string]struct {
+		cat string
+		f   Flat
+		ok  bool
+	}{
+		"invalid cat should return empty flat collection": {
+			cat: "cat",
+			f:   Flat(nil),
+		},
+		"test-1 cat should return expected flat collection": {
+			cat: "test-1",
+			f:   Flat{"test-1": gopium.Struct{Name: "test-1"}},
+			ok:  true,
+		},
+		"test-2 cat should return expected flat collection": {
+			cat: "test-2",
+			f: Flat{
+				"test-2": gopium.Struct{Name: "test-2"},
+				"test-3": gopium.Struct{Name: "test-3"},
+			},
+			ok: true,
+		},
 	}
-	// create new and check existed cat
-	h.Push("test-1", "cat", gopium.Struct{Name: "test-1"})
-	cat, ok = h.Cat("cat")
-	expected = Flat{"test-1": gopium.Struct{Name: "test-1"}}
-	if !ok || !reflect.DeepEqual(cat, expected) {
-		t.Errorf("actual %v doesn't equal to %v", cat, expected)
-	}
-	// check another non existed cat
-	cat, ok = h.Cat("cat-1")
-	expected = Flat(nil)
-	if ok || !reflect.DeepEqual(cat, expected) {
-		t.Errorf("actual %v doesn't equal to %v", cat, expected)
-	}
-	// update and check existed cat
-	h.Push("test-2", "cat", gopium.Struct{Name: "test-2"})
-	h.Push("test-3", "cat", gopium.Struct{Name: "test-3"})
-	cat, ok = h.Cat("cat")
-	expected = Flat{
-		"test-1": gopium.Struct{Name: "test-1"},
-		"test-2": gopium.Struct{Name: "test-2"},
-		"test-3": gopium.Struct{Name: "test-3"},
-	}
-	if !ok || !reflect.DeepEqual(cat, expected) {
-		t.Errorf("actual %v doesn't equal to %v", cat, expected)
-	}
-	// check another non existed cat
-	cat, ok = h.Cat("cat-1")
-	expected = Flat(nil)
-	if ok || !reflect.DeepEqual(cat, expected) {
-		t.Errorf("actual %v doesn't equal to %v", cat, expected)
-	}
-	// create new and update and check existed cat
-	h.Push("test-1", "cat", gopium.Struct{Name: "test-5"})
-	h.Push("test-1", "cat-1", gopium.Struct{Name: "test-1"})
-	cat, ok = h.Cat("cat")
-	expected = Flat{
-		"test-1": gopium.Struct{Name: "test-5"},
-		"test-2": gopium.Struct{Name: "test-2"},
-		"test-3": gopium.Struct{Name: "test-3"},
-	}
-	if !ok || !reflect.DeepEqual(cat, expected) {
-		t.Errorf("actual %v doesn't equal to %v", cat, expected)
-	}
-	// check another existed cat
-	cat, ok = h.Cat("cat-1")
-	expected = Flat{"test-1": gopium.Struct{Name: "test-1"}}
-	if !ok || !reflect.DeepEqual(cat, expected) {
-		t.Errorf("actual %v doesn't equal to %v", cat, expected)
+	for name, tcase := range table {
+		t.Run(name, func(t *testing.T) {
+			// exec
+			f, ok := h.Cat(tcase.cat)
+			// check
+			if !reflect.DeepEqual(ok, tcase.ok) {
+				t.Errorf("actual %v doesn't equal to %v", ok, tcase.ok)
+			}
+			if !reflect.DeepEqual(f, tcase.f) {
+				t.Errorf("actual %v doesn't equal to %v", f, tcase.f)
+			}
+		})
 	}
 }
 
 func TestHierarchicFlat(t *testing.T) {
 	// prepare
 	table := map[string]struct {
-		input  Hierarchic
-		output Flat
+		h Hierarchic
+		f Flat
 	}{
 		"nil hierarchic collection should return empty flat collection": {
-			input:  nil,
-			output: Flat{},
+			h: nil,
+			f: Flat{},
 		},
 		"empty hierarchic collection should return empty flat collection": {
-			input:  Hierarchic{},
-			output: Flat{},
+			h: Hierarchic{},
+			f: Flat{},
 		},
 		"single loc single item hierarchic collection should return single item flat collection": {
-			input:  Hierarchic{"loc": {"1-test": gopium.Struct{Name: "test1"}}},
-			output: Flat{"1-test": gopium.Struct{Name: "test1"}},
+			h: Hierarchic{"loc": {"1-test": gopium.Struct{Name: "test1"}}},
+			f: Flat{"1-test": gopium.Struct{Name: "test1"}},
 		},
 		"single loc multiple items hierarchic collection should return single item flat collection": {
-			input: Hierarchic{"loc": {
+			h: Hierarchic{"loc": {
 				"1-test": gopium.Struct{Name: "test1"},
 				"2-test": gopium.Struct{Name: "test2"},
 			}},
-			output: Flat{
+			f: Flat{
 				"1-test": gopium.Struct{Name: "test1"},
 				"2-test": gopium.Struct{Name: "test2"},
 			},
 		},
 		"multiple locs single item hierarchic collection should return multiple items flat collection": {
-			input: Hierarchic{
+			h: Hierarchic{
 				"loc-1": {"1-test": gopium.Struct{Name: "test1"}},
 				"loc-2": {"2-test": gopium.Struct{Name: "test2"}},
 			},
-			output: Flat{
+			f: Flat{
 				"1-test": gopium.Struct{Name: "test1"},
 				"2-test": gopium.Struct{Name: "test2"},
 			},
 		},
 		"multiple locs multiple items hierarchic collection should return multiple items flat collection": {
-			input: Hierarchic{
+			h: Hierarchic{
 				"loc-1": {
 					"1-test": gopium.Struct{Name: "test1"},
 					"2-test": gopium.Struct{Name: "test2"},
@@ -116,7 +100,7 @@ func TestHierarchicFlat(t *testing.T) {
 					"4-test": gopium.Struct{Name: "test4"},
 				},
 			},
-			output: Flat{
+			f: Flat{
 				"1-test": gopium.Struct{Name: "test1"},
 				"2-test": gopium.Struct{Name: "test2"},
 				"3-test": gopium.Struct{Name: "test3"},
@@ -127,10 +111,10 @@ func TestHierarchicFlat(t *testing.T) {
 	for name, tcase := range table {
 		t.Run(name, func(t *testing.T) {
 			// exec
-			output := tcase.input.Flat()
+			f := tcase.h.Flat()
 			// check
-			if !reflect.DeepEqual(output, tcase.output) {
-				t.Errorf("actual %v doesn't equal to %v", output, tcase.output)
+			if !reflect.DeepEqual(f, tcase.f) {
+				t.Errorf("actual %v doesn't equal to %v", f, tcase.f)
 			}
 		})
 	}

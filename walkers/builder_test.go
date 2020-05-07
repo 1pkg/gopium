@@ -23,7 +23,7 @@ func TestBuilder(t *testing.T) {
 		err  error
 	}{
 		// wast walkers
-		"`ast_std` name should lead to relevant walker": {
+		"`ast_std` name should return expected walker": {
 			name: AstStd,
 			w: aststd.With(
 				b.Parser,
@@ -33,7 +33,7 @@ func TestBuilder(t *testing.T) {
 				b.Bref,
 			),
 		},
-		"`ast_go` name should lead to relevant walker": {
+		"`ast_go` name should return expected walker": {
 			name: AstGo,
 			w: astgo.With(
 				b.Parser,
@@ -43,7 +43,7 @@ func TestBuilder(t *testing.T) {
 				b.Bref,
 			),
 		},
-		"`ast_gopium` name should lead to relevant walker": {
+		"`ast_gopium` name should return expected walker": {
 			name: AstGopium,
 			w: astgopium.With(
 				b.Parser,
@@ -54,7 +54,7 @@ func TestBuilder(t *testing.T) {
 			),
 		},
 		// wout walkers
-		"`json_std` name should lead to relevant walker": {
+		"`json_std` name should return expected walker": {
 			name: JsonStd,
 			w: jsonstd.With(
 				b.Parser,
@@ -63,7 +63,7 @@ func TestBuilder(t *testing.T) {
 				b.Bref,
 			),
 		},
-		"`xml_std` name should lead to relevant walker": {
+		"`xml_std` name should return expected walker": {
 			name: XmlStd,
 			w: xmlstd.With(
 				b.Parser,
@@ -72,7 +72,7 @@ func TestBuilder(t *testing.T) {
 				b.Bref,
 			),
 		},
-		"`csv_std` name should lead to relevant walker": {
+		"`csv_std` name should return expected walker": {
 			name: CsvStd,
 			w: csvstd.With(
 				b.Parser,
@@ -81,7 +81,7 @@ func TestBuilder(t *testing.T) {
 				b.Bref,
 			),
 		},
-		"`json_files` name should lead to relevant walker": {
+		"`json_files` name should return expected walker": {
 			name: JsonFiles,
 			w: jsonfiles.With(
 				b.Parser,
@@ -90,7 +90,7 @@ func TestBuilder(t *testing.T) {
 				b.Bref,
 			),
 		},
-		"`xml_files` name should lead to relevant walker": {
+		"`xml_files` name should return expected walker": {
 			name: XmlFiles,
 			w: xmlfiles.With(
 				b.Parser,
@@ -99,7 +99,7 @@ func TestBuilder(t *testing.T) {
 				b.Bref,
 			),
 		},
-		"`csv_files` name should lead to relevant walker": {
+		"`csv_files` name should return expected walker": {
 			name: CsvFiles,
 			w: csvfiles.With(
 				b.Parser,
@@ -109,7 +109,7 @@ func TestBuilder(t *testing.T) {
 			),
 		},
 		// others
-		"unknown name should lead to builder error": {
+		"invalid name should return builder error": {
 			name: "test",
 			err:  fmt.Errorf(`walker "test" wasn't found`),
 		},

@@ -1,12 +1,13 @@
 package typepkg
 
 import (
-	"context"
 	"errors"
 	"go/token"
 	"go/types"
 	"reflect"
 	"testing"
+
+	"1pkg/gopium"
 )
 
 func TestNewMavenGoTypes(t *testing.T) {
@@ -15,22 +16,22 @@ func TestNewMavenGoTypes(t *testing.T) {
 		compiler string
 		arch     string
 		caches   []int64
-		maven    MavenGoTypes
+		maven    gopium.Maven
 		err      error
 	}{
-		"non existed compiler should spawn error": {
+		"invalid compiler should return error": {
 			compiler: "test",
 			arch:     "amd64",
 			maven:    MavenGoTypes{},
 			err:      errors.New(`unsuported compiler "test" arch "amd64" combination`),
 		},
-		"non existed arch should spawn error": {
+		"invalid arch should return error": {
 			compiler: "gc",
 			arch:     "test",
 			maven:    MavenGoTypes{},
 			err:      errors.New(`unsuported compiler "gc" arch "test" combination`),
 		},
-		"existed compiler and arch should create actual maven": {
+		"valid compiler and arch pair should return expected maven": {
 			compiler: "gc",
 			arch:     "amd64",
 			caches:   []int64{2, 4, 8, 16, 32},
@@ -64,36 +65,42 @@ func TestNewMavenGoTypes(t *testing.T) {
 func TestMavenGoTypesSysMixed(t *testing.T) {
 	// prepare
 	maven, err := NewMavenGoTypes("gc", "amd64", 2, 4, 8, 16, 32)
-	if err != nil {
+	if !reflect.DeepEqual(err, nil) {
 		t.Fatalf("actual %v doesn't equal to %v", err, nil)
 	}
-	// check sys word
-	if maven.SysWord() != 8 {
-		t.Errorf("actual %v doesn't equal to %v", maven.SysWord(), 8)
+	table := map[string]struct {
+		maven  gopium.Maven
+		word   int64
+		align  int64
+		caches []int64
+	}{
+		"gc/amd64 maven should return expected results": {
+			maven:  maven,
+			word:   8,
+			align:  8,
+			caches: []int64{64, 2, 4, 8, 16, 32, 64, 64, 64},
+		},
 	}
-	// check sys align
-	if maven.SysAlign() != 8 {
-		t.Errorf("actual %v doesn't equal to %v", maven.SysAlign(), 8)
-	}
-	// check sys cache l1
-	if maven.SysCache(1) != 2 {
-		t.Errorf("actual %v doesn't equal to %v", maven.SysCache(1), 2)
-	}
-	// check sys cache l2
-	if maven.SysCache(2) != 4 {
-		t.Errorf("actual %v doesn't equal to %v", maven.SysCache(2), 4)
-	}
-	// check sys cache l3
-	if maven.SysCache(3) != 8 {
-		t.Errorf("actual %v doesn't equal to %v", maven.SysCache(3), 8)
-	}
-	// check sys cache l10
-	if maven.SysCache(10) != 64 {
-		t.Errorf("actual %v doesn't equal to %v", maven.SysCache(10), 64)
-	}
-	// check sys cache l0
-	if maven.SysCache(0) != 64 {
-		t.Errorf("actual %v doesn't equal to %v", maven.SysCache(0), 64)
+	for name, tcase := range table {
+		t.Run(name, func(t *testing.T) {
+			// exec
+			word := maven.SysWord()
+			align := maven.SysAlign()
+			caches := make([]int64, len(tcase.caches))
+			for i := range caches {
+				caches[i] = maven.SysCache(uint(i))
+			}
+			// check
+			if !reflect.DeepEqual(word, tcase.word) {
+				t.Errorf("actual %v doesn't equal to %v", word, tcase.word)
+			}
+			if !reflect.DeepEqual(align, tcase.align) {
+				t.Errorf("actual %v doesn't equal to %v", align, tcase.align)
+			}
+			if !reflect.DeepEqual(caches, tcase.caches) {
+				t.Errorf("actual %v doesn't equal to %v", caches, tcase.caches)
+			}
+		})
 	}
 }
 
@@ -105,36 +112,35 @@ func TestMavenGoTypesTypeMixed(t *testing.T) {
 	}
 	table := map[string]struct {
 		tp    types.Type
-		ctx   context.Context
 		name  string
 		size  int64
 		align int64
 	}{
-		"int64 type should return correct value": {
+		"int64 type should return expected resultss": {
 			tp:    types.Typ[types.Int64],
 			name:  "int64",
 			size:  8,
 			align: 8,
 		},
-		"string type should return correct value": {
+		"string type should return expected results": {
 			tp:    types.Typ[types.String],
 			name:  "string",
 			size:  16,
 			align: 8,
 		},
-		"string slice type should return correct value": {
+		"string slice type should return expected results": {
 			tp:    types.NewSlice(types.Typ[types.String]),
 			name:  "[]string",
 			size:  24,
 			align: 8,
 		},
-		"float32 arr type should return correct value": {
+		"float32 arr type should return expected results": {
 			tp:    types.NewArray(types.Typ[types.Float32], 8),
 			name:  "[8]float32",
 			size:  32,
 			align: 4,
 		},
-		"struct type should return correct value": {
+		"struct type should return expected results": {
 			tp: types.NewStruct(
 				[]*types.Var{
 					types.NewVar(token.Pos(0), nil, "a", types.Typ[types.Int64]),
@@ -156,13 +162,13 @@ func TestMavenGoTypesTypeMixed(t *testing.T) {
 			size := maven.Size(tcase.tp)
 			align := maven.Align(tcase.tp)
 			// check
-			if name != tcase.name {
+			if !reflect.DeepEqual(name, tcase.name) {
 				t.Errorf("actual %v doesn't equal to %v", name, tcase.name)
 			}
-			if size != tcase.size {
+			if !reflect.DeepEqual(size, tcase.size) {
 				t.Errorf("actual %v doesn't equal to %v", size, tcase.size)
 			}
-			if align != tcase.align {
+			if !reflect.DeepEqual(align, tcase.align) {
 				t.Errorf("actual %v doesn't equal to %v", align, tcase.align)
 			}
 		})

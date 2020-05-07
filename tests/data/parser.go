@@ -16,7 +16,7 @@ import (
 	"golang.org/x/tools/go/packages"
 )
 
-// prebake types cache map and sync
+// init types cache map and sync
 var (
 	tcache map[string]typesloc = make(map[string]typesloc, 5)
 	tmutex sync.Mutex

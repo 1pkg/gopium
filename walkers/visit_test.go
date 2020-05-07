@@ -19,64 +19,64 @@ import (
 func TestWithVisit(t *testing.T) {
 	// prepare
 	table := map[string]struct {
-		exp   gopium.Exposer
-		loc   gopium.Locator
-		bref  bool
-		regex *regexp.Regexp
-		stg   gopium.Strategy
-		ch    appliedCh
-		deep  bool
-		ctx   context.Context
-		s     *types.Scope
+		exp  gopium.Exposer
+		loc  gopium.Locator
+		bref bool
+		r    *regexp.Regexp
+		stg  gopium.Strategy
+		ch   appliedCh
+		deep bool
+		ctx  context.Context
+		s    *types.Scope
 	}{
-		"with visit should create valid govisit func": {
-			exp:   mocks.Maven{},
-			loc:   mocks.Locator{},
-			bref:  true,
-			regex: regexp.MustCompile(`.*`),
-			stg:   mocks.Strategy{},
-			ch:    make(appliedCh),
-			deep:  true,
-			ctx:   context.Background(),
-			s:     &types.Scope{},
+		"with visit should return expected govisit func": {
+			exp:  mocks.Maven{},
+			loc:  mocks.Locator{},
+			bref: true,
+			r:    regexp.MustCompile(`.*`),
+			stg:  mocks.Strategy{},
+			ch:   make(appliedCh),
+			deep: true,
+			ctx:  context.Background(),
+			s:    &types.Scope{},
 		},
-		"with visit should create valid govisit func even without bref flag": {
-			exp:   mocks.Maven{},
-			loc:   mocks.Locator{},
-			bref:  false,
-			regex: regexp.MustCompile(`.*`),
-			stg:   mocks.Strategy{},
-			ch:    make(appliedCh),
-			deep:  true,
-			ctx:   context.Background(),
-			s:     &types.Scope{},
+		"with visit should return expected govisit func even without bref flag": {
+			exp:  mocks.Maven{},
+			loc:  mocks.Locator{},
+			bref: false,
+			r:    regexp.MustCompile(`.*`),
+			stg:  mocks.Strategy{},
+			ch:   make(appliedCh),
+			deep: true,
+			ctx:  context.Background(),
+			s:    &types.Scope{},
 		},
-		"with visit should create valid govisit func even without deep flag": {
-			exp:   mocks.Maven{},
-			loc:   mocks.Locator{},
-			bref:  true,
-			regex: regexp.MustCompile(`.*`),
-			stg:   mocks.Strategy{},
-			ch:    make(appliedCh),
-			deep:  false,
-			ctx:   context.Background(),
-			s:     &types.Scope{},
+		"with visit should return expected govisit func even without deep flag": {
+			exp:  mocks.Maven{},
+			loc:  mocks.Locator{},
+			bref: true,
+			r:    regexp.MustCompile(`.*`),
+			stg:  mocks.Strategy{},
+			ch:   make(appliedCh),
+			deep: false,
+			ctx:  context.Background(),
+			s:    &types.Scope{},
 		},
-		"with visit should create valid govisit func even without flags": {
-			exp:   mocks.Maven{},
-			loc:   mocks.Locator{},
-			regex: regexp.MustCompile(`.*`),
-			stg:   mocks.Strategy{},
-			ch:    make(appliedCh),
-			ctx:   context.Background(),
-			s:     &types.Scope{},
+		"with visit should return expected govisit func even without all flags": {
+			exp: mocks.Maven{},
+			loc: mocks.Locator{},
+			r:   regexp.MustCompile(`.*`),
+			stg: mocks.Strategy{},
+			ch:  make(appliedCh),
+			ctx: context.Background(),
+			s:   &types.Scope{},
 		},
 	}
 	for name, tcase := range table {
 		t.Run(name, func(t *testing.T) {
 			// exec
 			gvisit := with(tcase.exp, tcase.loc, tcase.bref).
-				visit(tcase.regex, tcase.stg, tcase.ch, tcase.deep)
+				visit(tcase.r, tcase.stg, tcase.ch, tcase.deep)
 			gvisit(tcase.ctx, tcase.s)
 			// check
 			// we can't compare functions directly in go
@@ -94,15 +94,15 @@ func TestVscope(t *testing.T) {
 	cancel()
 	b := strategies.Builder{}
 	np, err := b.Build(strategies.Nope)
-	if err != nil {
+	if !reflect.DeepEqual(err, nil) {
 		t.Fatalf("actual %v doesn't equal to %v", err, nil)
 	}
 	pck, err := b.Build(strategies.Pack)
-	if err != nil {
+	if !reflect.DeepEqual(err, nil) {
 		t.Fatalf("actual %v doesn't equal to %v", err, nil)
 	}
 	m, err := typepkg.NewMavenGoTypes("gc", "amd64", 64, 64, 64)
-	if err != nil {
+	if !reflect.DeepEqual(err, nil) {
 		t.Fatalf("actual %v doesn't equal to %v", err, nil)
 	}
 	table := map[string]struct {
@@ -123,7 +123,7 @@ func TestVscope(t *testing.T) {
 			stg: np,
 			sts: make(map[string]gopium.Struct),
 		},
-		"single struct pkg should visit the single struct": {
+		"single struct pkg should visit the struct": {
 			ctx: context.Background(),
 			r:   regexp.MustCompile(`.*`),
 			m:   m,
@@ -158,7 +158,7 @@ func TestVscope(t *testing.T) {
 				},
 			},
 		},
-		"single struct pkg should visit nothing on context cancelation": {
+		"single struct pkg should visit nothing on canceled context": {
 			ctx: cctx,
 			r:   regexp.MustCompile(`.*`),
 			m:   m,
@@ -289,7 +289,7 @@ func TestVscope(t *testing.T) {
 				},
 			},
 		},
-		"flat struct pkg should visit single struct on same loc": {
+		"flat struct pkg should visit the struct on same loc": {
 			ctx: context.Background(),
 			r:   regexp.MustCompile(`.*`),
 			m:   m,
@@ -338,7 +338,7 @@ func TestVscope(t *testing.T) {
 				},
 			},
 		},
-		"flat struct pkg should visit only relevant structs with regex": {
+		"flat struct pkg should visit only expected structs with regex": {
 			ctx: context.Background(),
 			r:   regexp.MustCompile(`A`),
 			m:   m,
@@ -463,7 +463,7 @@ func TestVscope(t *testing.T) {
 				},
 			},
 		},
-		"multi structs pkg should visit only relevant top level structs": {
+		"multi structs pkg should visit only expected top level structs": {
 			ctx: context.Background(),
 			r:   regexp.MustCompile(`(A|Z)`),
 			m:   m,
@@ -545,10 +545,10 @@ func TestVscope(t *testing.T) {
 	}
 	for name, tcase := range table {
 		t.Run(name, func(t *testing.T) {
-			// exec
+			// prepare
 			pkg, loc, err := tcase.p.ParseTypes(context.Background())
-			if err != nil {
-				t.Fatal(err)
+			if !reflect.DeepEqual(err, nil) {
+				t.Fatalf("actual %v doesn't equal to %v", err, nil)
 			}
 			ref := collections.NewReference(false)
 			m := &maven{exp: m, loc: loc, ref: ref}
@@ -556,15 +556,16 @@ func TestVscope(t *testing.T) {
 				m.loc = tcase.loc
 			}
 			ch := make(appliedCh)
+			// exec
 			go vscope(tcase.ctx, pkg.Scope(), tcase.r, tcase.stg, m, ch)
 			// check
 			for applied := range ch {
-				// if error occured check it
+				// if error occured skip
 				if applied.Error != nil {
 					if !reflect.DeepEqual(applied.Error, tcase.err) {
 						t.Errorf("actual %v doesn't equal to expected %v", applied.Error, tcase.err)
 					}
-					return
+					continue
 				}
 				// otherwise check all struct
 				// against structs map
@@ -591,15 +592,15 @@ func TestVdeep(t *testing.T) {
 	cancel()
 	b := strategies.Builder{}
 	np, err := b.Build(strategies.Nope)
-	if err != nil {
+	if !reflect.DeepEqual(err, nil) {
 		t.Fatalf("actual %v doesn't equal to %v", err, nil)
 	}
 	pck, err := b.Build(strategies.Pack)
-	if err != nil {
+	if !reflect.DeepEqual(err, nil) {
 		t.Fatalf("actual %v doesn't equal to %v", err, nil)
 	}
 	m, err := typepkg.NewMavenGoTypes("gc", "amd64", 64, 64, 64)
-	if err != nil {
+	if !reflect.DeepEqual(err, nil) {
 		t.Fatalf("actual %v doesn't equal to %v", err, nil)
 	}
 	table := map[string]struct {
@@ -620,7 +621,7 @@ func TestVdeep(t *testing.T) {
 			stg: np,
 			sts: make(map[string]gopium.Struct),
 		},
-		"single struct pkg should visit the single struct": {
+		"single struct pkg should visit the struct": {
 			ctx: context.Background(),
 			r:   regexp.MustCompile(`.*`),
 			m:   m,
@@ -655,7 +656,7 @@ func TestVdeep(t *testing.T) {
 				},
 			},
 		},
-		"single struct pkg should visit nothing on context cancelation": {
+		"single struct pkg should visit nothing on canceled context": {
 			ctx: cctx,
 			r:   regexp.MustCompile(`.*`),
 			m:   m,
@@ -786,7 +787,7 @@ func TestVdeep(t *testing.T) {
 				},
 			},
 		},
-		"flat struct pkg should visit single struct on same loc": {
+		"flat struct pkg should visit the struct on same loc": {
 			ctx: context.Background(),
 			r:   regexp.MustCompile(`.*`),
 			m:   m,
@@ -835,7 +836,7 @@ func TestVdeep(t *testing.T) {
 				},
 			},
 		},
-		"flat struct pkg should visit only relevant structs with regex": {
+		"flat struct pkg should visit only expected structs with regex": {
 			ctx: context.Background(),
 			r:   regexp.MustCompile(`A`),
 			m:   m,
@@ -1024,7 +1025,7 @@ func TestVdeep(t *testing.T) {
 				},
 			},
 		},
-		"multi structs pkg should visit all relevant levels structs": {
+		"multi structs pkg should visit all expected levels structs": {
 			ctx: context.Background(),
 			r:   regexp.MustCompile(`(A|Z)`),
 			m:   m,
@@ -1130,10 +1131,10 @@ func TestVdeep(t *testing.T) {
 	}
 	for name, tcase := range table {
 		t.Run(name, func(t *testing.T) {
-			// exec
+			// prepare
 			pkg, loc, err := tcase.p.ParseTypes(context.Background())
-			if err != nil {
-				t.Fatal(err)
+			if !reflect.DeepEqual(err, nil) {
+				t.Fatalf("actual %v doesn't equal to %v", err, nil)
 			}
 			ref := collections.NewReference(false)
 			m := &maven{exp: m, loc: loc, ref: ref}
@@ -1141,15 +1142,16 @@ func TestVdeep(t *testing.T) {
 				m.loc = tcase.loc
 			}
 			ch := make(appliedCh)
+			// exec
 			go vdeep(tcase.ctx, pkg.Scope(), tcase.r, tcase.stg, m, ch)
 			// check
 			for applied := range ch {
-				// if error occured check it
+				// if error occured skip
 				if applied.Error != nil {
 					if !reflect.DeepEqual(applied.Error, tcase.err) {
 						t.Errorf("actual %v doesn't equal to expected %v", applied.Error, tcase.err)
 					}
-					return
+					continue
 				}
 				// otherwise check all struct
 				// against structs map

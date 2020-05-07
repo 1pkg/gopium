@@ -67,7 +67,7 @@ func TestGroup(t *testing.T) {
 				},
 			},
 		},
-		"non empty struct with valid tag should be applied to itself with relevant doc": {
+		"non empty struct with relevant tag should be applied to expected struct": {
 			b:   Builder{Curator: mocks.Maven{}},
 			ctx: context.Background(),
 			o: gopium.Struct{
@@ -94,7 +94,7 @@ func TestGroup(t *testing.T) {
 				},
 			},
 		},
-		"non empty struct with valid tag should be applied to itself with relevant doc on canceled context": {
+		"non empty struct with relevant tag should be applied to expected struct on canceled context": {
 			b:   Builder{Curator: mocks.Maven{}},
 			ctx: cctx,
 			o: gopium.Struct{
@@ -121,7 +121,7 @@ func TestGroup(t *testing.T) {
 			},
 			err: cctx.Err(),
 		},
-		"non empty struct with valid group tag should be applied to itself with relevant doc": {
+		"non empty struct with relevant group tag should be applied to expected struct": {
 			b:   Builder{Curator: mocks.Maven{}},
 			ctx: context.Background(),
 			o: gopium.Struct{
@@ -148,7 +148,7 @@ func TestGroup(t *testing.T) {
 				},
 			},
 		},
-		"non empty struct with valid group tag should be applied to itself with relevant doc with excess separators": {
+		"non empty struct with relevant group tag should be applied to expected struct with excess separators": {
 			b:   Builder{Curator: mocks.Maven{}},
 			ctx: context.Background(),
 			o: gopium.Struct{
@@ -307,7 +307,7 @@ func TestGroup(t *testing.T) {
 			},
 			err: errors.New(`inconsistent strategies list "comment_fields_annotate" for field "test" in group "def"`),
 		},
-		"mixed struct with non existent strategies should be applied to itself with error": {
+		"mixed struct with invalid strategies should be applied to itself with error": {
 			b:   Builder{Curator: mocks.Maven{}},
 			ctx: context.Background(),
 			o: gopium.Struct{
@@ -346,7 +346,7 @@ func TestGroup(t *testing.T) {
 			},
 			err: errors.New(`strategy "test" wasn't found`),
 		},
-		"mixed struct should be applied to itself accordingly to tags": {
+		"mixed struct should be applied to expected struct accordingly to tags": {
 			b:   Builder{Curator: mocks.Maven{SAlign: 12, SCache: []int64{24}}},
 			ctx: context.Background(),
 			o: gopium.Struct{
@@ -433,8 +433,9 @@ func TestGroup(t *testing.T) {
 	}
 	for name, tcase := range table {
 		t.Run(name, func(t *testing.T) {
-			// exec
+			// prepare
 			grp := ptgrp.Builder(tcase.b)
+			// exec
 			r, err := grp.Apply(tcase.ctx, tcase.o)
 			// check
 			if !reflect.DeepEqual(r, tcase.r) {

@@ -14,22 +14,22 @@ func TestCache(t *testing.T) {
 	cctx, cancel := context.WithCancel(context.Background())
 	cancel()
 	table := map[string]struct {
-		cache   cache
-		curator gopium.Curator
-		ctx     context.Context
-		o       gopium.Struct
-		r       gopium.Struct
-		err     error
+		cache cache
+		c     gopium.Curator
+		ctx   context.Context
+		o     gopium.Struct
+		r     gopium.Struct
+		err   error
 	}{
 		"empty struct should be applied to empty struct": {
-			cache:   cachel1,
-			curator: mocks.Maven{SCache: []int64{32}},
-			ctx:     context.Background(),
+			cache: cachel1,
+			c:     mocks.Maven{SCache: []int64{32}},
+			ctx:   context.Background(),
 		},
-		"non empty struct should be applied to cache aligned struct": {
-			cache:   cachel2,
-			curator: mocks.Maven{SCache: []int64{16, 16, 16}},
-			ctx:     context.Background(),
+		"non empty struct should be applied to expected aligned struct": {
+			cache: cachel2,
+			c:     mocks.Maven{SCache: []int64{16, 16, 16}},
+			ctx:   context.Background(),
 			o: gopium.Struct{
 				Name: "test",
 				Fields: []gopium.Field{
@@ -50,10 +50,10 @@ func TestCache(t *testing.T) {
 				},
 			},
 		},
-		"non empty struct should be applied to cache aligned struct on canceled context": {
-			cache:   cachel3,
-			curator: mocks.Maven{SCache: []int64{16, 16, 16}},
-			ctx:     cctx,
+		"non empty struct should be applied to expected aligned struct on canceled context": {
+			cache: cachel3,
+			c:     mocks.Maven{SCache: []int64{16, 16, 16}},
+			ctx:   cctx,
 			o: gopium.Struct{
 				Name: "test",
 				Fields: []gopium.Field{
@@ -75,10 +75,10 @@ func TestCache(t *testing.T) {
 			},
 			err: cctx.Err(),
 		},
-		"mixed struct should be applied to cache aligned struct": {
-			cache:   cachel3,
-			curator: mocks.Maven{SCache: []int64{16, 32, 64}},
-			ctx:     context.Background(),
+		"mixed struct should be applied to expected aligned struct": {
+			cache: cachel3,
+			c:     mocks.Maven{SCache: []int64{16, 32, 64}},
+			ctx:   context.Background(),
 			o: gopium.Struct{
 				Name: "test",
 				Fields: []gopium.Field{
@@ -123,10 +123,10 @@ func TestCache(t *testing.T) {
 				},
 			},
 		},
-		"mixed prealigned struct should be applied to same cache aligned struct": {
-			cache:   cachel2,
-			curator: mocks.Maven{SCache: []int64{16, 32, 64}},
-			ctx:     context.Background(),
+		"mixed prealigned struct should be applied to itself": {
+			cache: cachel2,
+			c:     mocks.Maven{SCache: []int64{16, 32, 64}},
+			ctx:   context.Background(),
 			o: gopium.Struct{
 				Name: "test",
 				Fields: []gopium.Field{
@@ -165,8 +165,9 @@ func TestCache(t *testing.T) {
 	}
 	for name, tcase := range table {
 		t.Run(name, func(t *testing.T) {
+			// prepare
+			cache := tcase.cache.Curator(tcase.c)
 			// exec
-			cache := tcase.cache.Curator(tcase.curator)
 			r, err := cache.Apply(tcase.ctx, tcase.o)
 			// check
 			if !reflect.DeepEqual(r, tcase.r) {

@@ -19,18 +19,18 @@ func TestPrinter(t *testing.T) {
 	cctx, cancel := context.WithCancel(context.Background())
 	cancel()
 	table := map[string]struct {
+		p   gopium.Parser
 		pr  Printer
 		w   Writer
 		ctx context.Context
 		pkg *ast.Package
-		p   gopium.Parser
 		r   map[string][]byte
 		err error
 	}{
-		"empty pkg should visit nothing": {
+		"empty pkg should print nothing": {
+			p:   data.NewParser("empty"),
 			pr:  Goprint(0, 4, true),
 			ctx: context.Background(),
-			p:   data.NewParser("empty"),
 			r: map[string][]byte{
 				"/src/1pkg/gopium/tests/data/empty/file.go": []byte(`
 //+build tests_data
@@ -39,10 +39,10 @@ package empty
 `),
 			},
 		},
-		"single struct pkg should visit the single struct": {
+		"single struct pkg should print the struct": {
+			p:   data.NewParser("single"),
 			pr:  Goprint(0, 4, false),
 			ctx: context.Background(),
-			p:   data.NewParser("single"),
 			r: map[string][]byte{
 				"/src/1pkg/gopium/tests/data/single/file.go": []byte(`
 //+build tests_data
@@ -57,34 +57,34 @@ type Single struct {
 `),
 			},
 		},
-		"single struct pkg should visit nothing on context cancelation": {
+		"single struct pkg should print nothing on canceled context": {
+			p:   data.NewParser("single"),
 			pr:  Goprint(0, 4, false),
 			ctx: cctx,
-			p:   data.NewParser("single"),
 			r:   make(map[string][]byte),
 			err: cctx.Err(),
 		},
-		"single struct pkg should visit nothing on persist error": {
+		"single struct pkg should print nothing on persist error": {
+			p:   data.NewParser("single"),
 			pr:  Goprint(0, 4, false),
 			ctx: context.Background(),
-			p:   data.NewParser("single"),
 			w:   (&mocks.Writer{Err: errors.New("test-1")}).Writer,
 			r:   make(map[string][]byte),
 			err: errors.New("test-1"),
 		},
-		"single struct pkg should visit nothing on printer error": {
+		"single struct pkg should print nothing on printer error": {
+			p:   data.NewParser("single"),
 			pr:  mocks.Printer{Err: errors.New("test-2")}.Printer,
 			ctx: context.Background(),
-			p:   data.NewParser("single"),
 			r: map[string][]byte{
 				"/src/1pkg/gopium/tests/data/single/file.go": []byte(``),
 			},
 			err: errors.New("test-2"),
 		},
-		"multi structs pkg should visit all relevant levels structs with deep": {
+		"multi structs pkg should print all expected levels structs with deep": {
+			p:   data.NewParser("multi"),
 			pr:  Goprint(0, 4, false),
 			ctx: context.Background(),
-			p:   data.NewParser("multi"),
 			r: map[string][]byte{
 				"/src/1pkg/gopium/tests/data/multi/file-1.go": []byte(`
 //+build tests_data
@@ -187,7 +187,7 @@ type (
 	}
 	for name, tcase := range table {
 		t.Run(name, func(t *testing.T) {
-			// exec
+			// prepare
 			writer := tcase.w
 			w := &mocks.Writer{}
 			if writer == nil {
@@ -197,21 +197,23 @@ type (
 			if !reflect.DeepEqual(err, nil) {
 				t.Fatalf("actual %v doesn't equal to expected %v", err, nil)
 			}
+			// exec
 			err = tcase.pr.Save(writer)(tcase.ctx, pkg, loc)
 			// check
 			if !reflect.DeepEqual(err, tcase.err) {
 				t.Errorf("actual %v doesn't equal to expected %v", err, tcase.err)
 			}
 			for name, buf := range w.Buffers {
-				// remove gopath from collected id
+				// remove gopath from id
 				name = strings.Replace(name, build.Default.GOPATH, "", 1)
 				// check all struct
 				// against bytes map
 				if st, ok := tcase.r[name]; ok {
 					// format actual and expected identically
-					stract, strexp := strings.Trim(string(buf.Bytes()), "\n"), strings.Trim(string(st), "\n")
-					if !reflect.DeepEqual(stract, strexp) {
-						t.Errorf("name %v actual %v doesn't equal to expected %v", name, stract, strexp)
+					actual := strings.Trim(string(buf.Bytes()), "\n")
+					expected := strings.Trim(string(st), "\n")
+					if !reflect.DeepEqual(actual, expected) {
+						t.Errorf("name %v actual %v doesn't equal to expected %v", name, actual, expected)
 					}
 					delete(tcase.r, name)
 				} else {

@@ -26,7 +26,7 @@ func TestFshare(t *testing.T) {
 			c:      mocks.Maven{SCache: []int64{32}},
 			ctx:    context.Background(),
 		},
-		"non empty struct should be applied to fshare aligned struct": {
+		"non empty struct should be applied to expected aligned struct": {
 			fshare: fsharel2,
 			c:      mocks.Maven{SCache: []int64{16, 16, 16}},
 			ctx:    context.Background(),
@@ -50,7 +50,7 @@ func TestFshare(t *testing.T) {
 				},
 			},
 		},
-		"non empty struct should be applied to fshare aligned struct on canceled context": {
+		"non empty struct should be applied to expected aligned struct on canceled context": {
 			fshare: fsharel3,
 			c:      mocks.Maven{SCache: []int64{16, 16, 16}},
 			ctx:    cctx,
@@ -75,7 +75,7 @@ func TestFshare(t *testing.T) {
 			},
 			err: cctx.Err(),
 		},
-		"mixed struct should be applied to fshare aligned struct": {
+		"mixed struct should be applied to expected aligned struct": {
 			fshare: fsharel3,
 			c:      mocks.Maven{SCache: []int64{16, 32, 64}},
 			ctx:    context.Background(),
@@ -126,7 +126,7 @@ func TestFshare(t *testing.T) {
 				},
 			},
 		},
-		"mixed prealigned struct should be applied to fshare aligned struct": {
+		"mixed prealigned struct should be applied to expected aligned struct": {
 			fshare: fsharel1,
 			c:      mocks.Maven{SCache: []int64{16, 32, 64}},
 			ctx:    context.Background(),
@@ -170,8 +170,9 @@ func TestFshare(t *testing.T) {
 	}
 	for name, tcase := range table {
 		t.Run(name, func(t *testing.T) {
-			// exec
+			// prepare
 			fshare := tcase.fshare.Curator(tcase.c)
+			// exec
 			r, err := fshare.Apply(tcase.ctx, tcase.o)
 			// check
 			if !reflect.DeepEqual(r, tcase.r) {

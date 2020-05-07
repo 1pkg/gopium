@@ -52,8 +52,6 @@ func (bs Boundaries) Inside(p token.Pos) bool {
 			l = i + 1
 			continue
 		}
-		// otherwise break from iteration
-		break
 	}
 	// we found the answer
 	return false

@@ -125,7 +125,7 @@ func (w wout) write(id string, loc string, st gopium.Struct) error {
 	if err != nil {
 		return err
 	}
-	// generate relevant writer
+	// generate writer
 	writer, err := w.writer(id, loc)
 	if err != nil {
 		return err

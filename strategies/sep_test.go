@@ -26,7 +26,7 @@ func TestSep(t *testing.T) {
 			c:   mocks.Maven{SCache: []int64{32}},
 			ctx: context.Background(),
 		},
-		"non empty struct should be applied to cache line separator aligned struct": {
+		"non empty struct should be applied to expected aligned struct": {
 			sep: sepl2b,
 			c:   mocks.Maven{SCache: []int64{16, 16, 16}},
 			ctx: context.Background(),
@@ -50,7 +50,7 @@ func TestSep(t *testing.T) {
 				},
 			},
 		},
-		"non empty struct should be applied to cache line separator aligned on canceled context": {
+		"non empty struct should be applied to expected aligned struct on canceled context": {
 			sep: sepl3b,
 			c:   mocks.Maven{SCache: []int64{16, 16, 16}},
 			ctx: cctx,
@@ -75,7 +75,7 @@ func TestSep(t *testing.T) {
 			},
 			err: cctx.Err(),
 		},
-		"mixed struct should be applied to sys separator aligned struct at top": {
+		"mixed struct should be applied to expected aligned struct with sys top": {
 			sep: sepsyst,
 			c:   mocks.Maven{SAlign: 24, SCache: []int64{16, 32, 64}},
 			ctx: context.Background(),
@@ -123,7 +123,7 @@ func TestSep(t *testing.T) {
 				},
 			},
 		},
-		"mixed struct should be applied to sys separator aligned struct at bottom": {
+		"mixed struct should be applied to expected aligned struct with sys bottom": {
 			sep: sepsysb,
 			c:   mocks.Maven{SAlign: 24, SCache: []int64{16, 32, 64}},
 			ctx: context.Background(),
@@ -171,7 +171,7 @@ func TestSep(t *testing.T) {
 				},
 			},
 		},
-		"mixed struct should be applied to cache line separator aligned struct at top": {
+		"mixed struct should be applied to expected aligned struct with cache top": {
 			sep: sepl3t,
 			c:   mocks.Maven{SAlign: 24, SCache: []int64{16, 32, 64}},
 			ctx: context.Background(),
@@ -230,8 +230,9 @@ func TestSep(t *testing.T) {
 	}
 	for name, tcase := range table {
 		t.Run(name, func(t *testing.T) {
-			// exec
+			// prepare
 			sep := tcase.sep.Curator(tcase.c)
+			// exec
 			r, err := sep.Apply(tcase.ctx, tcase.o)
 			// check
 			if !reflect.DeepEqual(r, tcase.r) {

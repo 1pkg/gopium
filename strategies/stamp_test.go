@@ -19,14 +19,14 @@ func TestStamp(t *testing.T) {
 		r     gopium.Struct
 		err   error
 	}{
-		"empty struct should be applied to itself with relevant doc": {
+		"empty struct should be applied to itself with expected doc": {
 			stamp: stampdoc,
 			ctx:   context.Background(),
 			r: gopium.Struct{
 				Doc: []string{"// struct has been auto curated - 🌺 gopium @1pkg"},
 			},
 		},
-		"non empty struct should be applied to itself with relevant doc": {
+		"non empty struct should be applied to itself with expected doc": {
 			stamp: stampdoc,
 			ctx:   context.Background(),
 			o: gopium.Struct{
@@ -47,7 +47,7 @@ func TestStamp(t *testing.T) {
 				},
 			},
 		},
-		"non empty struct should be applied to itself with relevant doc on canceled context": {
+		"non empty struct should be applied to itself with expected comment on canceled context": {
 			stamp: stampcom,
 			ctx:   cctx,
 			o: gopium.Struct{
@@ -69,7 +69,7 @@ func TestStamp(t *testing.T) {
 			},
 			err: cctx.Err(),
 		},
-		"complex struct should be applied to itself with relevant doc": {
+		"complex struct should be applied to itself with expected doc": {
 			stamp: stampdoc,
 			ctx:   context.Background(),
 			o: gopium.Struct{
@@ -113,7 +113,7 @@ func TestStamp(t *testing.T) {
 				},
 			},
 		},
-		"complex struct should be applied to itself with relevant comment": {
+		"complex struct should be applied to itself with expected comment": {
 			ctx: context.Background(),
 			o: gopium.Struct{
 				Name:    "test",
