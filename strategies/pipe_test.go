@@ -45,7 +45,7 @@ func TestPipe(t *testing.T) {
 				},
 			},
 		},
-		"non empty struct should be applied to itself on canceled context with empty pipe": {
+		"non empty struct should be applied to itself with empty pipe on canceled context": {
 			ctx: cctx,
 			o: gopium.Struct{
 				Name: "test",
@@ -114,7 +114,7 @@ func TestPipe(t *testing.T) {
 			},
 			err: cctx.Err(),
 		},
-		"non empty struct should be applied to success pipe result on pipe error": {
+		"non empty struct should be applied to expected result on pipe error": {
 			pipe: pipe([]gopium.Strategy{
 				fnotecom,
 				mocks.Strategy{Err: errors.New("test error")},

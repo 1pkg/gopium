@@ -37,11 +37,12 @@ type group struct {
 	builder Builder
 }
 
-// container carries all relevant group data
+// container carries sing group data
 type container struct {
-	grp  string
-	o, r gopium.Struct
-	stg  gopium.Strategy
+	grp string
+	o   gopium.Struct
+	r   gopium.Struct
+	stg gopium.Strategy
 }
 
 // Curator erich group strategy with builder instance

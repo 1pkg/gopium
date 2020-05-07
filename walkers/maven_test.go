@@ -32,12 +32,12 @@ func TestMavenHas(t *testing.T) {
 		id  string
 		loc string
 	}{
-		"type name with valid pos should provide correct id and loc": {
+		"type name with valid pos should return expected id and loc": {
 			tn:  types.NewTypeName(token.Pos(0), nil, "test", types.Typ[types.String]),
 			id:  "1",
 			loc: "loc1",
 		},
-		"different type name with valid pos should provide correct id and loc": {
+		"other type name with valid pos should return expected id and loc": {
 			tn:  types.NewTypeName(token.Pos(10), nil, "test", types.Typ[types.String]),
 			id:  "10",
 			loc: "loc10",
@@ -51,20 +51,26 @@ func TestMavenHas(t *testing.T) {
 	for name, tcase := range table {
 		t.Run(name, func(t *testing.T) {
 			// exec
-			id, loc, ok := m.has(tcase.tn)
-			id_, loc_, ok_ := m.has(tcase.tn)
+			id1, loc1, ok1 := m.has(tcase.tn)
+			id2, loc2, ok2 := m.has(tcase.tn)
 			// check
-			if ok || id != tcase.id {
-				t.Errorf("actual %v doesn't equal to expected %v", id, tcase.id)
+			if !reflect.DeepEqual(ok1, false) {
+				t.Errorf("actual %v doesn't equal to expected %v", ok1, false)
 			}
-			if ok || loc != tcase.loc {
-				t.Errorf("actual %v doesn't equal to expected %v", loc, tcase.loc)
+			if !reflect.DeepEqual(id1, tcase.id) {
+				t.Errorf("actual %v doesn't equal to expected %v", id1, tcase.id)
 			}
-			if !ok_ || id_ != tcase.id {
-				t.Errorf("actual %v doesn't equal to expected %v", id_, tcase.id)
+			if !reflect.DeepEqual(loc1, tcase.loc) {
+				t.Errorf("actual %v doesn't equal to expected %v", loc1, tcase.loc)
 			}
-			if !ok_ || loc_ != tcase.loc {
-				t.Errorf("actual %v doesn't equal to expected %v", loc_, tcase.loc)
+			if !reflect.DeepEqual(ok2, true) {
+				t.Errorf("actual %v doesn't equal to expected %v", ok2, true)
+			}
+			if !reflect.DeepEqual(id2, tcase.id) {
+				t.Errorf("actual %v doesn't equal to expected %v", id2, tcase.id)
+			}
+			if !reflect.DeepEqual(loc2, tcase.loc) {
+				t.Errorf("actual %v doesn't equal to expected %v", loc2, tcase.loc)
 			}
 		})
 	}
@@ -119,7 +125,7 @@ func TestMavenEnum(t *testing.T) {
 		tst  *types.Struct
 		st   gopium.Struct
 	}{
-		"custom type should return correct enum struct": {
+		"custom type should return expected struct": {
 			name: "test-st",
 			tst:  sti,
 			st: gopium.Struct{
@@ -146,7 +152,7 @@ func TestMavenEnum(t *testing.T) {
 				},
 			},
 		},
-		"custom type from backref should return correct enum struct": {
+		"custom type with backref should return expected struct": {
 			name: "test-st",
 			tst:  types.NewStruct([]*types.Var{types.NewVar(token.Pos(0), nil, "v", tp)}, nil),
 			st: gopium.Struct{
@@ -215,34 +221,34 @@ func TestMavenRefsa(t *testing.T) {
 		sa  sizealign
 		ref *collections.Reference
 	}{
-		"primitive type should return correct size and align without backref": {
+		"primitive type should return expected size and align without backref": {
 			t:  types.Typ[types.String],
 			sa: sizealign{size: 16, align: 8},
 		},
-		"custom type should return correct size and align without backref": {
+		"custom type should return expected size and align without backref": {
 			t:  tp,
 			sa: sizealign{size: 24, align: 20},
 		},
-		"custom arr type should return correct size and align without backref": {
+		"custom arr type should return expected size and align without backref": {
 			t:  types.NewArray(tp, 10),
 			sa: sizealign{size: 240, align: 20},
 		},
-		"primitive type should return correct size and align with actual backref": {
+		"primitive type should return expected size and align with backref": {
 			t:   types.Typ[types.String],
 			sa:  sizealign{size: 16, align: 8},
 			ref: ref,
 		},
-		"custom type should return correct size and align with actual backref": {
+		"custom type should return expected size and align with backref": {
 			t:   tp,
 			sa:  sizealign{size: 32, align: 32},
 			ref: ref,
 		},
-		"custom arr type should return correct size and align with actual backref": {
+		"custom arr type should return expected size and align with backref": {
 			t:   types.NewArray(tp, 10),
 			sa:  sizealign{size: 320, align: 32},
 			ref: ref,
 		},
-		"custom non struct type should return correct size and align with actual backref": {
+		"custom non struct type should return expected size and align with backref": {
 			t: types.NewNamed(
 				types.NewTypeName(token.Pos(0), nil, "test", types.Typ[types.Int64]),
 				types.Typ[types.Int64],
@@ -251,7 +257,7 @@ func TestMavenRefsa(t *testing.T) {
 			sa:  sizealign{size: 24, align: 20},
 			ref: ref,
 		},
-		"custom empty arr type should return correct size and align with actual backref": {
+		"custom empty arr type should return expected size and align with backref": {
 			t:   types.NewArray(tp, 0),
 			sa:  sizealign{},
 			ref: ref,
@@ -259,9 +265,10 @@ func TestMavenRefsa(t *testing.T) {
 	}
 	for name, tcase := range table {
 		t.Run(name, func(t *testing.T) {
-			// exec
+			// prepare
 			ml := maven{exp: m.exp, loc: m.loc}
 			ml.ref = tcase.ref
+			// exec
 			sa := ml.refsa(tcase.t)
 			// check
 			if !reflect.DeepEqual(sa, tcase.sa) {
@@ -274,8 +281,7 @@ func TestMavenRefsa(t *testing.T) {
 func TestMavenRefst(t *testing.T) {
 	// prepare
 	m := maven{ref: collections.NewReference(false)}
-	// test with real ref
-	f1, f2 := m.refst("test-1"), m.refst("test-2")
+	f1, f2, f3 := m.refst("test-1"), m.refst("test-2"), m.refst("test-3")
 	f2(gopium.Struct{
 		Fields: []gopium.Field{
 			{Size: 4, Align: 4},
@@ -283,32 +289,46 @@ func TestMavenRefst(t *testing.T) {
 			{Size: 2, Align: 2},
 		},
 	})
-	// set f1 in goroutine
 	go func() {
 		f1(gopium.Struct{
 			Fields: []gopium.Field{
 				{Size: 8, Align: 8},
 			},
 		})
+		go func() {
+			f3(gopium.Struct{
+				Fields: []gopium.Field{
+					{Size: 4, Align: 4},
+					{Size: 6, Align: 4},
+				},
+			})
+		}()
 	}()
-	sa1, sa2 := m.ref.Get("test-1"), m.ref.Get("test-2")
-	if !reflect.DeepEqual(sa1, sizealign{size: 8, align: 8}) {
-		t.Errorf("actual %v doesn't equal to expected %v", sa1, sizealign{size: 8, align: 8})
-	}
-	if !reflect.DeepEqual(sa2, sizealign{size: 18, align: 6}) {
-		t.Errorf("actual %v doesn't equal to expected %v", sa2, sizealign{size: 18, align: 6})
-	}
-	f2(gopium.Struct{
-		Fields: []gopium.Field{
-			{Size: 4, Align: 4},
-			{Size: 6, Align: 4},
+	table := map[string]struct {
+		key string
+		sa  sizealign
+	}{
+		"test-1 key should return expected result": {
+			key: "test-1",
+			sa:  sizealign{size: 8, align: 8},
 		},
-	})
-	sa1, sa2 = m.ref.Get("test-1"), m.ref.Get("test-2")
-	if !reflect.DeepEqual(sa1, sizealign{size: 8, align: 8}) {
-		t.Errorf("actual %v doesn't equal to expected %v", sa1, sizealign{size: 8, align: 8})
+		"test-2 key should return expected result": {
+			key: "test-2",
+			sa:  sizealign{size: 18, align: 6},
+		},
+		"test-3 key should return expected result": {
+			key: "test-3",
+			sa:  sizealign{size: 12, align: 4},
+		},
 	}
-	if !reflect.DeepEqual(sa2, sizealign{size: 12, align: 4}) {
-		t.Errorf("actual %v doesn't equal to expected %v", sa2, sizealign{size: 12, align: 4})
+	for name, tcase := range table {
+		t.Run(name, func(t *testing.T) {
+			// exec
+			sa := m.ref.Get(tcase.key)
+			// check
+			if !reflect.DeepEqual(sa, tcase.sa) {
+				t.Errorf("actual %v doesn't equal to expected %v", sa, tcase.sa)
+			}
+		})
 	}
 }

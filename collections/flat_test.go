@@ -10,47 +10,47 @@ import (
 func TestFlatSorted(t *testing.T) {
 	// prepare
 	table := map[string]struct {
-		input  Flat
-		output []gopium.Struct
+		f Flat
+		r []gopium.Struct
 	}{
 		"nil flat collection should return empty sorted": {
-			input:  nil,
-			output: []gopium.Struct{},
+			f: nil,
+			r: []gopium.Struct{},
 		},
 		"empty flat collection should return empty sorted": {
-			input:  Flat{},
-			output: []gopium.Struct{},
+			f: Flat{},
+			r: []gopium.Struct{},
 		},
 		"single item flat collection should return single item sorted": {
-			input:  Flat{"1-test": gopium.Struct{Name: "test1"}},
-			output: []gopium.Struct{gopium.Struct{Name: "test1"}},
+			f: Flat{"1-test": gopium.Struct{Name: "test1"}},
+			r: []gopium.Struct{gopium.Struct{Name: "test1"}},
 		},
 		"multiple presorted items flat collection should return multiple items sorted": {
-			input: Flat{
+			f: Flat{
 				"1-test": gopium.Struct{Name: "test1"},
 				"2-test": gopium.Struct{Name: "test2"},
 				"3-test": gopium.Struct{Name: "test3"},
 			},
-			output: []gopium.Struct{
+			r: []gopium.Struct{
 				gopium.Struct{Name: "test1"},
 				gopium.Struct{Name: "test2"},
 				gopium.Struct{Name: "test3"},
 			},
 		},
 		"multiple reverted items flat collection should return multiple items sorted": {
-			input: Flat{
+			f: Flat{
 				"3-test": gopium.Struct{Name: "test3"},
 				"2-test": gopium.Struct{Name: "test2"},
 				"1-test": gopium.Struct{Name: "test1"},
 			},
-			output: []gopium.Struct{
+			r: []gopium.Struct{
 				gopium.Struct{Name: "test1"},
 				gopium.Struct{Name: "test2"},
 				gopium.Struct{Name: "test3"},
 			},
 		},
 		"multiple mixed items flat collection should return multiple items sorted": {
-			input: Flat{
+			f: Flat{
 				"99-test":   gopium.Struct{Name: "test99"},
 				"5-test":    gopium.Struct{Name: "test5"},
 				"1000-test": gopium.Struct{Name: "test1000"},
@@ -60,7 +60,7 @@ func TestFlatSorted(t *testing.T) {
 				"4-test":    gopium.Struct{Name: "test4"},
 				"0-test":    gopium.Struct{Name: "test0"},
 			},
-			output: []gopium.Struct{
+			r: []gopium.Struct{
 				gopium.Struct{Name: "test0"},
 				gopium.Struct{Name: "test1"},
 				gopium.Struct{Name: "test2"},
@@ -71,20 +71,20 @@ func TestFlatSorted(t *testing.T) {
 				gopium.Struct{Name: "test1000"},
 			},
 		},
-		"multiple non pattern ids items flat collection should still return items sorted naturally": {
-			input: Flat{
+		"multiple non pattern ids items flat collection should return items sorted naturally": {
+			f: Flat{
 				"a-test": gopium.Struct{Name: "testa"},
 				"b-test": gopium.Struct{Name: "testb"},
 				"c-test": gopium.Struct{Name: "testc"},
 			},
-			output: []gopium.Struct{
+			r: []gopium.Struct{
 				gopium.Struct{Name: "testa"},
 				gopium.Struct{Name: "testb"},
 				gopium.Struct{Name: "testc"},
 			},
 		},
-		"multiple mixed non pattern ids items flat collection should still return items sorted naturally": {
-			input: Flat{
+		"multiple mixed non pattern ids items flat collection should return items sorted naturally": {
+			f: Flat{
 				"3-test": gopium.Struct{Name: "test3"},
 				"2-test": gopium.Struct{Name: "test2"},
 				"1-test": gopium.Struct{Name: "test1"},
@@ -92,7 +92,7 @@ func TestFlatSorted(t *testing.T) {
 				"b-test": gopium.Struct{Name: "testb"},
 				"c-test": gopium.Struct{Name: "testc"},
 			},
-			output: []gopium.Struct{
+			r: []gopium.Struct{
 				gopium.Struct{Name: "test1"},
 				gopium.Struct{Name: "test2"},
 				gopium.Struct{Name: "test3"},
@@ -101,8 +101,8 @@ func TestFlatSorted(t *testing.T) {
 				gopium.Struct{Name: "testc"},
 			},
 		},
-		"cmplex multiple mixed non pattern ids items flat collection should still return items sorted naturally": {
-			input: Flat{
+		"cmplex multiple mixed non pattern ids items flat collection should return items sorted naturally": {
+			f: Flat{
 				"z-test":    gopium.Struct{Name: "testz"},
 				"3-test":    gopium.Struct{Name: "test3"},
 				"2-test":    gopium.Struct{Name: "test2"},
@@ -117,7 +117,7 @@ func TestFlatSorted(t *testing.T) {
 				"0-test":    gopium.Struct{Name: "test0"},
 				"xytest":    gopium.Struct{Name: "testxy"},
 			},
-			output: []gopium.Struct{
+			r: []gopium.Struct{
 				gopium.Struct{Name: "test0"},
 				gopium.Struct{Name: "test1"},
 				gopium.Struct{Name: "test2"},
@@ -137,10 +137,10 @@ func TestFlatSorted(t *testing.T) {
 	for name, tcase := range table {
 		t.Run(name, func(t *testing.T) {
 			// exec
-			output := tcase.input.Sorted()
+			r := tcase.f.Sorted()
 			// check
-			if !reflect.DeepEqual(output, tcase.output) {
-				t.Errorf("actual %v doesn't equal to expected %v", output, tcase.output)
+			if !reflect.DeepEqual(r, tcase.r) {
+				t.Errorf("actual %v doesn't equal to expected %v", r, tcase.r)
 			}
 		})
 	}

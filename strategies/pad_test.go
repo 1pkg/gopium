@@ -26,7 +26,7 @@ func TestPad(t *testing.T) {
 			c:   mocks.Maven{SAlign: 16},
 			ctx: context.Background(),
 		},
-		"non empty struct should be applied to explicit pad aligned struct": {
+		"non empty struct should be applied to expected aligned struct": {
 			pad: padsys,
 			c:   mocks.Maven{SAlign: 6},
 			ctx: context.Background(),
@@ -50,7 +50,7 @@ func TestPad(t *testing.T) {
 				},
 			},
 		},
-		"non empty struct should be applied to explicit pad aligned struct on canceled context": {
+		"non empty struct should be applied to expected aligned struct on canceled context": {
 			pad: padtnat,
 			c:   mocks.Maven{SAlign: 12},
 			ctx: cctx,
@@ -77,7 +77,7 @@ func TestPad(t *testing.T) {
 			},
 			err: cctx.Err(),
 		},
-		"mixed struct should be applied to explicit pad aligned struct on type natural pad": {
+		"mixed struct should be applied to expected aligned struct on type natural pad": {
 			pad: padtnat,
 			c:   mocks.Maven{SAlign: 24},
 			ctx: context.Background(),
@@ -134,7 +134,7 @@ func TestPad(t *testing.T) {
 				},
 			},
 		},
-		"mixed struct should be applied to explicit pad aligned on same sys pad": {
+		"mixed struct should be applied to expected aligned on field sys pad": {
 			pad: padsys,
 			c:   mocks.Maven{SAlign: 9},
 			ctx: context.Background(),
@@ -184,7 +184,7 @@ func TestPad(t *testing.T) {
 				},
 			},
 		},
-		"mixed struct should be applied to explicit pad aligned on bigger sys pad": {
+		"mixed struct should be applied to expected aligned on big sys pad": {
 			pad: padsys,
 			c:   mocks.Maven{SAlign: 12},
 			ctx: context.Background(),
@@ -235,7 +235,7 @@ func TestPad(t *testing.T) {
 				},
 			},
 		},
-		"mixed struct should be applied to explicit pad aligned no additional aligment": {
+		"mixed struct should be applied to expected aligned no additional aligment": {
 			pad: padsys,
 			c:   mocks.Maven{SAlign: 4},
 			ctx: context.Background(),
@@ -277,8 +277,9 @@ func TestPad(t *testing.T) {
 	}
 	for name, tcase := range table {
 		t.Run(name, func(t *testing.T) {
-			// exec
+			// prepare
 			pad := tcase.pad.Curator(tcase.c)
+			// exec
 			r, err := pad.Apply(tcase.ctx, tcase.o)
 			// check
 			if !reflect.DeepEqual(r, tcase.r) {

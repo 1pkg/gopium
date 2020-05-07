@@ -25,15 +25,15 @@ func TestWast(t *testing.T) {
 	cancel()
 	b := strategies.Builder{}
 	np, err := b.Build(strategies.Nope)
-	if err != nil {
+	if !reflect.DeepEqual(err, nil) {
 		t.Fatalf("actual %v doesn't equal to %v", err, nil)
 	}
 	pck, err := b.Build(strategies.Pack)
-	if err != nil {
+	if !reflect.DeepEqual(err, nil) {
 		t.Fatalf("actual %v doesn't equal to %v", err, nil)
 	}
 	m, err := typepkg.NewMavenGoTypes("gc", "amd64", 64, 64, 64)
-	if err != nil {
+	if !reflect.DeepEqual(err, nil) {
 		t.Fatalf("actual %v doesn't equal to %v", err, nil)
 	}
 	p := fmtio.Goprint(0, 4, false)
@@ -63,7 +63,7 @@ package empty
 `),
 			},
 		},
-		"single struct pkg should visit the single struct": {
+		"single struct pkg should visit the struct": {
 			ctx: context.Background(),
 			r:   regexp.MustCompile(`.*`),
 			p:   data.NewParser("single"),
@@ -83,7 +83,7 @@ type Single struct {
 `),
 			},
 		},
-		"single struct pkg should visit nothing on context cancelation": {
+		"single struct pkg should visit nothing on canceled context": {
 			ctx: cctx,
 			r:   regexp.MustCompile(`.*`),
 			p:   data.NewParser("single"),
@@ -141,7 +141,7 @@ type Single struct {
 			sts: make(map[string][]byte),
 			err: errors.New("test-5"),
 		},
-		"multi structs pkg should visit all relevant levels structs with deep": {
+		"multi structs pkg should visit all expected levels structs with deep": {
 			ctx:  context.Background(),
 			r:    regexp.MustCompile(`(A|Z)`),
 			p:    data.NewParser("multi"),
@@ -247,7 +247,7 @@ type (
 `),
 			},
 		},
-		"multi structs pkg should visit all relevant levels structs without deep": {
+		"multi structs pkg should visit all expected levels structs without deep": {
 			ctx:  context.Background(),
 			r:    regexp.MustCompile(`(A|Z)`),
 			p:    data.NewParser("multi"),
@@ -356,7 +356,7 @@ type (
 	}
 	for name, tcase := range table {
 		t.Run(name, func(t *testing.T) {
-			// exec
+			// prepare
 			w := &mocks.Writer{}
 			wast := wast{
 				apply:  tcase.a,
@@ -365,21 +365,23 @@ type (
 			if tcase.w != nil {
 				wast.writer = tcase.w
 			}
+			// exec
 			err := wast.Visit(tcase.ctx, tcase.r, tcase.stg)
 			// check
 			if !reflect.DeepEqual(err, tcase.err) {
 				t.Errorf("actual %v doesn't equal to expected %v", err, tcase.err)
 			}
 			for id, buf := range w.Buffers {
-				// remove gopath from collected id
+				// remove gopath from id
 				id = strings.Replace(id, build.Default.GOPATH, "", 1)
 				// check all struct
 				// against bytes map
 				if st, ok := tcase.sts[id]; ok {
 					// format actual and expected identically
-					stract, strexp := strings.Trim(string(buf.Bytes()), "\n"), strings.Trim(string(st), "\n")
-					if !reflect.DeepEqual(stract, strexp) {
-						t.Errorf("id %v actual %v doesn't equal to expected %v", id, stract, strexp)
+					actual := strings.Trim(string(buf.Bytes()), "\n")
+					expected := strings.Trim(string(st), "\n")
+					if !reflect.DeepEqual(actual, expected) {
+						t.Errorf("id %v actual %v doesn't equal to expected %v", id, actual, expected)
 					}
 					delete(tcase.sts, id)
 				} else {

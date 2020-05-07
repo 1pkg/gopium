@@ -64,7 +64,7 @@ func TestUnpack(t *testing.T) {
 			},
 			err: cctx.Err(),
 		},
-		"even unpack struct should be applied to sorted struct": {
+		"even fields unpack struct should be applied to sorted struct": {
 			ctx: context.Background(),
 			o: gopium.Struct{
 				Name: "test",
@@ -149,7 +149,7 @@ func TestUnpack(t *testing.T) {
 				},
 			},
 		},
-		"odd unpack struct should be applied to sorted struct": {
+		"odd fields unpack struct should be applied to sorted struct": {
 			ctx: context.Background(),
 			o: gopium.Struct{
 				Name: "test",

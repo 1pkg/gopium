@@ -17,14 +17,14 @@ func TestAst(t *testing.T) {
 	// prepare
 	p := Goprint(0, 4, false)
 	table := map[string]struct {
-		f   Ast
+		fmt Ast
 		ts  *ast.TypeSpec
 		st  gopium.Struct
 		r   []byte
 		err error
 	}{
-		"not struct type should lead to error": {
-			f: FSPT,
+		"not struct type should return error": {
+			fmt: FSPT,
 			ts: &ast.TypeSpec{
 				Name: &ast.Ident{
 					Name: "test",
@@ -41,8 +41,8 @@ func TestAst(t *testing.T) {
 			},
 			err: errors.New(`type "test" is not valid structure`),
 		},
-		"error from ast func should be transfered": {
-			f: combine(flatten, mocks.Ast{Err: errors.New("test")}.Ast),
+		"struct type should return error on ast error": {
+			fmt: combine(flatten, mocks.Ast{Err: errors.New("test")}.Ast),
 			ts: &ast.TypeSpec{
 				Name: &ast.Ident{
 					Name: "test",
@@ -55,8 +55,8 @@ func TestAst(t *testing.T) {
 			},
 			err: errors.New("test"),
 		},
-		"non flat struct with tag should be flatten correctly": {
-			f: FSPT,
+		"non flat struct with tag should be flatten and tagged correctly": {
+			fmt: FSPT,
 			ts: &ast.TypeSpec{
 				Name: &ast.Ident{
 					Name: "test",
@@ -162,7 +162,7 @@ test struct {
 `),
 		},
 		"struct with excess paddings and fields should be filtered and sorted": {
-			f: FSPT,
+			fmt: FSPT,
 			ts: &ast.TypeSpec{
 				Name: &ast.Ident{
 					Name: "test",
@@ -245,8 +245,8 @@ test struct {// random
 }
 `),
 		},
-		"struct paddings should be synchronized": {
-			f: FSPT,
+		"struct paddings and fields should be synchronized": {
+			fmt: FSPT,
 			ts: &ast.TypeSpec{
 				Name: &ast.Ident{
 					Name: "test",
@@ -348,7 +348,7 @@ test struct {// random
 		t.Run(name, func(t *testing.T) {
 			// exec
 			var buf bytes.Buffer
-			err := tcase.f(tcase.ts, tcase.st)
+			err := tcase.fmt(tcase.ts, tcase.st)
 			perr := p(&buf, token.NewFileSet(), tcase.ts)
 			// check
 			if !reflect.DeepEqual(perr, nil) {

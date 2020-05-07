@@ -23,7 +23,7 @@ func TestTag(t *testing.T) {
 			tag: tags,
 			ctx: context.Background(),
 		},
-		"non empty struct should be applied to itself with relevant tag": {
+		"non empty struct should be applied to itself with expected tag": {
 			tag: tags.Names(gopium.StrategyName("test")),
 			ctx: context.Background(),
 			o: gopium.Struct{
@@ -44,7 +44,7 @@ func TestTag(t *testing.T) {
 				},
 			},
 		},
-		"non empty struct should be applied to itself with relevant tag on canceled context": {
+		"non empty struct should be applied to itself with expected tag on canceled context": {
 			tag: tags.Names(gopium.StrategyName("test")),
 			ctx: cctx,
 			o: gopium.Struct{
@@ -110,7 +110,7 @@ func TestTag(t *testing.T) {
 				},
 			},
 		},
-		"non empty struct should be applied to itself with relevant tag should be overwritten": {
+		"non empty struct should be applied to itself with expected tag should be overwritten": {
 			tag: tagf.Names(gopium.StrategyName("test")),
 			ctx: context.Background(),
 			o: gopium.Struct{
@@ -132,7 +132,7 @@ func TestTag(t *testing.T) {
 				},
 			},
 		},
-		"complex struct should be applied to itself with relevant tags on force": {
+		"complex struct should be applied to itself with expected tag on force": {
 			tag: tagf.Names(gopium.StrategyName("test")),
 			ctx: context.Background(),
 			o: gopium.Struct{
@@ -178,7 +178,7 @@ func TestTag(t *testing.T) {
 					},
 				},
 			},
-		}, "complex struct should be applied to itself with relevant tags on soft discrete": {
+		}, "complex struct should be applied to itself with expected tag on soft discrete": {
 			tag: tagsd.Names(gopium.StrategyName("test")),
 			ctx: context.Background(),
 			o: gopium.Struct{
@@ -225,7 +225,7 @@ func TestTag(t *testing.T) {
 				},
 			},
 		},
-		"complex struct should be applied to itself with relevant tags on force discrete": {
+		"complex struct should be applied to itself with expected tag on force discrete": {
 			tag: tagfd.Names(gopium.StrategyName("test")),
 			ctx: context.Background(),
 			o: gopium.Struct{
