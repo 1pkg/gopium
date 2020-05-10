@@ -87,7 +87,9 @@ func pressdoc(file *ast.File) wact {
 			stdocs = append(stdocs, &sdoc)
 		}
 		// update file comments list
-		file.Comments = append(file.Comments, &ast.CommentGroup{List: stdocs})
+		if len(stdocs) > 0 {
+			file.Comments = append(file.Comments, &ast.CommentGroup{List: stdocs})
+		}
 		// prepare struct comments slice
 		stcoms := make([]*ast.Comment, 0, len(st.Comment))
 		// collect all comments from resulted structure
@@ -98,7 +100,9 @@ func pressdoc(file *ast.File) wact {
 			stcoms = append(stcoms, &scom)
 		}
 		// update file comments list
-		file.Comments = append(file.Comments, &ast.CommentGroup{List: stcoms})
+		if len(stcoms) > 0 {
+			file.Comments = append(file.Comments, &ast.CommentGroup{List: stcoms})
+		}
 		// go through all resulted structure fields
 		tts := ts.Type.(*ast.StructType)
 		for index, field := range st.Fields {
@@ -113,7 +117,9 @@ func pressdoc(file *ast.File) wact {
 				fdocs = append(fdocs, &fdoc)
 			}
 			// update file comments list
-			file.Comments = append(file.Comments, &ast.CommentGroup{List: fdocs})
+			if len(fdocs) > 0 {
+				file.Comments = append(file.Comments, &ast.CommentGroup{List: fdocs})
+			}
 			// collect all comments from resulted structure
 			fcoms := make([]*ast.Comment, 0, len(field.Comment))
 			for _, com := range field.Comment {
@@ -123,7 +129,9 @@ func pressdoc(file *ast.File) wact {
 				fcoms = append(fcoms, &fcom)
 			}
 			// update file comments list
-			file.Comments = append(file.Comments, &ast.CommentGroup{List: fcoms})
+			if len(fcoms) > 0 {
+				file.Comments = append(file.Comments, &ast.CommentGroup{List: fcoms})
+			}
 		}
 		return nil
 	}

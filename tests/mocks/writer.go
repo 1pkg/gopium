@@ -2,7 +2,9 @@ package mocks
 
 import (
 	"bytes"
+	"go/build"
 	"io"
+	"strings"
 	"sync"
 )
 
@@ -28,6 +30,7 @@ func (w *Writer) Writer(id string, loc string) (io.WriteCloser, error) {
 	var buf bytes.Buffer
 	// write it to store
 	// and to mock write closer
+	id = strings.Replace(id, build.Default.GOPATH, "", 1)
 	w.Buffers[id] = &buf
 	return RWC{buf: &buf, Werr: w.Werr, Cerr: w.Cerr}, w.Err
 }
