@@ -73,7 +73,7 @@ func TestFshare(t *testing.T) {
 					gopium.PadField(8),
 				},
 			},
-			err: cctx.Err(),
+			err: context.Canceled,
 		},
 		"mixed struct should be applied to expected aligned struct": {
 			fshare: fsharel3,

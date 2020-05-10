@@ -67,7 +67,7 @@ func TestStamp(t *testing.T) {
 					},
 				},
 			},
-			err: cctx.Err(),
+			err: context.Canceled,
 		},
 		"complex struct should be applied to itself with expected doc": {
 			stamp: stampdoc,

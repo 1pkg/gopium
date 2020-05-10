@@ -65,7 +65,7 @@ func TestNote(t *testing.T) {
 					},
 				},
 			},
-			err: cctx.Err(),
+			err: context.Canceled,
 		},
 		"empty struct should be applied to itself with expected doc struct": {
 			note: stnotedoc,
@@ -115,7 +115,7 @@ func TestNote(t *testing.T) {
 					},
 				},
 			},
-			err: cctx.Err(),
+			err: context.Canceled,
 		},
 		"complex struct should be applied to itself with expected doc fields": {
 			note: fnotedoc,

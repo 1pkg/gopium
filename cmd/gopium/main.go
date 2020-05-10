@@ -4,10 +4,10 @@ import (
 	"context"
 	"log"
 	"os"
-	"os/signal"
 	"runtime"
 
 	"1pkg/gopium"
+	"1pkg/gopium/ctx"
 	"1pkg/gopium/runners"
 
 	"github.com/spf13/cobra"
@@ -35,9 +35,6 @@ var (
 	pusespace bool
 	// global vars
 	timeout int
-	// global context
-	gctx    context.Context
-	gcancel func()
 )
 
 // init cli command runner
@@ -312,19 +309,6 @@ By default any previous visited types have affect on future relevant visits.
 		0,
 		"Global timeout of cli command in seconds, considered only if value > 0.",
 	)
-	// prepare global context
-	// with cancelation
-	// on system signals
-	gctx, gcancel = context.WithCancel(context.Background())
-	go func() {
-		sig := make(chan os.Signal, 1)
-		signal.Notify(sig, os.Interrupt, os.Kill)
-		select {
-		case <-gctx.Done():
-		case <-sig:
-			gcancel()
-		}
-	}()
 }
 
 // main gopium cli entry point
@@ -332,11 +316,16 @@ func main() {
 	// explicitly set number of threads
 	// to number of logical cpu
 	runtime.GOMAXPROCS(runtime.NumCPU())
+	// prepare context with signals cancelation
+	ctx, cancel := ctx.WithSignals(
+		context.Background(),
+		os.Interrupt,
+		os.Kill,
+	)
+	defer cancel()
 	// execute cobra cli command
-	// on global running context
-	// and log error if any
-	defer gcancel()
-	if err := cli.ExecuteContext(gctx); err != nil {
+	// with ctx and log error if any
+	if err := cli.ExecuteContext(ctx); err != nil {
 		log.Fatal(err.Error())
 		os.Exit(1)
 	}

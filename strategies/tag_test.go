@@ -64,7 +64,7 @@ func TestTag(t *testing.T) {
 					},
 				},
 			},
-			err: cctx.Err(),
+			err: context.Canceled,
 		},
 		"non empty struct should be applied to itself valid tag shouldn't be overwritten": {
 			tag: tags.Names(gopium.StrategyName("test")),

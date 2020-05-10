@@ -5,6 +5,8 @@ import (
 	"errors"
 	"go/ast"
 	"go/parser"
+	"go/scanner"
+	"go/token"
 	"go/types"
 	"os"
 	"path/filepath"
@@ -30,6 +32,7 @@ func TestParserXToolPackagesAstTypesMixed(t *testing.T) {
 	table := map[string]struct {
 		p   ParserXToolPackagesAst
 		ctx context.Context
+		src []byte
 		pkg *types.Package
 		loc gopium.Locator
 		err error
@@ -80,6 +83,27 @@ func TestParserXToolPackagesAstTypesMixed(t *testing.T) {
 			pkg: types.NewPackage("test", "test"),
 			loc: NewLocator(nil),
 		},
+		"valid pattern and path and mode should return expected parser package skip src": {
+			p: ParserXToolPackagesAst{
+				Pattern:   "1pkg/gopium",
+				Path:      "./..",
+				ModeTypes: packages.LoadAllSyntax,
+			},
+			ctx: context.Background(),
+			src: []byte(`
+//+build tests_data
+
+package single
+
+type Single struct {
+	A	string
+	B	string
+	C	string
+}
+`),
+			pkg: types.NewPackage("test", "test"),
+			loc: NewLocator(nil),
+		},
 		"valid pattern and path and mode should return parser error on canceled context": {
 			p: ParserXToolPackagesAst{
 				Pattern:   "1pkg/gopium",
@@ -87,7 +111,7 @@ func TestParserXToolPackagesAstTypesMixed(t *testing.T) {
 				ModeTypes: packages.LoadAllSyntax,
 			},
 			ctx: cctx,
-			err: cctx.Err(),
+			err: context.Canceled,
 		},
 	}
 	for name, tcase := range table {
@@ -100,7 +124,7 @@ func TestParserXToolPackagesAstTypesMixed(t *testing.T) {
 			defer wg.Done()
 			t.Run(name, func(t *testing.T) {
 				// exec
-				pkg, loc, err := tcase.p.ParseTypes(tcase.ctx)
+				pkg, loc, err := tcase.p.ParseTypes(tcase.ctx, tcase.src...)
 				// check
 				// in case pkg or loc non nil
 				// just copy them from result
@@ -137,6 +161,7 @@ func TestParserXToolPackagesAstAstMixed(t *testing.T) {
 	table := map[string]struct {
 		p   ParserXToolPackagesAst
 		ctx context.Context
+		src []byte
 		pkg *ast.Package
 		loc gopium.Locator
 		err error
@@ -198,6 +223,80 @@ func TestParserXToolPackagesAstAstMixed(t *testing.T) {
 			pkg: &ast.Package{},
 			loc: NewLocator(nil),
 		},
+		"valid pattern and path and mode should return expected parser ast with src": {
+			p: ParserXToolPackagesAst{
+				Pattern: "gopium",
+				Path:    "./..",
+				ModeAst: parser.ParseComments | parser.AllErrors,
+			},
+			ctx: context.Background(),
+			src: []byte(`
+//+build tests_data
+
+package single
+
+type Single struct {
+	A	string
+	B	string
+	C	string
+}
+`),
+			pkg: &ast.Package{
+				Name: "pkg",
+				Files: map[string]*ast.File{
+					"file": &ast.File{},
+				},
+			},
+			loc: NewLocator(nil),
+		},
+		"valid pattern and path and mode should return parser error with invalid src": {
+			p: ParserXToolPackagesAst{
+				Pattern: "gopium",
+				Path:    "./..",
+				ModeAst: parser.ParseComments | parser.AllErrors,
+			},
+			ctx: context.Background(),
+			src: []byte(`
+random sets of string
+invalid gocode
+`),
+			err: scanner.ErrorList{
+				&scanner.Error{
+					Pos: token.Position{Offset: 1, Line: 2, Column: 1},
+					Msg: ("expected 'package', found random"),
+				},
+				&scanner.Error{
+					Pos: token.Position{Offset: 13, Line: 2, Column: 13},
+					Msg: ("expected ';', found of"),
+				},
+			},
+		},
+		"invalid pattern with relative path should return expected parser ast with src": {
+			p: ParserXToolPackagesAst{
+				Pattern: "1pkg/gopium",
+				Path:    "./..",
+				ModeAst: parser.ParseComments | parser.AllErrors,
+			},
+			ctx: context.Background(),
+			src: []byte(`
+//+build tests_data
+
+package single
+
+type Single struct {
+	A	string
+	B	string
+	C	string
+}
+`),
+			pkg: &ast.Package{
+				Name: "pkg",
+				Files: map[string]*ast.File{
+					"file": &ast.File{},
+				},
+			},
+			loc: NewLocator(nil),
+		},
 		"valid pattern and path and mode should return parser error on canceled context": {
 			p: ParserXToolPackagesAst{
 				Pattern: "gopium",
@@ -205,13 +304,13 @@ func TestParserXToolPackagesAstAstMixed(t *testing.T) {
 				ModeAst: parser.ParseComments | parser.AllErrors,
 			},
 			ctx: cctx,
-			err: cctx.Err(),
+			err: context.Canceled,
 		},
 	}
 	for name, tcase := range table {
 		t.Run(name, func(t *testing.T) {
 			// exec
-			pkg, loc, err := tcase.p.ParseAst(tcase.ctx)
+			pkg, loc, err := tcase.p.ParseAst(tcase.ctx, tcase.src...)
 			// check
 			// in case pkg or loc non nil
 			// just copy them from result
@@ -228,7 +327,7 @@ func TestParserXToolPackagesAstAstMixed(t *testing.T) {
 				t.Errorf("actual %v doesn't equal to expected %v", loc, tcase.loc)
 			}
 			if !reflect.DeepEqual(err, tcase.err) {
-				t.Errorf("actual %+v doesn't equal to expected %v", err, tcase.err)
+				t.Errorf("actual %v doesn't equal to expected %v", err, tcase.err)
 			}
 		})
 	}

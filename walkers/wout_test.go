@@ -1,6 +1,7 @@
 package walkers
 
 import (
+	"bytes"
 	"context"
 	"errors"
 	"reflect"
@@ -111,12 +112,12 @@ func TestWout(t *testing.T) {
 			fmt: mocks.Bytes{}.Bytes,
 			stg: np,
 			sts: make(map[string][]byte),
-			err: cctx.Err(),
+			err: context.Canceled,
 		},
 		"single struct pkg should visit nothing on parser error": {
 			ctx: context.Background(),
 			r:   regexp.MustCompile(`.*`),
-			p:   mocks.Parser{Terr: errors.New("test-1")},
+			p:   mocks.Parser{Typeserr: errors.New("test-1")},
 			fmt: mocks.Bytes{}.Bytes,
 			stg: np,
 			sts: make(map[string][]byte),
@@ -155,7 +156,11 @@ func TestWout(t *testing.T) {
 			r:   regexp.MustCompile(`.*`),
 			p:   data.NewParser("single"),
 			fmt: mocks.Bytes{}.Bytes,
-			w:   (&mocks.Writer{Werr: errors.New("test-5")}).Writer,
+			w: (&mocks.Writer{RWCs: map[string]*mocks.RWC{
+				"5-b0652be9c761c2f34deff8a560333dd372ee062bb1dbcba6a79647fdc3205919": {
+					Werr: errors.New("test-5"),
+				},
+			}}).Writer,
 			stg: np,
 			sts: make(map[string][]byte),
 			err: errors.New("test-5"),
@@ -165,7 +170,11 @@ func TestWout(t *testing.T) {
 			r:   regexp.MustCompile(`.*`),
 			p:   data.NewParser("single"),
 			fmt: mocks.Bytes{}.Bytes,
-			w:   (&mocks.Writer{Cerr: errors.New("test-6")}).Writer,
+			w: (&mocks.Writer{RWCs: map[string]*mocks.RWC{
+				"5-b0652be9c761c2f34deff8a560333dd372ee062bb1dbcba6a79647fdc3205919": {
+					Cerr: errors.New("test-6"),
+				},
+			}}).Writer,
 			stg: np,
 			sts: make(map[string][]byte),
 			err: errors.New("test-6"),
@@ -480,10 +489,13 @@ func TestWout(t *testing.T) {
 			if !reflect.DeepEqual(err, tcase.err) {
 				t.Errorf("actual %v doesn't equal to expected %v", err, tcase.err)
 			}
-			for id, buf := range w.Buffers {
+			for id, rwc := range w.RWCs {
 				// check all struct
 				// against bytes map
 				if st, ok := tcase.sts[id]; ok {
+					// read rwc to buffer
+					var buf bytes.Buffer
+					buf.ReadFrom(rwc)
 					// format actual and expected identically
 					actual := strings.Trim(string(buf.Bytes()), "\n")
 					expected := strings.Trim(string(st), "\n")

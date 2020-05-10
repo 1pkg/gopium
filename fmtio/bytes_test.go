@@ -167,7 +167,7 @@ Struct Name,Struct Doc,Struct Comment,Field Name,Field Type,Field Size,Field Ali
 `),
 		},
 		"csv should return error on writter error": {
-			fmt: Csv(mocks.RWC{Werr: errors.New("test")}),
+			fmt: Csv(&mocks.RWC{Werr: errors.New("test")}),
 			st: gopium.Struct{
 				Name:    "Test",
 				Doc:     []string{"doctest"},

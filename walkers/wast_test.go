@@ -1,9 +1,9 @@
 package walkers
 
 import (
+	"bytes"
 	"context"
 	"errors"
-	"go/types"
 	"reflect"
 	"regexp"
 	"strings"
@@ -89,12 +89,12 @@ type Single struct {
 			a:   astutil.FFN,
 			stg: np,
 			sts: make(map[string][]byte),
-			err: cctx.Err(),
+			err: context.Canceled,
 		},
 		"single struct pkg should visit nothing on type parser error": {
 			ctx: context.Background(),
 			r:   regexp.MustCompile(`.*`),
-			p:   mocks.Parser{Terr: errors.New("test-1")},
+			p:   mocks.Parser{Typeserr: errors.New("test-1")},
 			a:   astutil.FFN,
 			stg: np,
 			sts: make(map[string][]byte),
@@ -103,10 +103,7 @@ type Single struct {
 		"single struct pkg should visit nothing on ast parser error": {
 			ctx: context.Background(),
 			r:   regexp.MustCompile(`.*`),
-			p: mocks.Parser{
-				Types: types.NewPackage("", ""),
-				Aerr:  errors.New("test-2"),
-			},
+			p:   mocks.Parser{Asterr: errors.New("test-2")},
 			a:   astutil.FFN,
 			stg: np,
 			sts: make(map[string][]byte),
@@ -370,10 +367,13 @@ type (
 			if !reflect.DeepEqual(err, tcase.err) {
 				t.Errorf("actual %v doesn't equal to expected %v", err, tcase.err)
 			}
-			for id, buf := range w.Buffers {
+			for id, rwc := range w.RWCs {
 				// check all struct
 				// against bytes map
 				if st, ok := tcase.sts[id]; ok {
+					// read rwc to buffer
+					var buf bytes.Buffer
+					buf.ReadFrom(rwc)
 					// format actual and expected identically
 					actual := strings.Trim(string(buf.Bytes()), "\n")
 					expected := strings.Trim(string(st), "\n")

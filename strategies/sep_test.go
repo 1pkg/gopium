@@ -73,7 +73,7 @@ func TestSep(t *testing.T) {
 					gopium.PadField(16),
 				},
 			},
-			err: cctx.Err(),
+			err: context.Canceled,
 		},
 		"mixed struct should be applied to expected aligned struct with sys top": {
 			sep: sepsyst,

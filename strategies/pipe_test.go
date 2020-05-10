@@ -65,7 +65,7 @@ func TestPipe(t *testing.T) {
 					},
 				},
 			},
-			err: cctx.Err(),
+			err: context.Canceled,
 		},
 		"non empty struct should be applied accordingly to pipe": {
 			pipe: pipe([]gopium.Strategy{fnotecom, fnotedoc}),
@@ -112,7 +112,7 @@ func TestPipe(t *testing.T) {
 					},
 				},
 			},
-			err: cctx.Err(),
+			err: context.Canceled,
 		},
 		"non empty struct should be applied to expected result on pipe error": {
 			pipe: pipe([]gopium.Strategy{

@@ -66,7 +66,7 @@ func TestTLex(t *testing.T) {
 					},
 				},
 			},
-			err: cctx.Err(),
+			err: context.Canceled,
 		},
 		"asc type lex struct should be applied to itself": {
 			tlex: tlexasc,

@@ -62,7 +62,7 @@ func TestEmb(t *testing.T) {
 					},
 				},
 			},
-			err: cctx.Err(),
+			err: context.Canceled,
 		},
 		"not embedded struct should be applied to itself": {
 			emb: embasc,

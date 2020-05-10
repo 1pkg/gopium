@@ -62,7 +62,7 @@ func TestNLen(t *testing.T) {
 					},
 				},
 			},
-			err: cctx.Err(),
+			err: context.Canceled,
 		},
 		"asc name len struct should be applied to itself": {
 			nlen: nlenasc,

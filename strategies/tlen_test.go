@@ -66,7 +66,7 @@ func TestTLen(t *testing.T) {
 					},
 				},
 			},
-			err: cctx.Err(),
+			err: context.Canceled,
 		},
 		"asc type len struct should be applied to itself": {
 			tlen: tlenasc,
