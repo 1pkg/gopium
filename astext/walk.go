@@ -15,29 +15,29 @@ import (
 // helpes walk through ast node
 // with comparator function and
 // apply some custom action on them
-type Walk func(context.Context, ast.Node, Wcmp, Wact) (ast.Node, error)
+type Walk func(context.Context, ast.Node, Action, Comparator) (ast.Node, error)
 
-// Wact defines action
-// for ast walk helper
+// Action defines action
+// for ast walk abstraction
 // that applies custom action
 // on ast type spec node
-type Wact func(*ast.TypeSpec, gopium.Struct) error
+type Action func(*ast.TypeSpec, gopium.Struct) error
 
-// Wcmp defines comparator
-// for ast walk helper
+// Comparator defines comparator
+// for ast walk abstraction
 // that checks if ast type spec node
 // needs to be visitted and returns
 // relevant gopium struct and flags
-type Wcmp func(*ast.TypeSpec) (gopium.Struct, bool, bool)
+type Comparator func(*ast.TypeSpec) (gopium.Struct, bool, bool)
 
 // WalkSt walks through ast struct type
 // nodes with comparator function and
 // apply some custom action on them
-func WalkSt(ctx context.Context, node ast.Node, wcmp Wcmp, wact Wact) (ast.Node, error) {
+func WalkSt(ctx context.Context, node ast.Node, act Action, cmp Comparator) (ast.Node, error) {
 	// tracks error inside astutil apply
 	var err error
 	// apply astutil apply to parsed ast package
-	// and update structure in ast with wact
+	// and update structure in ast with action
 	return astutil.Apply(node, func(c *astutil.Cursor) bool {
 		if gendecl, ok := c.Node().(*ast.GenDecl); ok {
 			for _, spec := range gendecl.Specs {
@@ -56,7 +56,7 @@ func WalkSt(ctx context.Context, node ast.Node, wcmp Wcmp, wact Wact) (ast.Node,
 						// should be visited
 						// skip irrelevant structs
 						// check if walk should be stopped
-						st, skip, brk := wcmp(ts)
+						st, skip, brk := cmp(ts)
 						switch {
 						case skip:
 							return true
@@ -64,7 +64,7 @@ func WalkSt(ctx context.Context, node ast.Node, wcmp Wcmp, wact Wact) (ast.Node,
 							err = errors.New("walk has been stoped")
 						default:
 							// apply action to ast
-							err = wact(ts, st)
+							err = act(ts, st)
 						}
 						// in case we have error
 						// break iteration
@@ -77,9 +77,9 @@ func WalkSt(ctx context.Context, node ast.Node, wcmp Wcmp, wact Wact) (ast.Node,
 	}, nil), err
 }
 
-// Wcmpid helps to create wcmp
+// Cmpid helps to create comparator
 // which uses match on structs ids
-func Wcmpid(loc gopium.Locator, h collections.Hierarchic) Wcmp {
+func Cmpid(loc gopium.Locator, h collections.Hierarchic) Comparator {
 	// build flat collection from hierarchic
 	f := h.Flat()
 	// return basic comparator func
@@ -92,10 +92,10 @@ func Wcmpid(loc gopium.Locator, h collections.Hierarchic) Wcmp {
 	}
 }
 
-// Wcmploc helps to create wcmp
+// Cmploc helps to create comparator
 // which uses match on sorted
 // struct names in provided loc
-func Wcmploc(loc gopium.Locator, cat string, h collections.Hierarchic) Wcmp {
+func Cmploc(loc gopium.Locator, cat string, h collections.Hierarchic) Comparator {
 	// build sorted collection for loc
 	f, ok := h.Cat(cat)
 	sorted := f.Sorted()
@@ -114,14 +114,14 @@ func Wcmploc(loc gopium.Locator, cat string, h collections.Hierarchic) Wcmp {
 	}
 }
 
-// Wcmpnote helps to create wcmp
-// which adapts wcmp impl by adding
+// Cmpnote helps to create comparator
+// which adapts comparator impl by adding
 // check that structure or any structure's
 // field has any notes attached to them
-func Wcmpnote(wcmp Wcmp) Wcmp {
+func Cmpnote(cmp Comparator) Comparator {
 	return func(ts *ast.TypeSpec) (gopium.Struct, bool, bool) {
-		// use underlying wcmp func
-		st, skip, brk := wcmp(ts)
+		// use underlying comparator func
+		st, skip, brk := cmp(ts)
 		// check if we should process struct
 		if !brk && !skip {
 			// if struct has any notes
@@ -139,7 +139,7 @@ func Wcmpnote(wcmp Wcmp) Wcmp {
 			return st, true, false
 		}
 		// otherwise return underlying
-		// wcmp func results
+		// comparator func results
 		return st, skip, brk
 	}
 }

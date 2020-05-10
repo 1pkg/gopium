@@ -62,7 +62,7 @@ func TestNewMavenGoTypes(t *testing.T) {
 	}
 }
 
-func TestMavenGoTypesSysMixed(t *testing.T) {
+func TestMavenGoTypesCurator(t *testing.T) {
 	// prepare
 	maven, err := NewMavenGoTypes("gc", "amd64", 2, 4, 8, 16, 32)
 	if !reflect.DeepEqual(err, nil) {
@@ -104,7 +104,7 @@ func TestMavenGoTypesSysMixed(t *testing.T) {
 	}
 }
 
-func TestMavenGoTypesTypeMixed(t *testing.T) {
+func TestMavenGoTypesExposer(t *testing.T) {
 	// prepare
 	maven, err := NewMavenGoTypes("gc", "amd64", 2, 4, 8, 16, 32)
 	if err != nil {

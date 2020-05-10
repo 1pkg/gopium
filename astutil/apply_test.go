@@ -19,7 +19,7 @@ import (
 	"1pkg/gopium/typepkg"
 )
 
-func TestPrinter(t *testing.T) {
+func TestApply(t *testing.T) {
 	// prepare
 	rh := collections.NewHierarchic(build.Default.GOPATH)
 	rh.Push(
@@ -74,7 +74,7 @@ func TestPrinter(t *testing.T) {
 	}{
 		"empty pkg should apply nothing": {
 			p:   data.NewParser("empty"),
-			a:   FFN,
+			a:   UFFN,
 			ctx: context.Background(),
 			r: map[string][]byte{
 				"/src/1pkg/gopium/tests/data/empty/file.go": []byte(`
@@ -86,7 +86,7 @@ package empty
 		},
 		"note struct pkg should apply the struct": {
 			p:   data.NewParser("note"),
-			a:   FFN,
+			a:   UFFN,
 			ctx: context.Background(),
 			h:   rh,
 			r: map[string][]byte{
@@ -123,7 +123,7 @@ type DocCom struct {
 		},
 		"note struct pkg should apply nothing on canceled context": {
 			p:   data.NewParser("note"),
-			a:   FFN,
+			a:   UFFN,
 			ctx: cctx,
 			r:   make(map[string][]byte),
 			err: context.Canceled,

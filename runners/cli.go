@@ -18,9 +18,9 @@ import (
 	"golang.org/x/tools/go/packages"
 )
 
-// CliApp defines cli runner implementation
+// Cli defines cli runner implementation
 // that is able to run full gopium cli application
-type CliApp struct {
+type Cli struct {
 	coord    coordinator
 	wbuilder gopium.WalkerBuilder
 	sbuilder gopium.StrategyBuilder
@@ -28,9 +28,9 @@ type CliApp struct {
 	snames   []gopium.StrategyName
 }
 
-// NewCliApp helps to spawn new cli application runner
+// NewCli helps to spawn new cli application runner
 // from list of received parameters or returns error
-func NewCliApp(
+func NewCli(
 	// target platform vars
 	compiler,
 	arch string,
@@ -52,7 +52,7 @@ func NewCliApp(
 	usespace bool,
 	// global vars
 	timeout int,
-) (*CliApp, error) {
+) (*Cli, error) {
 	// cast caches to int64
 	caches := make([]int64, 0, len(cpucaches))
 	for _, cache := range cpucaches {
@@ -106,7 +106,7 @@ func NewCliApp(
 	// cast walker string to walker name
 	wname := gopium.WalkerName(walker)
 	// combine cli runner
-	return &CliApp{
+	return &Cli{
 		coord:    coord,
 		wbuilder: wbuilder,
 		sbuilder: sbuilder,
@@ -115,8 +115,8 @@ func NewCliApp(
 	}, nil
 }
 
-// Run CliApp implementation
-func (cli *CliApp) Run(ctx context.Context) error {
+// Run cli implementation
+func (cli *Cli) Run(ctx context.Context) error {
 	// build strategy
 	stg, err := cli.coord.strategy(cli.sbuilder, cli.snames)
 	if err != nil {

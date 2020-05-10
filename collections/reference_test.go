@@ -37,7 +37,7 @@ func TestNewReference(t *testing.T) {
 	}
 }
 
-func TestNilReferenceMixed(t *testing.T) {
+func TestNilReference(t *testing.T) {
 	// prepare
 	var r *Reference
 	r.Set("test-1", 10)
@@ -78,7 +78,7 @@ func TestNilReferenceMixed(t *testing.T) {
 	}
 }
 
-func TestActualReferenceMixed(t *testing.T) {
+func TestActualReference(t *testing.T) {
 	// prepare
 	var wg sync.WaitGroup
 	r := NewReference(false)

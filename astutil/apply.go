@@ -26,11 +26,11 @@ import (
 // hierarchic collection
 type Apply func(context.Context, *ast.Package, gopium.Locator, collections.Hierarchic) (*ast.Package, error)
 
-// FFN implements apply and combines:
-// - fmt with fmtio FSPT helper
+// UFFN implements apply and combines:
+// - ufmt with fmtio FSPT helper
 // - filter helper
 // - note helper
-var FFN = combine(
+var UFFN = combine(
 	ufmt(astext.WalkSt, fmtio.FSPT),
 	filter(astext.WalkSt),
 	note(
@@ -86,7 +86,12 @@ func ufmt(w astext.Walk, fmt fmtio.Ast) Apply {
 		h collections.Hierarchic,
 	) (*ast.Package, error) {
 		// just reuse inner walk helper
-		wpkg, err := w(ctx, pkg, astext.Wcmpid(loc, h), astext.Wact(fmt))
+		wpkg, err := w(
+			ctx,
+			pkg,
+			astext.Action(fmt),
+			astext.Cmpid(loc, h),
+		)
 		if err != nil {
 			return nil, err
 		}
@@ -114,7 +119,6 @@ func filter(w astext.Walk) Apply {
 		if _, err := w(
 			ctx,
 			pkg,
-			astext.Wcmpid(loc, h),
 			func(ts *ast.TypeSpec, st gopium.Struct) error {
 				// collect structs boundaries
 				tts := ts.Type.(*ast.StructType)
@@ -124,6 +128,7 @@ func filter(w astext.Walk) Apply {
 				})
 				return nil
 			},
+			astext.Cmpid(loc, h),
 		); err != nil {
 			return nil, err
 		}
@@ -206,7 +211,7 @@ func note(w astext.Walk, p gopium.AstParser, pr fmtio.Printer) Apply {
 			group.Go(func() error {
 				// print ast to buffer
 				var buf bytes.Buffer
-				if err := pr(&buf, loc.Root(), file); err != nil {
+				if err := pr(gctx, &buf, loc.Root(), file); err != nil {
 					return err
 				}
 				// parse ast back to file
@@ -218,9 +223,12 @@ func note(w astext.Walk, p gopium.AstParser, pr fmtio.Printer) Apply {
 				loc.Fset(name, nloc.Root())
 				// go through file structs
 				// and note all comments
-				comp := astext.Wcmploc(loc, name, h)
 				file := pkg.Files["file"]
-				node, err := w(gctx, file, astext.Wcmpnote(comp), pressdoc(file))
+				node, err := w(
+					gctx, file,
+					pressdoc(file),
+					astext.Cmpnote(astext.Cmploc(loc, name, h)),
+				)
 				if err != nil {
 					return err
 				}
@@ -250,10 +258,10 @@ func note(w astext.Walk, p gopium.AstParser, pr fmtio.Printer) Apply {
 	}
 }
 
-// pressdoc helps to create walk wact
+// pressdoc helps to create walk action
 // which presses comments from
 // gopium structure to ast file
-func pressdoc(file *ast.File) astext.Wact {
+func pressdoc(file *ast.File) astext.Action {
 	return func(ts *ast.TypeSpec, st gopium.Struct) error {
 		// prepare struct docs slice
 		stdocs := make([]*ast.Comment, 0, len(st.Doc))

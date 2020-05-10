@@ -7,7 +7,7 @@ import (
 	"1pkg/gopium"
 )
 
-func TestHierarchicPushCatMixed(t *testing.T) {
+func TestHierarchicPushCat(t *testing.T) {
 	// prepare
 	h := NewHierarchic("prefix/")
 	h.Push("test-1", "prefix/test-1", gopium.Struct{Name: "test-1"})
@@ -71,7 +71,7 @@ func TestHierarchicPushCatMixed(t *testing.T) {
 	}
 }
 
-func TestHierarchicFlat(t *testing.T) {
+func TestHierarchicFlatLen(t *testing.T) {
 	// prepare
 	table := map[string]struct {
 		h   Hierarchic

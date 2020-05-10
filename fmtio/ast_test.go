@@ -2,6 +2,7 @@ package fmtio
 
 import (
 	"bytes"
+	"context"
 	"errors"
 	"go/ast"
 	"go/token"
@@ -349,7 +350,7 @@ test struct {// random
 			// exec
 			var buf bytes.Buffer
 			err := tcase.fmt(tcase.ts, tcase.st)
-			perr := p(&buf, token.NewFileSet(), tcase.ts)
+			perr := p(context.Background(), &buf, token.NewFileSet(), tcase.ts)
 			// check
 			if !reflect.DeepEqual(perr, nil) {
 				t.Errorf("actual %v doesn't equal to expected %v", perr, nil)

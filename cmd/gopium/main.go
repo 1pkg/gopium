@@ -158,8 +158,8 @@ Notes:
 		`,
 		Args: cobra.MinimumNArgs(3),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			// create app instance
-			app, err := runners.NewCliApp(
+			// create cli app instance
+			cli, err := runners.NewCli(
 				// target platform vars
 				tcompiler,
 				tarch,
@@ -186,7 +186,7 @@ Notes:
 				return err
 			}
 			// execute app
-			return app.Run(cmd.Context())
+			return cli.Run(cmd.Context())
 		},
 	}
 	// set target_compiler flag
@@ -326,7 +326,7 @@ func main() {
 	// execute cobra cli command
 	// with ctx and log error if any
 	if err := cli.ExecuteContext(ctx); err != nil {
-		log.Fatal(err.Error())
+		log.Fatal(err)
 		os.Exit(1)
 	}
 }

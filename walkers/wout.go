@@ -100,13 +100,13 @@ func (w wout) Visit(ctx context.Context, regex *regexp.Regexp, stg gopium.Strate
 		group.Go(func() error {
 			// in case any error happened
 			// just return error back
-			if visited.Error != nil {
-				return visited.Error
+			if visited.Err != nil {
+				return visited.Err
 			}
 			// just process with write call
 			// in case any error happened
 			// just return error back
-			return w.write(visited.ID, visited.Loc, visited.Result)
+			return w.write(visited.ID, visited.Loc, visited.R)
 		})
 	}
 	// wait until all writers

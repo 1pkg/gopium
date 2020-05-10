@@ -20,7 +20,7 @@ import (
 	"golang.org/x/tools/go/packages"
 )
 
-func TestParserXToolPackagesAstTypesMixed(t *testing.T) {
+func TestParserXToolPackagesAstTypes(t *testing.T) {
 	// prepare
 	var wg sync.WaitGroup
 	pdir, err := filepath.Abs("./..")
@@ -150,7 +150,7 @@ type Single struct {
 	wg.Wait()
 }
 
-func TestParserXToolPackagesAstAstMixed(t *testing.T) {
+func TestParserXToolPackagesAstAst(t *testing.T) {
 	// prepare
 	pdir, err := filepath.Abs("./..")
 	if !reflect.DeepEqual(err, nil) {
