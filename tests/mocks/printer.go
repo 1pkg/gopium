@@ -1,6 +1,7 @@
 package mocks
 
 import (
+	"context"
 	"go/ast"
 	"go/token"
 	"io"
@@ -12,6 +13,6 @@ type Printer struct {
 }
 
 // Printer mock implementation
-func (p Printer) Printer(io.Writer, *token.FileSet, ast.Node) error {
+func (p Printer) Printer(context.Context, io.Writer, *token.FileSet, ast.Node) error {
 	return p.Err
 }

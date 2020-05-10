@@ -137,7 +137,7 @@ func TestLocatorIDLoc(t *testing.T) {
 	}
 }
 
-func TestLocatorFsetMixed(t *testing.T) {
+func TestLocatorFset(t *testing.T) {
 	// prepare
 	fset := token.NewFileSet()
 	fset.AddFile("test", 1, 10)

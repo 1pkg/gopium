@@ -13,6 +13,6 @@ type Walk struct {
 }
 
 // Walk mock implementation
-func (w Walk) Walk(context.Context, ast.Node, astext.Wcmp, astext.Wact) (ast.Node, error) {
+func (w Walk) Walk(context.Context, ast.Node, astext.Action, astext.Comparator) (ast.Node, error) {
 	return nil, w.Err
 }

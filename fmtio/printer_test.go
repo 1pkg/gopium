@@ -62,6 +62,15 @@ type Single struct {
 			r:   make(map[string][]byte),
 			err: context.Canceled,
 		},
+		"single struct pkg should print nothing on canceled context in printer": {
+			p:   data.NewParser("single"),
+			pr:  Goprint(0, 4, false),
+			ctx: &mocks.Context{After: 2},
+			r: map[string][]byte{
+				"/src/1pkg/gopium/tests/data/single/file.go": []byte(``),
+			},
+			err: context.Canceled,
+		},
 		"single struct pkg should print nothing on persist error": {
 			p:   data.NewParser("single"),
 			pr:  Goprint(0, 4, false),

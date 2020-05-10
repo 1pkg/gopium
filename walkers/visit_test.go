@@ -167,6 +167,15 @@ func TestVscope(t *testing.T) {
 			sts: make(map[string]gopium.Struct),
 			err: context.Canceled,
 		},
+		"single struct pkg should visit nothing on canceled context in closures": {
+			ctx: &mocks.Context{After: 2},
+			r:   regexp.MustCompile(`.*`),
+			m:   m,
+			p:   data.NewParser("single"),
+			stg: np,
+			sts: make(map[string]gopium.Struct),
+			err: context.Canceled,
+		},
 		"flat struct pkg should visit all structs": {
 			ctx: context.Background(),
 			r:   regexp.MustCompile(`.*`),
@@ -561,17 +570,17 @@ func TestVscope(t *testing.T) {
 			// check
 			for applied := range ch {
 				// if error occured skip
-				if applied.Error != nil {
-					if !reflect.DeepEqual(applied.Error, tcase.err) {
-						t.Errorf("actual %v doesn't equal to expected %v", applied.Error, tcase.err)
+				if applied.Err != nil {
+					if !reflect.DeepEqual(applied.Err, tcase.err) {
+						t.Errorf("actual %v doesn't equal to expected %v", applied.Err, tcase.err)
 					}
 					continue
 				}
 				// otherwise check all struct
 				// against structs map
 				if st, ok := tcase.sts[applied.ID]; ok {
-					if !reflect.DeepEqual(applied.Result, st) {
-						t.Errorf("id %v actual %v doesn't equal to expected %v", applied.ID, applied.Result, st)
+					if !reflect.DeepEqual(applied.R, st) {
+						t.Errorf("id %v actual %v doesn't equal to expected %v", applied.ID, applied.R, st)
 					}
 					delete(tcase.sts, applied.ID)
 				} else {
@@ -661,6 +670,15 @@ func TestVdeep(t *testing.T) {
 			r:   regexp.MustCompile(`.*`),
 			m:   m,
 			p:   data.NewParser("single"),
+			stg: np,
+			sts: make(map[string]gopium.Struct),
+			err: context.Canceled,
+		},
+		"nested struct pkg should visit nothing on canceled context": {
+			ctx: &mocks.Context{After: 2},
+			r:   regexp.MustCompile(`.*`),
+			m:   m,
+			p:   data.NewParser("nested"),
 			stg: np,
 			sts: make(map[string]gopium.Struct),
 			err: context.Canceled,
@@ -1147,17 +1165,17 @@ func TestVdeep(t *testing.T) {
 			// check
 			for applied := range ch {
 				// if error occured skip
-				if applied.Error != nil {
-					if !reflect.DeepEqual(applied.Error, tcase.err) {
-						t.Errorf("actual %v doesn't equal to expected %v", applied.Error, tcase.err)
+				if applied.Err != nil {
+					if !reflect.DeepEqual(applied.Err, tcase.err) {
+						t.Errorf("actual %v doesn't equal to expected %v", applied.Err, tcase.err)
 					}
 					continue
 				}
 				// otherwise check all struct
 				// against structs map
 				if st, ok := tcase.sts[applied.ID]; ok {
-					if !reflect.DeepEqual(applied.Result, st) {
-						t.Errorf("id %v actual %v doesn't equal to expected %v", applied.ID, applied.Result, st)
+					if !reflect.DeepEqual(applied.R, st) {
+						t.Errorf("id %v actual %v doesn't equal to expected %v", applied.ID, applied.R, st)
 					}
 					delete(tcase.sts, applied.ID)
 				} else {
