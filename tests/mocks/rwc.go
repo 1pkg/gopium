@@ -4,14 +4,14 @@ import "bytes"
 
 // RWC defines mock io reader writer closer implementation
 type RWC struct {
-	buf  *bytes.Buffer
+	buf  bytes.Buffer
 	Rerr error
 	Werr error
 	Cerr error
 }
 
 // Read mock implementation
-func (rwc RWC) Read(p []byte) (int, error) {
+func (rwc *RWC) Read(p []byte) (int, error) {
 	// in case we have error
 	// return it back
 	if rwc.Rerr != nil {
@@ -22,7 +22,7 @@ func (rwc RWC) Read(p []byte) (int, error) {
 }
 
 // Write mock implementation
-func (rwc RWC) Write(p []byte) (n int, err error) {
+func (rwc *RWC) Write(p []byte) (n int, err error) {
 	// in case we have error
 	// return it back
 	if rwc.Werr != nil {
@@ -33,6 +33,6 @@ func (rwc RWC) Write(p []byte) (n int, err error) {
 }
 
 // Close mock implementation
-func (rwc RWC) Close() error {
+func (rwc *RWC) Close() error {
 	return rwc.Cerr
 }

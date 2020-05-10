@@ -62,7 +62,7 @@ func TestNLex(t *testing.T) {
 					},
 				},
 			},
-			err: cctx.Err(),
+			err: context.Canceled,
 		},
 		"asc name lex struct should be applied to itself": {
 			nlex: nlexasc,

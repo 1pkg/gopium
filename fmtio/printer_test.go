@@ -1,6 +1,7 @@
 package fmtio
 
 import (
+	"bytes"
 	"context"
 	"errors"
 	"reflect"
@@ -59,7 +60,7 @@ type Single struct {
 			pr:  Goprint(0, 4, false),
 			ctx: cctx,
 			r:   make(map[string][]byte),
-			err: cctx.Err(),
+			err: context.Canceled,
 		},
 		"single struct pkg should print nothing on persist error": {
 			p:   data.NewParser("single"),
@@ -200,10 +201,13 @@ type (
 			if !reflect.DeepEqual(err, tcase.err) {
 				t.Errorf("actual %v doesn't equal to expected %v", err, tcase.err)
 			}
-			for name, buf := range w.Buffers {
+			for name, rwc := range w.RWCs {
 				// check all struct
 				// against bytes map
 				if st, ok := tcase.r[name]; ok {
+					// read rwc to buffer
+					var buf bytes.Buffer
+					buf.ReadFrom(rwc)
 					// format actual and expected identically
 					actual := strings.Trim(string(buf.Bytes()), "\n")
 					expected := strings.Trim(string(st), "\n")

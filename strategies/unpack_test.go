@@ -62,7 +62,7 @@ func TestUnpack(t *testing.T) {
 					},
 				},
 			},
-			err: cctx.Err(),
+			err: context.Canceled,
 		},
 		"even fields unpack struct should be applied to sorted struct": {
 			ctx: context.Background(),

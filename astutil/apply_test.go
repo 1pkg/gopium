@@ -1,22 +1,22 @@
 package astutil
 
 import (
+	"bytes"
 	"context"
 	"errors"
-	"go/ast"
 	"go/build"
 	"go/parser"
-	"go/token"
 	"reflect"
 	"strings"
 	"testing"
-	"time"
 
 	"1pkg/gopium"
+	"1pkg/gopium/astext"
 	"1pkg/gopium/collections"
 	"1pkg/gopium/fmtio"
 	"1pkg/gopium/tests/data"
 	"1pkg/gopium/tests/mocks"
+	"1pkg/gopium/typepkg"
 )
 
 func TestPrinter(t *testing.T) {
@@ -62,8 +62,6 @@ func TestPrinter(t *testing.T) {
 		},
 	)
 	cctx, cancel := context.WithCancel(context.Background())
-	cancel()
-	dctx, cancel := context.WithTimeout(context.Background(), 0)
 	cancel()
 	p := fmtio.Goprint(0, 4, false)
 	table := map[string]struct {
@@ -128,60 +126,91 @@ type DocCom struct {
 			a:   FFN,
 			ctx: cctx,
 			r:   make(map[string][]byte),
-			err: cctx.Err(),
+			err: context.Canceled,
 		},
 		"note struct pkg should apply nothing on canceled context fast": {
 			p:   data.NewParser("note"),
-			a:   ufmt(mocks.Ast{}.Ast),
+			a:   ufmt(astext.WalkSt, mocks.Ast{}.Ast),
 			ctx: cctx,
 			r:   make(map[string][]byte),
-			err: cctx.Err(),
+			err: context.Canceled,
 		},
 		"note struct pkg should apply nothing on canceled context filter": {
 			p:   data.NewParser("note"),
-			a:   filter,
+			a:   filter(astext.WalkSt),
 			ctx: cctx,
 			r:   make(map[string][]byte),
-			err: cctx.Err(),
+			err: context.Canceled,
 		},
-		"note struct pkg should apply nothing on canceled context after walk filter": {
+		"note struct pkg should apply nothing on canceled context filter after walk": {
 			p:   data.NewParser("note"),
-			a:   filter,
+			a:   filter(mocks.Walk{}.Walk),
+			ctx: cctx,
 			r:   make(map[string][]byte),
-			err: dctx.Err(),
+			err: context.Canceled,
+		},
+		"note struct pkg should apply nothing on walk error filter": {
+			p:   data.NewParser("note"),
+			a:   filter(mocks.Walk{Err: errors.New("walk-test")}.Walk),
+			ctx: context.Background(),
+			r:   make(map[string][]byte),
+			err: errors.New("walk-test"),
 		},
 		"note struct pkg should apply nothing on canceled context note": {
-			p:   data.NewParser("note"),
-			a:   note(goparse, fmtio.Goprint(0, 4, false)),
+			p: data.NewParser("note"),
+			a: note(
+				astext.WalkSt,
+				typepkg.ParserXToolPackagesAst{
+					ModeAst: parser.ParseComments | parser.AllErrors,
+				},
+				fmtio.Goprint(0, 4, false),
+			),
 			ctx: cctx,
 			r:   make(map[string][]byte),
-			err: cctx.Err(),
+			err: context.Canceled,
 		},
 		"note struct pkg should apply nothing on canceled context after walk note": {
-			p:   data.NewParser("note"),
-			a:   note(goparse, fmtio.Goprint(0, 4, false)),
+			p: data.NewParser("note"),
+			a: note(
+				mocks.Walk{Err: errors.New("walk-test")}.Walk,
+				typepkg.ParserXToolPackagesAst{
+					ModeAst: parser.ParseComments | parser.AllErrors,
+				},
+				fmtio.Goprint(0, 4, false),
+			),
+			ctx: context.Background(),
 			r:   make(map[string][]byte),
-			err: dctx.Err(),
+			err: errors.New("walk-test"),
 		},
 		"note struct pkg should apply nothing on parser error": {
 			p: data.NewParser("note"),
-			a: note(func(*token.FileSet, string, parser.Mode) (*ast.File, error) {
-				return nil, errors.New("test-1")
-			}, fmtio.Goprint(0, 4, false)),
+			a: note(
+				astext.WalkSt,
+				mocks.Parser{Asterr: errors.New("test-1")},
+				fmtio.Goprint(0, 4, false),
+			),
 			ctx: context.Background(),
 			r:   make(map[string][]byte),
 			err: errors.New("test-1"),
 		},
 		"note struct pkg should apply nothing on printer error": {
-			p:   data.NewParser("note"),
-			a:   note(goparse, mocks.Printer{Err: errors.New("test-2")}.Printer),
+			p: data.NewParser("note"),
+			a: note(
+				astext.WalkSt,
+				typepkg.ParserXToolPackagesAst{
+					ModeAst: parser.ParseComments | parser.AllErrors,
+				}, mocks.Printer{Err: errors.New("test-2")}.Printer,
+			),
 			ctx: context.Background(),
 			r:   make(map[string][]byte),
 			err: errors.New("test-2"),
 		},
 		"note struct pkg should apply nothing on apply error": {
-			p:   data.NewParser("note"),
-			a:   combine(mocks.Apply{Err: errors.New("test-3")}.Apply, filter),
+			p: data.NewParser("note"),
+			a: combine(
+				mocks.Apply{Err: errors.New("test-3")}.Apply,
+				filter(astext.WalkSt),
+			),
 			ctx: context.Background(),
 			r:   make(map[string][]byte),
 			err: errors.New("test-3"),
@@ -194,11 +223,6 @@ type DocCom struct {
 			pkg, loc, err := tcase.p.ParseAst(context.Background())
 			if !reflect.DeepEqual(err, nil) {
 				t.Fatalf("actual %v doesn't equal to expected %v", err, nil)
-			}
-			if tcase.ctx == nil {
-				ctx, cancel := context.WithTimeout(context.Background(), time.Microsecond)
-				defer cancel()
-				tcase.ctx = ctx
 			}
 			// exec
 			apkg, aerr := tcase.a(tcase.ctx, pkg, loc, tcase.h)
@@ -213,10 +237,13 @@ type DocCom struct {
 			if !reflect.DeepEqual(aerr, tcase.err) {
 				t.Errorf("actual %v doesn't equal to expected %v", aerr, tcase.err)
 			}
-			for name, buf := range w.Buffers {
+			for name, rwc := range w.RWCs {
 				// check all struct
 				// against bytes map
 				if st, ok := tcase.r[name]; ok {
+					// read rwc to buffer
+					var buf bytes.Buffer
+					buf.ReadFrom(rwc)
 					// format actual and expected identically
 					actual := strings.Trim(string(buf.Bytes()), "\n")
 					expected := strings.Trim(string(st), "\n")

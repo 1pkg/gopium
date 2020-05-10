@@ -67,7 +67,7 @@ func TestFilter(t *testing.T) {
 					},
 				},
 			},
-			err: cctx.Err(),
+			err: context.Canceled,
 		},
 		"non empty struct should be applied accordingly to filter name": {
 			filter: filter{nregex: regexp.MustCompile(`^test-2$`)},

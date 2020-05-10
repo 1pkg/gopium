@@ -75,7 +75,7 @@ func TestPad(t *testing.T) {
 					gopium.PadField(2),
 				},
 			},
-			err: cctx.Err(),
+			err: context.Canceled,
 		},
 		"mixed struct should be applied to expected aligned struct on type natural pad": {
 			pad: padtnat,

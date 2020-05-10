@@ -62,7 +62,7 @@ func TestExp(t *testing.T) {
 					},
 				},
 			},
-			err: cctx.Err(),
+			err: context.Canceled,
 		},
 		"not exported struct should be applied to itself": {
 			exp: expasc,

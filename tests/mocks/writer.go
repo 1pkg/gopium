@@ -1,7 +1,6 @@
 package mocks
 
 import (
-	"bytes"
 	"go/build"
 	"io"
 	"strings"
@@ -10,27 +9,31 @@ import (
 
 // Writer defines mock fmtio writer implementation
 type Writer struct {
-	Buffers map[string]*bytes.Buffer
-	mutex   sync.Mutex
-	Err     error
-	Werr    error
-	Cerr    error
+	Err   error
+	RWCs  map[string]*RWC
+	mutex sync.Mutex
 }
 
 // Writer mock implementation
 func (w *Writer) Writer(id string, loc string) (io.WriteCloser, error) {
-	// lock buffers access
-	// and init them
+	// lock rwcs access
+	// and init them if they
+	// haven't inited before
 	defer w.mutex.Unlock()
 	w.mutex.Lock()
-	if w.Buffers == nil {
-		w.Buffers = make(map[string]*bytes.Buffer)
+	if w.RWCs == nil {
+		w.RWCs = make(map[string]*RWC)
 	}
-	// prepare shared buf
-	var buf bytes.Buffer
-	// write it to store
-	// and to mock write closer
+	// remove abs part from id
 	id = strings.Replace(id, build.Default.GOPATH, "", 1)
-	w.Buffers[id] = &buf
-	return RWC{buf: &buf, Werr: w.Werr, Cerr: w.Cerr}, w.Err
+	// if id is inside existed rwcs
+	// just return found rwc back
+	if rwc, ok := w.RWCs[id]; ok {
+		return rwc, w.Err
+	}
+	// otherwise create new rwc
+	// store and return it back
+	rwc := &RWC{}
+	w.RWCs[id] = rwc
+	return rwc, w.Err
 }

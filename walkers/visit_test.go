@@ -40,7 +40,7 @@ func TestWithVisit(t *testing.T) {
 			ctx:  context.Background(),
 			s:    &types.Scope{},
 		},
-		"with visit should return expected govisit func even without bref flag": {
+		"with visit should return expected govisit func without bref flag": {
 			exp:  mocks.Maven{},
 			loc:  mocks.Locator{},
 			bref: false,
@@ -51,7 +51,7 @@ func TestWithVisit(t *testing.T) {
 			ctx:  context.Background(),
 			s:    &types.Scope{},
 		},
-		"with visit should return expected govisit func even without deep flag": {
+		"with visit should return expected govisit func without deep flag": {
 			exp:  mocks.Maven{},
 			loc:  mocks.Locator{},
 			bref: true,
@@ -62,7 +62,7 @@ func TestWithVisit(t *testing.T) {
 			ctx:  context.Background(),
 			s:    &types.Scope{},
 		},
-		"with visit should return expected govisit func even without all flags": {
+		"with visit should return expected govisit func without all flags": {
 			exp: mocks.Maven{},
 			loc: mocks.Locator{},
 			r:   regexp.MustCompile(`.*`),
@@ -165,7 +165,7 @@ func TestVscope(t *testing.T) {
 			p:   data.NewParser("single"),
 			stg: np,
 			sts: make(map[string]gopium.Struct),
-			err: cctx.Err(),
+			err: context.Canceled,
 		},
 		"flat struct pkg should visit all structs": {
 			ctx: context.Background(),
@@ -663,7 +663,7 @@ func TestVdeep(t *testing.T) {
 			p:   data.NewParser("single"),
 			stg: np,
 			sts: make(map[string]gopium.Struct),
-			err: cctx.Err(),
+			err: context.Canceled,
 		},
 		"flat struct pkg should visit all structs": {
 			ctx: context.Background(),

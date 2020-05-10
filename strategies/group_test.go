@@ -119,7 +119,7 @@ func TestGroup(t *testing.T) {
 					},
 				},
 			},
-			err: cctx.Err(),
+			err: context.Canceled,
 		},
 		"non empty struct with relevant group tag should be applied to expected struct": {
 			b:   Builder{Curator: mocks.Maven{}},

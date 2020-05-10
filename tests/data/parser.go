@@ -32,7 +32,7 @@ type typesloc struct {
 // parser defines parser implementation
 // that adds internal caching for results
 type Parser struct {
-	Parser gopium.Parser
+	p gopium.Parser
 }
 
 // NewParser creates parser for single tests data
@@ -44,13 +44,13 @@ func NewParser(pkg string) gopium.Parser {
 		ModeAst:    parser.ParseComments | parser.AllErrors,
 		BuildFlags: []string{"-tags=tests_data"},
 	}
-	return Parser{Parser: p}
+	return Parser{p: p}
 }
 
 // ParseTypes cache parser implementation
-func (p Parser) ParseTypes(ctx context.Context) (*types.Package, gopium.Locator, error) {
+func (p Parser) ParseTypes(ctx context.Context, src ...byte) (*types.Package, gopium.Locator, error) {
 	// check that known parser should be cached
-	if parser, ok := p.Parser.(typepkg.ParserXToolPackagesAst); ok {
+	if parser, ok := p.p.(typepkg.ParserXToolPackagesAst); ok {
 		// access cache syncroniusly
 		defer tmutex.Unlock()
 		tmutex.Lock()
@@ -61,7 +61,7 @@ func (p Parser) ParseTypes(ctx context.Context) (*types.Package, gopium.Locator,
 			return tp.pkg, tp.loc, nil
 		}
 		// if not do actual parsing
-		pkg, loc, err := p.Parser.ParseTypes(ctx)
+		pkg, loc, err := p.p.ParseTypes(ctx, src...)
 		// store result to cache if no error occured
 		if err == nil {
 			tcache[dir] = typesloc{pkg: pkg, loc: loc}
@@ -69,11 +69,11 @@ func (p Parser) ParseTypes(ctx context.Context) (*types.Package, gopium.Locator,
 		return pkg, loc, err
 	}
 	// otherwise use real parser
-	return p.Parser.ParseTypes(ctx)
+	return p.p.ParseTypes(ctx, src...)
 }
 
 // ParseAst cache parser implementation
-func (p Parser) ParseAst(ctx context.Context) (*ast.Package, gopium.Locator, error) {
+func (p Parser) ParseAst(ctx context.Context, src ...byte) (*ast.Package, gopium.Locator, error) {
 	// it's cheap to parse ast each time
-	return p.Parser.ParseAst(ctx)
+	return p.p.ParseAst(ctx, src...)
 }

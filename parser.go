@@ -20,13 +20,13 @@ type Locator interface {
 // TypeParser defines abstraction for
 // types packages parsing processor
 type TypeParser interface {
-	ParseTypes(context.Context) (*types.Package, Locator, error)
+	ParseTypes(context.Context, ...byte) (*types.Package, Locator, error)
 }
 
 // AstParser defines abstraction for
 // ast packages parsing processor
 type AstParser interface {
-	ParseAst(context.Context) (*ast.Package, Locator, error)
+	ParseAst(context.Context, ...byte) (*ast.Package, Locator, error)
 }
 
 // Parser defines abstraction that

@@ -10,18 +10,16 @@ import (
 
 // Parser defines mock parser implementation
 type Parser struct {
-	Types *types.Package
-	Ast   *ast.Package
-	Terr  error
-	Aerr  error
+	Typeserr error
+	Asterr   error
 }
 
 // ParseTypes mock implementation
-func (p Parser) ParseTypes(context.Context) (*types.Package, gopium.Locator, error) {
-	return p.Types, Locator{}, p.Terr
+func (p Parser) ParseTypes(context.Context, ...byte) (*types.Package, gopium.Locator, error) {
+	return types.NewPackage("", ""), Locator{}, p.Typeserr
 }
 
 // ParseAst mock implementation
-func (p Parser) ParseAst(context.Context) (*ast.Package, gopium.Locator, error) {
-	return p.Ast, Locator{}, p.Aerr
+func (p Parser) ParseAst(context.Context, ...byte) (*ast.Package, gopium.Locator, error) {
+	return &ast.Package{}, Locator{}, p.Asterr
 }
