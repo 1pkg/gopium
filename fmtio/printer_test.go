@@ -3,8 +3,6 @@ package fmtio
 import (
 	"context"
 	"errors"
-	"go/ast"
-	"go/build"
 	"reflect"
 	"strings"
 	"testing"
@@ -23,7 +21,6 @@ func TestPrinter(t *testing.T) {
 		pr  Printer
 		w   Writer
 		ctx context.Context
-		pkg *ast.Package
 		r   map[string][]byte
 		err error
 	}{
@@ -81,7 +78,7 @@ type Single struct {
 			},
 			err: errors.New("test-2"),
 		},
-		"multi structs pkg should print all expected levels structs with deep": {
+		"multi structs pkg should print all expected levels structs": {
 			p:   data.NewParser("multi"),
 			pr:  Goprint(0, 4, false),
 			ctx: context.Background(),
@@ -204,8 +201,6 @@ type (
 				t.Errorf("actual %v doesn't equal to expected %v", err, tcase.err)
 			}
 			for name, buf := range w.Buffers {
-				// remove gopath from id
-				name = strings.Replace(name, build.Default.GOPATH, "", 1)
 				// check all struct
 				// against bytes map
 				if st, ok := tcase.r[name]; ok {

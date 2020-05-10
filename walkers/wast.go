@@ -74,7 +74,7 @@ func (w wast) Visit(ctx context.Context, regex *regexp.Regexp, stg gopium.Strate
 	// run visiting in separate goroutine
 	go gvisit(gctx, pkg.Scope())
 	// prepare struct storage
-	h := make(collections.Hierarchic)
+	h := collections.NewHierarchic("")
 	for applied := range ch {
 		// in case any error happened
 		// just return error back

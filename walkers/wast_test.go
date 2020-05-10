@@ -3,7 +3,6 @@ package walkers
 import (
 	"context"
 	"errors"
-	"go/build"
 	"go/types"
 	"reflect"
 	"regexp"
@@ -372,8 +371,6 @@ type (
 				t.Errorf("actual %v doesn't equal to expected %v", err, tcase.err)
 			}
 			for id, buf := range w.Buffers {
-				// remove gopath from id
-				id = strings.Replace(id, build.Default.GOPATH, "", 1)
 				// check all struct
 				// against bytes map
 				if st, ok := tcase.sts[id]; ok {
