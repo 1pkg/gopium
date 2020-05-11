@@ -7,7 +7,6 @@ import (
 	"runtime"
 
 	"1pkg/gopium"
-	"1pkg/gopium/ctx"
 	"1pkg/gopium/runners"
 
 	"github.com/spf13/cobra"
@@ -317,7 +316,7 @@ func main() {
 	// to number of logical cpu
 	runtime.GOMAXPROCS(runtime.NumCPU())
 	// prepare context with signals cancelation
-	ctx, cancel := ctx.WithSignals(
+	ctx, cancel := gopium.ContextWithSignals(
 		context.Background(),
 		os.Interrupt,
 		os.Kill,

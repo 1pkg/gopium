@@ -32,5 +32,16 @@ func (w Walker) Visit(ctx context.Context, regex *regexp.Regexp, stg gopium.Stra
 			return err
 		}
 	}
-	return nil
+	return ctx.Err()
+}
+
+// WalkerBuilder defines mock walker builder implementation
+type WalkerBuilder struct {
+	Walker gopium.Walker
+	Err    error
+}
+
+// Build mock implementation
+func (b WalkerBuilder) Build(gopium.WalkerName) (gopium.Walker, error) {
+	return b.Walker, b.Err
 }

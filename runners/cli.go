@@ -21,11 +21,11 @@ import (
 // Cli defines cli runner implementation
 // that is able to run full gopium cli application
 type Cli struct {
-	coord    coordinator
-	wbuilder gopium.WalkerBuilder
-	sbuilder gopium.StrategyBuilder
-	wname    gopium.WalkerName
-	snames   []gopium.StrategyName
+	c      coordinator
+	wb     gopium.WalkerBuilder
+	sb     gopium.StrategyBuilder
+	wname  gopium.WalkerName
+	snames []gopium.StrategyName
 }
 
 // NewCli helps to spawn new cli application runner
@@ -78,26 +78,26 @@ func NewCli(
 	// set up printer
 	pr := fmtio.Goprint(indent, tabwidth, usespace)
 	// compile regexp
-	wregex, err := regexp.Compile(regex)
+	cregex, err := regexp.Compile(regex)
 	if err != nil {
-		return nil, fmt.Errorf("can't compile such regexp %q %v", wregex, err)
+		return nil, fmt.Errorf("can't compile such regexp %v", err)
 	}
 	// cast timeout to second duration
-	gtimeout := time.Duration(timeout) * time.Second
+	stimeout := time.Duration(timeout) * time.Second
 	// set up coordinator
-	coord := coordinator{
-		wregex:   wregex,
-		gtimeout: gtimeout,
+	c := coordinator{
+		regex:   cregex,
+		timeout: stimeout,
 	}
 	// set walker and strategy builders
-	wbuilder := walkers.Builder{
+	wb := walkers.Builder{
 		Parser:  p,
 		Exposer: m,
 		Printer: pr,
 		Deep:    deep,
 		Bref:    backref,
 	}
-	sbuilder := strategies.Builder{Curator: m}
+	sb := strategies.Builder{Curator: m}
 	// cast strategies strings to strategy names
 	snames := make([]gopium.StrategyName, 0, len(stgs))
 	for _, strategy := range stgs {
@@ -107,26 +107,26 @@ func NewCli(
 	wname := gopium.WalkerName(walker)
 	// combine cli runner
 	return &Cli{
-		coord:    coord,
-		wbuilder: wbuilder,
-		sbuilder: sbuilder,
-		wname:    wname,
-		snames:   snames,
+		c:      c,
+		wb:     wb,
+		sb:     sb,
+		wname:  wname,
+		snames: snames,
 	}, nil
 }
 
 // Run cli implementation
 func (cli *Cli) Run(ctx context.Context) error {
 	// build strategy
-	stg, err := cli.coord.strategy(cli.sbuilder, cli.snames)
+	stg, err := cli.c.strategy(cli.sb, cli.snames)
 	if err != nil {
 		return err
 	}
 	// build walker
-	w, err := cli.coord.walker(cli.wbuilder, cli.wname)
+	w, err := cli.c.walker(cli.wb, cli.wname)
 	if err != nil {
 		return err
 	}
 	// run visit
-	return cli.coord.visit(ctx, w, stg)
+	return cli.c.visit(ctx, w, stg)
 }
