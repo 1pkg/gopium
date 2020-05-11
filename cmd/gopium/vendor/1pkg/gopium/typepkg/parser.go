@@ -31,7 +31,7 @@ type ParserXToolPackagesAst struct {
 }
 
 // ParseTypes ParserXToolPackagesAst implementation
-func (p ParserXToolPackagesAst) ParseTypes(ctx context.Context) (*types.Package, gopium.Locator, error) {
+func (p ParserXToolPackagesAst) ParseTypes(ctx context.Context, _ ...byte) (*types.Package, gopium.Locator, error) {
 	// manage context actions
 	// in case of cancelation
 	// stop parse and return error back
@@ -74,7 +74,7 @@ func (p ParserXToolPackagesAst) ParseTypes(ctx context.Context) (*types.Package,
 }
 
 // ParseAst ParserXToolPackagesAst implementation
-func (p ParserXToolPackagesAst) ParseAst(ctx context.Context) (*ast.Package, gopium.Locator, error) {
+func (p ParserXToolPackagesAst) ParseAst(ctx context.Context, src ...byte) (*ast.Package, gopium.Locator, error) {
 	// manage context actions
 	// in case of cancelation
 	// stop parse and return error back
@@ -83,8 +83,30 @@ func (p ParserXToolPackagesAst) ParseAst(ctx context.Context) (*ast.Package, gop
 		return nil, nil, ctx.Err()
 	default:
 	}
-	// use parser.ParseDir
 	fset := token.NewFileSet()
+	// if src was provided
+	// use parser parse file
+	// in memory and return
+	// artificial package
+	if len(src) > 0 {
+		file, err := parser.ParseFile(
+			fset,
+			"",
+			string(src),
+			p.ModeAst,
+		)
+		// on any error just propagate it
+		if err != nil {
+			return nil, nil, err
+		}
+		return &ast.Package{
+			Name: "pkg",
+			Files: map[string]*ast.File{
+				"file": file,
+			},
+		}, NewLocator(fset), err
+	}
+	// otherwise use parser parse dir
 	dir := filepath.Join(p.Root, p.Path)
 	pkgs, err := parser.ParseDir(
 		fset,
