@@ -1,6 +1,7 @@
 package collections
 
 import (
+	"fmt"
 	"strings"
 
 	"1pkg/gopium"
@@ -23,7 +24,7 @@ func NewHierarchic(rcat string) Hierarchic {
 }
 
 // Push adds struct to hierarchic collection
-func (h Hierarchic) Push(key string, cat string, st gopium.Struct) {
+func (h Hierarchic) Push(key string, cat string, sts ...gopium.Struct) {
 	// remove root cat from the cat
 	cat = strings.Replace(cat, h.rcat, "", 1)
 	// if cat hasn't been created yet
@@ -31,8 +32,17 @@ func (h Hierarchic) Push(key string, cat string, st gopium.Struct) {
 	if !ok {
 		flat = make(Flat)
 	}
-	// push struct to flat collection
-	flat[key] = st
+	// push not structs to flat collection
+	switch l := len(sts); {
+	case l == 1:
+		flat[key] = sts[0]
+	case l > 1:
+		// if we have list of struct
+		// make unique keys
+		for i, st := range sts {
+			flat[fmt.Sprintf("%s-%d", key, i)] = st
+		}
+	}
 	// update hierarchic structs collection
 	h.cats[cat] = flat
 }

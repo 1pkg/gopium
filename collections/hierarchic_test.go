@@ -11,9 +11,10 @@ func TestHierarchicPushCat(t *testing.T) {
 	// prepare
 	h := NewHierarchic("prefix/")
 	h.Push("test-1", "prefix/test-1", gopium.Struct{Name: "test-1"})
-	h.Push("test-2", "prefix/test-2", gopium.Struct{Name: "test-2"})
-	h.Push("test-3", "prefix/test-2", gopium.Struct{Name: "test-3"})
+	h.Push("test-2", "prefix/test-2")
+	h.Push("test-3", "prefix/test-2", gopium.Struct{Name: "test-2"}, gopium.Struct{Name: "test-3"})
 	h.Push("test-4", "test-2", gopium.Struct{Name: "test-4"})
+	h.Push("test-5", "test-3")
 	table := map[string]struct {
 		cat string
 		f   Flat
@@ -36,24 +37,29 @@ func TestHierarchicPushCat(t *testing.T) {
 		"test-2 cat should return expected flat collection": {
 			cat: "test-2",
 			f: Flat{
-				"test-2": gopium.Struct{Name: "test-2"},
-				"test-3": gopium.Struct{Name: "test-3"},
-				"test-4": gopium.Struct{Name: "test-4"},
+				"test-3-0": gopium.Struct{Name: "test-2"},
+				"test-3-1": gopium.Struct{Name: "test-3"},
+				"test-4":   gopium.Struct{Name: "test-4"},
 			},
 			ok: true,
 		},
 		"prefix/test-2 cat should return expected flat collection": {
 			cat: "prefix/test-2",
 			f: Flat{
-				"test-2": gopium.Struct{Name: "test-2"},
-				"test-3": gopium.Struct{Name: "test-3"},
-				"test-4": gopium.Struct{Name: "test-4"},
+				"test-3-0": gopium.Struct{Name: "test-2"},
+				"test-3-1": gopium.Struct{Name: "test-3"},
+				"test-4":   gopium.Struct{Name: "test-4"},
 			},
 			ok: true,
 		},
 		"p/test-2 cat should return empty flat collection": {
 			cat: "p/test-2",
 			f:   Flat(nil),
+		},
+		"test-3 cat should return empty flat collection": {
+			cat: "test-3",
+			f:   make(Flat),
+			ok:  true,
 		},
 	}
 	for name, tcase := range table {

@@ -4,7 +4,7 @@ import (
 	"context"
 	"go/ast"
 
-	"1pkg/gopium/astext"
+	"1pkg/gopium"
 )
 
 // Walk defines mock walk implementation
@@ -13,6 +13,6 @@ type Walk struct {
 }
 
 // Walk mock implementation
-func (w Walk) Walk(context.Context, ast.Node, astext.Action, astext.Comparator) (ast.Node, error) {
+func (w Walk) Walk(context.Context, ast.Node, gopium.Action, gopium.Comparator) (ast.Node, error) {
 	return nil, w.Err
 }
