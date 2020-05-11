@@ -183,35 +183,35 @@ type DocCom struct {
 			p:   data.NewParser("note"),
 			a:   UFFN,
 			ctx: cctx,
-			r:   make(map[string][]byte),
+			r:   map[string][]byte{},
 			err: context.Canceled,
 		},
 		"note struct pkg should apply nothing on canceled context fast": {
 			p:   data.NewParser("note"),
 			a:   ufmt(walk, mocks.Ast{}.Ast),
 			ctx: cctx,
-			r:   make(map[string][]byte),
+			r:   map[string][]byte{},
 			err: context.Canceled,
 		},
 		"note struct pkg should apply nothing on canceled context filter": {
 			p:   data.NewParser("note"),
 			a:   filter(walk),
 			ctx: cctx,
-			r:   make(map[string][]byte),
+			r:   map[string][]byte{},
 			err: context.Canceled,
 		},
 		"note struct pkg should apply nothing on canceled context filter after walk": {
 			p:   data.NewParser("note"),
 			a:   filter(mocks.Walk{}.Walk),
 			ctx: cctx,
-			r:   make(map[string][]byte),
+			r:   map[string][]byte{},
 			err: context.Canceled,
 		},
 		"note struct pkg should apply nothing on walk error filter": {
 			p:   data.NewParser("note"),
 			a:   filter(mocks.Walk{Err: errors.New("walk-test")}.Walk),
 			ctx: context.Background(),
-			r:   make(map[string][]byte),
+			r:   map[string][]byte{},
 			err: errors.New("walk-test"),
 		},
 		"note struct pkg should apply nothing on canceled context note": {
@@ -224,7 +224,7 @@ type DocCom struct {
 				fmtio.Goprint(0, 4, false),
 			),
 			ctx: cctx,
-			r:   make(map[string][]byte),
+			r:   map[string][]byte{},
 			err: context.Canceled,
 		},
 		"note struct pkg should apply nothing on canceled context after walk note": {
@@ -238,7 +238,7 @@ type DocCom struct {
 			),
 			h:   lh,
 			ctx: context.Background(),
-			r:   make(map[string][]byte),
+			r:   map[string][]byte{},
 			err: errors.New("walk-test"),
 		},
 		"note struct pkg should apply nothing on parser error": {
@@ -249,7 +249,7 @@ type DocCom struct {
 				fmtio.Goprint(0, 4, false),
 			),
 			ctx: context.Background(),
-			r:   make(map[string][]byte),
+			r:   map[string][]byte{},
 			err: errors.New("test-1"),
 		},
 		"note struct pkg should apply nothing on printer error": {
@@ -261,7 +261,7 @@ type DocCom struct {
 				}, mocks.Printer{Err: errors.New("test-2")}.Printer,
 			),
 			ctx: context.Background(),
-			r:   make(map[string][]byte),
+			r:   map[string][]byte{},
 			err: errors.New("test-2"),
 		},
 		"note struct pkg should apply nothing on apply error": {
@@ -271,7 +271,7 @@ type DocCom struct {
 				filter(walk),
 			),
 			ctx: context.Background(),
-			r:   make(map[string][]byte),
+			r:   map[string][]byte{},
 			err: errors.New("test-3"),
 		},
 	}
@@ -302,7 +302,10 @@ type DocCom struct {
 				if st, ok := tcase.r[name]; ok {
 					// read rwc to buffer
 					var buf bytes.Buffer
-					buf.ReadFrom(rwc)
+					_, err := buf.ReadFrom(rwc)
+					if !reflect.DeepEqual(err, nil) {
+						t.Errorf("actual %v doesn't equal to expected %v", err, nil)
+					}
 					// format actual and expected identically
 					actual := strings.Trim(string(buf.Bytes()), "\n")
 					expected := strings.Trim(string(st), "\n")
@@ -315,8 +318,8 @@ type DocCom struct {
 				}
 			}
 			// check that map has been drained
-			if !reflect.DeepEqual(tcase.r, make(map[string][]byte)) {
-				t.Errorf("actual %v doesn't equal to expected %v", tcase.r, make(map[string][]byte))
+			if !reflect.DeepEqual(tcase.r, map[string][]byte{}) {
+				t.Errorf("actual %v doesn't equal to expected %v", tcase.r, map[string][]byte{})
 			}
 		})
 	}

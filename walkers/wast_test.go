@@ -88,7 +88,7 @@ type Single struct {
 			p:   data.NewParser("single"),
 			a:   astutil.UFFN,
 			stg: np,
-			sts: make(map[string][]byte),
+			sts: map[string][]byte{},
 			err: context.Canceled,
 		},
 		"single struct pkg should visit nothing on type parser error": {
@@ -97,7 +97,7 @@ type Single struct {
 			p:   mocks.Parser{Typeserr: errors.New("test-1")},
 			a:   astutil.UFFN,
 			stg: np,
-			sts: make(map[string][]byte),
+			sts: map[string][]byte{},
 			err: errors.New("test-1"),
 		},
 		"single struct pkg should visit nothing on ast parser error": {
@@ -106,7 +106,7 @@ type Single struct {
 			p:   mocks.Parser{Asterr: errors.New("test-2")},
 			a:   astutil.UFFN,
 			stg: np,
-			sts: make(map[string][]byte),
+			sts: map[string][]byte{},
 			err: errors.New("test-2"),
 		},
 		"single struct pkg should visit nothing on strategy error": {
@@ -115,7 +115,7 @@ type Single struct {
 			p:   data.NewParser("single"),
 			a:   astutil.UFFN,
 			stg: &mocks.Strategy{Err: errors.New("test-3")},
-			sts: make(map[string][]byte),
+			sts: map[string][]byte{},
 			err: errors.New("test-3"),
 		},
 		"single struct pkg should visit nothing on persist error": {
@@ -125,7 +125,7 @@ type Single struct {
 			a:   astutil.UFFN,
 			w:   (&mocks.Writer{Err: errors.New("test-4")}).Writer,
 			stg: np,
-			sts: make(map[string][]byte),
+			sts: map[string][]byte{},
 			err: errors.New("test-4"),
 		},
 		"single struct pkg should visit nothing on apply error": {
@@ -134,7 +134,7 @@ type Single struct {
 			p:   data.NewParser("single"),
 			a:   (&mocks.Apply{Err: errors.New("test-5")}).Apply,
 			stg: np,
-			sts: make(map[string][]byte),
+			sts: map[string][]byte{},
 			err: errors.New("test-5"),
 		},
 		"multi structs pkg should visit all expected levels structs with deep": {
@@ -373,7 +373,10 @@ type (
 				if st, ok := tcase.sts[id]; ok {
 					// read rwc to buffer
 					var buf bytes.Buffer
-					buf.ReadFrom(rwc)
+					_, err := buf.ReadFrom(rwc)
+					if !reflect.DeepEqual(err, nil) {
+						t.Errorf("actual %v doesn't equal to expected %v", err, nil)
+					}
 					// format actual and expected identically
 					actual := strings.Trim(string(buf.Bytes()), "\n")
 					expected := strings.Trim(string(st), "\n")
@@ -386,8 +389,8 @@ type (
 				}
 			}
 			// check that map has been drained
-			if !reflect.DeepEqual(tcase.sts, make(map[string][]byte)) {
-				t.Errorf("actual %v doesn't equal to expected %v", tcase.sts, make(map[string][]byte))
+			if !reflect.DeepEqual(tcase.sts, map[string][]byte{}) {
+				t.Errorf("actual %v doesn't equal to expected %v", tcase.sts, map[string][]byte{})
 			}
 		})
 	}

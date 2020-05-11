@@ -16,27 +16,30 @@ import (
 // formatting gopium struct to byte slice
 type Bytes func(gopium.Struct) ([]byte, error)
 
-// Json defines bytes implementation
+// Jsonb defines bytes implementation
 // which uses json.Marshal with json.Indent to serialize struct
-func Json(st gopium.Struct) ([]byte, error) {
+func Jsonb(st gopium.Struct) ([]byte, error) {
 	// just use json marshal with indent
 	return json.MarshalIndent(st, "", "\t")
 }
 
-// Xml defines bytes implementation
+// Xmlb defines bytes implementation
 // which uses xml.MarshalIndent to serialize struct
-func Xml(st gopium.Struct) ([]byte, error) {
+func Xmlb(st gopium.Struct) ([]byte, error) {
 	// just use xml marshal with indent
 	return xml.MarshalIndent(st, "", "\t")
 }
 
-// Csv defines bytes implementation
+// Csvb defines bytes implementation
 // that serializes struct to csv format
-func Csv(rw io.ReadWriter) Bytes {
+func Csvb(rw io.ReadWriter) Bytes {
 	return func(st gopium.Struct) ([]byte, error) {
 		// prepare csv writer
 		w := csv.NewWriter(rw)
 		// write header
+		// no error should be
+		// checked as it uses
+		// buffered writer
 		_ = w.Write([]string{
 			"Struct Name",
 			"Struct Doc",
@@ -54,6 +57,9 @@ func Csv(rw io.ReadWriter) Bytes {
 		// go through all fields
 		// and write then one by one
 		for _, f := range st.Fields {
+			// no error should be
+			// checked as it uses
+			// buffered writer
 			_ = w.Write([]string{
 				st.Name,
 				strings.Join(st.Doc, " "),

@@ -52,7 +52,7 @@ func TestWout(t *testing.T) {
 			p:   data.NewParser("empty"),
 			fmt: mocks.Bytes{}.Bytes,
 			stg: np,
-			sts: make(map[string][]byte),
+			sts: map[string][]byte{},
 		},
 		"single struct pkg should visit the struct": {
 			ctx: context.Background(),
@@ -111,7 +111,7 @@ func TestWout(t *testing.T) {
 			p:   data.NewParser("single"),
 			fmt: mocks.Bytes{}.Bytes,
 			stg: np,
-			sts: make(map[string][]byte),
+			sts: map[string][]byte{},
 			err: context.Canceled,
 		},
 		"single struct pkg should visit nothing on parser error": {
@@ -120,7 +120,7 @@ func TestWout(t *testing.T) {
 			p:   mocks.Parser{Typeserr: errors.New("test-1")},
 			fmt: mocks.Bytes{}.Bytes,
 			stg: np,
-			sts: make(map[string][]byte),
+			sts: map[string][]byte{},
 			err: errors.New("test-1"),
 		},
 		"single struct pkg should visit nothing on strategy error": {
@@ -129,7 +129,7 @@ func TestWout(t *testing.T) {
 			p:   data.NewParser("single"),
 			fmt: mocks.Bytes{}.Bytes,
 			stg: &mocks.Strategy{Err: errors.New("test-2")},
-			sts: make(map[string][]byte),
+			sts: map[string][]byte{},
 			err: errors.New("test-2"),
 		},
 		"single struct pkg should visit nothing on writer error": {
@@ -139,7 +139,7 @@ func TestWout(t *testing.T) {
 			fmt: mocks.Bytes{}.Bytes,
 			w:   (&mocks.Writer{Err: errors.New("test-3")}).Writer,
 			stg: np,
-			sts: make(map[string][]byte),
+			sts: map[string][]byte{},
 			err: errors.New("test-3"),
 		},
 		"single struct pkg should visit nothing on fmt error": {
@@ -148,7 +148,7 @@ func TestWout(t *testing.T) {
 			p:   data.NewParser("single"),
 			fmt: mocks.Bytes{Err: errors.New("test-4")}.Bytes,
 			stg: np,
-			sts: make(map[string][]byte),
+			sts: map[string][]byte{},
 			err: errors.New("test-4"),
 		},
 		"single struct pkg should visit nothing on writer persist error": {
@@ -162,7 +162,7 @@ func TestWout(t *testing.T) {
 				},
 			}}).Writer,
 			stg: np,
-			sts: make(map[string][]byte),
+			sts: map[string][]byte{},
 			err: errors.New("test-5"),
 		},
 		"single struct pkg should visit nothing on writer close error": {
@@ -176,7 +176,7 @@ func TestWout(t *testing.T) {
 				},
 			}}).Writer,
 			stg: np,
-			sts: make(map[string][]byte),
+			sts: map[string][]byte{},
 			err: errors.New("test-6"),
 		},
 		"multi structs pkg should visit all expected levels structs with deep": {
@@ -495,7 +495,10 @@ func TestWout(t *testing.T) {
 				if st, ok := tcase.sts[id]; ok {
 					// read rwc to buffer
 					var buf bytes.Buffer
-					buf.ReadFrom(rwc)
+					_, err := buf.ReadFrom(rwc)
+					if !reflect.DeepEqual(err, nil) {
+						t.Errorf("actual %v doesn't equal to expected %v", err, nil)
+					}
 					// format actual and expected identically
 					actual := strings.Trim(string(buf.Bytes()), "\n")
 					expected := strings.Trim(string(st), "\n")
@@ -508,8 +511,8 @@ func TestWout(t *testing.T) {
 				}
 			}
 			// check that map has been drained
-			if !reflect.DeepEqual(tcase.sts, make(map[string][]byte)) {
-				t.Errorf("actual %v doesn't equal to expected %v", tcase.sts, make(map[string][]byte))
+			if !reflect.DeepEqual(tcase.sts, map[string][]byte{}) {
+				t.Errorf("actual %v doesn't equal to expected %v", tcase.sts, map[string][]byte{})
 			}
 		})
 	}

@@ -19,7 +19,7 @@ func TestBytes(t *testing.T) {
 		err error
 	}{
 		"json should return expected result for empty struct": {
-			fmt: Json,
+			fmt: Jsonb,
 			st:  gopium.Struct{},
 			r: []byte(`
 {
@@ -31,7 +31,7 @@ func TestBytes(t *testing.T) {
 `),
 		},
 		"json should return expected result for non empty struct": {
-			fmt: Json,
+			fmt: Jsonb,
 			st: gopium.Struct{
 				Name:    "Test",
 				Doc:     []string{"doctest"},
@@ -97,7 +97,7 @@ func TestBytes(t *testing.T) {
 `),
 		},
 		"xml should return expected result for empty struct": {
-			fmt: Xml,
+			fmt: Xmlb,
 			st:  gopium.Struct{},
 			r: []byte(`
 <Struct>
@@ -106,7 +106,7 @@ func TestBytes(t *testing.T) {
 `),
 		},
 		"xml should return valid expected for non empty struct": {
-			fmt: Xml,
+			fmt: Xmlb,
 			st: gopium.Struct{
 				Name:    "Test",
 				Doc:     []string{"doctest"},
@@ -160,14 +160,14 @@ func TestBytes(t *testing.T) {
 `),
 		},
 		"csv should return expected result for empty struct": {
-			fmt: Csv(Buffer()),
+			fmt: Csvb(Buffer()),
 			st:  gopium.Struct{},
 			r: []byte(`
 Struct Name,Struct Doc,Struct Comment,Field Name,Field Type,Field Size,Field Align,Field Tag,Field Exported,Field Embedded,Field Doc,Field Comment
 `),
 		},
 		"csv should return error on writter error": {
-			fmt: Csv(&mocks.RWC{Werr: errors.New("test")}),
+			fmt: Csvb(&mocks.RWC{Werr: errors.New("test")}),
 			st: gopium.Struct{
 				Name:    "Test",
 				Doc:     []string{"doctest"},
@@ -195,7 +195,7 @@ Struct Name,Struct Doc,Struct Comment,Field Name,Field Type,Field Size,Field Ali
 			err: errors.New("test"),
 		},
 		"csv should return expected result for non empty struct": {
-			fmt: Csv(Buffer()),
+			fmt: Csvb(Buffer()),
 			st: gopium.Struct{
 				Name:    "Test",
 				Doc:     []string{"doctest"},

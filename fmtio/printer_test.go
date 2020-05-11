@@ -18,12 +18,13 @@ func TestPrinter(t *testing.T) {
 	cctx, cancel := context.WithCancel(context.Background())
 	cancel()
 	table := map[string]struct {
-		p   gopium.Parser
-		pr  Printer
-		w   Writer
-		ctx context.Context
-		r   map[string][]byte
-		err error
+		p    gopium.Parser
+		pr   Printer
+		w    Writer
+		skip bool
+		ctx  context.Context
+		r    map[string][]byte
+		err  error
 	}{
 		"empty pkg should print nothing": {
 			p:   data.NewParser("empty"),
@@ -59,24 +60,23 @@ type Single struct {
 			p:   data.NewParser("single"),
 			pr:  Goprint(0, 4, false),
 			ctx: cctx,
-			r:   make(map[string][]byte),
+			r:   map[string][]byte{},
 			err: context.Canceled,
 		},
 		"single struct pkg should print nothing on canceled context in printer": {
-			p:   data.NewParser("single"),
-			pr:  Goprint(0, 4, false),
-			ctx: &mocks.Context{After: 2},
-			r: map[string][]byte{
-				"/src/1pkg/gopium/tests/data/single/file.go": []byte(``),
-			},
-			err: context.Canceled,
+			p:    data.NewParser("single"),
+			pr:   Goprint(0, 4, false),
+			skip: true,
+			ctx:  cctx,
+			r:    map[string][]byte{},
+			err:  context.Canceled,
 		},
 		"single struct pkg should print nothing on persist error": {
 			p:   data.NewParser("single"),
 			pr:  Goprint(0, 4, false),
 			ctx: context.Background(),
 			w:   (&mocks.Writer{Err: errors.New("test-1")}).Writer,
-			r:   make(map[string][]byte),
+			r:   map[string][]byte{},
 			err: errors.New("test-1"),
 		},
 		"single struct pkg should print nothing on printer error": {
@@ -205,7 +205,11 @@ type (
 				t.Fatalf("actual %v doesn't equal to expected %v", err, nil)
 			}
 			// exec
-			err = tcase.pr.Save(writer)(tcase.ctx, pkg, loc)
+			if tcase.skip {
+				err = tcase.pr(tcase.ctx, &bytes.Buffer{}, loc.Root(), pkg)
+			} else {
+				err = tcase.pr.Save(writer)(tcase.ctx, pkg, loc)
+			}
 			// check
 			if !reflect.DeepEqual(err, tcase.err) {
 				t.Errorf("actual %v doesn't equal to expected %v", err, tcase.err)
@@ -216,7 +220,10 @@ type (
 				if st, ok := tcase.r[name]; ok {
 					// read rwc to buffer
 					var buf bytes.Buffer
-					buf.ReadFrom(rwc)
+					_, err := buf.ReadFrom(rwc)
+					if !reflect.DeepEqual(err, nil) {
+						t.Errorf("actual %v doesn't equal to expected %v", err, nil)
+					}
 					// format actual and expected identically
 					actual := strings.Trim(string(buf.Bytes()), "\n")
 					expected := strings.Trim(string(st), "\n")
@@ -229,8 +236,8 @@ type (
 				}
 			}
 			// check that map has been drained
-			if !reflect.DeepEqual(tcase.r, make(map[string][]byte)) {
-				t.Errorf("actual %v doesn't equal to expected %v", tcase.r, make(map[string][]byte))
+			if !reflect.DeepEqual(tcase.r, map[string][]byte{}) {
+				t.Errorf("actual %v doesn't equal to expected %v", tcase.r, map[string][]byte{})
 			}
 		})
 	}
