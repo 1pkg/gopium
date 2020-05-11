@@ -41,7 +41,7 @@ type wast struct {
 
 // With erich wast walker with external visiting parameters
 // parser, exposer, printer instances and additional visiting flags
-func (w wast) With(p gopium.Parser, exp gopium.Exposer, pr fmtio.Printer, deep bool, bref bool) wast {
+func (w wast) With(p gopium.Parser, exp gopium.Exposer, pr fmtio.Printer, deep, bref bool) wast {
 	w.parser = p
 	w.exposer = exp
 	w.printer = pr

@@ -20,6 +20,9 @@ import (
 // that uses "golang.org/x/tools/go/packages"
 // to collect package types
 // and "go/parser" to collect ast package
+//
+// Note: ParserXToolPackagesAst is big struct
+// so it should be passed via pointer
 type ParserXToolPackagesAst struct {
 	Pattern    string
 	Path       string
@@ -31,7 +34,7 @@ type ParserXToolPackagesAst struct {
 }
 
 // ParseTypes ParserXToolPackagesAst implementation
-func (p ParserXToolPackagesAst) ParseTypes(ctx context.Context, _ ...byte) (*types.Package, gopium.Locator, error) {
+func (p *ParserXToolPackagesAst) ParseTypes(ctx context.Context, _ ...byte) (*types.Package, gopium.Locator, error) {
 	// manage context actions
 	// in case of cancelation
 	// stop parse and return error back
@@ -74,7 +77,7 @@ func (p ParserXToolPackagesAst) ParseTypes(ctx context.Context, _ ...byte) (*typ
 }
 
 // ParseAst ParserXToolPackagesAst implementation
-func (p ParserXToolPackagesAst) ParseAst(ctx context.Context, src ...byte) (*ast.Package, gopium.Locator, error) {
+func (p *ParserXToolPackagesAst) ParseAst(ctx context.Context, src ...byte) (*ast.Package, gopium.Locator, error) {
 	// manage context actions
 	// in case of cancelation
 	// stop parse and return error back

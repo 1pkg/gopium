@@ -68,10 +68,6 @@ func TestWriter(t *testing.T) {
 	}
 	for name, tcase := range table {
 		t.Run(name, func(t *testing.T) {
-			// prepare
-			if tcase.path != "" {
-				defer os.Remove(tcase.path)
-			}
 			// exec
 			wc, err := tcase.w(tcase.id, tcase.loc)
 			n, werr := wc.Write([]byte(``))
@@ -84,8 +80,11 @@ func TestWriter(t *testing.T) {
 				t.Errorf("actual %v doesn't equal to expected not %v", wc, nil)
 			}
 			// check that such file exists
-			if _, err := os.Stat(tcase.path); tcase.path != "" && !reflect.DeepEqual(err, nil) {
-				t.Errorf("actual %v doesn't equal to expected %v", err, nil)
+			if tcase.path != "" {
+				defer os.Remove(tcase.path)
+				if _, err := os.Stat(tcase.path); !reflect.DeepEqual(err, nil) {
+					t.Errorf("actual %v doesn't equal to expected %v", err, nil)
+				}
 			}
 			if !reflect.DeepEqual(werr, tcase.werr) {
 				t.Errorf("actual %v doesn't equal to expected %v", werr, tcase.werr)

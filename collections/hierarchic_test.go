@@ -140,13 +140,13 @@ func TestHierarchicFlatLen(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			// exec
 			f := tcase.h.Flat()
-			len := tcase.h.Len()
+			hlen := tcase.h.Len()
 			// check
 			if !reflect.DeepEqual(f, tcase.f) {
 				t.Errorf("actual %v doesn't equal to %v", f, tcase.f)
 			}
-			if !reflect.DeepEqual(len, tcase.len) {
-				t.Errorf("actual %v doesn't equal to %v", len, tcase.len)
+			if !reflect.DeepEqual(hlen, tcase.len) {
+				t.Errorf("actual %v doesn't equal to %v", hlen, tcase.len)
 			}
 		})
 	}

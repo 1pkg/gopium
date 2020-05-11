@@ -33,7 +33,7 @@ var UFFN = combine(
 	filter(walk),
 	note(
 		walk,
-		typepkg.ParserXToolPackagesAst{
+		&typepkg.ParserXToolPackagesAst{
 			ModeAst: parser.ParseComments | parser.AllErrors,
 		},
 		fmtio.Goprint(0, 4, false),

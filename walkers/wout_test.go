@@ -128,7 +128,7 @@ func TestWout(t *testing.T) {
 			r:   regexp.MustCompile(`.*`),
 			p:   data.NewParser("single"),
 			fmt: mocks.Bytes{}.Bytes,
-			stg: mocks.Strategy{Err: errors.New("test-2")},
+			stg: &mocks.Strategy{Err: errors.New("test-2")},
 			sts: make(map[string][]byte),
 			err: errors.New("test-2"),
 		},
@@ -181,7 +181,7 @@ func TestWout(t *testing.T) {
 		},
 		"multi structs pkg should visit all expected levels structs with deep": {
 			ctx:  context.Background(),
-			r:    regexp.MustCompile(`(A|Z)`),
+			r:    regexp.MustCompile(`([AZ])`),
 			p:    data.NewParser("multi"),
 			fmt:  mocks.Bytes{}.Bytes,
 			stg:  pck,
@@ -348,7 +348,7 @@ func TestWout(t *testing.T) {
 		},
 		"multi structs pkg should visit all expected levels structs without deep": {
 			ctx:  context.Background(),
-			r:    regexp.MustCompile(`(A|Z)`),
+			r:    regexp.MustCompile(`([AZ])`),
 			p:    data.NewParser("multi"),
 			fmt:  mocks.Bytes{}.Bytes,
 			stg:  pck,

@@ -91,7 +91,7 @@ func (stg group) Apply(ctx context.Context, o gopium.Struct) (gopium.Struct, err
 	}
 	// wait until all strategies
 	// have been applied and resolved
-	if err = group.Wait(); err != nil {
+	if err := group.Wait(); err != nil {
 		return o, err
 	}
 	// sort result containers lexicographicaly

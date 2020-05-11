@@ -13,7 +13,7 @@ type Strategy struct {
 }
 
 // Apply mock implementation
-func (stg Strategy) Apply(context.Context, gopium.Struct) (gopium.Struct, error) {
+func (stg *Strategy) Apply(context.Context, gopium.Struct) (gopium.Struct, error) {
 	return stg.R, stg.Err
 }
 

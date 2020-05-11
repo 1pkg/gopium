@@ -114,7 +114,7 @@ type Single struct {
 			r:   regexp.MustCompile(`.*`),
 			p:   data.NewParser("single"),
 			a:   astutil.UFFN,
-			stg: mocks.Strategy{Err: errors.New("test-3")},
+			stg: &mocks.Strategy{Err: errors.New("test-3")},
 			sts: make(map[string][]byte),
 			err: errors.New("test-3"),
 		},
@@ -139,7 +139,7 @@ type Single struct {
 		},
 		"multi structs pkg should visit all expected levels structs with deep": {
 			ctx:  context.Background(),
-			r:    regexp.MustCompile(`(A|Z)`),
+			r:    regexp.MustCompile(`([AZ])`),
 			p:    data.NewParser("multi"),
 			a:    astutil.UFFN,
 			stg:  pck,
@@ -245,7 +245,7 @@ type (
 		},
 		"multi structs pkg should visit all expected levels structs without deep": {
 			ctx:  context.Background(),
-			r:    regexp.MustCompile(`(A|Z)`),
+			r:    regexp.MustCompile(`([AZ])`),
 			p:    data.NewParser("multi"),
 			a:    astutil.UFFN,
 			stg:  pck,

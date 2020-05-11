@@ -24,7 +24,7 @@ func NewHierarchic(rcat string) Hierarchic {
 }
 
 // Push adds struct to hierarchic collection
-func (h Hierarchic) Push(key string, cat string, sts ...gopium.Struct) {
+func (h Hierarchic) Push(key, cat string, sts ...gopium.Struct) {
 	// remove root cat from the cat
 	cat = strings.Replace(cat, h.rcat, "", 1)
 	// if cat hasn't been created yet
