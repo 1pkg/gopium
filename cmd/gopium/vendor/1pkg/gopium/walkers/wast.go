@@ -13,15 +13,15 @@ import (
 // list of wast presets
 var (
 	aststd = wast{
-		apply:  astutil.FFN,
+		apply:  astutil.UFFN,
 		writer: fmtio.Stdout,
 	}
 	astgo = wast{
-		apply:  astutil.FFN,
+		apply:  astutil.UFFN,
 		writer: fmtio.File("go"),
 	}
 	astgopium = wast{
-		apply:  astutil.FFN,
+		apply:  astutil.UFFN,
 		writer: fmtio.File("gopium"),
 	}
 )
@@ -74,16 +74,16 @@ func (w wast) Visit(ctx context.Context, regex *regexp.Regexp, stg gopium.Strate
 	// run visiting in separate goroutine
 	go gvisit(gctx, pkg.Scope())
 	// prepare struct storage
-	h := make(collections.Hierarchic)
+	h := collections.NewHierarchic("")
 	for applied := range ch {
 		// in case any error happened
 		// just return error back
 		// it auto cancels context
-		if applied.Error != nil {
-			return applied.Error
+		if applied.Err != nil {
+			return applied.Err
 		}
 		// push struct to storage
-		h.Push(applied.ID, applied.Loc, applied.Result)
+		h.Push(applied.ID, applied.Loc, applied.R)
 	}
 	// run sync write
 	// with collected strategies results

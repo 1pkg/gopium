@@ -14,7 +14,7 @@ import (
 
 // Printer defines abstraction for
 // ast node printing function to io writer
-type Printer func(io.Writer, *token.FileSet, ast.Node) error
+type Printer func(context.Context, io.Writer, *token.FileSet, ast.Node) error
 
 // Goprint generates go printer ast print instance
 // with specified tabwidth and space mode
@@ -24,7 +24,15 @@ func Goprint(indent int, tabwidth int, usespace bool) Printer {
 	if usespace {
 		p.Mode = printer.UseSpaces
 	}
-	return func(w io.Writer, fset *token.FileSet, node ast.Node) error {
+	return func(ctx context.Context, w io.Writer, fset *token.FileSet, node ast.Node) error {
+		// manage context actions
+		// in case of cancelation
+		// stop execution
+		select {
+		case <-ctx.Done():
+			return ctx.Err()
+		default:
+		}
 		// use printer fprint
 		return p.Fprint(w, fset, node)
 	}
@@ -54,14 +62,6 @@ func (p Printer) Save(w Writer) func(ctx context.Context, pkg *ast.Package, loc 
 			file := file
 			// run error group write call
 			group.Go(func() error {
-				// manage context actions
-				// in case of cancelation
-				// stop execution and return error
-				select {
-				case <-gctx.Done():
-					return gctx.Err()
-				default:
-				}
 				// generate relevant writer
 				writer, err := w(name, name)
 				// in case any error happened
@@ -75,7 +75,7 @@ func (p Printer) Save(w Writer) func(ctx context.Context, pkg *ast.Package, loc 
 				// use original file set to keep format
 				// in case any error happened
 				// just return error back
-				if err := p(writer, fset, file); err != nil {
+				if err := p(gctx, writer, fset, file); err != nil {
 					return err
 				}
 				// flush writter result
