@@ -11,7 +11,6 @@ import (
 	"testing"
 
 	"1pkg/gopium"
-	"1pkg/gopium/astext"
 	"1pkg/gopium/collections"
 	"1pkg/gopium/fmtio"
 	"1pkg/gopium/tests/data"
@@ -21,8 +20,8 @@ import (
 
 func TestApply(t *testing.T) {
 	// prepare
-	rh := collections.NewHierarchic(build.Default.GOPATH)
-	rh.Push(
+	lh := collections.NewHierarchic(build.Default.GOPATH)
+	lh.Push(
 		"6-39ba0c31867d8eaabd59a515e15955bbe83b4aa800278c7ef0c75e5ca9bcf56c",
 		"/src/1pkg/gopium/tests/data/note/file-1.go",
 		gopium.Struct{
@@ -47,7 +46,7 @@ func TestApply(t *testing.T) {
 			},
 		},
 	)
-	rh.Push(
+	lh.Push(
 		"6-90fba0480e71f274086a3057fe48a45c98599132b3e64b02d2b7540bb385e217",
 		"/src/1pkg/gopium/tests/data/note/file-2.go",
 		gopium.Struct{
@@ -60,6 +59,33 @@ func TestApply(t *testing.T) {
 				},
 			},
 		},
+	)
+	ldc := collections.NewHierarchic(build.Default.GOPATH)
+	ldc.Push(
+		"6-39ba0c31867d8eaabd59a515e15955bbe83b4aa800278c7ef0c75e5ca9bcf56c",
+		"/src/1pkg/gopium/tests/data/note/file-1.go",
+		gopium.Struct{
+			Name: "Note",
+			Fields: []gopium.Field{
+				{
+					Name: "C",
+					Type: "string",
+				},
+				{
+					Name: "_",
+					Type: "[]byte",
+					Size: 8,
+				},
+				{
+					Name: "A",
+					Type: "string",
+				},
+			},
+		},
+	)
+	ldc.Push(
+		"6-90fba0480e71f274086a3057fe48a45c98599132b3e64b02d2b7540bb385e217",
+		"/src/1pkg/gopium/tests/data/note/file-2.go",
 	)
 	cctx, cancel := context.WithCancel(context.Background())
 	cancel()
@@ -84,11 +110,11 @@ package empty
 `),
 			},
 		},
-		"note struct pkg should apply the struct": {
+		"note struct pkg should apply expected structs": {
 			p:   data.NewParser("note"),
 			a:   UFFN,
 			ctx: context.Background(),
-			h:   rh,
+			h:   lh,
 			r: map[string][]byte{
 				"/src/1pkg/gopium/tests/data/note/file-1.go": []byte(`
 //+build tests_data
@@ -121,6 +147,38 @@ type DocCom struct {
 `),
 			},
 		},
+		"note struct pkg should skip expected structs": {
+			p:   data.NewParser("note"),
+			a:   UFFN,
+			ctx: context.Background(),
+			h:   ldc,
+			r: map[string][]byte{
+				"/src/1pkg/gopium/tests/data/note/file-1.go": []byte(`
+//+build tests_data
+
+package note
+
+// Note doc
+type Note struct {
+	C	string
+	_	[8]byte
+	A	string
+}	// some comment
+
+// last comment
+`),
+				"/src/1pkg/gopium/tests/data/note/file-2.go": []byte(`
+//+build tests_data
+
+package note
+
+/**/
+type DocCom struct {
+	f complex128
+}	// doc com
+`),
+			},
+		},
 		"note struct pkg should apply nothing on canceled context": {
 			p:   data.NewParser("note"),
 			a:   UFFN,
@@ -130,14 +188,14 @@ type DocCom struct {
 		},
 		"note struct pkg should apply nothing on canceled context fast": {
 			p:   data.NewParser("note"),
-			a:   ufmt(astext.WalkSt, mocks.Ast{}.Ast),
+			a:   ufmt(walk, mocks.Ast{}.Ast),
 			ctx: cctx,
 			r:   make(map[string][]byte),
 			err: context.Canceled,
 		},
 		"note struct pkg should apply nothing on canceled context filter": {
 			p:   data.NewParser("note"),
-			a:   filter(astext.WalkSt),
+			a:   filter(walk),
 			ctx: cctx,
 			r:   make(map[string][]byte),
 			err: context.Canceled,
@@ -159,7 +217,7 @@ type DocCom struct {
 		"note struct pkg should apply nothing on canceled context note": {
 			p: data.NewParser("note"),
 			a: note(
-				astext.WalkSt,
+				walk,
 				typepkg.ParserXToolPackagesAst{
 					ModeAst: parser.ParseComments | parser.AllErrors,
 				},
@@ -178,6 +236,7 @@ type DocCom struct {
 				},
 				fmtio.Goprint(0, 4, false),
 			),
+			h:   lh,
 			ctx: context.Background(),
 			r:   make(map[string][]byte),
 			err: errors.New("walk-test"),
@@ -185,7 +244,7 @@ type DocCom struct {
 		"note struct pkg should apply nothing on parser error": {
 			p: data.NewParser("note"),
 			a: note(
-				astext.WalkSt,
+				walk,
 				mocks.Parser{Asterr: errors.New("test-1")},
 				fmtio.Goprint(0, 4, false),
 			),
@@ -196,7 +255,7 @@ type DocCom struct {
 		"note struct pkg should apply nothing on printer error": {
 			p: data.NewParser("note"),
 			a: note(
-				astext.WalkSt,
+				walk,
 				typepkg.ParserXToolPackagesAst{
 					ModeAst: parser.ParseComments | parser.AllErrors,
 				}, mocks.Printer{Err: errors.New("test-2")}.Printer,
@@ -209,7 +268,7 @@ type DocCom struct {
 			p: data.NewParser("note"),
 			a: combine(
 				mocks.Apply{Err: errors.New("test-3")}.Apply,
-				filter(astext.WalkSt),
+				filter(walk),
 			),
 			ctx: context.Background(),
 			r:   make(map[string][]byte),
