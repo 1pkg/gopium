@@ -23,7 +23,7 @@ func (b Boundary) Inside(p token.Pos) bool {
 	return !b.Less(p) && !b.Greater(p)
 }
 
-// Boundary defines ordered boundaries set
+// Boundaries defines ordered set of boundary
 type Boundaries []Boundary
 
 // Inside checks if pos inside boundaries

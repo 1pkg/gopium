@@ -13,27 +13,27 @@ import (
 // list of wout presets
 var (
 	jsonstd = wout{
-		fmt:    fmtio.Json,
+		fmt:    fmtio.Jsonb,
 		writer: fmtio.Stdout,
 	}
 	xmlstd = wout{
-		fmt:    fmtio.Xml,
+		fmt:    fmtio.Xmlb,
 		writer: fmtio.Stdout,
 	}
 	csvstd = wout{
-		fmt:    fmtio.Csv(fmtio.Buffer()),
+		fmt:    fmtio.Csvb(fmtio.Buffer()),
 		writer: fmtio.Stdout,
 	}
 	jsonfiles = wout{
-		fmt:    fmtio.Json,
+		fmt:    fmtio.Jsonb,
 		writer: fmtio.File("json"),
 	}
 	xmlfiles = wout{
-		fmt:    fmtio.Xml,
+		fmt:    fmtio.Xmlb,
 		writer: fmtio.File("xml"),
 	}
 	csvfiles = wout{
-		fmt:    fmtio.Csv(fmtio.Buffer()),
+		fmt:    fmtio.Csvb(fmtio.Buffer()),
 		writer: fmtio.File("csv"),
 	}
 )

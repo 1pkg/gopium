@@ -55,7 +55,7 @@ func TestBuilder(t *testing.T) {
 		},
 		// wout walkers
 		"`json_std` name should return expected walker": {
-			name: JsonStd,
+			name: JsonbStd,
 			w: jsonstd.With(
 				b.Parser,
 				b.Exposer,
@@ -64,7 +64,7 @@ func TestBuilder(t *testing.T) {
 			),
 		},
 		"`xml_std` name should return expected walker": {
-			name: XmlStd,
+			name: XmlbStd,
 			w: xmlstd.With(
 				b.Parser,
 				b.Exposer,
@@ -73,7 +73,7 @@ func TestBuilder(t *testing.T) {
 			),
 		},
 		"`csv_std` name should return expected walker": {
-			name: CsvStd,
+			name: CsvbStd,
 			w: csvstd.With(
 				b.Parser,
 				b.Exposer,
@@ -82,7 +82,7 @@ func TestBuilder(t *testing.T) {
 			),
 		},
 		"`json_files` name should return expected walker": {
-			name: JsonFiles,
+			name: JsonbFile,
 			w: jsonfiles.With(
 				b.Parser,
 				b.Exposer,
@@ -91,7 +91,7 @@ func TestBuilder(t *testing.T) {
 			),
 		},
 		"`xml_files` name should return expected walker": {
-			name: XmlFiles,
+			name: XmlbFile,
 			w: xmlfiles.With(
 				b.Parser,
 				b.Exposer,
@@ -100,7 +100,7 @@ func TestBuilder(t *testing.T) {
 			),
 		},
 		"`csv_files` name should return expected walker": {
-			name: CsvFiles,
+			name: CsvbFile,
 			w: csvfiles.With(
 				b.Parser,
 				b.Exposer,

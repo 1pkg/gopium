@@ -14,12 +14,12 @@ const (
 	AstGo     gopium.WalkerName = "ast_go"
 	AstGopium gopium.WalkerName = "ast_gopium"
 	// wout walkers
-	JsonStd   gopium.WalkerName = "json_std"
-	XmlStd    gopium.WalkerName = "xml_std"
-	CsvStd    gopium.WalkerName = "csv_std"
-	JsonFiles gopium.WalkerName = "json_files"
-	XmlFiles  gopium.WalkerName = "xml_files"
-	CsvFiles  gopium.WalkerName = "csv_files"
+	JsonbStd  gopium.WalkerName = "json_std"
+	XmlbStd   gopium.WalkerName = "xml_std"
+	CsvbStd   gopium.WalkerName = "csv_std"
+	JsonbFile gopium.WalkerName = "json_file"
+	XmlbFile  gopium.WalkerName = "xml_file"
+	CsvbFile  gopium.WalkerName = "csv_file"
 )
 
 // Builder defines types gopium.WalkerBuilder implementation
@@ -61,42 +61,42 @@ func (b Builder) Build(name gopium.WalkerName) (gopium.Walker, error) {
 			b.Bref,
 		), nil
 	// wout walkers
-	case JsonStd:
+	case JsonbStd:
 		return jsonstd.With(
 			b.Parser,
 			b.Exposer,
 			b.Deep,
 			b.Bref,
 		), nil
-	case XmlStd:
+	case XmlbStd:
 		return xmlstd.With(
 			b.Parser,
 			b.Exposer,
 			b.Deep,
 			b.Bref,
 		), nil
-	case CsvStd:
+	case CsvbStd:
 		return csvstd.With(
 			b.Parser,
 			b.Exposer,
 			b.Deep,
 			b.Bref,
 		), nil
-	case JsonFiles:
+	case JsonbFile:
 		return jsonfiles.With(
 			b.Parser,
 			b.Exposer,
 			b.Deep,
 			b.Bref,
 		), nil
-	case XmlFiles:
+	case XmlbFile:
 		return xmlfiles.With(
 			b.Parser,
 			b.Exposer,
 			b.Deep,
 			b.Bref,
 		), nil
-	case CsvFiles:
+	case CsvbFile:
 		return csvfiles.With(
 			b.Parser,
 			b.Exposer,

@@ -29,7 +29,7 @@ type typesloc struct {
 	loc gopium.Locator
 }
 
-// parser defines parser implementation
+// Parser defines tests data parser implementation
 // that adds internal caching for results
 type Parser struct {
 	p gopium.Parser
