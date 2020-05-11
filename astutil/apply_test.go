@@ -218,7 +218,7 @@ type DocCom struct {
 			p: data.NewParser("note"),
 			a: note(
 				walk,
-				typepkg.ParserXToolPackagesAst{
+				&typepkg.ParserXToolPackagesAst{
 					ModeAst: parser.ParseComments | parser.AllErrors,
 				},
 				fmtio.Goprint(0, 4, false),
@@ -231,7 +231,7 @@ type DocCom struct {
 			p: data.NewParser("note"),
 			a: note(
 				mocks.Walk{Err: errors.New("walk-test")}.Walk,
-				typepkg.ParserXToolPackagesAst{
+				&typepkg.ParserXToolPackagesAst{
 					ModeAst: parser.ParseComments | parser.AllErrors,
 				},
 				fmtio.Goprint(0, 4, false),
@@ -256,7 +256,7 @@ type DocCom struct {
 			p: data.NewParser("note"),
 			a: note(
 				walk,
-				typepkg.ParserXToolPackagesAst{
+				&typepkg.ParserXToolPackagesAst{
 					ModeAst: parser.ParseComments | parser.AllErrors,
 				}, mocks.Printer{Err: errors.New("test-2")}.Printer,
 			),

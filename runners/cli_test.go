@@ -80,7 +80,7 @@ func TestCliNew(t *testing.T) {
 					timeout: 5 * time.Second,
 				},
 				wb: walkers.Builder{
-					Parser: typepkg.ParserXToolPackagesAst{
+					Parser: &typepkg.ParserXToolPackagesAst{
 						Pattern:    "test-pkg",
 						Root:       build.Default.GOPATH,
 						Path:       "test-path",
@@ -90,7 +90,7 @@ func TestCliNew(t *testing.T) {
 						BuildFlags: []string{},
 					},
 					Exposer: m,
-					Printer: nil, //fmtio.Goprint(4, 4, true),
+					Printer: nil, // fmtio.Goprint(4, 4, true),
 					Deep:    true,
 					Bref:    true,
 				},
@@ -205,7 +205,7 @@ func TestCliRun(t *testing.T) {
 		"cli should return error on walker builder error": {
 			cli: &Cli{
 				c:  coordinator{},
-				sb: mocks.StrategyBuilder{Strategy: mocks.Strategy{}},
+				sb: mocks.StrategyBuilder{Strategy: &mocks.Strategy{}},
 				wb: mocks.WalkerBuilder{Err: errors.New("test-2")},
 			},
 			err: errors.New(`can't build such walker "" test-2`),
@@ -213,7 +213,7 @@ func TestCliRun(t *testing.T) {
 		"cli should return error on visiting error": {
 			cli: &Cli{
 				c:  coordinator{},
-				sb: mocks.StrategyBuilder{Strategy: mocks.Strategy{}},
+				sb: mocks.StrategyBuilder{Strategy: &mocks.Strategy{}},
 				wb: mocks.WalkerBuilder{Walker: mocks.Walker{Err: errors.New("test-3")}},
 			},
 			err: errors.New("strategy error happened test-3"),
@@ -221,7 +221,7 @@ func TestCliRun(t *testing.T) {
 		"cli should return error on timeout": {
 			cli: &Cli{
 				c:  coordinator{timeout: time.Nanosecond},
-				sb: mocks.StrategyBuilder{Strategy: mocks.Strategy{}},
+				sb: mocks.StrategyBuilder{Strategy: &mocks.Strategy{}},
 				wb: mocks.WalkerBuilder{Walker: mocks.Walker{}},
 			},
 			err: errors.New("strategy error happened context deadline exceeded"),
@@ -229,7 +229,7 @@ func TestCliRun(t *testing.T) {
 		"cli should return expected results on visiting": {
 			cli: &Cli{
 				c:  coordinator{},
-				sb: mocks.StrategyBuilder{Strategy: mocks.Strategy{}},
+				sb: mocks.StrategyBuilder{Strategy: &mocks.Strategy{}},
 				wb: mocks.WalkerBuilder{Walker: mocks.Walker{}},
 			},
 		},

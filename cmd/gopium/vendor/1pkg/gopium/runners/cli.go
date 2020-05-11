@@ -66,7 +66,7 @@ func NewCli(
 	// replace package template
 	path = strings.Replace(path, "{{package}}", pkg, 1)
 	// set up parser
-	p := typepkg.ParserXToolPackagesAst{
+	p := &typepkg.ParserXToolPackagesAst{
 		Pattern:    pkg,
 		Root:       build.Default.GOPATH,
 		Path:       path,

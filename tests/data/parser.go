@@ -37,7 +37,7 @@ type Parser struct {
 
 // NewParser creates parser for single tests data
 func NewParser(pkg string) gopium.Parser {
-	p := typepkg.ParserXToolPackagesAst{
+	p := &typepkg.ParserXToolPackagesAst{
 		Path:       fmt.Sprintf("%s/%s", "src/1pkg/gopium/tests/data", pkg),
 		Root:       build.Default.GOPATH,
 		ModeTypes:  packages.LoadAllSyntax,
@@ -50,12 +50,12 @@ func NewParser(pkg string) gopium.Parser {
 // ParseTypes cache parser implementation
 func (p Parser) ParseTypes(ctx context.Context, src ...byte) (*types.Package, gopium.Locator, error) {
 	// check that known parser should be cached
-	if parser, ok := p.p.(typepkg.ParserXToolPackagesAst); ok {
+	if xparser, ok := p.p.(*typepkg.ParserXToolPackagesAst); ok {
 		// access cache syncroniusly
 		defer tmutex.Unlock()
 		tmutex.Lock()
 		// build full dir cache key
-		dir := filepath.Join(parser.Root, parser.Path)
+		dir := filepath.Join(xparser.Root, xparser.Path)
 		// check if key exists in cache
 		if tp, ok := tcache[dir]; ok {
 			return tp.pkg, tp.loc, nil

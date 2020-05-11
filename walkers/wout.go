@@ -52,7 +52,7 @@ type wout struct {
 
 // With erich wast walker with external visiting parameters
 // parser, exposer instances and additional visiting flags
-func (w wout) With(p gopium.TypeParser, exp gopium.Exposer, deep bool, bref bool) wout {
+func (w wout) With(p gopium.TypeParser, exp gopium.Exposer, deep, bref bool) wout {
 	w.parser = p
 	w.exposer = exp
 	w.deep = deep
@@ -117,7 +117,7 @@ func (w wout) Visit(ctx context.Context, regex *regexp.Regexp, stg gopium.Strate
 // write wout helps to apply struct to bytes
 // to format strategy result and writer
 // to write result to output
-func (w wout) write(id string, loc string, st gopium.Struct) error {
+func (w wout) write(id, loc string, st gopium.Struct) error {
 	// apply formatter
 	buf, err := w.fmt(st)
 	// in case any error happened

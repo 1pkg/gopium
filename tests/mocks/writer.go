@@ -15,7 +15,7 @@ type Writer struct {
 }
 
 // Writer mock implementation
-func (w *Writer) Writer(id string, loc string) (io.WriteCloser, error) {
+func (w *Writer) Writer(id, loc string) (io.WriteCloser, error) {
 	// lock rwcs access
 	// and init them if they
 	// haven't inited before

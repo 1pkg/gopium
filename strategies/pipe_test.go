@@ -117,7 +117,7 @@ func TestPipe(t *testing.T) {
 		"non empty struct should be applied to expected result on pipe error": {
 			pipe: pipe([]gopium.Strategy{
 				fnotecom,
-				mocks.Strategy{Err: errors.New("test error")},
+				&mocks.Strategy{Err: errors.New("test error")},
 				fnotedoc,
 			}),
 			ctx: context.Background(),

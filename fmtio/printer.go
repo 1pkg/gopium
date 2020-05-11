@@ -18,7 +18,7 @@ type Printer func(context.Context, io.Writer, *token.FileSet, ast.Node) error
 
 // Goprint generates go printer ast print instance
 // with specified tabwidth and space mode
-func Goprint(indent int, tabwidth int, usespace bool) Printer {
+func Goprint(indent, tabwidth int, usespace bool) Printer {
 	// prepare printer with params
 	p := &printer.Config{Indent: indent, Tabwidth: tabwidth}
 	if usespace {
