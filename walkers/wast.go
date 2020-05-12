@@ -18,11 +18,11 @@ var (
 	}
 	astgo = wast{
 		apply:  astutil.UFFN,
-		writer: fmtio.File("go"),
+		writer: fmtio.Files("go"),
 	}
 	astgopium = wast{
 		apply:  astutil.UFFN,
-		writer: fmtio.File("gopium"),
+		writer: fmtio.Files("gopium"),
 	}
 )
 
@@ -93,6 +93,10 @@ func (w wast) Visit(ctx context.Context, regex *regexp.Regexp, stg gopium.Strate
 // write wast helps to sync
 // and persist strategy results to ast files
 func (w wast) write(ctx context.Context, h collections.Hierarchic) error {
+	// skip empty writes
+	if h.Len() == 0 {
+		return nil
+	}
 	// use parser to parse ast pkg data
 	pkg, loc, err := w.parser.ParseAst(ctx)
 	if err != nil {

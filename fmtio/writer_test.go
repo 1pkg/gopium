@@ -14,9 +14,12 @@ func TestWriter(t *testing.T) {
 	if !reflect.DeepEqual(err, nil) {
 		t.Fatalf("actual %v doesn't equal to %v", err, nil)
 	}
+	pfile, err := filepath.Abs("./../opium.go")
+	if !reflect.DeepEqual(err, nil) {
+		t.Fatalf("actual %v doesn't equal to %v", err, nil)
+	}
 	table := map[string]struct {
 		w    Writer
-		id   string
 		loc  string
 		path string
 		err  error
@@ -25,51 +28,44 @@ func TestWriter(t *testing.T) {
 	}{
 		"stdout should return expected stdout writer": {
 			w:    Stdout,
-			id:   "test",
 			loc:  pdir,
 			path: "",
 		},
-		"filejson should return expected json writer": {
-			w:    File("json"),
-			id:   "test",
-			loc:  pdir,
-			path: path.Join(filepath.Dir(pdir), "test.json"),
+		"file json should return expected json writer": {
+			w:    File("test", "json"),
+			loc:  pfile,
+			path: path.Join(pdir, "test.json"),
 		},
-		"filexml should return expected xml writer": {
-			w:    File("xml"),
-			id:   "test",
-			loc:  pdir,
-			path: path.Join(filepath.Dir(pdir), "test.xml"),
+		"file xml should return expected xml writer": {
+			w:    File("test", "xml"),
+			loc:  pfile,
+			path: path.Join(pdir, "test.xml"),
 		},
-		"filecs should return expected csv writer": {
-			w:    File("csv"),
-			id:   "test",
-			loc:  pdir,
-			path: path.Join(filepath.Dir(pdir), "test.csv"),
+		"file csv should return expected csv writer": {
+			w:    File("test", "csv"),
+			loc:  pfile,
+			path: path.Join(pdir, "test.csv"),
 		},
-		"filego should return expected go writer": {
-			w:    File("go"),
-			id:   "test",
-			loc:  pdir,
-			path: path.Join(filepath.Dir(pdir), "test.go"),
+		"files json should return expected json writer": {
+			w:    Files("json"),
+			loc:  pfile,
+			path: path.Join(pdir, "opium.json"),
 		},
-		"filegopium should return expected gopium writer": {
-			w:    File("gopium"),
-			id:   "test",
-			loc:  pdir,
-			path: path.Join(filepath.Dir(pdir), "test.gopium"),
+		"files xml should return expected xml writer": {
+			w:    Files("xml"),
+			loc:  pfile,
+			path: path.Join(pdir, "opium.xml"),
 		},
-		"long id param should return expected writer": {
-			w:    File("test"),
-			id:   "test/test/test.test",
-			loc:  pdir,
-			path: path.Join(filepath.Dir(pdir), "test.test"),
+		"files csv should return expected csv writer": {
+			w:    Files("csv"),
+			loc:  pfile,
+			path: path.Join(pdir, "opium.csv"),
 		},
 	}
 	for name, tcase := range table {
 		t.Run(name, func(t *testing.T) {
 			// exec
-			wc, err := tcase.w(tcase.id, tcase.loc)
+			wc, err := tcase.w(tcase.loc)
 			n, werr := wc.Write([]byte(``))
 			cerr := wc.Close()
 			// check

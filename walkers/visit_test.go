@@ -569,7 +569,7 @@ func TestVscope(t *testing.T) {
 			go vscope(tcase.ctx, pkg.Scope(), tcase.r, tcase.stg, m, ch)
 			// check
 			for applied := range ch {
-				// if error occured skip
+				// if error occurred skip
 				if applied.Err != nil {
 					if !reflect.DeepEqual(applied.Err, tcase.err) {
 						t.Errorf("actual %v doesn't equal to expected %v", applied.Err, tcase.err)
@@ -1164,7 +1164,7 @@ func TestVdeep(t *testing.T) {
 			go vdeep(tcase.ctx, pkg.Scope(), tcase.r, tcase.stg, m, ch)
 			// check
 			for applied := range ch {
-				// if error occured skip
+				// if error occurred skip
 				if applied.Err != nil {
 					if !reflect.DeepEqual(applied.Err, tcase.err) {
 						t.Errorf("actual %v doesn't equal to expected %v", applied.Err, tcase.err)

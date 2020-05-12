@@ -62,7 +62,7 @@ func (p Parser) ParseTypes(ctx context.Context, src ...byte) (*types.Package, go
 		}
 		// if not do actual parsing
 		pkg, loc, err := p.p.ParseTypes(ctx, src...)
-		// store result to cache if no error occured
+		// store result to cache if no error occurred
 		if err == nil {
 			tcache[dir] = typesloc{pkg: pkg, loc: loc}
 		}

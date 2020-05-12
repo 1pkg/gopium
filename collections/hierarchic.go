@@ -2,6 +2,7 @@ package collections
 
 import (
 	"fmt"
+	"path"
 	"strings"
 
 	"1pkg/gopium"
@@ -66,6 +67,35 @@ func (h Hierarchic) Flat() Flat {
 		}
 	}
 	return flat
+}
+
+// Rcat finds root category that
+// all other category contain for collection
+func (h Hierarchic) Rcat() string {
+	var rcat string
+	// go through all cats
+	for cat := range h.cats {
+		cat = path.Dir(cat)
+		switch {
+		case cat == ".":
+			// just skip empty dir
+		case rcat == "":
+			// if root cat hasn't been
+			// initialized yet set it
+			rcat = cat
+		case strings.Contains(rcat, cat):
+			// if root cat contains cat
+			// update root cat
+			rcat = cat
+		case strings.Contains(cat, rcat):
+			// just skip this case
+		default:
+			// otherwise there are no
+			// specific root cat found
+			return ""
+		}
+	}
+	return rcat
 }
 
 // Len calculates total len of hierarchic collection
