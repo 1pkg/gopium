@@ -11,7 +11,7 @@ import (
 
 // Writer defines abstraction for
 // io witer generation from set of parametrs
-type Writer func(id string, loc string) (io.WriteCloser, error)
+type Writer func(string) (io.WriteCloser, error)
 
 // stdout defines tiny wrapper for
 // os stdout stream that couldn't be closed
@@ -29,19 +29,27 @@ func (stdout) Close() error {
 
 // Stdout defines writer implementation
 // which only returns os stdout all the time
-func Stdout(string, string) (io.WriteCloser, error) {
+func Stdout(string) (io.WriteCloser, error) {
 	return stdout{}, nil
 }
 
 // File defines writer helper
 // which creates underlying file callback
-// by name, path and capture ext
-func File(ext string) Writer {
-	return func(id string, loc string) (io.WriteCloser, error) {
-		bname := filepath.Base(id)
-		bname = strings.Split(bname, ".")[0]
+// with capture name and ext on provided loc
+func File(name string, ext string) Writer {
+	return func(loc string) (io.WriteCloser, error) {
 		path := filepath.Dir(loc)
-		return os.Create(fmt.Sprintf("%s/%s.%s", path, bname, ext))
+		return os.Create(fmt.Sprintf("%s/%s.%s", path, name, ext))
+	}
+}
+
+// Files defines writer helper
+// which creates underlying files callback
+// with capture ext on provided loc
+func Files(ext string) Writer {
+	return func(loc string) (io.WriteCloser, error) {
+		path := strings.Replace(loc, filepath.Ext(loc), fmt.Sprintf(".%s", ext), 1)
+		return os.Create(path)
 	}
 }
 

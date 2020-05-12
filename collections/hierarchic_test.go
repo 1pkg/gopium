@@ -77,12 +77,13 @@ func TestHierarchicPushCat(t *testing.T) {
 	}
 }
 
-func TestHierarchicFlatLen(t *testing.T) {
+func TestHierarchicFlatRcatLen(t *testing.T) {
 	// prepare
 	table := map[string]struct {
-		h   Hierarchic
-		f   Flat
-		len int
+		h    Hierarchic
+		f    Flat
+		rcat string
+		len  int
 	}{
 		"empty hierarchic collection should return empty flat collection": {
 			h:   NewHierarchic(""),
@@ -135,18 +136,77 @@ func TestHierarchicFlatLen(t *testing.T) {
 			},
 			len: 4,
 		},
+		"multiple overlapping cats multiple items hierarchic collection should return multiple items flat collection": {
+			h: Hierarchic{cats: map[string]Flat{
+				"loc/test/123": {
+					"1-test": gopium.Struct{Name: "test1"},
+					"2-test": gopium.Struct{Name: "test2"},
+				},
+				"loc/test/abcd": {
+					"3-test": gopium.Struct{Name: "test3"},
+					"4-test": gopium.Struct{Name: "test4"},
+				},
+				"loc/test/test/test/test": {
+					"5-test": gopium.Struct{Name: "test5"},
+				},
+				"loc/test/abcd/test/123": {
+					"6-test": gopium.Struct{Name: "test6"},
+				},
+			}},
+			f: Flat{
+				"1-test": gopium.Struct{Name: "test1"},
+				"2-test": gopium.Struct{Name: "test2"},
+				"3-test": gopium.Struct{Name: "test3"},
+				"4-test": gopium.Struct{Name: "test4"},
+				"5-test": gopium.Struct{Name: "test5"},
+				"6-test": gopium.Struct{Name: "test6"},
+			},
+			rcat: "loc/test",
+			len:  6,
+		},
+		"multiple non overlapping cats multiple items hierarchic collection should return multiple items flat collection": {
+			h: Hierarchic{cats: map[string]Flat{
+				"loc1/test/123": {
+					"1-test": gopium.Struct{Name: "test1"},
+					"2-test": gopium.Struct{Name: "test2"},
+				},
+				"loc/test2/abcd": {
+					"3-test": gopium.Struct{Name: "test3"},
+					"4-test": gopium.Struct{Name: "test4"},
+				},
+				"loc3/test/test/test/test": {
+					"5-test": gopium.Struct{Name: "test5"},
+				},
+				"loc/test/abcd/test/123": {
+					"6-test": gopium.Struct{Name: "test6"},
+				},
+			}},
+			f: Flat{
+				"1-test": gopium.Struct{Name: "test1"},
+				"2-test": gopium.Struct{Name: "test2"},
+				"3-test": gopium.Struct{Name: "test3"},
+				"4-test": gopium.Struct{Name: "test4"},
+				"5-test": gopium.Struct{Name: "test5"},
+				"6-test": gopium.Struct{Name: "test6"},
+			},
+			len: 6,
+		},
 	}
 	for name, tcase := range table {
 		t.Run(name, func(t *testing.T) {
 			// exec
 			f := tcase.h.Flat()
 			hlen := tcase.h.Len()
+			rcat := tcase.h.Rcat()
 			// check
 			if !reflect.DeepEqual(f, tcase.f) {
 				t.Errorf("actual %v doesn't equal to %v", f, tcase.f)
 			}
 			if !reflect.DeepEqual(hlen, tcase.len) {
 				t.Errorf("actual %v doesn't equal to %v", hlen, tcase.len)
+			}
+			if !reflect.DeepEqual(rcat, tcase.rcat) {
+				t.Errorf("actual %v doesn't equal to %v", rcat, tcase.rcat)
 			}
 		})
 	}

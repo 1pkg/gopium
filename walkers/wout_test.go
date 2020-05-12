@@ -52,9 +52,7 @@ func TestWout(t *testing.T) {
 			p:   data.NewParser("empty"),
 			fmt: mocks.Bytes{}.Bytes,
 			stg: np,
-			sts: map[string][]byte{
-				"gopium": []byte(`[]`),
-			},
+			sts: map[string][]byte{},
 		},
 		"single struct pkg should visit the struct": {
 			ctx: context.Background(),
@@ -63,7 +61,7 @@ func TestWout(t *testing.T) {
 			fmt: mocks.Bytes{}.Bytes,
 			stg: np,
 			sts: map[string][]byte{
-				"gopium": []byte(`
+				"/src/1pkg/gopium/tests/data/single/gopium": []byte(`
 [
 	{
 		"Name": "Single",
@@ -161,7 +159,7 @@ func TestWout(t *testing.T) {
 			p:   data.NewParser("single"),
 			fmt: mocks.Bytes{}.Bytes,
 			w: (&mocks.Writer{RWCs: map[string]*mocks.RWC{
-				"gopium": {Werr: errors.New("test-5")},
+				"/src/1pkg/gopium/tests/data/single/gopium": {Werr: errors.New("test-5")},
 			}}).Writer,
 			stg: np,
 			sts: map[string][]byte{},
@@ -173,7 +171,7 @@ func TestWout(t *testing.T) {
 			p:   data.NewParser("single"),
 			fmt: mocks.Bytes{}.Bytes,
 			w: (&mocks.Writer{RWCs: map[string]*mocks.RWC{
-				"gopium": {Cerr: errors.New("test-6")},
+				"/src/1pkg/gopium/tests/data/single/gopium": {Cerr: errors.New("test-6")},
 			}}).Writer,
 			stg: np,
 			sts: map[string][]byte{},
@@ -187,7 +185,7 @@ func TestWout(t *testing.T) {
 			stg:  pck,
 			deep: true,
 			sts: map[string][]byte{
-				"gopium": []byte(`
+				"/src/1pkg/gopium/tests/data/multi/gopium": []byte(`
 [
 	{
 		"Name": "A",
@@ -350,7 +348,7 @@ func TestWout(t *testing.T) {
 			stg:  pck,
 			bref: true,
 			sts: map[string][]byte{
-				"gopium": []byte(`
+				"/src/1pkg/gopium/tests/data/multi/gopium": []byte(`
 [
 	{
 		"Name": "A",

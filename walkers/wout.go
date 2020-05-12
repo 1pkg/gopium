@@ -2,6 +2,7 @@ package walkers
 
 import (
 	"context"
+	"fmt"
 	"regexp"
 
 	"1pkg/gopium"
@@ -25,15 +26,15 @@ var (
 	}
 	jsonfiles = wout{
 		fmt:    fmtio.Jsonb,
-		writer: fmtio.File("json"),
+		writer: fmtio.File("gopium", "json"),
 	}
 	xmlfiles = wout{
 		fmt:    fmtio.Xmlb,
-		writer: fmtio.File("xml"),
+		writer: fmtio.File("gopium", "xml"),
 	}
 	csvfiles = wout{
 		fmt:    fmtio.Csvb(fmtio.Buffer()),
-		writer: fmtio.File("csv"),
+		writer: fmtio.File("gopium", "csv"),
 	}
 )
 
@@ -84,8 +85,7 @@ func (w wout) Visit(ctx context.Context, regex *regexp.Regexp, stg gopium.Strate
 	// run visiting in separate goroutine
 	go gvisit(gctx, pkg.Scope())
 	// prepare struct storage
-	var floc string
-	f := make(collections.Flat)
+	h := collections.NewHierarchic("")
 	for applied := range ch {
 		// in case any error happened
 		// just return error back
@@ -93,20 +93,23 @@ func (w wout) Visit(ctx context.Context, regex *regexp.Regexp, stg gopium.Strate
 		if applied.Err != nil {
 			return applied.Err
 		}
-		// TODO hacky solution
-		floc = applied.Loc
 		// push struct to storage
-		f[applied.ID] = applied.R
+		h.Push(applied.ID, applied.Loc, applied.R)
 	}
 	// run sync write
 	// with collected strategies results
-	return w.write(gctx, floc, f)
+	return w.write(gctx, h)
 }
 
 // write wout helps to apply struct to bytes
 // to format strategy result and writer
 // to write result to output
-func (w wout) write(ctx context.Context, loc string, f collections.Flat) error {
+func (w wout) write(ctx context.Context, h collections.Hierarchic) error {
+	// skip empty writes
+	f := h.Flat()
+	if len(f) == 0 {
+		return nil
+	}
 	// apply formatter
 	buf, err := w.fmt(f)
 	// in case any error happened
@@ -115,7 +118,7 @@ func (w wout) write(ctx context.Context, loc string, f collections.Flat) error {
 		return err
 	}
 	// generate writer
-	writer, err := w.writer("gopium", loc)
+	writer, err := w.writer(fmt.Sprintf("%s/gopium", h.Rcat()))
 	if err != nil {
 		return err
 	}

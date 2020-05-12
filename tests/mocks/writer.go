@@ -15,7 +15,7 @@ type Writer struct {
 }
 
 // Writer mock implementation
-func (w *Writer) Writer(id string, loc string) (io.WriteCloser, error) {
+func (w *Writer) Writer(loc string) (io.WriteCloser, error) {
 	// lock rwcs access
 	// and init them if they
 	// haven't inited before
@@ -24,16 +24,16 @@ func (w *Writer) Writer(id string, loc string) (io.WriteCloser, error) {
 	if w.RWCs == nil {
 		w.RWCs = make(map[string]*RWC)
 	}
-	// remove abs part from id
-	id = strings.Replace(id, build.Default.GOPATH, "", 1)
-	// if id is inside existed rwcs
+	// remove abs part from loc
+	loc = strings.Replace(loc, build.Default.GOPATH, "", 1)
+	// if loc is inside existed rwcs
 	// just return found rwc back
-	if rwc, ok := w.RWCs[id]; ok {
+	if rwc, ok := w.RWCs[loc]; ok {
 		return rwc, w.Err
 	}
 	// otherwise create new rwc
 	// store and return it back
 	rwc := &RWC{}
-	w.RWCs[id] = rwc
+	w.RWCs[loc] = rwc
 	return rwc, w.Err
 }

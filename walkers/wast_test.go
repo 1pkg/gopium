@@ -54,13 +54,7 @@ func TestWast(t *testing.T) {
 			p:   data.NewParser("empty"),
 			a:   astutil.UFFN,
 			stg: np,
-			sts: map[string][]byte{
-				"/src/1pkg/gopium/tests/data/empty/file.go": []byte(`
-//+build tests_data
-
-package empty
-`),
-			},
+			sts: map[string][]byte{},
 		},
 		"single struct pkg should visit the struct": {
 			ctx: context.Background(),
@@ -103,7 +97,7 @@ type Single struct {
 		"single struct pkg should visit nothing on ast parser error": {
 			ctx: context.Background(),
 			r:   regexp.MustCompile(`.*`),
-			p:   mocks.Parser{Asterr: errors.New("test-2")},
+			p:   mocks.Parser{Parser: data.NewParser("single"), Asterr: errors.New("test-2")},
 			a:   astutil.UFFN,
 			stg: np,
 			sts: map[string][]byte{},
