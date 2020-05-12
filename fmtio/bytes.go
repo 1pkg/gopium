@@ -9,31 +9,34 @@ import (
 	"strconv"
 	"strings"
 
-	"1pkg/gopium"
+	"1pkg/gopium/collections"
 )
 
 // Bytes defines abstraction for
-// formatting gopium struct to byte slice
-type Bytes func(gopium.Struct) ([]byte, error)
+// formatting gopium flat collection to byte slice
+type Bytes func(collections.Flat) ([]byte, error)
 
 // Jsonb defines bytes implementation
-// which uses json.Marshal with json.Indent to serialize struct
-func Jsonb(st gopium.Struct) ([]byte, error) {
+// which uses json marshal with indent
+// to serialize flat collection to byte slice
+func Jsonb(f collections.Flat) ([]byte, error) {
 	// just use json marshal with indent
-	return json.MarshalIndent(st, "", "\t")
+	return json.MarshalIndent(f.Sorted(), "", "\t")
 }
 
 // Xmlb defines bytes implementation
-// which uses xml.MarshalIndent to serialize struct
-func Xmlb(st gopium.Struct) ([]byte, error) {
+// which uses xml marshal with indent
+// to serialize flat collection to byte slice
+func Xmlb(f collections.Flat) ([]byte, error) {
 	// just use xml marshal with indent
-	return xml.MarshalIndent(st, "", "\t")
+	return xml.MarshalIndent(f.Sorted(), "", "\t")
 }
 
 // Csvb defines bytes implementation
-// that serializes struct to csv format
+// which serializes flat collection
+// to formatted csv byte slice
 func Csvb(rw io.ReadWriter) Bytes {
-	return func(st gopium.Struct) ([]byte, error) {
+	return func(f collections.Flat) ([]byte, error) {
 		// prepare csv writer
 		w := csv.NewWriter(rw)
 		// write header
@@ -54,33 +57,34 @@ func Csvb(rw io.ReadWriter) Bytes {
 			"Field Doc",
 			"Field Comment",
 		})
-		// go through all fields
-		// and write then one by one
-		for _, f := range st.Fields {
-			// no error should be
-			// checked as it uses
-			// buffered writer
-			_ = w.Write([]string{
-				st.Name,
-				strings.Join(st.Doc, " "),
-				strings.Join(st.Comment, " "),
-				f.Name,
-				f.Type,
-				strconv.Itoa(int(f.Size)),
-				strconv.Itoa(int(f.Align)),
-				f.Tag,
-				strconv.FormatBool(f.Exported),
-				strconv.FormatBool(f.Embedded),
-				strings.Join(f.Doc, " "),
-				strings.Join(f.Comment, " "),
-			})
-		}
-		// flush to buf
-		w.Flush()
-		// check flush error
-		if err := w.Error(); err != nil {
-			// this should never happen/covered
-			return nil, err
+		for _, st := range f.Sorted() {
+			// go through all fields
+			// and write then one by one
+			for _, f := range st.Fields {
+				// no error should be
+				// checked as it uses
+				// buffered writer
+				_ = w.Write([]string{
+					st.Name,
+					strings.Join(st.Doc, " "),
+					strings.Join(st.Comment, " "),
+					f.Name,
+					f.Type,
+					strconv.Itoa(int(f.Size)),
+					strconv.Itoa(int(f.Align)),
+					f.Tag,
+					strconv.FormatBool(f.Exported),
+					strconv.FormatBool(f.Embedded),
+					strings.Join(f.Doc, " "),
+					strings.Join(f.Comment, " "),
+				})
+			}
+			// flush to buf
+			w.Flush()
+			// check flush error
+			if err := w.Error(); err != nil {
+				return nil, err
+			}
 		}
 		// and return buf result
 		return ioutil.ReadAll(rw)

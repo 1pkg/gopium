@@ -30,7 +30,7 @@ type maven struct {
 // that uses locator to build id
 // for a structure and check that
 // builded id has not been stored already
-func (m *maven) has(tn *types.TypeName) (id, loc string, ok bool) {
+func (m *maven) has(tn *types.TypeName) (id string, loc string, ok bool) {
 	// build id for the structure
 	id = m.loc.ID(tn.Pos())
 	// build loc for the structure

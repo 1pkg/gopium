@@ -5,9 +5,8 @@ import (
 	"regexp"
 
 	"1pkg/gopium"
+	"1pkg/gopium/collections"
 	"1pkg/gopium/fmtio"
-
-	"golang.org/x/sync/errgroup"
 )
 
 // list of wout presets
@@ -52,7 +51,7 @@ type wout struct {
 
 // With erich wast walker with external visiting parameters
 // parser, exposer instances and additional visiting flags
-func (w wout) With(p gopium.TypeParser, exp gopium.Exposer, deep, bref bool) wout {
+func (w wout) With(p gopium.TypeParser, exp gopium.Exposer, deep bool, bref bool) wout {
 	w.parser = p
 	w.exposer = exp
 	w.deep = deep
@@ -78,55 +77,45 @@ func (w wout) Visit(ctx context.Context, regex *regexp.Regexp, stg gopium.Strate
 	ch := make(appliedCh)
 	gvisit := with(w.exposer, loc, w.bref).
 		visit(regex, stg, ch, w.deep)
-	// create sync error group
-	// with cancelation context
-	group, gctx := errgroup.WithContext(ctx)
+	// prepare separate cancelation
+	// context for visiting
+	gctx, cancel := context.WithCancel(ctx)
+	defer cancel()
 	// run visiting in separate goroutine
 	go gvisit(gctx, pkg.Scope())
-	// go through results from visit func
-	// and write them to buf concurently
+	// prepare struct storage
+	var floc string
+	f := make(collections.Flat)
 	for applied := range ch {
-		// manage context actions
-		// in case of cancelation
-		// stop execution
-		select {
-		case <-gctx.Done():
-			return gctx.Err()
-		default:
+		// in case any error happened
+		// just return error back
+		// it auto cancels context
+		if applied.Err != nil {
+			return applied.Err
 		}
-		// create applied copy
-		visited := applied
-		// run error group write call
-		group.Go(func() error {
-			// in case any error happened
-			// just return error back
-			if visited.Err != nil {
-				return visited.Err
-			}
-			// just process with write call
-			// in case any error happened
-			// just return error back
-			return w.write(visited.ID, visited.Loc, visited.R)
-		})
+		// TODO hacky solution
+		floc = applied.Loc
+		// push struct to storage
+		f[applied.ID] = applied.R
 	}
-	// wait until all writers
-	// resolve their jobs and
-	return group.Wait()
+	// run sync write
+	// with collected strategies results
+	return w.write(gctx, floc, f)
 }
 
 // write wout helps to apply struct to bytes
 // to format strategy result and writer
 // to write result to output
-func (w wout) write(id, loc string, st gopium.Struct) error {
+func (w wout) write(ctx context.Context, loc string, f collections.Flat) error {
 	// apply formatter
-	buf, err := w.fmt(st)
+	buf, err := w.fmt(f)
 	// in case any error happened
 	// in formatter return error back
 	if err != nil {
 		return err
 	}
 	// generate writer
-	writer, err := w.writer(id, loc)
+	writer, err := w.writer("gopium", loc)
 	if err != nil {
 		return err
 	}

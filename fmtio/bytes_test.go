@@ -7,6 +7,7 @@ import (
 	"testing"
 
 	"1pkg/gopium"
+	"1pkg/gopium/collections"
 	"1pkg/gopium/tests/mocks"
 )
 
@@ -14,124 +15,194 @@ func TestBytes(t *testing.T) {
 	// prepare
 	table := map[string]struct {
 		fmt Bytes
-		st  gopium.Struct
+		f   collections.Flat
 		r   []byte
 		err error
 	}{
-		"json should return expected result for empty struct": {
+		"json should return expected result for empty collection": {
 			fmt: Jsonb,
-			st:  gopium.Struct{},
+			f:   collections.Flat{},
+			r:   []byte(`[]`),
+		},
+		"json should return expected result for empty struct in collection": {
+			fmt: Jsonb,
+			f:   collections.Flat{"test": gopium.Struct{}},
 			r: []byte(`
-{
-	"Name": "",
-	"Doc": null,
-	"Comment": null,
-	"Fields": null
-}
+[
+	{
+		"Name": "",
+		"Doc": null,
+		"Comment": null,
+		"Fields": null
+	}
+]
 `),
 		},
-		"json should return expected result for non empty struct": {
+		"json should return expected result for non collection": {
 			fmt: Jsonb,
-			st: gopium.Struct{
-				Name:    "Test",
-				Doc:     []string{"doctest"},
-				Comment: []string{"comtest"},
-				Fields: []gopium.Field{
-					{
-						Name:     "test-1",
-						Type:     "string",
-						Size:     16,
-						Align:    8,
-						Tag:      "test-tag",
-						Exported: true,
-						Embedded: true,
-						Doc:      []string{"fdoctest"},
-						Comment:  []string{"fcomtest"},
+			f: collections.Flat{
+				"test-2": gopium.Struct{
+					Name:    "Test",
+					Doc:     []string{"doctest"},
+					Comment: []string{"comtest"},
+					Fields: []gopium.Field{
+						{
+							Name:     "test-1",
+							Type:     "string",
+							Size:     16,
+							Align:    8,
+							Tag:      "test-tag",
+							Exported: true,
+							Embedded: true,
+							Doc:      []string{"fdoctest"},
+							Comment:  []string{"fcomtest"},
+						},
+						{
+							Name:  "test-2",
+							Type:  "test_type",
+							Size:  12,
+							Align: 4,
+						},
 					},
-					{
-						Name:  "test-2",
-						Type:  "test_type",
-						Size:  12,
-						Align: 4,
+				},
+				"test-1": gopium.Struct{
+					Name: "Test-1",
+					Fields: []gopium.Field{
+						{
+							Name:  "test-3",
+							Type:  "test",
+							Size:  1,
+							Align: 1,
+						},
 					},
 				},
 			},
 			r: []byte(`
-{
-	"Name": "Test",
-	"Doc": [
-		"doctest"
-	],
-	"Comment": [
-		"comtest"
-	],
-	"Fields": [
-		{
-			"Name": "test-1",
-			"Type": "string",
-			"Size": 16,
-			"Align": 8,
-			"Tag": "test-tag",
-			"Exported": true,
-			"Embedded": true,
-			"Doc": [
-				"fdoctest"
-			],
-			"Comment": [
-				"fcomtest"
-			]
-		},
-		{
-			"Name": "test-2",
-			"Type": "test_type",
-			"Size": 12,
-			"Align": 4,
-			"Tag": "",
-			"Exported": false,
-			"Embedded": false,
-			"Doc": null,
-			"Comment": null
-		}
-	]
-}
+[
+	{
+		"Name": "Test-1",
+		"Doc": null,
+		"Comment": null,
+		"Fields": [
+			{
+				"Name": "test-3",
+				"Type": "test",
+				"Size": 1,
+				"Align": 1,
+				"Tag": "",
+				"Exported": false,
+				"Embedded": false,
+				"Doc": null,
+				"Comment": null
+			}
+		]
+	},
+	{
+		"Name": "Test",
+		"Doc": [
+			"doctest"
+		],
+		"Comment": [
+			"comtest"
+		],
+		"Fields": [
+			{
+				"Name": "test-1",
+				"Type": "string",
+				"Size": 16,
+				"Align": 8,
+				"Tag": "test-tag",
+				"Exported": true,
+				"Embedded": true,
+				"Doc": [
+					"fdoctest"
+				],
+				"Comment": [
+					"fcomtest"
+				]
+			},
+			{
+				"Name": "test-2",
+				"Type": "test_type",
+				"Size": 12,
+				"Align": 4,
+				"Tag": "",
+				"Exported": false,
+				"Embedded": false,
+				"Doc": null,
+				"Comment": null
+			}
+		]
+	}
+]
 `),
 		},
-		"xml should return expected result for empty struct": {
+		"xml should return expected result for empty collection": {
 			fmt: Xmlb,
-			st:  gopium.Struct{},
+			f:   collections.Flat{},
+			r:   []byte(``),
+		},
+		"xml should return expected result for empty struct in collection": {
+			fmt: Xmlb,
+			f:   collections.Flat{"test": gopium.Struct{}},
 			r: []byte(`
 <Struct>
 	<Name></Name>
 </Struct>
 `),
 		},
-		"xml should return valid expected for non empty struct": {
+		"xml should return valid expected for non collection": {
 			fmt: Xmlb,
-			st: gopium.Struct{
-				Name:    "Test",
-				Doc:     []string{"doctest"},
-				Comment: []string{"comtest"},
-				Fields: []gopium.Field{
-					{
-						Name:     "test-1",
-						Type:     "string",
-						Size:     16,
-						Align:    8,
-						Tag:      "test-tag",
-						Exported: true,
-						Embedded: true,
-						Doc:      []string{"fdoctest"},
-						Comment:  []string{"fcomtest"},
+			f: collections.Flat{
+				"test-2": gopium.Struct{
+					Name:    "Test",
+					Doc:     []string{"doctest"},
+					Comment: []string{"comtest"},
+					Fields: []gopium.Field{
+						{
+							Name:     "test-1",
+							Type:     "string",
+							Size:     16,
+							Align:    8,
+							Tag:      "test-tag",
+							Exported: true,
+							Embedded: true,
+							Doc:      []string{"fdoctest"},
+							Comment:  []string{"fcomtest"},
+						},
+						{
+							Name:  "test-2",
+							Type:  "test_type",
+							Size:  12,
+							Align: 4,
+						},
 					},
-					{
-						Name:  "test-2",
-						Type:  "test_type",
-						Size:  12,
-						Align: 4,
+				},
+				"test-1": gopium.Struct{
+					Name: "Test-1",
+					Fields: []gopium.Field{
+						{
+							Name:  "test-3",
+							Type:  "test",
+							Size:  1,
+							Align: 1,
+						},
 					},
 				},
 			},
 			r: []byte(`
+<Struct>
+	<Name>Test-1</Name>
+	<Fields>
+		<Name>test-3</Name>
+		<Type>test</Type>
+		<Size>1</Size>
+		<Align>1</Align>
+		<Tag></Tag>
+		<Exported>false</Exported>
+		<Embedded>false</Embedded>
+	</Fields>
+</Struct>
 <Struct>
 	<Name>Test</Name>
 	<Doc>doctest</Doc>
@@ -159,69 +230,101 @@ func TestBytes(t *testing.T) {
 </Struct>
 `),
 		},
-		"csv should return expected result for empty struct": {
+		"csv should return expected result for empty collection": {
 			fmt: Csvb(Buffer()),
-			st:  gopium.Struct{},
+			f:   collections.Flat{},
+			r:   []byte(``),
+		},
+		"csv should return expected result for empty struct in collection": {
+			fmt: Csvb(Buffer()),
+			f:   collections.Flat{"test": gopium.Struct{}},
 			r: []byte(`
 Struct Name,Struct Doc,Struct Comment,Field Name,Field Type,Field Size,Field Align,Field Tag,Field Exported,Field Embedded,Field Doc,Field Comment
 `),
 		},
 		"csv should return error on writter error": {
 			fmt: Csvb(&mocks.RWC{Werr: errors.New("test")}),
-			st: gopium.Struct{
-				Name:    "Test",
-				Doc:     []string{"doctest"},
-				Comment: []string{"comtest"},
-				Fields: []gopium.Field{
-					{
-						Name:     "test-1",
-						Type:     "string",
-						Size:     16,
-						Align:    8,
-						Tag:      "test-tag",
-						Exported: true,
-						Embedded: true,
-						Doc:      []string{"fdoctest"},
-						Comment:  []string{"fcomtest"},
+			f: collections.Flat{
+				"test-2": gopium.Struct{
+					Name:    "Test",
+					Doc:     []string{"doctest"},
+					Comment: []string{"comtest"},
+					Fields: []gopium.Field{
+						{
+							Name:     "test-1",
+							Type:     "string",
+							Size:     16,
+							Align:    8,
+							Tag:      "test-tag",
+							Exported: true,
+							Embedded: true,
+							Doc:      []string{"fdoctest"},
+							Comment:  []string{"fcomtest"},
+						},
+						{
+							Name:  "test-2",
+							Type:  "test_type",
+							Size:  12,
+							Align: 4,
+						},
 					},
-					{
-						Name:  "test-2",
-						Type:  "test_type",
-						Size:  12,
-						Align: 4,
+				},
+				"test-1": gopium.Struct{
+					Name: "Test-1",
+					Fields: []gopium.Field{
+						{
+							Name:  "test-3",
+							Type:  "test",
+							Size:  1,
+							Align: 1,
+						},
 					},
 				},
 			},
 			err: errors.New("test"),
 		},
-		"csv should return expected result for non empty struct": {
+		"csv should return expected result for non empty collection": {
 			fmt: Csvb(Buffer()),
-			st: gopium.Struct{
-				Name:    "Test",
-				Doc:     []string{"doctest"},
-				Comment: []string{"comtest"},
-				Fields: []gopium.Field{
-					{
-						Name:     "test-1",
-						Type:     "string",
-						Size:     16,
-						Align:    8,
-						Tag:      "test-tag",
-						Exported: true,
-						Embedded: true,
-						Doc:      []string{"fdoctest"},
-						Comment:  []string{"fcomtest"},
+			f: collections.Flat{
+				"test-2": gopium.Struct{
+					Name:    "Test",
+					Doc:     []string{"doctest"},
+					Comment: []string{"comtest"},
+					Fields: []gopium.Field{
+						{
+							Name:     "test-1",
+							Type:     "string",
+							Size:     16,
+							Align:    8,
+							Tag:      "test-tag",
+							Exported: true,
+							Embedded: true,
+							Doc:      []string{"fdoctest"},
+							Comment:  []string{"fcomtest"},
+						},
+						{
+							Name:  "test-2",
+							Type:  "test_type",
+							Size:  12,
+							Align: 4,
+						},
 					},
-					{
-						Name:  "test-2",
-						Type:  "test_type",
-						Size:  12,
-						Align: 4,
+				},
+				"test-1": gopium.Struct{
+					Name: "Test-1",
+					Fields: []gopium.Field{
+						{
+							Name:  "test-3",
+							Type:  "test",
+							Size:  1,
+							Align: 1,
+						},
 					},
 				},
 			},
 			r: []byte(`
 Struct Name,Struct Doc,Struct Comment,Field Name,Field Type,Field Size,Field Align,Field Tag,Field Exported,Field Embedded,Field Doc,Field Comment
+Test-1,,,test-3,test,1,1,,false,false,,
 Test,doctest,comtest,test-1,string,16,8,test-tag,true,true,fdoctest,fcomtest
 Test,doctest,comtest,test-2,test_type,12,4,,false,false,,
 `),
@@ -230,7 +333,7 @@ Test,doctest,comtest,test-2,test_type,12,4,,false,false,,
 	for name, tcase := range table {
 		t.Run(name, func(t *testing.T) {
 			// exec
-			r, err := tcase.fmt(tcase.st)
+			r, err := tcase.fmt(tcase.f)
 			// check
 			if !reflect.DeepEqual(err, tcase.err) {
 				t.Errorf("actual %v doesn't equal to expected %v", err, tcase.err)
