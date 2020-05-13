@@ -3,6 +3,7 @@ package collections
 import (
 	"fmt"
 	"sort"
+	"strings"
 
 	"1pkg/gopium"
 )
@@ -27,13 +28,17 @@ func (f Flat) Sorted() []gopium.Struct {
 	sort.SliceStable(ids, func(i, j int) bool {
 		// only first part of "%d-%s" id is ordered
 		// so we need to parse and compare it
-		var idi, idj int
+		var numi, numj int
 		var sumi, sumj string
+		// scanf works only with space
+		// separated values so we need
+		// to apply this format first
+		//
 		// in case of any pattern error
 		// just apply natural sort
 		// otherwise sort it by id
-		_, erri := fmt.Sscanf(ids[i], "%d-%s", &idi, &sumi)
-		_, errj := fmt.Sscanf(ids[j], "%d-%s", &idj, &sumj)
+		_, erri := fmt.Sscanf(strings.Replace(ids[i], ":", " ", 1), "%s %d", &sumi, &numi)
+		_, errj := fmt.Sscanf(strings.Replace(ids[j], ":", " ", 1), "%s %d", &sumj, &numj)
 		switch {
 		case erri != nil && errj != nil:
 			return ids[i] < ids[j]
@@ -42,7 +47,7 @@ func (f Flat) Sorted() []gopium.Struct {
 		case errj != nil:
 			return true
 		default:
-			return idi < idj
+			return numi < numj
 		}
 	})
 	// collect all structs in asc order
