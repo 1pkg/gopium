@@ -68,47 +68,47 @@ func TestLocatorIDLoc(t *testing.T) {
 	}{
 		"valid token pos 1 should be located in expected file": {
 			pos: token.Pos(1),
-			id:  "1-cad4a5be62ba01bfe7a07a8ff9ab1ed0d726c3cd82bfb3053f92fc21b3088ca3",
+			id:  "9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08:1",
 			loc: "test",
 		},
 		"valid token pos 11 should be located in expected file": {
 			pos: token.Pos(11),
-			id:  "3-da1d0a859e4d55d60b29d1a8b8ce379a9c24b7e1db83868708329c64193470bb",
+			id:  "9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08:3",
 			loc: "test",
 		},
 		"valid token pos 21 should be located in expected file": {
 			pos: token.Pos(21),
-			id:  "3-da1d0a859e4d55d60b29d1a8b8ce379a9c24b7e1db83868708329c64193470bb",
+			id:  "9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08:3",
 			loc: "test",
 		},
 		"valid token pos 22 should be located in expected file": {
 			pos: token.Pos(22),
-			id:  "1-a79ce52b40bfe7dfc16f512d45d9d382cefb70603f50adb5abcf5f73f4b4fefe",
+			id:  "7395c92698585f5dff68edce8314a30f534e98707af84f11a725cd62b538b139:1",
 			loc: "loc-test-id",
 		},
 		"valid token pos 50 should be located in expected file": {
 			pos: token.Pos(50),
-			id:  "2-4a7e3c3497f71fdb5c1c2389cd6d2e6afb93706c72448b8308e643b4ab56a791",
+			id:  "7395c92698585f5dff68edce8314a30f534e98707af84f11a725cd62b538b139:2",
 			loc: "loc-test-id",
 		},
 		"valid token pos 52 should be located in expected file": {
 			pos: token.Pos(52),
-			id:  "2-4a7e3c3497f71fdb5c1c2389cd6d2e6afb93706c72448b8308e643b4ab56a791",
+			id:  "7395c92698585f5dff68edce8314a30f534e98707af84f11a725cd62b538b139:2",
 			loc: "loc-test-id",
 		},
 		"valid token pos 53 should be located in expected file": {
 			pos: token.Pos(53),
-			id:  "1-80b7343d7bde2f986326d4d4b6c638b24f22f3a46b7e1f1eac80488e90f91398",
+			id:  "e65de074e1a2fc5a98d431c9d737f851e27625eca54b73816d4682805938e454:1",
 			loc: "id-test-loc",
 		},
 		"valid token pos 99 should be located in expected file": {
 			pos: token.Pos(99),
-			id:  "3-f898adf4c5d8f97ed4f7841d2afacb8225690dd19a538b08071f50d20d44f79c",
+			id:  "e65de074e1a2fc5a98d431c9d737f851e27625eca54b73816d4682805938e454:3",
 			loc: "id-test-loc",
 		},
 		"valid token pos 100 should be located in expected file": {
 			pos: token.Pos(100),
-			id:  "3-f898adf4c5d8f97ed4f7841d2afacb8225690dd19a538b08071f50d20d44f79c",
+			id:  "e65de074e1a2fc5a98d431c9d737f851e27625eca54b73816d4682805938e454:3",
 			loc: "id-test-loc",
 		},
 		"invalid token pos 1000 should return default results": {

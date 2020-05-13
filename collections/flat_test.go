@@ -22,14 +22,14 @@ func TestFlatSorted(t *testing.T) {
 			r: []gopium.Struct{},
 		},
 		"single item flat collection should return single item sorted": {
-			f: Flat{"1-test": gopium.Struct{Name: "test1"}},
+			f: Flat{"test:1": gopium.Struct{Name: "test1"}},
 			r: []gopium.Struct{gopium.Struct{Name: "test1"}},
 		},
 		"multiple presorted items flat collection should return multiple items sorted": {
 			f: Flat{
-				"1-test": gopium.Struct{Name: "test1"},
-				"2-test": gopium.Struct{Name: "test2"},
-				"3-test": gopium.Struct{Name: "test3"},
+				"test:1": gopium.Struct{Name: "test1"},
+				"test:2": gopium.Struct{Name: "test2"},
+				"test:3": gopium.Struct{Name: "test3"},
 			},
 			r: []gopium.Struct{
 				gopium.Struct{Name: "test1"},
@@ -39,9 +39,9 @@ func TestFlatSorted(t *testing.T) {
 		},
 		"multiple reverted items flat collection should return multiple items sorted": {
 			f: Flat{
-				"3-test": gopium.Struct{Name: "test3"},
-				"2-test": gopium.Struct{Name: "test2"},
-				"1-test": gopium.Struct{Name: "test1"},
+				"test:3": gopium.Struct{Name: "test3"},
+				"test:2": gopium.Struct{Name: "test2"},
+				"test:1": gopium.Struct{Name: "test1"},
 			},
 			r: []gopium.Struct{
 				gopium.Struct{Name: "test1"},
@@ -51,14 +51,14 @@ func TestFlatSorted(t *testing.T) {
 		},
 		"multiple mixed items flat collection should return multiple items sorted": {
 			f: Flat{
-				"99-test":   gopium.Struct{Name: "test99"},
-				"5-test":    gopium.Struct{Name: "test5"},
-				"1000-test": gopium.Struct{Name: "test1000"},
-				"3-test":    gopium.Struct{Name: "test3"},
-				"1-test":    gopium.Struct{Name: "test1"},
-				"2-test":    gopium.Struct{Name: "test2"},
-				"4-test":    gopium.Struct{Name: "test4"},
-				"0-test":    gopium.Struct{Name: "test0"},
+				"test:99":   gopium.Struct{Name: "test99"},
+				"test:5":    gopium.Struct{Name: "test5"},
+				"test:1000": gopium.Struct{Name: "test1000"},
+				"test:3":    gopium.Struct{Name: "test3"},
+				"test:1":    gopium.Struct{Name: "test1"},
+				"test:2":    gopium.Struct{Name: "test2"},
+				"test:4":    gopium.Struct{Name: "test4"},
+				"test:0":    gopium.Struct{Name: "test0"},
 			},
 			r: []gopium.Struct{
 				gopium.Struct{Name: "test0"},
@@ -73,9 +73,9 @@ func TestFlatSorted(t *testing.T) {
 		},
 		"multiple non pattern ids items flat collection should return items sorted naturally": {
 			f: Flat{
-				"a-test": gopium.Struct{Name: "testa"},
-				"b-test": gopium.Struct{Name: "testb"},
-				"c-test": gopium.Struct{Name: "testc"},
+				"test:a": gopium.Struct{Name: "testa"},
+				"test:b": gopium.Struct{Name: "testb"},
+				"test:c": gopium.Struct{Name: "testc"},
 			},
 			r: []gopium.Struct{
 				gopium.Struct{Name: "testa"},
@@ -85,12 +85,12 @@ func TestFlatSorted(t *testing.T) {
 		},
 		"multiple mixed non pattern ids items flat collection should return items sorted naturally": {
 			f: Flat{
-				"3-test": gopium.Struct{Name: "test3"},
-				"2-test": gopium.Struct{Name: "test2"},
-				"1-test": gopium.Struct{Name: "test1"},
-				"a-test": gopium.Struct{Name: "testa"},
-				"b-test": gopium.Struct{Name: "testb"},
-				"c-test": gopium.Struct{Name: "testc"},
+				"test:3": gopium.Struct{Name: "test3"},
+				"test:2": gopium.Struct{Name: "test2"},
+				"test:1": gopium.Struct{Name: "test1"},
+				"test:a": gopium.Struct{Name: "testa"},
+				"test:b": gopium.Struct{Name: "testb"},
+				"test:c": gopium.Struct{Name: "testc"},
 			},
 			r: []gopium.Struct{
 				gopium.Struct{Name: "test1"},
@@ -101,21 +101,21 @@ func TestFlatSorted(t *testing.T) {
 				gopium.Struct{Name: "testc"},
 			},
 		},
-		"cmplex multiple mixed non pattern ids items flat collection should return items sorted naturally": {
+		"complex multiple mixed non pattern ids items flat collection should return items sorted naturally": {
 			f: Flat{
-				"z-test":    gopium.Struct{Name: "testz"},
-				"3-test":    gopium.Struct{Name: "test3"},
-				"2-test":    gopium.Struct{Name: "test2"},
-				"1-test":    gopium.Struct{Name: "test1"},
-				"a-test":    gopium.Struct{Name: "testa"},
-				"b-test":    gopium.Struct{Name: "testb"},
-				"c-test":    gopium.Struct{Name: "testc"},
-				"99-test":   gopium.Struct{Name: "test99"},
-				"5-test":    gopium.Struct{Name: "test5"},
-				"1000-test": gopium.Struct{Name: "test1000"},
-				"4-test":    gopium.Struct{Name: "test4"},
-				"0-test":    gopium.Struct{Name: "test0"},
-				"xytest":    gopium.Struct{Name: "testxy"},
+				"test:z":    gopium.Struct{Name: "testz"},
+				"test:3":    gopium.Struct{Name: "test3"},
+				"test:2":    gopium.Struct{Name: "test2"},
+				"test:1":    gopium.Struct{Name: "test1"},
+				"test:a":    gopium.Struct{Name: "testa"},
+				"test:b":    gopium.Struct{Name: "testb"},
+				"test:c":    gopium.Struct{Name: "testc"},
+				"test:99":   gopium.Struct{Name: "test99"},
+				"test:5":    gopium.Struct{Name: "test5"},
+				"test:1000": gopium.Struct{Name: "test1000"},
+				"test:4":    gopium.Struct{Name: "test4"},
+				"test:0":    gopium.Struct{Name: "test0"},
+				"test:xy":   gopium.Struct{Name: "testxy"},
 			},
 			r: []gopium.Struct{
 				gopium.Struct{Name: "test0"},

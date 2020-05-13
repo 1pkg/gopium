@@ -3,6 +3,7 @@ package collections
 import (
 	"fmt"
 	"path"
+	"sort"
 	"strings"
 
 	"1pkg/gopium"
@@ -72,9 +73,15 @@ func (h Hierarchic) Flat() Flat {
 // Rcat finds root category that
 // all other category contain for collection
 func (h Hierarchic) Rcat() string {
-	var rcat string
-	// go through all cats
+	// make cats order predictable
+	cats := make([]string, 0, len(h.cats))
 	for cat := range h.cats {
+		cats = append(cats, cat)
+	}
+	sort.Strings(cats)
+	// go through cats
+	var rcat string
+	for _, cat := range cats {
 		cat = path.Dir(cat)
 		switch {
 		case cat == ".":

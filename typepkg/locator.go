@@ -38,11 +38,10 @@ func (l *Locator) ID(p token.Pos) string {
 	// check if such file exists
 	if f := l.root.File(p); f != nil {
 		// generate hash sum
-		r := fmt.Sprintf("%s/%d", f.Name(), f.Line(p))
-		h := sha256.Sum256([]byte(r))
+		h := sha256.Sum256([]byte(f.Name()))
 		sum := hex.EncodeToString(h[:])
 		// generate ordered id
-		return fmt.Sprintf("%d-%s", f.Line(p), sum)
+		return fmt.Sprintf("%s:%d", sum, f.Line(p))
 	}
 	return ""
 }

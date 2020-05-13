@@ -22,7 +22,7 @@ func TestApply(t *testing.T) {
 	// prepare
 	lh := collections.NewHierarchic(build.Default.GOPATH)
 	lh.Push(
-		"6-39ba0c31867d8eaabd59a515e15955bbe83b4aa800278c7ef0c75e5ca9bcf56c",
+		"660d36c978f943d2e8325462c049cf1e003521b3ad3fc2f71c646cbf51a3acc1:6",
 		"/src/1pkg/gopium/tests/data/note/file-1.go",
 		gopium.Struct{
 			Name:    "Note",
@@ -47,7 +47,7 @@ func TestApply(t *testing.T) {
 		},
 	)
 	lh.Push(
-		"6-90fba0480e71f274086a3057fe48a45c98599132b3e64b02d2b7540bb385e217",
+		"dcd36f56fb9252fc90eac010290a5ae42b67d55ad3c8fbe55a1aa72749633e0e:6",
 		"/src/1pkg/gopium/tests/data/note/file-2.go",
 		gopium.Struct{
 			Name: "DocCom",
@@ -62,7 +62,7 @@ func TestApply(t *testing.T) {
 	)
 	ldc := collections.NewHierarchic(build.Default.GOPATH)
 	ldc.Push(
-		"6-39ba0c31867d8eaabd59a515e15955bbe83b4aa800278c7ef0c75e5ca9bcf56c",
+		"660d36c978f943d2e8325462c049cf1e003521b3ad3fc2f71c646cbf51a3acc1:6",
 		"/src/1pkg/gopium/tests/data/note/file-1.go",
 		gopium.Struct{
 			Name: "Note",
@@ -84,7 +84,7 @@ func TestApply(t *testing.T) {
 		},
 	)
 	ldc.Push(
-		"6-90fba0480e71f274086a3057fe48a45c98599132b3e64b02d2b7540bb385e217",
+		"dcd36f56fb9252fc90eac010290a5ae42b67d55ad3c8fbe55a1aa72749633e0e:6",
 		"/src/1pkg/gopium/tests/data/note/file-2.go",
 	)
 	cctx, cancel := context.WithCancel(context.Background())
