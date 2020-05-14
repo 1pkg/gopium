@@ -90,8 +90,8 @@ func (w wast) Visit(ctx context.Context, regex *regexp.Regexp, stg gopium.Strate
 	return w.write(gctx, h)
 }
 
-// write wast helps to sync
-// and persist strategy results to ast files
+// write wast helps to sync and persist
+// strategies results to ast files
 func (w wast) write(ctx context.Context, h collections.Hierarchic) error {
 	// skip empty writes
 	if h.Len() == 0 {

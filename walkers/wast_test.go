@@ -175,25 +175,6 @@ func scope() {
 	}
 }
 `),
-				"/src/1pkg/gopium/tests/data/multi/file-2.go": []byte(`
-//+build tests_data
-
-package multi
-
-import "errors"
-
-func scope1() error {
-	type B struct {
-		b
-	}
-	type b1 b
-	type b2 struct {
-		A
-		b	float64
-	}
-	return errors.New("test data")
-}
-`),
 				"/src/1pkg/gopium/tests/data/multi/file-3.go": []byte(`
 //+build tests_data
 
@@ -279,25 +260,6 @@ func scope() {
 		D	A
 		z	bool
 	}
-}
-`),
-				"/src/1pkg/gopium/tests/data/multi/file-2.go": []byte(`
-//+build tests_data
-
-package multi
-
-import "errors"
-
-func scope1() error {
-	type B struct {
-		b
-	}
-	type b1 b
-	type b2 struct {
-		A
-		b	float64
-	}
-	return errors.New("test data")
 }
 `),
 				"/src/1pkg/gopium/tests/data/multi/file-3.go": []byte(`
