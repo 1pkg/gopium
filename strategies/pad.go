@@ -30,7 +30,7 @@ func (stg pad) Curator(curator gopium.Curator) pad {
 // Apply pad implementation
 func (stg pad) Apply(ctx context.Context, o gopium.Struct) (gopium.Struct, error) {
 	// copy original structure to result
-	r := o
+	r := o.Copy()
 	// preset defaults and check that structure has fields
 	var offset, stalign, align int64 = 0, 1, stg.curator.SysAlign()
 	if flen := len(r.Fields); flen > 0 {

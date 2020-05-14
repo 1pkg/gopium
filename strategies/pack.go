@@ -22,7 +22,7 @@ type pack struct{}
 // Apply pack implementation
 func (stg pack) Apply(ctx context.Context, o gopium.Struct) (gopium.Struct, error) {
 	// copy original structure to result
-	r := o
+	r := o.Copy()
 	// execute memory sorting
 	sort.SliceStable(r.Fields, func(i, j int) bool {
 		// first compare aligns of two fields

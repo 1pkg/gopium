@@ -23,7 +23,7 @@ type emb struct {
 // Apply emb implementation
 func (stg emb) Apply(ctx context.Context, o gopium.Struct) (gopium.Struct, error) {
 	// copy original structure to result
-	r := o
+	r := o.Copy()
 	// then execute embedded sorting
 	sort.SliceStable(r.Fields, func(i, j int) bool {
 		if r.Fields[i].Embedded == r.Fields[j].Embedded {

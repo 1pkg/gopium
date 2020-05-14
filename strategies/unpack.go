@@ -21,8 +21,10 @@ type unpack struct{}
 
 // Apply unpack implementation
 func (stg unpack) Apply(ctx context.Context, o gopium.Struct) (gopium.Struct, error) {
+	// copy original structure to result
+	r := o.Copy()
 	// execute pack strategy
-	r, err := pck.Apply(ctx, o)
+	r, err := pck.Apply(ctx, r)
 	if err != nil {
 		return o, err
 	}

@@ -30,7 +30,7 @@ func (stg cache) Curator(curator gopium.Curator) cache {
 // Apply cache implementation
 func (stg cache) Apply(ctx context.Context, o gopium.Struct) (gopium.Struct, error) {
 	// copy original structure to result
-	r := o
+	r := o.Copy()
 	// calculate size of whole structure
 	var size int64
 	for _, f := range r.Fields {

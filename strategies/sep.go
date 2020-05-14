@@ -39,7 +39,7 @@ func (stg sep) Curator(curator gopium.Curator) sep {
 // Apply sep implementation
 func (stg sep) Apply(ctx context.Context, o gopium.Struct) (gopium.Struct, error) {
 	// copy original structure to result
-	r := o
+	r := o.Copy()
 	// get separator size
 	sep := stg.curator.SysAlign()
 	// if we wanna use

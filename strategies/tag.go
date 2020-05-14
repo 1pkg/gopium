@@ -44,7 +44,7 @@ func (stg tag) Names(names ...gopium.StrategyName) tag {
 // Apply tag implementation
 func (stg tag) Apply(ctx context.Context, o gopium.Struct) (gopium.Struct, error) {
 	// copy original structure to result
-	r := o
+	r := o.Copy()
 	// iterate through all fields
 	for i := range r.Fields {
 		f := &r.Fields[i]
