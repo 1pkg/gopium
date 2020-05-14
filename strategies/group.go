@@ -54,7 +54,7 @@ func (stg group) Builder(builder Builder) group {
 // Apply group implementation
 func (stg group) Apply(ctx context.Context, o gopium.Struct) (gopium.Struct, error) {
 	// copy original structure to result
-	r := o
+	r := o.Copy()
 	// parse tag annotation
 	// into containers groups
 	containers, err := stg.parse(r)
@@ -72,7 +72,7 @@ func (stg group) Apply(ctx context.Context, o gopium.Struct) (gopium.Struct, err
 		container := &containers[i]
 		group.Go(func() error {
 			// apply strategy on struct
-			rst, err := container.stg.Apply(gctx, container.o)
+			tmp, err := container.stg.Apply(gctx, container.o.Copy())
 			// in case of any error
 			// just return error back
 			if err != nil {
@@ -80,11 +80,11 @@ func (stg group) Apply(ctx context.Context, o gopium.Struct) (gopium.Struct, err
 			}
 			// in case of success
 			// update result on container
-			container.r = rst
+			container.r = tmp
 			// if we faced default group
 			// update result comment and doc
 			if container.grp == tdef {
-				r = rst
+				r = tmp
 			}
 			return nil
 		})
@@ -145,7 +145,7 @@ func (stg group) parse(st gopium.Struct) ([]container, error) {
 			}
 			// collect strategies and fields
 			gstrategiesnames[tdef] = stgs
-			gfields[tdef] = append(gfields[tdef], f)
+			gfields[tdef] = append(gfields[tdef], f.Copy())
 		case 2:
 			group := tokens[0]
 			stgs := tokens[1]
@@ -166,7 +166,7 @@ func (stg group) parse(st gopium.Struct) ([]container, error) {
 			}
 			// collect strategies and fields
 			gstrategiesnames[group] = stgs
-			gfields[group] = append(gfields[group], f)
+			gfields[group] = append(gfields[group], f.Copy())
 		default:
 			// return parsing error msg
 			return nil, fmt.Errorf("tag %q can't be parsed, neither as `default` nor named group", f.Tag)
@@ -203,7 +203,7 @@ func (stg group) parse(st gopium.Struct) ([]container, error) {
 		cnt.grp = grp
 		// set container original
 		// struct and its fields
-		cnt.o = st
+		cnt.o = st.Copy()
 		cnt.o.Fields = fields
 		// if group has strategy set it
 		// otherwise set nil strategy

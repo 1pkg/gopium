@@ -31,7 +31,7 @@ func (stg fshare) Curator(curator gopium.Curator) fshare {
 // Apply fshare implementation
 func (stg fshare) Apply(ctx context.Context, o gopium.Struct) (gopium.Struct, error) {
 	// copy original structure to result
-	r := o
+	r := o.Copy()
 	// check that struct has fields
 	// and cache line size is valid
 	if flen, cachel := len(r.Fields), stg.curator.SysCache(stg.line); flen > 0 && cachel > 0 {

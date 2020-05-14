@@ -256,23 +256,23 @@ func TestWdiff(t *testing.T) {
 			"Comment": null,
 			"Fields": [
 				{
-					"Name": "D",
-					"Type": "1pkg/gopium/tests/data/multi.D",
-					"Size": 24,
-					"Align": 8,
-					"Tag": "",
-					"Exported": true,
-					"Embedded": false,
-					"Doc": null,
-					"Comment": null
-				},
-				{
 					"Name": "a",
 					"Type": "bool",
 					"Size": 1,
 					"Align": 1,
 					"Tag": "",
 					"Exported": false,
+					"Embedded": false,
+					"Doc": null,
+					"Comment": null
+				},
+				{
+					"Name": "D",
+					"Type": "1pkg/gopium/tests/data/multi.D",
+					"Size": 24,
+					"Align": 8,
+					"Tag": "",
+					"Exported": true,
 					"Embedded": false,
 					"Doc": null,
 					"Comment": null
@@ -296,12 +296,12 @@ func TestWdiff(t *testing.T) {
 			"Comment": null,
 			"Fields": [
 				{
-					"Name": "AZ",
-					"Type": "1pkg/gopium/tests/data/multi.AZ",
-					"Size": 33,
+					"Name": "ze",
+					"Type": "1pkg/gopium/tests/data/multi.ze",
+					"Size": 16,
 					"Align": 8,
 					"Tag": "",
-					"Exported": true,
+					"Exported": false,
 					"Embedded": true,
 					"Doc": null,
 					"Comment": null
@@ -310,6 +310,17 @@ func TestWdiff(t *testing.T) {
 					"Name": "D",
 					"Type": "1pkg/gopium/tests/data/multi.D",
 					"Size": 24,
+					"Align": 8,
+					"Tag": "",
+					"Exported": true,
+					"Embedded": true,
+					"Doc": null,
+					"Comment": null
+				},
+				{
+					"Name": "AZ",
+					"Type": "1pkg/gopium/tests/data/multi.AZ",
+					"Size": 33,
 					"Align": 8,
 					"Tag": "",
 					"Exported": true,
@@ -327,17 +338,6 @@ func TestWdiff(t *testing.T) {
 					"Embedded": false,
 					"Doc": null,
 					"Comment": null
-				},
-				{
-					"Name": "ze",
-					"Type": "1pkg/gopium/tests/data/multi.ze",
-					"Size": 16,
-					"Align": 8,
-					"Tag": "",
-					"Exported": false,
-					"Embedded": true,
-					"Doc": null,
-					"Comment": null
 				}
 			]
 		},
@@ -347,23 +347,23 @@ func TestWdiff(t *testing.T) {
 			"Comment": null,
 			"Fields": [
 				{
-					"Name": "D",
-					"Type": "1pkg/gopium/tests/data/multi.A",
-					"Size": 8,
-					"Align": 8,
-					"Tag": "",
-					"Exported": true,
-					"Embedded": false,
-					"Doc": null,
-					"Comment": null
-				},
-				{
 					"Name": "a",
 					"Type": "bool",
 					"Size": 1,
 					"Align": 1,
 					"Tag": "",
 					"Exported": false,
+					"Embedded": false,
+					"Doc": null,
+					"Comment": null
+				},
+				{
+					"Name": "D",
+					"Type": "1pkg/gopium/tests/data/multi.A",
+					"Size": 8,
+					"Align": 8,
+					"Tag": "",
+					"Exported": true,
 					"Embedded": false,
 					"Doc": null,
 					"Comment": null
@@ -572,23 +572,23 @@ func TestWdiff(t *testing.T) {
 			"Comment": null,
 			"Fields": [
 				{
-					"Name": "D",
-					"Type": "1pkg/gopium/tests/data/multi.D",
-					"Size": 24,
-					"Align": 8,
-					"Tag": "",
-					"Exported": true,
-					"Embedded": false,
-					"Doc": null,
-					"Comment": null
-				},
-				{
 					"Name": "a",
 					"Type": "bool",
 					"Size": 1,
 					"Align": 1,
 					"Tag": "",
 					"Exported": false,
+					"Embedded": false,
+					"Doc": null,
+					"Comment": null
+				},
+				{
+					"Name": "D",
+					"Type": "1pkg/gopium/tests/data/multi.D",
+					"Size": 24,
+					"Align": 8,
+					"Tag": "",
+					"Exported": true,
 					"Embedded": false,
 					"Doc": null,
 					"Comment": null
@@ -612,12 +612,12 @@ func TestWdiff(t *testing.T) {
 			"Comment": null,
 			"Fields": [
 				{
-					"Name": "AZ",
-					"Type": "1pkg/gopium/tests/data/multi.AZ",
-					"Size": 32,
+					"Name": "ze",
+					"Type": "1pkg/gopium/tests/data/multi.ze",
+					"Size": 16,
 					"Align": 8,
 					"Tag": "",
-					"Exported": true,
+					"Exported": false,
 					"Embedded": true,
 					"Doc": null,
 					"Comment": null
@@ -634,6 +634,17 @@ func TestWdiff(t *testing.T) {
 					"Comment": null
 				},
 				{
+					"Name": "AZ",
+					"Type": "1pkg/gopium/tests/data/multi.AZ",
+					"Size": 32,
+					"Align": 8,
+					"Tag": "",
+					"Exported": true,
+					"Embedded": true,
+					"Doc": null,
+					"Comment": null
+				},
+				{
 					"Name": "AWA",
 					"Type": "1pkg/gopium/tests/data/multi.D",
 					"Size": 24,
@@ -641,17 +652,6 @@ func TestWdiff(t *testing.T) {
 					"Tag": "",
 					"Exported": true,
 					"Embedded": false,
-					"Doc": null,
-					"Comment": null
-				},
-				{
-					"Name": "ze",
-					"Type": "1pkg/gopium/tests/data/multi.ze",
-					"Size": 16,
-					"Align": 8,
-					"Tag": "",
-					"Exported": false,
-					"Embedded": true,
 					"Doc": null,
 					"Comment": null
 				}

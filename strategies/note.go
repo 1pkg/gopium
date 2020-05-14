@@ -28,7 +28,7 @@ type note struct {
 // Apply note implementation
 func (stg note) Apply(ctx context.Context, o gopium.Struct) (gopium.Struct, error) {
 	// copy original structure to result
-	r := o
+	r := o.Copy()
 	// note each field with size comment
 	var size, align int64
 	for i := range r.Fields {

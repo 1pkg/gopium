@@ -22,7 +22,7 @@ type stamp struct {
 // Apply stamp implementation
 func (stg stamp) Apply(ctx context.Context, o gopium.Struct) (gopium.Struct, error) {
 	// copy original structure to result
-	r := o
+	r := o.Copy()
 	// create stamp
 	stamp := fmt.Sprintf(
 		"// struct has been auto curated - %s",

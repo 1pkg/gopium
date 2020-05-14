@@ -14,7 +14,7 @@ type pipe []gopium.Strategy
 // Apply pipe implementation
 func (stgs pipe) Apply(ctx context.Context, o gopium.Struct) (gopium.Struct, error) {
 	// copy original structure to result
-	r := o
+	r := o.Copy()
 	// go through all inner strategies
 	// and apply them one by one
 	for _, stg := range stgs {
@@ -26,7 +26,7 @@ func (stgs pipe) Apply(ctx context.Context, o gopium.Struct) (gopium.Struct, err
 			return o, ctx.Err()
 		default:
 		}
-		rst, err := stg.Apply(ctx, r)
+		tmp, err := stg.Apply(ctx, r)
 		// in case of any error
 		// return immediately
 		if err != nil {
@@ -34,7 +34,7 @@ func (stgs pipe) Apply(ctx context.Context, o gopium.Struct) (gopium.Struct, err
 		}
 		// copy result back to
 		// result structure
-		r = rst
+		r = tmp
 	}
 	return r, ctx.Err()
 }

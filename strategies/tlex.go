@@ -23,7 +23,7 @@ type tlex struct {
 // Apply tlex implementation
 func (stg tlex) Apply(ctx context.Context, o gopium.Struct) (gopium.Struct, error) {
 	// copy original structure to result
-	r := o
+	r := o.Copy()
 	// then execute lexicographical sorting
 	sort.SliceStable(r.Fields, func(i, j int) bool {
 		// sort depends on type of ordering
