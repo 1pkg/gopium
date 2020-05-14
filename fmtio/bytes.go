@@ -12,8 +12,8 @@ import (
 	"1pkg/gopium/collections"
 )
 
-// Bytes defines abstraction for
-// formatting gopium flat collection to byte slice
+// Bytes defines abstraction for formatting
+// gopium flat collection to byte slice
 type Bytes func(collections.Flat) ([]byte, error)
 
 // Jsonb defines bytes implementation

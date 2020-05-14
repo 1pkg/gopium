@@ -102,13 +102,7 @@ func TestApply(t *testing.T) {
 			p:   data.NewParser("empty"),
 			a:   UFFN,
 			ctx: context.Background(),
-			r: map[string][]byte{
-				"/src/1pkg/gopium/tests/data/empty/file.go": []byte(`
-//+build tests_data
-
-package empty
-`),
-			},
+			r:   map[string][]byte{},
 		},
 		"note struct pkg should apply expected structs": {
 			p:   data.NewParser("note"),

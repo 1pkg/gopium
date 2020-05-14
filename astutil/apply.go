@@ -49,8 +49,9 @@ func combine(funcs ...Apply) Apply {
 		loc gopium.Locator,
 		h collections.Hierarchic,
 	) (*ast.Package, error) {
-		// tracks error inside loop
-		var err error
+		// filters all files that
+		// could be skipped
+		pkg, err := cat(ctx, pkg, loc, h)
 		// go through all provided funcs
 		for _, fun := range funcs {
 			// manage context actions
@@ -71,6 +72,25 @@ func combine(funcs ...Apply) Apply {
 		}
 		return pkg, nil
 	}
+}
+
+// cat helps to filter only ast files
+// that exist inside hierarchic collection
+func cat(
+	ctx context.Context,
+	pkg *ast.Package,
+	loc gopium.Locator,
+	h collections.Hierarchic,
+) (*ast.Package, error) {
+	files := make(map[string]*ast.File, len(pkg.Files))
+	for name, file := range pkg.Files {
+		// skip empty writes
+		if _, ok := h.Cat(name); ok {
+			files[name] = file
+		}
+	}
+	pkg.Files = files
+	return pkg, nil
 }
 
 // ufmt helps to update ast package
@@ -210,12 +230,8 @@ func note(w gopium.Walk, p gopium.AstParser, pr fmtio.Printer) Apply {
 				if err != nil {
 					return err
 				}
-				// build sorted collection for cat
-				cat, ok := h.Cat(name)
-				// skip cat if not exists
-				if !ok {
-					return nil
-				}
+				// get collection for cat
+				cat, _ := h.Cat(name)
 				// go through file structs
 				// and note all comments
 				file := pkg.Files["file"]
