@@ -1,8 +1,42 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
-import * as conf from './confs';
-import run from "./run";
+import Gopiumcli from "./gopiumcli";
+import Workspace from "./workspace";
+
+export interface Settings {
+	readonly presets: { [key: string]: Arguments };
+	readonly flags: Flags;
+	build(preset: string, path: string, pkg: string, regex: string): string[];
+}
+
+export interface Arguments {
+	readonly walker: string;
+	readonly strategies: string[];
+}
+
+export interface Flags {
+	// target platform vars
+	readonly c?: string;
+	readonly a?: string;
+	readonly l?: number[];
+	// package parser vars
+	readonly e?: string[];
+	readonly f?: string[];
+	// gopium walker vars
+	readonly d?: boolean;
+	readonly b?: boolean;
+	// gopium printer vars
+	readonly i?: number;
+	readonly w?: number;
+	readonly s?: boolean;
+	// gopium global vars
+	readonly t?: number;
+}
+
+export interface Runner {
+	run(preset: string, configs: Settings, path: string, pkg: string, struct?: string): Promise<boolean>;
+}
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
@@ -16,17 +50,8 @@ export function activate(context: vscode.ExtensionContext) {
 	// Now provide the implementation of the command with registerCommand
 	// The commandId parameter must match the command field in package.json
 	let disposable = vscode.commands.registerCommand('gopium.helloWorld', async () => {
-		const confs: conf.default = {
-			args: {
-				package: "1pkg/gopium",
-				walker: "json_file",
-				startegies: ["explicit_padings_type_natural", "add_tag_group_soft"],
-			} as conf.Args,
-			flags: {
-				w: 4,
-			} as conf.Flags,
-		}
-		await run(confs);
+		let cli = new Gopiumcli();
+		await cli.run("test", new Workspace(), "", "");
 	});
 
 	context.subscriptions.push(disposable);
