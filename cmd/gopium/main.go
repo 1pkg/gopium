@@ -24,15 +24,15 @@ var (
 	ppath   string
 	pbenvs  []string
 	pbflags []string
-	// walker vars
+	// gopium walker vars
 	wregex   string
 	wdeep    bool
 	wbackref bool
-	// printer vars
+	// gopium printer vars
 	pindent   int
 	ptabwidth int
 	pusespace bool
-	// global vars
+	// gopium global vars
 	timeout int
 )
 
@@ -168,17 +168,17 @@ Notes:
 				ppath,
 				pbenvs,
 				pbflags,
-				// walker vars
-				args[0], // walker
+				// gopium walker vars
+				args[0], // single walker
 				wregex,
 				wdeep,
 				wbackref,
 				args[2:], // strategies slice
-				// printer vars
+				// gopium printer vars
 				pindent,
 				ptabwidth,
 				pusespace,
-				// global vars
+				// gopium global vars
 				timeout,
 			)
 			if err != nil {

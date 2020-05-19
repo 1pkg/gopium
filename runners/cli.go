@@ -40,17 +40,17 @@ func NewCli(
 	path string,
 	benvs,
 	bflags []string,
-	// walker vars
+	// gopium walker vars
 	walker,
 	regex string,
 	deep,
 	backref bool,
 	stgs []string,
-	// printer vars
+	// gopium printer vars
 	indent,
 	tabwidth int,
 	usespace bool,
-	// global vars
+	// gopium global vars
 	timeout int,
 ) (*Cli, error) {
 	// cast caches to int64
