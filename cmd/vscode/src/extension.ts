@@ -1,11 +1,11 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode'
-import * as install from '../vscode-go/src/goInstallTools'
-import { GO_MODE } from '../vscode-go/src/goMode'
 import Codelens from './codelens'
 import Gopiumcli from './gopiumcli'
 import { patch } from './patch'
+import * as install from './vscode-go/src/goInstallTools'
+import { GO_MODE } from './vscode-go/src/goMode'
 import Workspace from './workspace'
 
 export interface Settings {

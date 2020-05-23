@@ -1,9 +1,9 @@
 import * as cp from 'child_process'
 import { isAbsolute } from 'path'
 import * as vscode from 'vscode'
-import { promptForMissingTool } from '../vscode-go/src/goInstallTools'
-import { getBinPath } from '../vscode-go/src/util'
 import * as extension from './extension'
+import { promptForMissingTool } from './vscode-go/src/goInstallTools'
+import { getBinPath } from './vscode-go/src/util'
 
 export default class Gopiumcli implements extension.Runner {
 	async run(

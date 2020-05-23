@@ -12,5 +12,5 @@
 		"strictBindCallApply": true,
 		"strictFunctionTypes": true
 	},
-	"exclude": ["node_modules", "vscode-go/test"]
+	"exclude": ["node_modules", "src/vscode-go/test"]
 }

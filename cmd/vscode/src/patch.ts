@@ -1,6 +1,6 @@
-import * as main from '../vscode-go/src/goMain'
-import * as tools from '../vscode-go/src/goTools'
-import * as telemetry from '../vscode-go/src/telemetry'
+import * as main from './vscode-go/src/goMain'
+import * as tools from './vscode-go/src/goTools'
+import * as telemetry from './vscode-go/src/telemetry'
 
 const pfunc = (): null => null
 
