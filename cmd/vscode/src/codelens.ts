@@ -2,9 +2,9 @@
 
 import * as path from 'path'
 import * as vscode from 'vscode'
-import { GoDocumentSymbolProvider } from '../vscode-go/src/goOutline'
-import { GoRunTestCodeLensProvider } from '../vscode-go/src/goRunTestCodelens'
 import * as extension from './extension'
+import { GoDocumentSymbolProvider } from './vscode-go/src/goOutline'
+import { GoRunTestCodeLensProvider } from './vscode-go/src/goRunTestCodelens'
 
 export default class Codelens extends GoRunTestCodeLensProvider {
 	private settings: extension.Settings
