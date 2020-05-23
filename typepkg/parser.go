@@ -64,16 +64,11 @@ func (p *ParserXToolPackagesAst) ParseTypes(ctx context.Context, _ ...byte) (*ty
 	// check parse results
 	// it should be equal to
 	// package pattern or
-	// all except first components of path
-	pkg := p.Path
-	if list := strings.Split(p.Path, string(filepath.Separator)); len(list) > 0 {
-		pkg = filepath.Join(list[1:]...)
+	// at least path should containt it
+	if len(pkgs) == 1 && (pkgs[0].String() == p.Pattern || strings.Contains(p.Path, pkgs[0].String())) {
+		return pkgs[0].Types, NewLocator(fset), nil
 	}
-	if len(pkgs) != 1 ||
-		(pkgs[0].String() != p.Pattern && pkgs[0].String() != pkg) {
-		return nil, nil, fmt.Errorf("package %q wasn't found at %q", p.Pattern, dir)
-	}
-	return pkgs[0].Types, NewLocator(fset), nil
+	return nil, nil, fmt.Errorf("package %q wasn't found at %q", p.Pattern, dir)
 }
 
 // ParseAst ParserXToolPackagesAst implementation

@@ -83,6 +83,26 @@ func TestParserXToolPackagesAstTypes(t *testing.T) {
 			pkg: types.NewPackage("test", "test"),
 			loc: NewLocator(nil),
 		},
+		"valid pattern and path and mode should return expected parser package on abs path": {
+			p: ParserXToolPackagesAst{
+				Pattern:   "1pkg/gopium",
+				Path:      pdir,
+				ModeTypes: packages.LoadAllSyntax,
+			},
+			ctx: context.Background(),
+			pkg: types.NewPackage("test", "test"),
+			loc: NewLocator(nil),
+		},
+		"valid pattern and path and mode should return expected parser package on abs path with invalid pattern": {
+			p: ParserXToolPackagesAst{
+				Pattern:   "test",
+				Path:      pdir,
+				ModeTypes: packages.LoadAllSyntax,
+			},
+			ctx: context.Background(),
+			pkg: types.NewPackage("test", "test"),
+			loc: NewLocator(nil),
+		},
 		"valid pattern and path and mode should return expected parser package skip src": {
 			p: ParserXToolPackagesAst{
 				Pattern:   "1pkg/gopium",

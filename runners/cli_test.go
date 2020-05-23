@@ -99,6 +99,53 @@ func TestCliNew(t *testing.T) {
 				snames: []gopium.StrategyName{"test-stg"},
 			},
 		},
+		"new cli cli should expected cli on valid parameters with abs path": {
+			// target platform vars
+			compiler:  "gc",
+			arch:      "amd64",
+			cpucaches: []int{2, 4, 8},
+			// package parser vars
+			pkg:    "test-pkg",
+			path:   "/test-path",
+			benvs:  []string{},
+			bflags: []string{},
+			// walker vars
+			walker:  "test-w",
+			regex:   `.*`,
+			deep:    true,
+			backref: true,
+			stgs:    []string{"test-stg"},
+			// printer vars
+			indent:   4,
+			tabwidth: 4,
+			usespace: true,
+			// global vars
+			timeout: 5,
+			// test vars
+			cli: &Cli{
+				c: coordinator{
+					regex:   regexp.MustCompile(`.*`),
+					timeout: 5 * time.Second,
+				},
+				wb: walkers.Builder{
+					Parser: &typepkg.ParserXToolPackagesAst{
+						Pattern:    "test-pkg",
+						Path:       "/test-path",
+						ModeTypes:  packages.LoadAllSyntax,
+						ModeAst:    parser.ParseComments | parser.AllErrors,
+						BuildEnv:   []string{},
+						BuildFlags: []string{},
+					},
+					Exposer: m,
+					Printer: nil, // fmtio.Goprint(4, 4, true),
+					Deep:    true,
+					Bref:    true,
+				},
+				sb:     strategies.Builder{Curator: m},
+				wname:  "test-w",
+				snames: []gopium.StrategyName{"test-stg"},
+			},
+		},
 		"new cli should return error on invalid compiler arch combination": {
 			// target platform vars
 			compiler:  "cg",
@@ -216,7 +263,7 @@ func TestCliRun(t *testing.T) {
 				sb: mocks.StrategyBuilder{Strategy: &mocks.Strategy{}},
 				wb: mocks.WalkerBuilder{Walker: mocks.Walker{Err: errors.New("test-3")}},
 			},
-			err: errors.New("strategy error happened test-3"),
+			err: errors.New("visiting error happened test-3"),
 		},
 		"cli should return error on timeout": {
 			cli: &Cli{
@@ -224,7 +271,7 @@ func TestCliRun(t *testing.T) {
 				sb: mocks.StrategyBuilder{Strategy: &mocks.Strategy{}},
 				wb: mocks.WalkerBuilder{Walker: mocks.Walker{}},
 			},
-			err: errors.New("strategy error happened context deadline exceeded"),
+			err: errors.New("visiting error happened context deadline exceeded"),
 		},
 		"cli should return expected results on visiting": {
 			cli: &Cli{
