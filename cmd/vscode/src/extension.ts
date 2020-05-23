@@ -1,60 +1,64 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
-import * as vscode from 'vscode';
-import { GO_MODE } from '../vscode-go/src/goMode';
-import Codelens from './codelens';
-import Gopiumcli from './gopiumcli';
-import Workspace from './workspace';
+import * as vscode from 'vscode'
+import * as install from '../vscode-go/src/goInstallTools'
+import { GO_MODE } from '../vscode-go/src/goMode'
+import Codelens from './codelens'
+import Gopiumcli from './gopiumcli'
+import { patch } from './patch'
+import Workspace from './workspace'
 
 export interface Settings {
-	readonly presets: { [key: string]: Arguments };
-	readonly flags: Flags;
-	build(preset: string, path: string, pkg: string, regex: string): string[];
+	readonly presets: { [key: string]: Arguments }
+	readonly flags: Flags
+	build(preset: string, path: string, pkg: string, regex: string): string[]
 }
 
 export interface Arguments {
-	readonly walker: string;
-	readonly strategies: string[];
+	readonly walker: string
+	readonly strategies: string[]
 }
 
 export interface Flags {
 	// target platform vars
-	readonly c?: string;
-	readonly a?: string;
-	readonly l?: number[];
+	readonly c?: string
+	readonly a?: string
+	readonly l?: number[]
 	// package parser vars
-	readonly e?: string[];
-	readonly f?: string[];
+	readonly e?: string[]
+	readonly f?: string[]
 	// gopium walker vars
-	readonly d?: boolean;
-	readonly b?: boolean;
+	readonly d?: boolean
+	readonly b?: boolean
 	// gopium printer vars
-	readonly i?: number;
-	readonly w?: number;
-	readonly s?: boolean;
+	readonly i?: number
+	readonly w?: number
+	readonly s?: boolean
 	// gopium global vars
-	readonly t?: number;
+	readonly t?: number
 }
 
 export interface Runner {
-	run(preset: string, configs: Settings, path: string, pkg: string, struct?: string): Promise<boolean>;
+	run(preset: string, configs: Settings, path: string, pkg: string, struct?: string): Promise<boolean>
 }
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
-export function activate(context: vscode.ExtensionContext) {
+export async function activate(context: vscode.ExtensionContext) {
+	patch()
 
-	// The command has been defined in the package.json file
-	// Now provide the implementation of the command with registerCommand
-	// The commandId parameter must match the command field in package.json
+	await install.updateGoPathGoRootFromConfig()
+	await install.offerToInstallTools()
+	vscode.commands.executeCommand('go.promptforinstall')
+
 	let disposable = vscode.commands.registerCommand('gopium', async (preset, path, pkg, struct) => {
-		let gopiumcli = new Gopiumcli();
-		await gopiumcli.run(preset, new Workspace(), path, pkg, struct);
-	});
+		let gopiumcli = new Gopiumcli()
+		await gopiumcli.run(preset, new Workspace(), path, pkg, struct)
+	})
 
-	context.subscriptions.push(vscode.languages.registerCodeLensProvider(GO_MODE, new Codelens(new Workspace())));
-	context.subscriptions.push(disposable);
+	context.subscriptions.push(vscode.languages.registerCodeLensProvider(GO_MODE, new Codelens(new Workspace())))
+	context.subscriptions.push(disposable)
 }
 
 // this method is called when your extension is deactivated
-export function deactivate() { }
+export function deactivate() {}
