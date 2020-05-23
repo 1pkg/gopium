@@ -51,7 +51,7 @@ func (c coordinator) visit(ctx context.Context, w gopium.Walker, stg gopium.Stra
 	}
 	// exec visit on walker with strategy
 	if err := w.Visit(ctx, c.regex, stg); err != nil {
-		return fmt.Errorf("strategy error happened %v", err)
+		return fmt.Errorf("visiting error happened %v", err)
 	}
 	return nil
 }

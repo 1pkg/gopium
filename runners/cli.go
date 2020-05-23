@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"go/build"
 	"go/parser"
+	"path/filepath"
 	"regexp"
 	"strings"
 	"time"
@@ -65,10 +66,16 @@ func NewCli(
 	}
 	// replace package template
 	path = strings.Replace(path, "{{package}}", pkg, 1)
+	// set root to gopath only if
+	// not absolute path has been provided
+	var root string
+	if !filepath.IsAbs(path) {
+		root = build.Default.GOPATH
+	}
 	// set up parser
 	p := &typepkg.ParserXToolPackagesAst{
 		Pattern:    pkg,
-		Root:       build.Default.GOPATH,
+		Root:       root,
 		Path:       path,
 		ModeTypes:  packages.LoadAllSyntax,
 		ModeAst:    parser.ParseComments | parser.AllErrors,
