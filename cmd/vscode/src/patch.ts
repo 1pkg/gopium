@@ -1,4 +1,6 @@
+import * as vscode from 'vscode'
 import * as main from './vscode-go/src/goMain'
+import * as status from './vscode-go/src/goStatus'
 import * as tools from './vscode-go/src/goTools'
 import * as telemetry from './vscode-go/src/telemetry'
 
@@ -31,4 +33,25 @@ export function patch() {
 			},
 		]
 	}
+	ptools.getTool = (name: string): tools.Tool => {
+		switch (name) {
+			case 'go-outline':
+				return {
+					name: 'go-outline',
+					importPath: 'github.com/ramya-rao-a/go-outline',
+					isImportant: true,
+					description: 'Go to symbol in file',
+				}
+			case 'gopium':
+				return {
+					name: 'gopium',
+					importPath: 'github.com/1pkg/gopim',
+					isImportant: true,
+					description: 'Gopium struct manager package',
+				}
+		}
+		return null
+	}
+	let pstatus = status as any
+	pstatus.outputChannel = vscode.window.createOutputChannel('gopium')
 }

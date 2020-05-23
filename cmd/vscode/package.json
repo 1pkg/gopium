@@ -13,7 +13,7 @@
 		"onCommand:go.tools.install",
 		"onDebugResolve:go"
 	],
-	"main": "./out/src/extension.js",
+	"main": "./out/extension.js",
 	"contributes": {
 		"commands": [
 			{

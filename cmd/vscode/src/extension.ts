@@ -4,7 +4,7 @@ import * as vscode from 'vscode'
 import Codelens from './codelens'
 import Gopiumcli from './gopiumcli'
 import { patch } from './patch'
-import * as install from './vscode-go/src/goInstallTools'
+import * as tools from './tools'
 import { GO_MODE } from './vscode-go/src/goMode'
 import Workspace from './workspace'
 
@@ -47,17 +47,23 @@ export interface Runner {
 export async function activate(context: vscode.ExtensionContext) {
 	patch()
 
-	await install.updateGoPathGoRootFromConfig()
-	await install.offerToInstallTools()
-	vscode.commands.executeCommand('go.promptforinstall')
+	await tools.offerTools()
 
-	let disposable = vscode.commands.registerCommand('gopium', async (preset, path, pkg, struct) => {
-		let gopiumcli = new Gopiumcli()
-		await gopiumcli.run(preset, new Workspace(), path, pkg, struct)
-	})
+	context.subscriptions.push(
+		vscode.workspace.onDidChangeConfiguration((e: vscode.ConfigurationChangeEvent) => {
+			if (!e.affectsConfiguration('gopium')) {
+				return
+			}
+			vscode.commands.executeCommand('workbench.action.reloadWindow')
+		}),
 
-	context.subscriptions.push(vscode.languages.registerCodeLensProvider(GO_MODE, new Codelens(new Workspace())))
-	context.subscriptions.push(disposable)
+		vscode.languages.registerCodeLensProvider(GO_MODE, new Codelens(new Workspace())),
+
+		vscode.commands.registerCommand('gopium', async (preset, path, pkg, struct) => {
+			let gopiumcli = new Gopiumcli()
+			await gopiumcli.run(preset, new Workspace(), path, pkg, struct)
+		}),
+	)
 }
 
 // this method is called when your extension is deactivated
