@@ -12,19 +12,13 @@ export default class Workspace implements extension.Settings {
 	constructor() {
 		// grab root and actions presets workspace configs
 		let root = vscode.workspace.getConfiguration('gopium')
-		let presets = root.get<{ [key: string]: any }>('actions', {})
+		let actions = root.get<any[]>('actions', [])
 		// fill presets map from workspace configs
 		this.presets = {}
-		for (const key in presets) {
-			let preset = presets[key]
-			if (typeof preset === 'string') {
-				let list = preset.split(' ')
-				if (list.length > 1) {
-					this.presets[key] = {
-						walker: list[0],
-						strategies: list.slice(1),
-					}
-				}
+		for (const action of actions) {
+			this.presets[action.name] = {
+				walker: action.walker,
+				strategies: action.strategies,
 			}
 		}
 		// fill flags from workspace configs

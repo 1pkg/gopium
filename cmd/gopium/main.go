@@ -194,7 +194,7 @@ Notes:
 		"target_compiler",
 		"c",
 		"gc",
-		"Target platform compiler, possible values are: gc or gccgo.",
+		"Gopium target platform compiler, possible values are: gc or gccgo.",
 	)
 	// set target_architecture flag
 	cli.Flags().StringVarP(
@@ -202,7 +202,7 @@ Notes:
 		"target_architecture",
 		"a",
 		"amd64",
-		"Target platform architecture, possible values are: 386, arm, arm64, amd64, mips, etc.",
+		"Gopium target platform architecture, possible values are: 386, arm, arm64, amd64, mips, etc.",
 	)
 	// set target_cpu_cache_line_sizes flag
 	cli.Flags().IntSliceVarP(
@@ -211,7 +211,7 @@ Notes:
 		"l",
 		[]int{64, 64, 64},
 		`
-Target platform CPU cache line sizes in bytes, cache line size is set one by one l1,l2,l3,...
+Gopium target platform CPU cache line sizes in bytes, cache line size is set one by one l1,l2,l3,...
 For now only 3 lines of cache are supported by strategies.
 		`,
 	)
@@ -222,7 +222,7 @@ For now only 3 lines of cache are supported by strategies.
 		"p",
 		"src/{{package}}",
 		`
-Go package path, relative path to root of the package is expected.
+Gopium go package path, relative path to root of the package is expected.
 To obtain fill path, package path is concatenated with current GOPATH env var.
 Template {{package}} part is replaced with package name.
 		`,
@@ -233,7 +233,7 @@ Template {{package}} part is replaced with package name.
 		"package_build_envs",
 		"e",
 		[]string{},
-		"Go package build envs, additional list of building envs is expected.",
+		"Gopium go package build envs, additional list of building envs is expected.",
 	)
 	// set package_build_flags flag
 	cli.Flags().StringSliceVarP(
@@ -241,7 +241,7 @@ Template {{package}} part is replaced with package name.
 		"package_build_flags",
 		"f",
 		[]string{},
-		"Go package build flags, additional list of building flags is expected.",
+		"Gopium go package build flags, additional list of building flags is expected.",
 	)
 	// set walker_regexp flag
 	cli.Flags().StringVarP(
@@ -250,7 +250,7 @@ Template {{package}} part is replaced with package name.
 		"r",
 		".*",
 		`
-Gopium walker regexp, regexp that defines which structures are subjects for visiting.
+GopiumGopium walker regexp, regexp that defines which structures are subjects for visiting.
 Visiting is done only if structure name matches the regexp.
 		`,
 	)
@@ -306,7 +306,7 @@ By default any previous visited types have affect on future relevant visits.
 		"timeout",
 		"t",
 		0,
-		"Global timeout of cli command in seconds, considered only if value > 0.",
+		"Gopium global timeout of cli command in seconds, considered only if value > 0.",
 	)
 }
 

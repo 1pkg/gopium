@@ -34,10 +34,10 @@ export default class Codelens extends GoRunTestCodeLensProvider {
 		for (const preset in this.settings.presets) {
 			codelens.push(
 				new vscode.CodeLens(pkg.range, {
-					title: `package gopium ${preset}`,
+					title: `gopium ${preset}`,
 					command: 'gopium',
 					arguments: [preset, path, pkg.name],
-					tooltip: `gopium pkg action ${preset}`,
+					tooltip: `gopium package action ${preset}`,
 				}),
 			)
 		}
@@ -51,10 +51,10 @@ export default class Codelens extends GoRunTestCodeLensProvider {
 				for (const preset in this.settings.presets) {
 					codelens.push(
 						new vscode.CodeLens(struct.range, {
-							title: `struct gopium ${preset}`,
+							title: `gopium ${preset}`,
 							command: 'gopium',
 							arguments: [preset, path, pkg.name, struct.name],
-							tooltip: `gopium pkg action ${preset}`,
+							tooltip: `gopium struct action ${preset}`,
 						}),
 					)
 				}
