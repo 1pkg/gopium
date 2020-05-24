@@ -267,19 +267,19 @@ namespace settings {
 			// fill flags from workspace configs
 			this.flags = {
 				// target platform vars
-				c: root.get<string>('target_compiler'),
-				a: root.get<string>('target_architecture'),
-				l: root.get<number[]>('target_cpu_cache_line_sizes'),
+				c: root.get<string>('targetCompiler'),
+				a: root.get<string>('targetArchitecture'),
+				l: root.get<number[]>('targetCpuCacheLinesSizes'),
 				// package parser vars
-				e: root.get<string[]>('package_build_envs'),
-				f: root.get<string[]>('package_build_flags'),
+				e: root.get<string[]>('packageBuildEnvs'),
+				f: root.get<string[]>('packageBuildFlags'),
 				// gopium walker vars
-				d: root.get<boolean>('walker_deep'),
-				b: root.get<boolean>('walker_backref'),
+				d: root.get<boolean>('walkerDeep'),
+				b: root.get<boolean>('walkerBackref'),
 				// gopium printer vars
-				i: root.get<number>('printer_indent'),
-				w: root.get<number>('printer_tab_width'),
-				s: root.get<boolean>('printer_use_space'),
+				i: root.get<number>('printerIndent'),
+				w: root.get<number>('printerTabWidth'),
+				s: root.get<boolean>('printerUseSpace'),
 				// gopium global vars
 				t: root.get<number>('timeout'),
 			}

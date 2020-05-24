@@ -204,10 +204,10 @@ Notes:
 		"amd64",
 		"Gopium target platform architecture, possible values are: 386, arm, arm64, amd64, mips, etc.",
 	)
-	// set target_cpu_cache_line_sizes flag
+	// set target_cpu_cache_lines_sizes flag
 	cli.Flags().IntSliceVarP(
 		&tcpulines,
-		"target_cpu_cache_line_sizes",
+		"target_cpu_cache_lines_sizes",
 		"l",
 		[]int{64, 64, 64},
 		`

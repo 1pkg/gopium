@@ -1,7 +1,8 @@
 .vscode/**
-src/**
-.gitignore
-**/tsconfig.json
-**/.eslintrc.json
+src/**/*
+tsconfig.json
+tslint.json
+.prettierrc.json
 **/*.map
 **/*.ts
+node_modules/fs-extra

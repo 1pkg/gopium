@@ -1,31 +1,115 @@
 {
 	"name": "gopium",
 	"displayName": "gopium",
-	"description": "",
-	"version": "0.0.1",
+	"description": "Extension that supports gopium tool vscode integration.",
+	"author": {
+		"name": "Kostiantyn Masliuk - github.com/1pkg"
+	},
+	"license": "MIT",
+	"version": "1.0.0",
 	"categories": [
+		"Programming Languages",
+		"Formatters",
 		"Other"
 	],
+	"icon": "logo.png",
+	"galleryBanner": {
+		"color": "#ff5656",
+		"theme": "dark"
+	},
+	"private": true,
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/1pkg/gopium.git"
+	},
+	"scripts": {
+		"vscode:prepublish": "npm run compile",
+		"compile": "tsc -p ./",
+		"watch": "tsc -watch -p ./",
+		"pretest": "npm run compile",
+		"lint": "node ./node_modules/tslint/bin/tslint --project tsconfig.json",
+		"fix-lint": "node ./node_modules/tslint/bin/tslint --fix --project tsconfig.json",
+		"format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\""
+	},
+	"extensionDependencies": [],
+	"dependencies": {
+		"diff": "^4.0.2",
+		"json-rpc2": "^1.0.2",
+		"moment": "^2.24.0",
+		"semver": "^7.3.2",
+		"tree-kill": "^1.2.2",
+		"vscode-debugadapter": "^1.40.0",
+		"vscode-debugprotocol": "^1.40.0",
+		"vscode-extension-telemetry": "^0.1.2",
+		"vscode-languageclient": "6.1.0",
+		"web-request": "^1.0.7",
+		"deep-equal": "^2.0.2"
+	},
+	"devDependencies": {
+		"@types/fs-extra": "^8.1.0",
+		"@types/glob": "^7.1.1",
+		"@types/node": "^13.11.1",
+		"@types/semver": "^7.1.0",
+		"@types/sinon": "^9.0.0",
+		"@types/vscode": "^1.41.0",
+		"fs-extra": "^9.0.0",
+		"glob": "^7.1.6",
+		"prettier": "^2.0.4",
+		"sinon": "^9.0.2",
+		"tslint": "^6.1.1",
+		"typescript": "^3.8.3",
+		"@types/deep-equal": "^1.0.1"
+	},
+	"engines": {
+		"vscode": "^1.41.0"
+	},
+	"main": "./out/extension.js",
 	"activationEvents": [
 		"workspaceContains:**/*.go",
-		"onLanguage:go",
-		"onCommand:go.gopath",
-		"onCommand:go.tools.install",
-		"onDebugResolve:go"
+		"onLanguage:go"
 	],
-	"main": "./out/extension.js",
 	"contributes": {
+		"languages": [
+			{
+				"id": "go",
+				"extensions": [
+					".go"
+				],
+				"aliases": [
+					"Go"
+				]
+			},
+			{
+				"id": "go.mod",
+				"extensions": [
+					"go.mod"
+				],
+				"aliases": [
+					"Go Module File"
+				],
+				"configuration": "./languages/go.mod.language-configuration.json"
+			},
+			{
+				"id": "go.sum",
+				"extensions": [
+					"go.sum"
+				],
+				"aliases": [
+					"Go Checksum File"
+				]
+			}
+		],
 		"commands": [
 			{
 				"command": "gopium",
-				"title": "Gopium cli runner"
+				"title": "Gopium tool vscode cli command runner binding."
 			}
 		],
 		"configuration": {
 			"type": "object",
 			"title": "Gopium",
 			"properties": {
-				"gopium.target_compiler": {
+				"gopium.targetCompiler": {
 					"type": "string",
 					"enum": [
 						"gc",
@@ -35,13 +119,13 @@
 					"description": "Gopium target platform compiler.",
 					"scope": "resource"
 				},
-				"gopium.target_architecture": {
+				"gopium.targetArchitecture": {
 					"type": "string",
 					"default": "amd64",
 					"description": "Gopium target platform architecture.",
 					"scope": "resource"
 				},
-				"gopium.target_cpu_cache_line_sizes": {
+				"gopium.targetCpuCacheLinesSizes": {
 					"type": "array",
 					"default": [
 						64,
@@ -51,44 +135,44 @@
 					"description": "Gopium target platform CPU cache line sizes in bytes, cache line size is set one by one l1,l2,l3,...",
 					"scope": "resource"
 				},
-				"gopium.package_build_envs": {
+				"gopium.packageBuildEnvs": {
 					"type": "array",
 					"default": [],
 					"description": "Gopium go package build envs, additional list of building envs is expected.",
 					"scope": "resource"
 				},
-				"gopium.package_build_flags": {
+				"gopium.packageBuildFlags": {
 					"type": "array",
 					"default": [],
 					"description": "Gopium go package build flags, additional list of building flags is expected.",
 					"scope": "resource"
 				},
-				"gopium.walker_deep": {
+				"gopium.walkerDeep": {
 					"type": "boolean",
 					"default": true,
 					"description": "Gopium walker deep flag, flag that defines type of nested scopes visiting.",
 					"scope": "resource"
 				},
-				"gopium.walker_backref": {
+				"gopium.walkerBackref": {
 					"type": "boolean",
 					"default": true,
 					"description": "Gopium walker backref flag, flag that defines type of names referencing.",
 					"scope": "resource"
 				},
-				"gopium.printer_indent": {
+				"gopium.printerIndent": {
 					"type": "number",
 					"default": 0,
 					"description": "Gopium printer width of tab, defines the least code indent.",
 					"scope": "resource"
 				},
-				"gopium.printer_tab_width": {
+				"gopium.printerTabWidth": {
 					"type": "number",
 					"default": 8,
 					"description": "Gopium printer width of tab, defines width of tab in spaces for printer.",
 					"scope": "resource"
 				},
-				"gopium.printer_use_space": {
-					"type": "number",
+				"gopium.printerUseSpace": {
+					"type": "boolean",
 					"default": false,
 					"description": "Gopium printer use space flag, flag that defines if all formatting should be done by spaces.",
 					"scope": "resource"
@@ -103,19 +187,83 @@
 					"type": "array",
 					"items": {
 						"type": "object",
-						"title": "single gopium action preset",
 						"properties": {
 							"name": {
 								"type": "string",
-								"description": "Name of single gopium action."
+								"description": "Gopium name of single action preset."
 							},
 							"walker": {
 								"type": "string",
-								"description": "Walker for single gopium action."
+								"enum": [
+									"ast_std",
+									"ast_go",
+									"ast_gopium",
+									"json_std",
+									"xml_std",
+									"csv_std",
+									"json_file",
+									"xml_file",
+									"csv_file"
+								],
+								"description": "Gopium walker for single action preset."
 							},
 							"strategies": {
 								"type": "array",
-								"description": "Strategies list for single gopium action."
+								"items": {
+									"type": "string",
+									"enum": [
+										"memory_pack",
+										"memory_unpack",
+										"explicit_padings_system_alignment",
+										"explicit_padings_type_natural",
+										"false_sharing_cpu_l1",
+										"false_sharing_cpu_l2",
+										"false_sharing_cpu_l3",
+										"cache_rounding_cpu_l1",
+										"cache_rounding_cpu_l2",
+										"cache_rounding_cpu_l3",
+										"separate_padding_system_alignment_top",
+										"separate_padding_cpu_l1_top",
+										"separate_padding_cpu_l2_top",
+										"separate_padding_cpu_l3_top",
+										"separate_padding_system_alignment_bottom",
+										"separate_padding_cpu_l1_bottom",
+										"separate_padding_cpu_l2_bottom",
+										"separate_padding_cpu_l3_bottom",
+										"process_tag_group",
+										"add_tag_group_soft",
+										"add_tag_group_force",
+										"add_tag_group_discrete",
+										"add_tag_group_force_discrete",
+										"remove_tag_group",
+										"doc_fields_annotate",
+										"comment_fields_annotate",
+										"doc_struct_annotate",
+										"comment_struct_annotate",
+										"doc_struct_stamp",
+										"comment_struct_stamp",
+										"name_lexicographical_ascending",
+										"name_lexicographical_descending",
+										"name_length_ascending",
+										"name_length_descending",
+										"type_lexicographical_ascending",
+										"type_lexicographical_descending",
+										"type_length_ascending",
+										"type_length_descending",
+										"embedded_ascending",
+										"embedded_descending",
+										"exported_ascending",
+										"exported_descending",
+										"filter_pads",
+										"filter_embedded",
+										"filter_not_embedded",
+										"filter_exported",
+										"filter_not_exported",
+										"nope",
+										"void"
+									]
+								},
+								"description": "Gopium strategies list for single action preset."
 							}
 						}
 					},
@@ -182,43 +330,5 @@
 				}
 			}
 		}
-	},
-	"scripts": {
-		"vscode:prepublish": "npm run compile",
-		"compile": "tsc -p ./",
-		"lint": "eslint src --ext ts",
-		"watch": "tsc -watch -p ./"
-	},
-	"extensionDependencies": [],
-	"dependencies": {
-		"diff": "^4.0.2",
-		"json-rpc2": "^1.0.2",
-		"moment": "^2.24.0",
-		"semver": "^7.3.2",
-		"tree-kill": "^1.2.2",
-		"vscode-debugadapter": "^1.40.0",
-		"vscode-debugprotocol": "^1.40.0",
-		"vscode-extension-telemetry": "^0.1.2",
-		"vscode-languageclient": "6.1.0",
-		"web-request": "^1.0.7",
-		"deep-equal": "^2.0.2"
-	},
-	"devDependencies": {
-		"@types/fs-extra": "^8.1.0",
-		"@types/glob": "^7.1.1",
-		"@types/node": "^13.11.1",
-		"@types/semver": "^7.1.0",
-		"@types/sinon": "^9.0.0",
-		"@types/vscode": "^1.41.0",
-		"fs-extra": "^9.0.0",
-		"glob": "^7.1.6",
-		"prettier": "^2.0.4",
-		"sinon": "^9.0.2",
-		"tslint": "^6.1.1",
-		"typescript": "^3.8.3",
-		"@types/deep-equal": "^1.0.1"
-	},
-	"engines": {
-		"vscode": "^1.41.0"
 	}
 }

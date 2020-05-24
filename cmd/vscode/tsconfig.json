@@ -4,8 +4,6 @@
 		"target": "es6",
 		"outDir": "out",
 		"lib": ["es6"],
-		"sourceMap": true,
-		"traceResolution": false,
 		"noImplicitAny": true,
 		"noImplicitThis": true,
 		"alwaysStrict": true,
