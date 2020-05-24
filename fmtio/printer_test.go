@@ -20,7 +20,7 @@ func TestPrinter(t *testing.T) {
 	table := map[string]struct {
 		p    gopium.Parser
 		pr   Printer
-		w    Writer
+		w    gopium.Writer
 		skip bool
 		ctx  context.Context
 		r    map[string][]byte

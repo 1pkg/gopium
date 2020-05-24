@@ -41,7 +41,8 @@ func TestWast(t *testing.T) {
 		r    *regexp.Regexp
 		p    gopium.Parser
 		a    astutil.Apply
-		w    fmtio.Writer
+		w    gopium.Writer
+		catw gopium.Catwriter
 		stg  gopium.Strategy
 		deep bool
 		bref bool
@@ -49,19 +50,21 @@ func TestWast(t *testing.T) {
 		err  error
 	}{
 		"empty pkg should visit nothing": {
-			ctx: context.Background(),
-			r:   regexp.MustCompile(`.*`),
-			p:   data.NewParser("empty"),
-			a:   astutil.UFFN,
-			stg: np,
-			sts: map[string][]byte{},
+			ctx:  context.Background(),
+			r:    regexp.MustCompile(`.*`),
+			p:    data.NewParser("empty"),
+			a:    astutil.UFFN,
+			catw: mocks.Catwriter{}.Catwriter,
+			stg:  np,
+			sts:  map[string][]byte{},
 		},
 		"single struct pkg should visit the struct": {
-			ctx: context.Background(),
-			r:   regexp.MustCompile(`.*`),
-			p:   data.NewParser("single"),
-			a:   astutil.UFFN,
-			stg: np,
+			ctx:  context.Background(),
+			r:    regexp.MustCompile(`.*`),
+			p:    data.NewParser("single"),
+			a:    astutil.UFFN,
+			catw: mocks.Catwriter{}.Catwriter,
+			stg:  np,
 			sts: map[string][]byte{
 				"/src/1pkg/gopium/tests/data/single/file.go": []byte(`
 //+build tests_data
@@ -77,65 +80,82 @@ type Single struct {
 			},
 		},
 		"single struct pkg should visit nothing on canceled context": {
-			ctx: cctx,
-			r:   regexp.MustCompile(`.*`),
-			p:   data.NewParser("single"),
-			a:   astutil.UFFN,
-			stg: np,
-			sts: map[string][]byte{},
-			err: context.Canceled,
+			ctx:  cctx,
+			r:    regexp.MustCompile(`.*`),
+			p:    data.NewParser("single"),
+			a:    astutil.UFFN,
+			catw: mocks.Catwriter{}.Catwriter,
+			stg:  np,
+			sts:  map[string][]byte{},
+			err:  context.Canceled,
 		},
 		"single struct pkg should visit nothing on type parser error": {
-			ctx: context.Background(),
-			r:   regexp.MustCompile(`.*`),
-			p:   mocks.Parser{Typeserr: errors.New("test-1")},
-			a:   astutil.UFFN,
-			stg: np,
-			sts: map[string][]byte{},
-			err: errors.New("test-1"),
+			ctx:  context.Background(),
+			r:    regexp.MustCompile(`.*`),
+			p:    mocks.Parser{Typeserr: errors.New("test-1")},
+			a:    astutil.UFFN,
+			catw: mocks.Catwriter{}.Catwriter,
+			stg:  np,
+			sts:  map[string][]byte{},
+			err:  errors.New("test-1"),
 		},
 		"single struct pkg should visit nothing on ast parser error": {
-			ctx: context.Background(),
-			r:   regexp.MustCompile(`.*`),
-			p:   mocks.Parser{Parser: data.NewParser("single"), Asterr: errors.New("test-2")},
-			a:   astutil.UFFN,
-			stg: np,
-			sts: map[string][]byte{},
-			err: errors.New("test-2"),
+			ctx:  context.Background(),
+			r:    regexp.MustCompile(`.*`),
+			p:    mocks.Parser{Parser: data.NewParser("single"), Asterr: errors.New("test-2")},
+			a:    astutil.UFFN,
+			catw: mocks.Catwriter{}.Catwriter,
+			stg:  np,
+			sts:  map[string][]byte{},
+			err:  errors.New("test-2"),
 		},
 		"single struct pkg should visit nothing on strategy error": {
-			ctx: context.Background(),
-			r:   regexp.MustCompile(`.*`),
-			p:   data.NewParser("single"),
-			a:   astutil.UFFN,
-			stg: &mocks.Strategy{Err: errors.New("test-3")},
-			sts: map[string][]byte{},
-			err: errors.New("test-3"),
+			ctx:  context.Background(),
+			r:    regexp.MustCompile(`.*`),
+			p:    data.NewParser("single"),
+			a:    astutil.UFFN,
+			catw: mocks.Catwriter{}.Catwriter,
+			stg:  &mocks.Strategy{Err: errors.New("test-3")},
+			sts:  map[string][]byte{},
+			err:  errors.New("test-3"),
 		},
 		"single struct pkg should visit nothing on persist error": {
-			ctx: context.Background(),
-			r:   regexp.MustCompile(`.*`),
-			p:   data.NewParser("single"),
-			a:   astutil.UFFN,
-			w:   (&mocks.Writer{Err: errors.New("test-4")}).Writer,
-			stg: np,
-			sts: map[string][]byte{},
-			err: errors.New("test-4"),
+			ctx:  context.Background(),
+			r:    regexp.MustCompile(`.*`),
+			p:    data.NewParser("single"),
+			a:    astutil.UFFN,
+			w:    (&mocks.Writer{Err: errors.New("test-4")}).Writer,
+			catw: mocks.Catwriter{}.Catwriter,
+			stg:  np,
+			sts:  map[string][]byte{},
+			err:  errors.New("test-4"),
+		},
+		"single struct pkg should visit nothing on cat persist error": {
+			ctx:  context.Background(),
+			r:    regexp.MustCompile(`.*`),
+			p:    data.NewParser("single"),
+			a:    astutil.UFFN,
+			catw: mocks.Catwriter{Err: errors.New("test-5")}.Catwriter,
+			stg:  np,
+			sts:  map[string][]byte{},
+			err:  errors.New("test-5"),
 		},
 		"single struct pkg should visit nothing on apply error": {
-			ctx: context.Background(),
-			r:   regexp.MustCompile(`.*`),
-			p:   data.NewParser("single"),
-			a:   (&mocks.Apply{Err: errors.New("test-5")}).Apply,
-			stg: np,
-			sts: map[string][]byte{},
-			err: errors.New("test-5"),
+			ctx:  context.Background(),
+			r:    regexp.MustCompile(`.*`),
+			p:    data.NewParser("single"),
+			a:    (&mocks.Apply{Err: errors.New("test-6")}).Apply,
+			catw: mocks.Catwriter{}.Catwriter,
+			stg:  np,
+			sts:  map[string][]byte{},
+			err:  errors.New("test-6"),
 		},
 		"multi structs pkg should visit all expected levels structs with deep": {
 			ctx:  context.Background(),
 			r:    regexp.MustCompile(`([AZ])`),
 			p:    data.NewParser("multi"),
 			a:    astutil.UFFN,
+			catw: mocks.Catwriter{}.Catwriter,
 			stg:  pck,
 			deep: true,
 			sts: map[string][]byte{
@@ -223,6 +243,7 @@ type (
 			r:    regexp.MustCompile(`([AZ])`),
 			p:    data.NewParser("multi"),
 			a:    astutil.UFFN,
+			catw: mocks.Catwriter{}.Catwriter,
 			stg:  pck,
 			bref: true,
 			sts: map[string][]byte{
@@ -311,8 +332,9 @@ type (
 			// prepare
 			w := &mocks.Writer{}
 			wast := wast{
-				apply:  tcase.a,
-				writer: w.Writer,
+				apply:     tcase.a,
+				writer:    w.Writer,
+				catwriter: tcase.catw,
 			}.With(tcase.p, m, p, tcase.deep, tcase.bref)
 			if tcase.w != nil {
 				wast.writer = tcase.w

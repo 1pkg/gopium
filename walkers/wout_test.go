@@ -39,7 +39,7 @@ func TestWout(t *testing.T) {
 		r    *regexp.Regexp
 		p    gopium.TypeParser
 		fmt  fmtio.Bytes
-		w    fmtio.Writer
+		w    gopium.Writer
 		stg  gopium.Strategy
 		deep bool
 		bref bool

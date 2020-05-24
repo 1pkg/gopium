@@ -43,6 +43,16 @@ func TestBuilder(t *testing.T) {
 				b.Bref,
 			),
 		},
+		"`ast_go_tree` name should return expected walker": {
+			name: AstGoTree,
+			w: astgotree.With(
+				b.Parser,
+				b.Exposer,
+				b.Printer,
+				b.Deep,
+				b.Bref,
+			),
+		},
 		"`ast_gopium` name should return expected walker": {
 			name: AstGopium,
 			w: astgopium.With(
