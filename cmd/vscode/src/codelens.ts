@@ -3,6 +3,7 @@
 import * as path from 'path'
 import * as vscode from 'vscode'
 import * as extension from './extension'
+import * as tools from './tools'
 import { GoDocumentSymbolProvider } from './vscode-go/src/goOutline'
 import { GoRunTestCodeLensProvider } from './vscode-go/src/goRunTestCodelens'
 
@@ -18,14 +19,18 @@ export default class Codelens extends GoRunTestCodeLensProvider {
 		document: vscode.TextDocument,
 		token: vscode.CancellationToken,
 	): vscode.CodeLens[] | Thenable<vscode.CodeLens[]> {
-		const dsp = new GoDocumentSymbolProvider(true)
-		return dsp.provideDocumentSymbols(document, token).then((symbols) => {
-			const pkg = symbols[0]
-			if (!pkg) {
-				return []
+		return tools.getb('go-outline').then((bpath) => {
+			if (bpath != null) {
+				const dsp = new GoDocumentSymbolProvider(true)
+				return dsp.provideDocumentSymbols(document, token).then((symbols) => {
+					const pkg = symbols[0]
+					if (!pkg) {
+						return []
+					}
+					const pdir = path.dirname(document.fileName)
+					return [...this.package(pdir, pkg), ...this.structs(pdir, pkg)]
+				})
 			}
-			const pdir = path.dirname(document.fileName)
-			return [...this.package(pdir, pkg), ...this.structs(pdir, pkg)]
 		})
 	}
 

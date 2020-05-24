@@ -12,18 +12,22 @@ export default class Gopiumcli implements extension.Runner {
 		struct?: string,
 	): Promise<boolean> {
 		return new Promise<boolean>(async (resolve, reject) => {
-			// prepare out channel
-			const out = vscode.window.createOutputChannel('gopium')
-			out.clear()
-			out.show(true)
 			// build the regex
 			let regex = /.*/
 			if (struct != null) {
 				regex = new RegExp(`^${struct}$`)
 			}
 			// prepare final args and cli
-			let gopium = await tools.getInstallTool('gopium')
+			let gopium = await tools.getb('gopium')
+			if (gopium == null) {
+				resolve()
+				return
+			}
 			let args = settings.build(preset, path, pkg, regex.source)
+			// prepare out channel
+			const out = vscode.window.createOutputChannel('gopium')
+			out.clear()
+			out.show(true)
 			// start gopium process
 			out.appendLine(`executing gopium cli: ${gopium} ${args.join(' ')}`)
 			const proc = cp.spawn(gopium, args)
@@ -34,9 +38,7 @@ export default class Gopiumcli implements extension.Runner {
 				resolve()
 			})
 			proc.on('close', (code, signal) => {
-				out.appendLine('gopium cli finished execution')
-				// out.hide();
-				resolve(code === 0)
+				resolve()
 			})
 		})
 	}
