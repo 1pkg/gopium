@@ -7,6 +7,7 @@ import (
 	"go/parser"
 	"go/token"
 	"go/types"
+	"os"
 	"path/filepath"
 	"strings"
 
@@ -61,12 +62,29 @@ func (p *ParserXToolPackagesAst) ParseTypes(ctx context.Context, _ ...byte) (*ty
 	if err != nil {
 		return nil, nil, err
 	}
+	// prepare relative path for package
+	// by splitting path by src directory
+	path := p.Path
+	src := fmt.Sprintf("src%s", string(os.PathSeparator))
+	if parts := strings.SplitN(p.Path, src, 2); len(parts) == 2 {
+		path = parts[1]
+	}
 	// check parse results
 	// it should be equal to
 	// package pattern or
-	// at least path should containt it
-	if len(pkgs) == 1 && (pkgs[0].String() == p.Pattern || strings.Contains(p.Path, pkgs[0].String())) {
-		return pkgs[0].Types, NewLocator(fset), nil
+	// relative path
+	// note: len of pkgs should be equal to
+	// - either 1 (pkg contains no tests)
+	// - or 3 (pkg contains tests)
+	// see go packages config test description
+	if plen := len(pkgs); plen >= 1 &&
+		(pkgs[0].String() == p.Pattern || pkgs[0].String() == path) {
+		switch plen {
+		case 1:
+			return pkgs[0].Types, NewLocator(fset), nil
+		case 3:
+			return pkgs[1].Types, NewLocator(fset), nil
+		}
 	}
 	return nil, nil, fmt.Errorf("package %q wasn't found at %q", p.Pattern, dir)
 }
@@ -120,6 +138,7 @@ func (p *ParserXToolPackagesAst) ParseAst(ctx context.Context, src ...byte) (*as
 	// it should be equal to
 	// package pattern or
 	// last component of path
+	// note: len of pkgs should aways be equal to 1
 	if pkg, ok := pkgs[p.Pattern]; len(pkgs) == 1 && ok {
 		return pkg, NewLocator(fset), nil
 	}
