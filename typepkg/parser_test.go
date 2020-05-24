@@ -27,6 +27,10 @@ func TestParserXToolPackagesAstTypes(t *testing.T) {
 	if !reflect.DeepEqual(err, nil) {
 		t.Fatalf("actual %v doesn't equal to %v", err, nil)
 	}
+	sdir, err := filepath.Abs("./")
+	if !reflect.DeepEqual(err, nil) {
+		t.Fatalf("actual %v doesn't equal to %v", err, nil)
+	}
 	cctx, cancel := context.WithCancel(context.Background())
 	cancel()
 	table := map[string]struct {
@@ -87,6 +91,16 @@ func TestParserXToolPackagesAstTypes(t *testing.T) {
 			p: ParserXToolPackagesAst{
 				Pattern:   "1pkg/gopium",
 				Path:      pdir,
+				ModeTypes: packages.LoadAllSyntax,
+			},
+			ctx: context.Background(),
+			pkg: types.NewPackage("test", "test"),
+			loc: NewLocator(nil),
+		},
+		"valid pattern and path and mode should return expected parser package with tests": {
+			p: ParserXToolPackagesAst{
+				Pattern:   "1pkg/gopium/typepkg",
+				Path:      sdir,
 				ModeTypes: packages.LoadAllSyntax,
 			},
 			ctx: context.Background(),
