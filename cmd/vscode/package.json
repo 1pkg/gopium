@@ -20,7 +20,168 @@
 				"command": "gopium",
 				"title": "Gopium cli runner"
 			}
-		]
+		],
+		"configuration": {
+			"type": "object",
+			"title": "Gopium",
+			"properties": {
+				"gopium.target_compiler": {
+					"type": "string",
+					"enum": [
+						"gc",
+						"gccgo"
+					],
+					"default": "gc",
+					"description": "Gopium target platform compiler.",
+					"scope": "resource"
+				},
+				"gopium.target_architecture": {
+					"type": "string",
+					"default": "amd64",
+					"description": "Gopium target platform architecture.",
+					"scope": "resource"
+				},
+				"gopium.target_cpu_cache_line_sizes": {
+					"type": "array",
+					"default": [
+						64,
+						64,
+						64
+					],
+					"description": "Gopium target platform CPU cache line sizes in bytes, cache line size is set one by one l1,l2,l3,...",
+					"scope": "resource"
+				},
+				"gopium.package_build_envs": {
+					"type": "array",
+					"default": [],
+					"description": "Gopium go package build envs, additional list of building envs is expected.",
+					"scope": "resource"
+				},
+				"gopium.package_build_flags": {
+					"type": "array",
+					"default": [],
+					"description": "Gopium go package build flags, additional list of building flags is expected.",
+					"scope": "resource"
+				},
+				"gopium.walker_deep": {
+					"type": "boolean",
+					"default": true,
+					"description": "Gopium walker deep flag, flag that defines type of nested scopes visiting.",
+					"scope": "resource"
+				},
+				"gopium.walker_backref": {
+					"type": "boolean",
+					"default": true,
+					"description": "Gopium walker backref flag, flag that defines type of names referencing.",
+					"scope": "resource"
+				},
+				"gopium.printer_indent": {
+					"type": "number",
+					"default": 0,
+					"description": "Gopium printer width of tab, defines the least code indent.",
+					"scope": "resource"
+				},
+				"gopium.printer_tab_width": {
+					"type": "number",
+					"default": 8,
+					"description": "Gopium printer width of tab, defines width of tab in spaces for printer.",
+					"scope": "resource"
+				},
+				"gopium.printer_use_space": {
+					"type": "number",
+					"default": false,
+					"description": "Gopium printer use space flag, flag that defines if all formatting should be done by spaces.",
+					"scope": "resource"
+				},
+				"gopium.timeout": {
+					"type": "number",
+					"default": 0,
+					"description": "Gopium global timeout of cli command in seconds, considered only if value > 0.",
+					"scope": "resource"
+				},
+				"gopium.actions": {
+					"type": "array",
+					"items": {
+						"type": "object",
+						"title": "single gopium action preset",
+						"properties": {
+							"name": {
+								"type": "string",
+								"description": "Name of single gopium action."
+							},
+							"walker": {
+								"type": "string",
+								"description": "Walker for single gopium action."
+							},
+							"strategies": {
+								"type": "array",
+								"description": "Strategies list for single gopium action."
+							}
+						}
+					},
+					"default": [
+						{
+							"name": "pack",
+							"walker": "ast_go",
+							"strategies": [
+								"memory_pack"
+							]
+						},
+						{
+							"name": "cache",
+							"walker": "ast_go",
+							"strategies": [
+								"cache_rounding_cpu_l1"
+							]
+						},
+						{
+							"name": "pack cache",
+							"walker": "ast_go",
+							"strategies": [
+								"filter_pads",
+								"memory_pack",
+								"explicit_padings_type_natural",
+								"cache_rounding_cpu_l1"
+							]
+						},
+						{
+							"name": "false sharing",
+							"walker": "ast_go",
+							"strategies": [
+								"filter_pads",
+								"false_sharing_cpu_l1"
+							]
+						},
+						{
+							"name": "pack verbose",
+							"walker": "ast_go",
+							"strategies": [
+								"filter_pads",
+								"memory_pack",
+								"explicit_padings_type_natural",
+								"comment_fields_annotate",
+								"comment_struct_annotate",
+								"add_tag_group_soft"
+							]
+						},
+						{
+							"name": "cache verbose",
+							"walker": "ast_go",
+							"strategies": [
+								"filter_pads",
+								"explicit_padings_type_natural",
+								"cache_rounding_cpu_l1",
+								"comment_fields_annotate",
+								"comment_struct_annotate",
+								"add_tag_group_soft"
+							]
+						}
+					],
+					"description": "Gopium actions list that defines binding of vscode actions and goiump walker and strategies.",
+					"scope": "resource"
+				}
+			}
+		}
 	},
 	"scripts": {
 		"vscode:prepublish": "npm run compile",
