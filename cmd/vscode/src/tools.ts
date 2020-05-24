@@ -6,47 +6,35 @@ import * as install from './vscode-go/src/goInstallTools'
 import * as tools from './vscode-go/src/goTools'
 import * as util from './vscode-go/src/util'
 
-export async function offerTools() {
-	const goVersion = await util.getGoVersion()
-	let all = tools.getConfiguredTools(goVersion)
-	let missing = all.filter((t) => isMissing(t))
-	if (missing.length > 0) {
-		vscode.window
-			.showInformationMessage('Required gopium extension tools have been failed to found.', {
-				title: 'Try to install tools',
-				command() {
-					install.installTools(missing, goVersion)
-				},
-			})
-			.then((selection) => {
-				if (selection) {
-					selection.command()
-				}
-			})
-	} else {
-		vscode.window
-			.showInformationMessage('Required gopium extension tools have been found successfully.', {
-				title: 'Try to update tools',
-				command() {
-					install.installTools(all, goVersion)
-				},
-			})
-			.then((selection) => {
-				if (selection) {
-					selection.command()
-				}
-			})
-	}
+export function missing(): tools.Tool[] {
+	let all = tools.getConfiguredTools(new util.GoVersion('any'))
+	return all.filter((t) => !path.isAbsolute(util.getBinPath(t.name)))
 }
 
-export async function getInstallTool(tname: string) {
-	let tool = tools.getTool(tname)
-	if (isMissing(tool)) {
-		await install.installTools([tool], await util.getGoVersion())
+export async function getb(name: string): Promise<string | null> {
+	const bpath = util.getBinPath(name)
+	if (!path.isAbsolute(util.getBinPath(name))) {
+		await offer([tools.getTool(name)])
+		return null
 	}
-	return util.getBinPath(tname)
+	return bpath
 }
 
-export function isMissing(tool: tools.Tool): boolean {
-	return !path.isAbsolute(util.getBinPath(tool.name))
+export async function offer(tools: tools.Tool[]) {
+	if (tools.length == 0) {
+		return
+	}
+	const gov = await util.getGoVersion()
+	vscode.window
+		.showInformationMessage('Required gopium extension tools have been not found.', {
+			title: 'Try to install tools',
+			command() {
+				install.installTools(tools, gov)
+			},
+		})
+		.then((selection) => {
+			if (selection) {
+				selection.command()
+			}
+		})
 }

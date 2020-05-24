@@ -47,7 +47,7 @@ export interface Runner {
 export async function activate(context: vscode.ExtensionContext) {
 	patch()
 
-	await tools.offerTools()
+	await tools.offer(tools.missing())
 
 	context.subscriptions.push(
 		vscode.workspace.onDidChangeConfiguration((e: vscode.ConfigurationChangeEvent) => {
