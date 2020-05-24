@@ -62,8 +62,9 @@ that outcome is written to one of supported destinations.
 
 Gopium supports next walkers: 
  - ast_std (prints result as go code to stdout)
- - ast_go (directly syncs result as go code in orinal file)
- - ast_gopium (directly syncs result as go code in copy package)
+ - ast_go (directly syncs result as go code to orinal file)
+ - ast_go_tree (directly syncs result as go code to copy package)
+ - ast_gopium (directly syncs result as go code to copy gopium files)
 
  - json_std (prints json encoded result to stdout)
  - xml_std (prints xml encoded result to stdout)

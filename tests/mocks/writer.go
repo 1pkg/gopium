@@ -5,9 +5,11 @@ import (
 	"io"
 	"strings"
 	"sync"
+
+	"1pkg/gopium"
 )
 
-// Writer defines mock fmtio writer implementation
+// Writer defines mock writer implementation
 type Writer struct {
 	Err   error
 	RWCs  map[string]*RWC
@@ -36,4 +38,14 @@ func (w *Writer) Writer(loc string) (io.WriteCloser, error) {
 	rwc := &RWC{}
 	w.RWCs[loc] = rwc
 	return rwc, w.Err
+}
+
+// Catwriter defines cat writer implementation
+type Catwriter struct {
+	Err error
+}
+
+// Catwriter mock implementation
+func (cw Catwriter) Catwriter(w gopium.Writer, rcat string) (gopium.Writer, error) {
+	return w, cw.Err
 }

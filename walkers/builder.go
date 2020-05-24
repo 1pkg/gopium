@@ -12,6 +12,7 @@ const (
 	// wast walkers
 	AstStd    gopium.WalkerName = "ast_std"
 	AstGo     gopium.WalkerName = "ast_go"
+	AstGoTree gopium.WalkerName = "ast_go_tree"
 	AstGopium gopium.WalkerName = "ast_gopium"
 	// wout walkers
 	JsonbStd  gopium.WalkerName = "json_std"
@@ -46,6 +47,14 @@ func (b Builder) Build(name gopium.WalkerName) (gopium.Walker, error) {
 		), nil
 	case AstGo:
 		return astgo.With(
+			b.Parser,
+			b.Exposer,
+			b.Printer,
+			b.Deep,
+			b.Bref,
+		), nil
+	case AstGoTree:
+		return astgotree.With(
 			b.Parser,
 			b.Exposer,
 			b.Printer,

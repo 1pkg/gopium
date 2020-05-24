@@ -242,7 +242,7 @@ func TestBytes(t *testing.T) {
 Struct Name,Struct Doc,Struct Comment,Field Name,Field Type,Field Size,Field Align,Field Tag,Field Exported,Field Embedded,Field Doc,Field Comment
 `),
 		},
-		"csv should return error on writter error": {
+		"csv should return error on writer error": {
 			fmt: Csvb(&mocks.RWC{Werr: errors.New("test")}),
 			f: collections.Flat{
 				"test-2": gopium.Struct{

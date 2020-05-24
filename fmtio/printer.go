@@ -41,7 +41,7 @@ func Goprint(indent int, tabwidth int, usespace bool) Printer {
 // Save asynchronously pesists ast package
 // one ast file by one ast file
 // to fmtio writer by using printer
-func (p Printer) Save(w Writer) func(ctx context.Context, pkg *ast.Package, loc gopium.Locator) error {
+func (p Printer) Save(w gopium.Writer) func(ctx context.Context, pkg *ast.Package, loc gopium.Locator) error {
 	return func(ctx context.Context, pkg *ast.Package, loc gopium.Locator) error {
 		// create sync error group
 		// with cancelation context
@@ -78,7 +78,7 @@ func (p Printer) Save(w Writer) func(ctx context.Context, pkg *ast.Package, loc 
 				if err := p(gctx, writer, fset, file); err != nil {
 					return err
 				}
-				// flush writter result
+				// flush writer result
 				// in case any error happened
 				// just return error back
 				return writer.Close()

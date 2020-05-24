@@ -39,7 +39,7 @@ func TestWdiff(t *testing.T) {
 		r    *regexp.Regexp
 		p    gopium.TypeParser
 		fmt  fmtio.Diff
-		w    fmtio.Writer
+		w    gopium.Writer
 		stg  gopium.Strategy
 		deep bool
 		bref bool

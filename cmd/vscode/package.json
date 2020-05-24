@@ -197,6 +197,7 @@
 								"enum": [
 									"ast_std",
 									"ast_go",
+									"ast_go_tree",
 									"ast_gopium",
 									"json_std",
 									"xml_std",

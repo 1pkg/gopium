@@ -13,24 +13,33 @@ import (
 // list of wast presets
 var (
 	aststd = wast{
-		apply:  astutil.UFFN,
-		writer: fmtio.Stdout,
+		apply:     astutil.UFFN,
+		writer:    fmtio.Stdout,
+		catwriter: fmtio.Replace,
 	}
 	astgo = wast{
-		apply:  astutil.UFFN,
-		writer: fmtio.Files("go"),
+		apply:     astutil.UFFN,
+		writer:    fmtio.Files("go"),
+		catwriter: fmtio.Replace,
+	}
+	astgotree = wast{
+		apply:     astutil.UFFN,
+		writer:    fmtio.Files("go"),
+		catwriter: fmtio.Copy("gopium"),
 	}
 	astgopium = wast{
-		apply:  astutil.UFFN,
-		writer: fmtio.Files("gopium"),
+		apply:     astutil.UFFN,
+		writer:    fmtio.Files("gopium"),
+		catwriter: fmtio.Replace,
 	}
 )
 
 // wast defines packages walker ast sync implementation
 type wast struct {
 	// inner visiting parameters
-	apply  astutil.Apply
-	writer fmtio.Writer
+	apply     astutil.Apply
+	writer    gopium.Writer
+	catwriter gopium.Catwriter
 	// external visiting parameters
 	parser  gopium.Parser
 	exposer gopium.Exposer
@@ -110,9 +119,16 @@ func (w wast) write(ctx context.Context, h collections.Hierarchic) error {
 	if err != nil {
 		return err
 	}
+	// build writer from cat writer with root cat
+	// in case any error happened
+	// just return error back
+	writer, err := w.catwriter(w.writer, h.Rcat())
+	if err != nil {
+		return err
+	}
 	// build and run persist helper
 	// in case any error happened
 	// just return error back
-	p := w.printer.Save(w.writer)
+	p := w.printer.Save(writer)
 	return p(ctx, pkg, loc)
 }

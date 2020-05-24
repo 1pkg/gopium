@@ -24,7 +24,7 @@ var (
 type wdiff struct {
 	// inner visiting parameters
 	fmt    fmtio.Diff
-	writer fmtio.Writer
+	writer gopium.Writer
 	// external visiting parameters
 	parser  gopium.TypeParser
 	exposer gopium.Exposer
