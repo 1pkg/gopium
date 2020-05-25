@@ -1,8 +1,8 @@
 package mocks
 
 import (
-	"go/build"
 	"io"
+	"os"
 	"strings"
 	"sync"
 
@@ -27,7 +27,10 @@ func (w *Writer) Writer(loc string) (io.WriteCloser, error) {
 		w.RWCs = make(map[string]*RWC)
 	}
 	// remove abs part from loc
-	loc = strings.Replace(loc, build.Default.GOPATH, "", 1)
+	// replace os path separators with underscores
+	loc = strings.Replace(loc, gopium.Root, "", 1)
+	loc = strings.ReplaceAll(loc, string(os.PathSeparator), "_")
+	loc = strings.Trim(loc, "_")
 	// if loc is inside existed rwcs
 	// just return found rwc back
 	if rwc, ok := w.RWCs[loc]; ok {

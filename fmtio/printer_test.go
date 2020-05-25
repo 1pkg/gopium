@@ -31,7 +31,7 @@ func TestPrinter(t *testing.T) {
 			pr:  Goprint(0, 4, true),
 			ctx: context.Background(),
 			r: map[string][]byte{
-				"/src/1pkg/gopium/tests/data/empty/file.go": []byte(`
+				"tests_data_empty_file.go": []byte(`
 //+build tests_data
 
 package empty
@@ -43,7 +43,7 @@ package empty
 			pr:  Goprint(0, 4, false),
 			ctx: context.Background(),
 			r: map[string][]byte{
-				"/src/1pkg/gopium/tests/data/single/file.go": []byte(`
+				"tests_data_single_file.go": []byte(`
 //+build tests_data
 
 package single
@@ -84,7 +84,7 @@ type Single struct {
 			pr:  mocks.Printer{Err: errors.New("test-2")}.Printer,
 			ctx: context.Background(),
 			r: map[string][]byte{
-				"/src/1pkg/gopium/tests/data/single/file.go": []byte(``),
+				"tests_data_single_file.go": []byte(``),
 			},
 			err: errors.New("test-2"),
 		},
@@ -93,7 +93,7 @@ type Single struct {
 			pr:  Goprint(0, 4, false),
 			ctx: context.Background(),
 			r: map[string][]byte{
-				"/src/1pkg/gopium/tests/data/multi/file-1.go": []byte(`
+				"tests_data_multi_file-1.go": []byte(`
 //+build tests_data
 
 package multi
@@ -129,7 +129,7 @@ func scope() {
 	}
 }
 `),
-				"/src/1pkg/gopium/tests/data/multi/file-2.go": []byte(`
+				"tests_data_multi_file-2.go": []byte(`
 //+build tests_data
 
 package multi
@@ -148,7 +148,7 @@ func scope1() error {
 	return errors.New("test data")
 }
 `),
-				"/src/1pkg/gopium/tests/data/multi/file-3.go": []byte(`
+				"tests_data_multi_file-3.go": []byte(`
 //+build tests_data
 
 package multi

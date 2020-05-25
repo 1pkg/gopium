@@ -4,8 +4,8 @@ import (
 	"bytes"
 	"context"
 	"errors"
-	"go/build"
 	"go/parser"
+	"path/filepath"
 	"reflect"
 	"strings"
 	"testing"
@@ -20,10 +20,10 @@ import (
 
 func TestApply(t *testing.T) {
 	// prepare
-	lh := collections.NewHierarchic(build.Default.GOPATH)
+	lh := collections.NewHierarchic(gopium.Root)
 	lh.Push(
 		"660d36c978f943d2e8325462c049cf1e003521b3ad3fc2f71c646cbf51a3acc1:6",
-		"/src/1pkg/gopium/tests/data/note/file-1.go",
+		filepath.Join(gopium.Root, "tests", "data", "note", "file-1.go"),
 		gopium.Struct{
 			Name:    "Note",
 			Doc:     []string{"// test-doc"},
@@ -48,7 +48,7 @@ func TestApply(t *testing.T) {
 	)
 	lh.Push(
 		"dcd36f56fb9252fc90eac010290a5ae42b67d55ad3c8fbe55a1aa72749633e0e:6",
-		"/src/1pkg/gopium/tests/data/note/file-2.go",
+		filepath.Join(gopium.Root, "tests", "data", "note", "file-2.go"),
 		gopium.Struct{
 			Name: "DocCom",
 			Fields: []gopium.Field{
@@ -60,10 +60,10 @@ func TestApply(t *testing.T) {
 			},
 		},
 	)
-	ldc := collections.NewHierarchic(build.Default.GOPATH)
+	ldc := collections.NewHierarchic(gopium.Root)
 	ldc.Push(
 		"660d36c978f943d2e8325462c049cf1e003521b3ad3fc2f71c646cbf51a3acc1:6",
-		"/src/1pkg/gopium/tests/data/note/file-1.go",
+		filepath.Join(gopium.Root, "tests", "data", "note", "file-1.go"),
 		gopium.Struct{
 			Name: "Note",
 			Fields: []gopium.Field{
@@ -85,7 +85,7 @@ func TestApply(t *testing.T) {
 	)
 	ldc.Push(
 		"dcd36f56fb9252fc90eac010290a5ae42b67d55ad3c8fbe55a1aa72749633e0e:6",
-		"/src/1pkg/gopium/tests/data/note/file-2.go",
+		filepath.Join(gopium.Root, "tests", "data", "note", "file-2.go"),
 	)
 	cctx, cancel := context.WithCancel(context.Background())
 	cancel()
@@ -110,7 +110,7 @@ func TestApply(t *testing.T) {
 			ctx: context.Background(),
 			h:   lh,
 			r: map[string][]byte{
-				"/src/1pkg/gopium/tests/data/note/file-1.go": []byte(`
+				"tests_data_note_file-1.go": []byte(`
 //+build tests_data
 
 package note
@@ -127,7 +127,7 @@ type Note struct {
 
 // last comment
 `),
-				"/src/1pkg/gopium/tests/data/note/file-2.go": []byte(`
+				"tests_data_note_file-2.go": []byte(`
 //+build tests_data
 
 package note
@@ -147,7 +147,7 @@ type DocCom struct {
 			ctx: context.Background(),
 			h:   ldc,
 			r: map[string][]byte{
-				"/src/1pkg/gopium/tests/data/note/file-1.go": []byte(`
+				"tests_data_note_file-1.go": []byte(`
 //+build tests_data
 
 package note
@@ -161,7 +161,7 @@ type Note struct {
 
 // last comment
 `),
-				"/src/1pkg/gopium/tests/data/note/file-2.go": []byte(`
+				"tests_data_note_file-2.go": []byte(`
 //+build tests_data
 
 package note
