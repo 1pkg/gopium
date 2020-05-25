@@ -66,7 +66,7 @@ func TestWast(t *testing.T) {
 			catw: mocks.Catwriter{}.Catwriter,
 			stg:  np,
 			sts: map[string][]byte{
-				"/src/1pkg/gopium/tests/data/single/file.go": []byte(`
+				"tests_data_single_file.go": []byte(`
 //+build tests_data
 
 package single
@@ -159,7 +159,7 @@ type Single struct {
 			stg:  pck,
 			deep: true,
 			sts: map[string][]byte{
-				"/src/1pkg/gopium/tests/data/multi/file-1.go": []byte(`
+				"tests_data_multi_file-1.go": []byte(`
 //+build tests_data
 
 package multi
@@ -195,7 +195,7 @@ func scope() {
 	}
 }
 `),
-				"/src/1pkg/gopium/tests/data/multi/file-3.go": []byte(`
+				"tests_data_multi_file-3.go": []byte(`
 //+build tests_data
 
 package multi
@@ -247,7 +247,7 @@ type (
 			stg:  pck,
 			bref: true,
 			sts: map[string][]byte{
-				"/src/1pkg/gopium/tests/data/multi/file-1.go": []byte(`
+				"tests_data_multi_file-1.go": []byte(`
 //+build tests_data
 
 package multi
@@ -283,7 +283,7 @@ func scope() {
 	}
 }
 `),
-				"/src/1pkg/gopium/tests/data/multi/file-3.go": []byte(`
+				"tests_data_multi_file-3.go": []byte(`
 //+build tests_data
 
 package multi

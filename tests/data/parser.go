@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"go/ast"
-	"go/build"
 	"go/parser"
 	"go/types"
 	"path/filepath"
@@ -38,8 +37,8 @@ type Parser struct {
 // NewParser creates parser for single tests data
 func NewParser(pkg string) gopium.Parser {
 	p := &typepkg.ParserXToolPackagesAst{
-		Path:       fmt.Sprintf("%s/%s", "src/1pkg/gopium/tests/data", pkg),
-		Root:       build.Default.GOPATH,
+		Pattern:    fmt.Sprintf("tests/data/%s", pkg),
+		Path:       filepath.Join(gopium.Root, "tests", "data", pkg),
 		ModeTypes:  packages.LoadAllSyntax,
 		ModeAst:    parser.ParseComments | parser.AllErrors,
 		BuildFlags: []string{"-tags=tests_data"},

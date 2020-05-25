@@ -61,7 +61,7 @@ func TestWdiff(t *testing.T) {
 			fmt: mocks.Diff{}.Diff,
 			stg: np,
 			sts: map[string][]byte{
-				"/src/1pkg/gopium/tests/data/single/gopium": []byte(`
+				"tests_data_single_gopium": []byte(`
 [
 	[
 		{
@@ -203,7 +203,7 @@ func TestWdiff(t *testing.T) {
 			p:   data.NewParser("single"),
 			fmt: mocks.Diff{}.Diff,
 			w: (&mocks.Writer{RWCs: map[string]*mocks.RWC{
-				"/src/1pkg/gopium/tests/data/single/gopium": {Werr: errors.New("test-5")},
+				"tests_data_single_gopium": {Werr: errors.New("test-5")},
 			}}).Writer,
 			stg: np,
 			sts: map[string][]byte{},
@@ -215,7 +215,7 @@ func TestWdiff(t *testing.T) {
 			p:   data.NewParser("single"),
 			fmt: mocks.Diff{}.Diff,
 			w: (&mocks.Writer{RWCs: map[string]*mocks.RWC{
-				"/src/1pkg/gopium/tests/data/single/gopium": {Cerr: errors.New("test-6")},
+				"tests_data_single_gopium": {Cerr: errors.New("test-6")},
 			}}).Writer,
 			stg: np,
 			sts: map[string][]byte{},
@@ -229,7 +229,7 @@ func TestWdiff(t *testing.T) {
 			stg:  pck,
 			deep: true,
 			sts: map[string][]byte{
-				"/src/1pkg/gopium/tests/data/multi/gopium": []byte(`
+				"tests_data_multi_gopium": []byte(`
 [
 	[
 		{
@@ -545,7 +545,7 @@ func TestWdiff(t *testing.T) {
 			stg:  pck,
 			bref: true,
 			sts: map[string][]byte{
-				"/src/1pkg/gopium/tests/data/multi/gopium": []byte(`
+				"tests_data_multi_gopium": []byte(`
 [
 	[
 		{

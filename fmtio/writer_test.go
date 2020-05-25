@@ -37,32 +37,32 @@ func TestWriter(t *testing.T) {
 		"file json should return expected json writer": {
 			w:    File("test", "json"),
 			loc:  pfile,
-			path: path.Join(pdir, "test.json"),
+			path: filepath.Join(pdir, "test.json"),
 		},
 		"file xml should return expected xml writer": {
 			w:    File("test", "xml"),
 			loc:  pfile,
-			path: path.Join(pdir, "test.xml"),
+			path: filepath.Join(pdir, "test.xml"),
 		},
 		"file csv should return expected csv writer": {
 			w:    File("test", "csv"),
 			loc:  pfile,
-			path: path.Join(pdir, "test.csv"),
+			path: filepath.Join(pdir, "test.csv"),
 		},
 		"files json should return expected json writer": {
 			w:    Files("json"),
 			loc:  pfile,
-			path: path.Join(pdir, "opium.json"),
+			path: filepath.Join(pdir, "opium.json"),
 		},
 		"files xml should return expected xml writer": {
 			w:    Files("xml"),
 			loc:  pfile,
-			path: path.Join(pdir, "opium.xml"),
+			path: filepath.Join(pdir, "opium.xml"),
 		},
 		"files csv should return expected csv writer": {
 			w:    Files("csv"),
 			loc:  pfile,
-			path: path.Join(pdir, "opium.csv"),
+			path: filepath.Join(pdir, "opium.csv"),
 		},
 	}
 	for name, tcase := range table {
@@ -121,14 +121,14 @@ func TestCatwriter(t *testing.T) {
 			w:    File("test", "json"),
 			cat:  pdir,
 			loc:  pfile,
-			path: path.Join(pdir, "test.json"),
+			path: filepath.Join(pdir, "test.json"),
 		},
 		"file json with copy cat writer should return expected json writer": {
 			catw: Copy("test"),
 			w:    File("test", "json"),
 			cat:  pdir,
 			loc:  pfile,
-			path: path.Join(fmt.Sprintf("%s_%s", pdir, "test"), "test.json"),
+			path: filepath.Join(fmt.Sprintf("%s_%s", pdir, "test"), "test.json"),
 		},
 	}
 	for name, tcase := range table {
