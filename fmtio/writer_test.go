@@ -30,37 +30,37 @@ func TestWriter(t *testing.T) {
 		cerr error
 	}{
 		"stdout should return expected stdout writer": {
-			w:    Stdout,
+			w:    Stdout{},
 			loc:  pdir,
 			path: "",
 		},
 		"file json should return expected json writer": {
-			w:    File("test", "json"),
+			w:    File{Name: "test", Ext: "json"},
 			loc:  pfile,
 			path: filepath.Join(pdir, "test.json"),
 		},
 		"file xml should return expected xml writer": {
-			w:    File("test", "xml"),
+			w:    File{Name: "test", Ext: "xml"},
 			loc:  pfile,
 			path: filepath.Join(pdir, "test.xml"),
 		},
 		"file csv should return expected csv writer": {
-			w:    File("test", "csv"),
+			w:    File{Name: "test", Ext: "csv"},
 			loc:  pfile,
 			path: filepath.Join(pdir, "test.csv"),
 		},
 		"files json should return expected json writer": {
-			w:    Files("json"),
+			w:    Files{Ext: "json"},
 			loc:  pfile,
 			path: filepath.Join(pdir, "opium.json"),
 		},
 		"files xml should return expected xml writer": {
-			w:    Files("xml"),
+			w:    Files{Ext: "xml"},
 			loc:  pfile,
 			path: filepath.Join(pdir, "opium.xml"),
 		},
 		"files csv should return expected csv writer": {
-			w:    Files("csv"),
+			w:    Files{Ext: "csv"},
 			loc:  pfile,
 			path: filepath.Join(pdir, "opium.csv"),
 		},
@@ -68,7 +68,7 @@ func TestWriter(t *testing.T) {
 	for name, tcase := range table {
 		t.Run(name, func(t *testing.T) {
 			// exec
-			wc, err := tcase.w(tcase.loc)
+			wc, err := tcase.w.Generate(tcase.loc)
 			n, werr := wc.Write([]byte(``))
 			cerr := wc.Close()
 			// check
@@ -98,7 +98,7 @@ func TestWriter(t *testing.T) {
 	}
 }
 
-func TestCatwriter(t *testing.T) {
+func TestCategoryWriter(t *testing.T) {
 	// prepare
 	pdir, err := filepath.Abs("./..")
 	if !reflect.DeepEqual(err, nil) {
@@ -109,23 +109,20 @@ func TestCatwriter(t *testing.T) {
 		t.Fatalf("actual %v doesn't equal to %v", err, nil)
 	}
 	table := map[string]struct {
-		catw gopium.Catwriter
-		w    gopium.Writer
+		w    gopium.CategoryWriter
 		cat  string
 		loc  string
 		path string
 		err  error
 	}{
 		"file json with replace cat writer should return expected json writer": {
-			catw: Replace,
-			w:    File("test", "json"),
+			w:    Origin{Writter: File{Name: "test", Ext: "json"}},
 			cat:  pdir,
 			loc:  pfile,
 			path: filepath.Join(pdir, "test.json"),
 		},
 		"file json with copy cat writer should return expected json writer": {
-			catw: Copy("test"),
-			w:    File("test", "json"),
+			w:    &Suffix{Writter: File{Name: "test", Ext: "json"}, Suffix: "test"},
 			cat:  pdir,
 			loc:  pfile,
 			path: filepath.Join(fmt.Sprintf("%s_%s", pdir, "test"), "test.json"),
@@ -134,9 +131,9 @@ func TestCatwriter(t *testing.T) {
 	for name, tcase := range table {
 		t.Run(name, func(t *testing.T) {
 			// exec
-			w, err := tcase.catw(tcase.w, tcase.cat)
-			wc, werr := w(tcase.loc)
-			n, wcwerr := wc.Write([]byte(``))
+			err := tcase.w.Category(tcase.cat)
+			wc, gerr := tcase.w.Generate(tcase.loc)
+			n, werr := wc.Write([]byte(``))
 			cerr := wc.Close()
 			// check
 			if !reflect.DeepEqual(err, tcase.err) {
@@ -155,8 +152,8 @@ func TestCatwriter(t *testing.T) {
 					t.Errorf("actual %v doesn't equal to expected %v", err, nil)
 				}
 			}
-			if !reflect.DeepEqual(wcwerr, nil) {
-				t.Errorf("actual %v doesn't equal to expected %v", wcwerr, nil)
+			if !reflect.DeepEqual(gerr, nil) {
+				t.Errorf("actual %v doesn't equal to expected %v", gerr, nil)
 			}
 			if !reflect.DeepEqual(werr, nil) {
 				t.Errorf("actual %v doesn't equal to expected %v", werr, nil)

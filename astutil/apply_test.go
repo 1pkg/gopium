@@ -182,28 +182,28 @@ type DocCom struct {
 		},
 		"note struct pkg should apply nothing on canceled context fast": {
 			p:   data.NewParser("note"),
-			a:   ufmt(walk, mocks.Ast{}.Ast),
+			a:   ufmt(walker{}, mocks.Ast{}.Ast),
 			ctx: cctx,
 			r:   map[string][]byte{},
 			err: context.Canceled,
 		},
 		"note struct pkg should apply nothing on canceled context filter": {
 			p:   data.NewParser("note"),
-			a:   filter(walk),
+			a:   filter(walker{}),
 			ctx: cctx,
 			r:   map[string][]byte{},
 			err: context.Canceled,
 		},
 		"note struct pkg should apply nothing on canceled context filter after walk": {
 			p:   data.NewParser("note"),
-			a:   filter(mocks.Walk{}.Walk),
+			a:   filter(mocks.XWalker{}),
 			ctx: cctx,
 			r:   map[string][]byte{},
 			err: context.Canceled,
 		},
 		"note struct pkg should apply nothing on walk error filter": {
 			p:   data.NewParser("note"),
-			a:   filter(mocks.Walk{Err: errors.New("walk-test")}.Walk),
+			a:   filter(mocks.XWalker{Err: errors.New("walk-test")}),
 			ctx: context.Background(),
 			r:   map[string][]byte{},
 			err: errors.New("walk-test"),
@@ -211,7 +211,7 @@ type DocCom struct {
 		"note struct pkg should apply nothing on canceled context note": {
 			p: data.NewParser("note"),
 			a: note(
-				walk,
+				walker{},
 				&typepkg.ParserXToolPackagesAst{
 					ModeAst: parser.ParseComments | parser.AllErrors,
 				},
@@ -224,7 +224,7 @@ type DocCom struct {
 		"note struct pkg should apply nothing on canceled context after walk note": {
 			p: data.NewParser("note"),
 			a: note(
-				mocks.Walk{Err: errors.New("walk-test")}.Walk,
+				mocks.XWalker{Err: errors.New("walk-test")},
 				&typepkg.ParserXToolPackagesAst{
 					ModeAst: parser.ParseComments | parser.AllErrors,
 				},
@@ -238,7 +238,7 @@ type DocCom struct {
 		"note struct pkg should apply nothing on parser error": {
 			p: data.NewParser("note"),
 			a: note(
-				walk,
+				walker{},
 				mocks.Parser{Asterr: errors.New("test-1")},
 				fmtio.Goprint(0, 4, false),
 			),
@@ -249,7 +249,7 @@ type DocCom struct {
 		"note struct pkg should apply nothing on printer error": {
 			p: data.NewParser("note"),
 			a: note(
-				walk,
+				walker{},
 				&typepkg.ParserXToolPackagesAst{
 					ModeAst: parser.ParseComments | parser.AllErrors,
 				}, mocks.Printer{Err: errors.New("test-2")}.Printer,
@@ -262,7 +262,7 @@ type DocCom struct {
 			p: data.NewParser("note"),
 			a: combine(
 				mocks.Apply{Err: errors.New("test-3")}.Apply,
-				filter(walk),
+				filter(walker{}),
 			),
 			ctx: context.Background(),
 			r:   map[string][]byte{},
@@ -281,7 +281,7 @@ type DocCom struct {
 			apkg, aerr := tcase.a(tcase.ctx, pkg, loc, tcase.h)
 			// prepare
 			if apkg != nil {
-				err = p.Save(w.Writer)(context.Background(), apkg, loc)
+				err = p.Save(w)(context.Background(), apkg, loc)
 				if !reflect.DeepEqual(err, nil) {
 					t.Fatalf("actual %v doesn't equal to expected %v", err, nil)
 				}

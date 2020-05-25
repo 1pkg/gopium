@@ -14,27 +14,27 @@ import (
 var (
 	jsonstd = wout{
 		fmt:    fmtio.Jsonb,
-		writer: fmtio.Stdout,
+		writer: fmtio.Stdout{},
 	}
 	xmlstd = wout{
 		fmt:    fmtio.Xmlb,
-		writer: fmtio.Stdout,
+		writer: fmtio.Stdout{},
 	}
 	csvstd = wout{
 		fmt:    fmtio.Csvb(fmtio.Buffer()),
-		writer: fmtio.Stdout,
+		writer: fmtio.Stdout{},
 	}
 	jsonfiles = wout{
 		fmt:    fmtio.Jsonb,
-		writer: fmtio.File("gopium", "json"),
+		writer: fmtio.File{Name: "gopium", Ext: "json"},
 	}
 	xmlfiles = wout{
 		fmt:    fmtio.Xmlb,
-		writer: fmtio.File("gopium", "xml"),
+		writer: fmtio.File{Name: "gopium", Ext: "xml"},
 	}
 	csvfiles = wout{
 		fmt:    fmtio.Csvb(fmtio.Buffer()),
-		writer: fmtio.File("gopium", "csv"),
+		writer: fmtio.File{Name: "gopium", Ext: "csv"},
 	}
 )
 
@@ -118,7 +118,8 @@ func (w wout) write(ctx context.Context, h collections.Hierarchic) error {
 		return err
 	}
 	// generate writer
-	writer, err := w.writer(fmt.Sprintf("%s/gopium", h.Rcat()))
+	loc := fmt.Sprintf("%s/gopium", h.Rcat())
+	writer, err := w.writer.Generate(loc)
 	if err != nil {
 		return err
 	}

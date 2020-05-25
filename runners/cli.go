@@ -22,7 +22,7 @@ import (
 // Cli defines cli runner implementation
 // that is able to run full gopium cli application
 type Cli struct {
-	c      coordinator
+	v      visitor
 	wb     gopium.WalkerBuilder
 	sb     gopium.StrategyBuilder
 	wname  gopium.WalkerName
@@ -91,8 +91,8 @@ func NewCli(
 	}
 	// cast timeout to second duration
 	stimeout := time.Duration(timeout) * time.Second
-	// set up coordinator
-	c := coordinator{
+	// set up visitor
+	v := visitor{
 		regex:   cregex,
 		timeout: stimeout,
 	}
@@ -114,7 +114,7 @@ func NewCli(
 	wname := gopium.WalkerName(walker)
 	// combine cli runner
 	return &Cli{
-		c:      c,
+		v:      v,
 		wb:     wb,
 		sb:     sb,
 		wname:  wname,
@@ -125,15 +125,15 @@ func NewCli(
 // Run cli implementation
 func (cli *Cli) Run(ctx context.Context) error {
 	// build strategy
-	stg, err := cli.c.strategy(cli.sb, cli.snames)
+	stg, err := cli.v.strategy(cli.sb, cli.snames)
 	if err != nil {
 		return err
 	}
 	// build walker
-	w, err := cli.c.walker(cli.wb, cli.wname)
+	w, err := cli.v.walker(cli.wb, cli.wname)
 	if err != nil {
 		return err
 	}
-	// run visit
-	return cli.c.visit(ctx, w, stg)
+	// run visitor visiting
+	return cli.v.visit(ctx, w, stg)
 }

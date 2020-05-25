@@ -9,19 +9,20 @@ import (
 	"1pkg/gopium"
 )
 
-// coordinator defines helper
+// visitor defines helper
 // that coordinates runner stages
+// to finaly make visiting
 // - strategy building
 // - walker building
 // - visiting
-type coordinator struct {
+type visitor struct {
 	regex   *regexp.Regexp
 	timeout time.Duration
 }
 
 // strategy builds strategy instance
 // by using builder and strategies names
-func (coordinator) strategy(b gopium.StrategyBuilder, snames []gopium.StrategyName) (gopium.Strategy, error) {
+func (visitor) strategy(b gopium.StrategyBuilder, snames []gopium.StrategyName) (gopium.Strategy, error) {
 	// build strategy
 	stg, err := b.Build(snames...)
 	if err != nil {
@@ -32,7 +33,7 @@ func (coordinator) strategy(b gopium.StrategyBuilder, snames []gopium.StrategyNa
 
 // walker builds walker instance
 // by using builder and walker name
-func (coordinator) walker(b gopium.WalkerBuilder, wname gopium.WalkerName) (gopium.Walker, error) {
+func (visitor) walker(b gopium.WalkerBuilder, wname gopium.WalkerName) (gopium.Walker, error) {
 	// build walker
 	walker, err := b.Build(wname)
 	if err != nil {
@@ -42,15 +43,15 @@ func (coordinator) walker(b gopium.WalkerBuilder, wname gopium.WalkerName) (gopi
 }
 
 // visit coordinates walker visiting
-func (c coordinator) visit(ctx context.Context, w gopium.Walker, stg gopium.Strategy) error {
+func (v visitor) visit(ctx context.Context, w gopium.Walker, stg gopium.Strategy) error {
 	// set up timeout context
-	if c.timeout > 0 {
-		nctx, cancel := context.WithTimeout(ctx, c.timeout)
+	if v.timeout > 0 {
+		nctx, cancel := context.WithTimeout(ctx, v.timeout)
 		defer cancel()
 		ctx = nctx
 	}
 	// exec visit on walker with strategy
-	if err := w.Visit(ctx, c.regex, stg); err != nil {
+	if err := w.Visit(ctx, v.regex, stg); err != nil {
 		return fmt.Errorf("visiting error happened %v", err)
 	}
 	return nil

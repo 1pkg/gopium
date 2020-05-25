@@ -14,11 +14,11 @@ func TestNewReference(t *testing.T) {
 		ref *Reference
 	}{
 		"nil new reference should return nil ref": {
-			b:   true,
+			b:   false,
 			ref: nil,
 		},
 		"not nil new reference should return actual ref": {
-			b: false,
+			b: true,
 			ref: &Reference{
 				vals:    make(map[string]interface{}),
 				signals: make(map[string]chan struct{}),
@@ -81,7 +81,7 @@ func TestNilReference(t *testing.T) {
 func TestActualReference(t *testing.T) {
 	// prepare
 	var wg sync.WaitGroup
-	r := NewReference(false)
+	r := NewReference(true)
 	r.Set("test-1", 10)
 	go func() {
 		r.Set("test-2", 10)

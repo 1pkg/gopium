@@ -13,10 +13,10 @@ type Reference struct {
 
 // NewReference creates reference instance
 // accordingly to passed nil flag
-func NewReference(nl bool) *Reference {
+func NewReference(actual bool) *Reference {
 	// in case we wanna use
 	// nil reference instance
-	if nl {
+	if !actual {
 		return nil
 	}
 	// othewise return actual reference instance
