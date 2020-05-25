@@ -75,7 +75,7 @@ type Single struct {
 			p:   data.NewParser("single"),
 			pr:  Goprint(0, 4, false),
 			ctx: context.Background(),
-			w:   (&mocks.Writer{Err: errors.New("test-1")}).Writer,
+			w:   (&mocks.Writer{Gerr: errors.New("test-1")}),
 			r:   map[string][]byte{},
 			err: errors.New("test-1"),
 		},
@@ -198,7 +198,7 @@ type (
 			writer := tcase.w
 			w := &mocks.Writer{}
 			if writer == nil {
-				writer = w.Writer
+				writer = w
 			}
 			pkg, loc, err := tcase.p.ParseAst(context.Background())
 			if !reflect.DeepEqual(err, nil) {

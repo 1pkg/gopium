@@ -13,10 +13,7 @@ import (
 // list of wdiff presets
 var (
 	diffstd = wdiff{
-		writer: fmtio.Stdout,
-	}
-	diffdiff = wdiff{
-		writer: fmtio.File("gopium", "diff"),
+		writer: fmtio.Stdout{},
 	}
 )
 
@@ -100,7 +97,8 @@ func (w wdiff) write(ctx context.Context, ho collections.Hierarchic, hr collecti
 		return err
 	}
 	// generate writer
-	writer, err := w.writer(fmt.Sprintf("%s/gopium", hr.Rcat()))
+	loc := fmt.Sprintf("%s/gopium", ho.Rcat())
+	writer, err := w.writer.Generate(loc)
 	if err != nil {
 		return err
 	}

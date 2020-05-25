@@ -63,7 +63,7 @@ func (p Printer) Save(w gopium.Writer) func(ctx context.Context, pkg *ast.Packag
 			// run error group write call
 			group.Go(func() error {
 				// generate relevant writer
-				writer, err := w(name)
+				writer, err := w.Generate(name)
 				// in case any error happened
 				// just return error back
 				if err != nil {

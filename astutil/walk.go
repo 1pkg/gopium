@@ -12,11 +12,14 @@ import (
 	"golang.org/x/tools/go/ast/astutil"
 )
 
-// walk ines gopium ast walk implementation
+// walker defines gopium ast xwalker implementation
 // that walks through ast struct type
 // nodes with comparator function and
 // apply some custom action on them
-func walk(ctx context.Context, node ast.Node, act gopium.Action, cmp gopium.Comparator) (ast.Node, error) {
+type walker struct{}
+
+// Walk walker implementation
+func (walker) Walk(ctx context.Context, node ast.Node, act gopium.XAction, cmp gopium.XComparator) (ast.Node, error) {
 	// err tracks error inside astutil apply
 	var err error
 	// apply astutil apply to parsed ast package
@@ -55,13 +58,11 @@ func walk(ctx context.Context, node ast.Node, act gopium.Action, cmp gopium.Comp
 
 // fmtioast defines gopium ast walk
 // action fmtio ast implementation
-type fmtioast struct {
-	fmt fmtio.Ast
-}
+type fmtast fmtio.Ast
 
-// Apply fmtioast implementation
-func (fmt fmtioast) Apply(ts *ast.TypeSpec, st gopium.Struct) error {
-	return fmt.fmt(ts, st)
+// Apply fmtast implementation
+func (fmt fmtast) Apply(ts *ast.TypeSpec, st gopium.Struct) error {
+	return fmt(ts, st)
 }
 
 // bcollect defines gopium ast walk
@@ -85,13 +86,12 @@ func (b *bcollect) Apply(ts *ast.TypeSpec, st gopium.Struct) error {
 // action press doc to file implementation
 // which presses comments from
 // gopium structure to ast file
-type pressdoccom struct {
-	file *ast.File
-}
+type pressdoccom ast.File
 
 // Apply pressdoc implementation
-func (pdc pressdoccom) Apply(ts *ast.TypeSpec, st gopium.Struct) error {
+func (pdc *pressdoccom) Apply(ts *ast.TypeSpec, st gopium.Struct) error {
 	// prepare struct docs slice
+	file := ((*ast.File)(pdc))
 	stdocs := make([]*ast.Comment, 0, len(st.Doc))
 	// collect all docs from resulted structure
 	for _, doc := range st.Doc {
@@ -102,7 +102,7 @@ func (pdc pressdoccom) Apply(ts *ast.TypeSpec, st gopium.Struct) error {
 	}
 	// update file comments list
 	if len(stdocs) > 0 {
-		pdc.file.Comments = append(pdc.file.Comments, &ast.CommentGroup{List: stdocs})
+		file.Comments = append(file.Comments, &ast.CommentGroup{List: stdocs})
 	}
 	// prepare struct comments slice
 	stcoms := make([]*ast.Comment, 0, len(st.Comment))
@@ -115,7 +115,7 @@ func (pdc pressdoccom) Apply(ts *ast.TypeSpec, st gopium.Struct) error {
 	}
 	// update file comments list
 	if len(stcoms) > 0 {
-		pdc.file.Comments = append(pdc.file.Comments, &ast.CommentGroup{List: stcoms})
+		file.Comments = append(file.Comments, &ast.CommentGroup{List: stcoms})
 	}
 	// go through all resulted structure fields
 	tts := ts.Type.(*ast.StructType)
@@ -132,7 +132,7 @@ func (pdc pressdoccom) Apply(ts *ast.TypeSpec, st gopium.Struct) error {
 		}
 		// update file comments list
 		if len(fdocs) > 0 {
-			pdc.file.Comments = append(pdc.file.Comments, &ast.CommentGroup{List: fdocs})
+			file.Comments = append(file.Comments, &ast.CommentGroup{List: fdocs})
 		}
 		// collect all comments from resulted structure
 		fcoms := make([]*ast.Comment, 0, len(field.Comment))
@@ -144,7 +144,7 @@ func (pdc pressdoccom) Apply(ts *ast.TypeSpec, st gopium.Struct) error {
 		}
 		// update file comments list
 		if len(fcoms) > 0 {
-			pdc.file.Comments = append(pdc.file.Comments, &ast.CommentGroup{List: fcoms})
+			file.Comments = append(file.Comments, &ast.CommentGroup{List: fcoms})
 		}
 	}
 	return nil
@@ -193,7 +193,7 @@ func (cmp cmpsorted) Check(ts *ast.TypeSpec) (gopium.Struct, bool) {
 // check that structure or any structure's
 // field has any notes attached to them
 type cmpnote struct {
-	cmp gopium.Comparator
+	cmp gopium.XComparator
 }
 
 // Check cmpnote implementation

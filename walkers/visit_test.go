@@ -566,7 +566,7 @@ func TestVscope(t *testing.T) {
 			if !reflect.DeepEqual(err, nil) {
 				t.Fatalf("actual %v doesn't equal to %v", err, nil)
 			}
-			ref := collections.NewReference(false)
+			ref := collections.NewReference(true)
 			m := &maven{exp: m, loc: loc, ref: ref}
 			if tcase.loc != nil {
 				m.loc = tcase.loc
@@ -1168,7 +1168,7 @@ func TestVdeep(t *testing.T) {
 			if !reflect.DeepEqual(err, nil) {
 				t.Fatalf("actual %v doesn't equal to %v", err, nil)
 			}
-			ref := collections.NewReference(false)
+			ref := collections.NewReference(true)
 			m := &maven{exp: m, loc: loc, ref: ref}
 			if tcase.loc != nil {
 				m.loc = tcase.loc

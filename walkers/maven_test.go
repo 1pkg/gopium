@@ -78,7 +78,7 @@ func TestMavenHas(t *testing.T) {
 
 func TestMavenEnum(t *testing.T) {
 	// prepare
-	ref := collections.NewReference(false)
+	ref := collections.NewReference(true)
 	ref.Alloc("test")
 	ref.Set("test", sizealign{size: 32, align: 32})
 	m := maven{
@@ -182,7 +182,7 @@ func TestMavenEnum(t *testing.T) {
 
 func TestMavenRefsa(t *testing.T) {
 	// prepare
-	ref := collections.NewReference(false)
+	ref := collections.NewReference(true)
 	ref.Alloc("test")
 	ref.Set("test", sizealign{size: 32, align: 32})
 	m := maven{
@@ -280,7 +280,7 @@ func TestMavenRefsa(t *testing.T) {
 
 func TestMavenRefst(t *testing.T) {
 	// prepare
-	m := maven{ref: collections.NewReference(false)}
+	m := maven{ref: collections.NewReference(true)}
 	f1, f2, f3 := m.refst("test-1"), m.refst("test-2"), m.refst("test-3")
 	f2(gopium.Struct{
 		Fields: []gopium.Field{

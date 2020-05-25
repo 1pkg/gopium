@@ -139,7 +139,7 @@ func TestWout(t *testing.T) {
 			r:   regexp.MustCompile(`.*`),
 			p:   data.NewParser("single"),
 			fmt: mocks.Bytes{}.Bytes,
-			w:   (&mocks.Writer{Err: errors.New("test-3")}).Writer,
+			w:   (&mocks.Writer{Gerr: errors.New("test-3")}),
 			stg: np,
 			sts: map[string][]byte{},
 			err: errors.New("test-3"),
@@ -160,7 +160,7 @@ func TestWout(t *testing.T) {
 			fmt: mocks.Bytes{}.Bytes,
 			w: (&mocks.Writer{RWCs: map[string]*mocks.RWC{
 				"tests_data_single_gopium": {Werr: errors.New("test-5")},
-			}}).Writer,
+			}}),
 			stg: np,
 			sts: map[string][]byte{},
 			err: errors.New("test-5"),
@@ -172,7 +172,7 @@ func TestWout(t *testing.T) {
 			fmt: mocks.Bytes{}.Bytes,
 			w: (&mocks.Writer{RWCs: map[string]*mocks.RWC{
 				"tests_data_single_gopium": {Cerr: errors.New("test-6")},
-			}}).Writer,
+			}}),
 			stg: np,
 			sts: map[string][]byte{},
 			err: errors.New("test-6"),
@@ -470,7 +470,7 @@ func TestWout(t *testing.T) {
 			w := &mocks.Writer{}
 			wout := wout{
 				fmt:    tcase.fmt,
-				writer: w.Writer,
+				writer: w,
 			}.With(tcase.p, m, tcase.deep, tcase.bref)
 			if tcase.w != nil {
 				wout.writer = tcase.w

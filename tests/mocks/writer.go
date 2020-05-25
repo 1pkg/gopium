@@ -9,15 +9,16 @@ import (
 	"1pkg/gopium"
 )
 
-// Writer defines mock writer implementation
+// Writer defines mock category writer implementation
 type Writer struct {
-	Err   error
+	Gerr  error
+	Cerr  error
 	RWCs  map[string]*RWC
 	mutex sync.Mutex
 }
 
 // Writer mock implementation
-func (w *Writer) Writer(loc string) (io.WriteCloser, error) {
+func (w *Writer) Generate(loc string) (io.WriteCloser, error) {
 	// lock rwcs access
 	// and init them if they
 	// haven't inited before
@@ -34,21 +35,16 @@ func (w *Writer) Writer(loc string) (io.WriteCloser, error) {
 	// if loc is inside existed rwcs
 	// just return found rwc back
 	if rwc, ok := w.RWCs[loc]; ok {
-		return rwc, w.Err
+		return rwc, w.Gerr
 	}
 	// otherwise create new rwc
 	// store and return it back
 	rwc := &RWC{}
 	w.RWCs[loc] = rwc
-	return rwc, w.Err
+	return rwc, w.Gerr
 }
 
-// Catwriter defines cat writer implementation
-type Catwriter struct {
-	Err error
-}
-
-// Catwriter mock implementation
-func (cw Catwriter) Catwriter(w gopium.Writer, rcat string) (gopium.Writer, error) {
-	return w, cw.Err
+// Category mock implementation
+func (w *Writer) Category(cat string) error {
+	return w.Cerr
 }

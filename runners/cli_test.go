@@ -75,7 +75,7 @@ func TestCliNew(t *testing.T) {
 			timeout: 5,
 			// test vars
 			cli: &Cli{
-				c: coordinator{
+				v: visitor{
 					regex:   regexp.MustCompile(`.*`),
 					timeout: 5 * time.Second,
 				},
@@ -123,7 +123,7 @@ func TestCliNew(t *testing.T) {
 			timeout: 5,
 			// test vars
 			cli: &Cli{
-				c: coordinator{
+				v: visitor{
 					regex:   regexp.MustCompile(`.*`),
 					timeout: 5 * time.Second,
 				},
@@ -244,14 +244,14 @@ func TestCliRun(t *testing.T) {
 	}{
 		"cli should return error on strategy builder error": {
 			cli: &Cli{
-				c:  coordinator{},
+				v:  visitor{},
 				sb: mocks.StrategyBuilder{Err: errors.New("test-1")},
 			},
 			err: errors.New("can't build such strategy [] test-1"),
 		},
 		"cli should return error on walker builder error": {
 			cli: &Cli{
-				c:  coordinator{},
+				v:  visitor{},
 				sb: mocks.StrategyBuilder{Strategy: &mocks.Strategy{}},
 				wb: mocks.WalkerBuilder{Err: errors.New("test-2")},
 			},
@@ -259,7 +259,7 @@ func TestCliRun(t *testing.T) {
 		},
 		"cli should return error on visiting error": {
 			cli: &Cli{
-				c:  coordinator{},
+				v:  visitor{},
 				sb: mocks.StrategyBuilder{Strategy: &mocks.Strategy{}},
 				wb: mocks.WalkerBuilder{Walker: mocks.Walker{Err: errors.New("test-3")}},
 			},
@@ -267,7 +267,7 @@ func TestCliRun(t *testing.T) {
 		},
 		"cli should return error on timeout": {
 			cli: &Cli{
-				c:  coordinator{timeout: time.Nanosecond},
+				v:  visitor{timeout: time.Nanosecond},
 				sb: mocks.StrategyBuilder{Strategy: &mocks.Strategy{}},
 				wb: mocks.WalkerBuilder{Walker: mocks.Walker{}},
 			},
@@ -275,7 +275,7 @@ func TestCliRun(t *testing.T) {
 		},
 		"cli should return expected results on visiting": {
 			cli: &Cli{
-				c:  coordinator{},
+				v:  visitor{},
 				sb: mocks.StrategyBuilder{Strategy: &mocks.Strategy{}},
 				wb: mocks.WalkerBuilder{Walker: mocks.Walker{}},
 			},

@@ -39,7 +39,7 @@ func with(exp gopium.Exposer, loc gopium.Locator, bref bool) prepare {
 		// create visiting maven with reference
 		// and return it back,
 		// with ref prune cancelation func
-		ref := collections.NewReference(!bref)
+		ref := collections.NewReference(bref)
 		return &maven{exp: exp, loc: loc, ref: ref}, ref.Prune
 	}
 }
