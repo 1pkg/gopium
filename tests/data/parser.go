@@ -38,7 +38,7 @@ type Parser struct {
 func NewParser(pkg string) gopium.Parser {
 	p := &typepkg.ParserXToolPackagesAst{
 		Pattern:    fmt.Sprintf("tests/data/%s", pkg),
-		Path:       filepath.Join(gopium.Root, "tests", "data", pkg),
+		Path:       filepath.Join(gopium.Root(), "tests", "data", pkg),
 		ModeTypes:  packages.LoadAllSyntax,
 		ModeAst:    parser.ParseComments | parser.AllErrors,
 		BuildFlags: []string{"-tags=tests_data"},
