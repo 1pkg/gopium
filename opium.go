@@ -12,10 +12,8 @@ const (
 	STAMP   = "🌺 gopium @1pkg"
 )
 
-// Root defines project root path
-var Root string
-
-func init() {
+// Root defines getter for project root path
+func Root() string {
 	// grabs running root path
 	p, err := filepath.Abs(".")
 	if err != nil {
@@ -25,6 +23,5 @@ func init() {
 	for path.Base(p) != "gopium" {
 		p = path.Dir(p)
 	}
-	// update the root path
-	Root = p
+	return p
 }

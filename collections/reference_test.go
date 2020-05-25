@@ -99,6 +99,7 @@ func TestActualReference(t *testing.T) {
 	}()
 	r.Alloc("test-4")
 	r.Alloc("test-5")
+	time.Sleep(3 * time.Millisecond)
 	table := map[string]struct {
 		key string
 		val interface{}

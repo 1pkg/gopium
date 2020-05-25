@@ -107,7 +107,6 @@ func (r *Reference) Alloc(key string) {
 }
 
 // Prune releases all value waiters
-// and clean all signal resources
 func (r *Reference) Prune() {
 	// in case of nil reference
 	// just skip it
@@ -128,7 +127,4 @@ func (r *Reference) Prune() {
 			close(ch)
 		}
 	}
-	// reset vals and signals
-	r.vals = make(map[string]interface{})
-	r.signals = make(map[string]chan struct{})
 }

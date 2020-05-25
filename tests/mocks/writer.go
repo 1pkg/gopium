@@ -28,7 +28,7 @@ func (w *Writer) Writer(loc string) (io.WriteCloser, error) {
 	}
 	// remove abs part from loc
 	// replace os path separators with underscores
-	loc = strings.Replace(loc, gopium.Root, "", 1)
+	loc = strings.Replace(loc, gopium.Root(), "", 1)
 	loc = strings.ReplaceAll(loc, string(os.PathSeparator), "_")
 	loc = strings.Trim(loc, "_")
 	// if loc is inside existed rwcs
