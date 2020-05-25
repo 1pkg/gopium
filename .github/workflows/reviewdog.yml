@@ -1,0 +1,38 @@
+name: reviewdog
+on: [pull_request]
+jobs:
+  govet:
+    name: runner / govet
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code into the Go module directory
+        uses: actions/checkout@v1
+      - name: govet
+        uses: reviewdog/action-golangci-lint@v1
+        with:
+          golangci_lint_flags: "--disable-all -E govet"
+          tool_name: govet
+  golint:
+    name: runner / golint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code into the Go module directory
+        uses: actions/checkout@v1
+      - name: golint
+        uses: reviewdog/action-golangci-lint@v1
+        with:
+          golangci_lint_flags: "--disable-all -E golint"
+          tool_name: golint
+          level: warning
+  misspell:
+    name: runner / misspell
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code into the Go module directory
+        uses: actions/checkout@v1
+      - name: misspell
+        uses: reviewdog/action-golangci-lint@v1
+        with:
+          golangci_lint_flags: "--disable-all -E misspell"
+          tool_name: misspell
+          level: info
