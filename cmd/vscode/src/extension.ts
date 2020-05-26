@@ -314,10 +314,18 @@ namespace settings {
 				}
 				// depends on flag type
 				// do different serialization
-				if (typeof fval === 'boolean' && fval != false) {
-					flags.push(`-${fkey}`)
+				if (typeof fval === 'boolean') {
+					// only need to append flag
+					// on true flag value
+					if (fval != false) {
+						flags.push(`-${fkey}`)
+					}
 				} else if (Array.isArray(fval)) {
-					flags.push(`-${fkey}`, fval.join(' '))
+					// for each element of array
+					// append new value flag
+					for (const val of fval) {
+						flags.push(`-${fkey}`, String(val))
+					}
 				} else {
 					flags.push(`-${fkey}`, String(fval))
 				}

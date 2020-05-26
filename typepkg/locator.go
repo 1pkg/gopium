@@ -22,6 +22,8 @@ type Locator struct {
 // NewLocator creates new locator instance
 // from provided file set
 func NewLocator(fset *token.FileSet) *Locator {
+	// init root with defaul fset
+	// if nil fset has been provided
 	if fset == nil {
 		fset = token.NewFileSet()
 	}

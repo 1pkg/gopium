@@ -155,6 +155,7 @@ func vscope(ctx context.Context, s *types.Scope, r *regexp.Regexp, stg gopium.St
 	var wg sync.WaitGroup
 	// go through all names inside the package scope
 	// and collect all visiting closure
+	//
 	// we can't call them directly in order to backref
 	// work correctly, as we need in first iteration to
 	// enumerate all structs on the scope first

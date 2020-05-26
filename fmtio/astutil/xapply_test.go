@@ -279,18 +279,18 @@ type DocCom struct {
 				t.Fatalf("actual %v doesn't equal to expected %v", err, nil)
 			}
 			// exec
-			apkg, aerr := tcase.a(tcase.ctx, pkg, loc, tcase.h)
+			pkg, err = tcase.a(tcase.ctx, pkg, loc, tcase.h)
+			if !reflect.DeepEqual(err, tcase.err) {
+				t.Errorf("actual %v doesn't equal to expected %v", err, tcase.err)
+			}
 			// prepare
-			if apkg != nil {
-				err = sp.Persist(context.Background(), p, w, loc, apkg)
+			if pkg != nil {
+				err = sp.Persist(context.Background(), p, w, loc, pkg)
 				if !reflect.DeepEqual(err, nil) {
 					t.Fatalf("actual %v doesn't equal to expected %v", err, nil)
 				}
 			}
 			// check
-			if !reflect.DeepEqual(aerr, tcase.err) {
-				t.Errorf("actual %v doesn't equal to expected %v", aerr, tcase.err)
-			}
 			for name, rwc := range w.RWCs {
 				// check all struct
 				// against bytes map
