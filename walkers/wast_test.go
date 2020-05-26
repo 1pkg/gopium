@@ -35,12 +35,13 @@ func TestWast(t *testing.T) {
 	if !reflect.DeepEqual(err, nil) {
 		t.Fatalf("actual %v doesn't equal to %v", err, nil)
 	}
-	p := fmtio.Goprint(0, 4, false)
+	p := fmtio.NewGoprinter(0, 4, false)
 	table := map[string]struct {
 		ctx  context.Context
 		r    *regexp.Regexp
 		p    gopium.Parser
 		a    gopium.Xapply
+		sp   gopium.Persister
 		w    gopium.CategoryWriter
 		stg  gopium.Strategy
 		deep bool
@@ -53,6 +54,7 @@ func TestWast(t *testing.T) {
 			r:   regexp.MustCompile(`.*`),
 			p:   data.NewParser("empty"),
 			a:   astutil.UFFN,
+			sp:  astutil.Package{},
 			stg: np,
 			sts: map[string][]byte{},
 		},
@@ -61,6 +63,7 @@ func TestWast(t *testing.T) {
 			r:   regexp.MustCompile(`.*`),
 			p:   data.NewParser("single"),
 			a:   astutil.UFFN,
+			sp:  astutil.Package{},
 			stg: np,
 			sts: map[string][]byte{
 				"tests_data_single_file.go": []byte(`
@@ -81,6 +84,7 @@ type Single struct {
 			r:   regexp.MustCompile(`.*`),
 			p:   data.NewParser("single"),
 			a:   astutil.UFFN,
+			sp:  astutil.Package{},
 			stg: np,
 			sts: map[string][]byte{},
 			err: context.Canceled,
@@ -90,6 +94,7 @@ type Single struct {
 			r:   regexp.MustCompile(`.*`),
 			p:   mocks.Parser{Typeserr: errors.New("test-1")},
 			a:   astutil.UFFN,
+			sp:  astutil.Package{},
 			stg: np,
 			sts: map[string][]byte{},
 			err: errors.New("test-1"),
@@ -99,6 +104,7 @@ type Single struct {
 			r:   regexp.MustCompile(`.*`),
 			p:   mocks.Parser{Parser: data.NewParser("single"), Asterr: errors.New("test-2")},
 			a:   astutil.UFFN,
+			sp:  astutil.Package{},
 			stg: np,
 			sts: map[string][]byte{},
 			err: errors.New("test-2"),
@@ -108,6 +114,7 @@ type Single struct {
 			r:   regexp.MustCompile(`.*`),
 			p:   data.NewParser("single"),
 			a:   astutil.UFFN,
+			sp:  astutil.Package{},
 			stg: &mocks.Strategy{Err: errors.New("test-3")},
 			sts: map[string][]byte{},
 			err: errors.New("test-3"),
@@ -117,6 +124,7 @@ type Single struct {
 			r:   regexp.MustCompile(`.*`),
 			p:   data.NewParser("single"),
 			a:   astutil.UFFN,
+			sp:  astutil.Package{},
 			w:   (&mocks.Writer{Gerr: errors.New("test-4")}),
 			stg: np,
 			sts: map[string][]byte{},
@@ -127,6 +135,7 @@ type Single struct {
 			r:   regexp.MustCompile(`.*`),
 			p:   data.NewParser("single"),
 			a:   astutil.UFFN,
+			sp:  astutil.Package{},
 			w:   (&mocks.Writer{Cerr: errors.New("test-5")}),
 			stg: np,
 			sts: map[string][]byte{},
@@ -137,15 +146,27 @@ type Single struct {
 			r:   regexp.MustCompile(`.*`),
 			p:   data.NewParser("single"),
 			a:   (&mocks.Xapply{Err: errors.New("test-6")}).Apply,
+			sp:  astutil.Package{},
 			stg: np,
 			sts: map[string][]byte{},
 			err: errors.New("test-6"),
+		},
+		"single struct pkg should visit nothing on persister error": {
+			ctx: context.Background(),
+			r:   regexp.MustCompile(`.*`),
+			p:   data.NewParser("single"),
+			a:   astutil.UFFN,
+			sp:  mocks.Persister{Err: errors.New("test-7")},
+			stg: np,
+			sts: map[string][]byte{},
+			err: errors.New("test-7"),
 		},
 		"multi structs pkg should visit all expected levels structs with deep": {
 			ctx:  context.Background(),
 			r:    regexp.MustCompile(`([AZ])`),
 			p:    data.NewParser("multi"),
 			a:    astutil.UFFN,
+			sp:   astutil.Package{},
 			stg:  pck,
 			deep: true,
 			sts: map[string][]byte{
@@ -233,6 +254,7 @@ type (
 			r:    regexp.MustCompile(`([AZ])`),
 			p:    data.NewParser("multi"),
 			a:    astutil.UFFN,
+			sp:   astutil.Package{},
 			stg:  pck,
 			bref: true,
 			sts: map[string][]byte{
@@ -321,8 +343,9 @@ type (
 			// prepare
 			w := &mocks.Writer{}
 			wast := wast{
-				apply:  tcase.a,
-				writer: w,
+				apply:     tcase.a,
+				persister: tcase.sp,
+				writer:    w,
 			}.With(tcase.p, m, p, tcase.deep, tcase.bref)
 			if tcase.w != nil {
 				wast.writer = tcase.w

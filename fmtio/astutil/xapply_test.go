@@ -18,7 +18,7 @@ import (
 	"1pkg/gopium/typepkg"
 )
 
-func TestApply(t *testing.T) {
+func TestXapply(t *testing.T) {
 	// prepare
 	lh := collections.NewHierarchic(gopium.Root())
 	lh.Push(
@@ -89,7 +89,8 @@ func TestApply(t *testing.T) {
 	)
 	cctx, cancel := context.WithCancel(context.Background())
 	cancel()
-	p := fmtio.Goprint(0, 4, false)
+	p := fmtio.NewGoprinter(0, 4, false)
+	sp := Package{}
 	table := map[string]struct {
 		p   gopium.Parser
 		a   gopium.Xapply
@@ -215,7 +216,7 @@ type DocCom struct {
 				&typepkg.ParserXToolPackagesAst{
 					ModeAst: parser.ParseComments | parser.AllErrors,
 				},
-				fmtio.Goprint(0, 4, false),
+				fmtio.NewGoprinter(0, 4, false),
 			),
 			ctx: cctx,
 			r:   map[string][]byte{},
@@ -228,7 +229,7 @@ type DocCom struct {
 				&typepkg.ParserXToolPackagesAst{
 					ModeAst: parser.ParseComments | parser.AllErrors,
 				},
-				fmtio.Goprint(0, 4, false),
+				fmtio.NewGoprinter(0, 4, false),
 			),
 			h:   lh,
 			ctx: context.Background(),
@@ -240,7 +241,7 @@ type DocCom struct {
 			a: note(
 				walker{},
 				mocks.Parser{Asterr: errors.New("test-1")},
-				fmtio.Goprint(0, 4, false),
+				fmtio.NewGoprinter(0, 4, false),
 			),
 			ctx: context.Background(),
 			r:   map[string][]byte{},
@@ -252,7 +253,7 @@ type DocCom struct {
 				walker{},
 				&typepkg.ParserXToolPackagesAst{
 					ModeAst: parser.ParseComments | parser.AllErrors,
-				}, mocks.Printer{Err: errors.New("test-2")}.Printer,
+				}, mocks.Printer{Err: errors.New("test-2")},
 			),
 			ctx: context.Background(),
 			r:   map[string][]byte{},
@@ -281,7 +282,7 @@ type DocCom struct {
 			apkg, aerr := tcase.a(tcase.ctx, pkg, loc, tcase.h)
 			// prepare
 			if apkg != nil {
-				err = p.Save(w)(context.Background(), apkg, loc)
+				err = sp.Persist(context.Background(), p, w, loc, apkg)
 				if !reflect.DeepEqual(err, nil) {
 					t.Fatalf("actual %v doesn't equal to expected %v", err, nil)
 				}

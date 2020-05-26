@@ -1,4 +1,4 @@
-package fmtio
+package astutil
 
 import (
 	"bytes"
@@ -9,27 +9,27 @@ import (
 	"testing"
 
 	"1pkg/gopium"
+	"1pkg/gopium/fmtio"
 	"1pkg/gopium/tests/data"
 	"1pkg/gopium/tests/mocks"
 )
 
-func TestPrinter(t *testing.T) {
+func TestPackage(t *testing.T) {
 	// prepare
 	cctx, cancel := context.WithCancel(context.Background())
 	cancel()
 	table := map[string]struct {
-		p    gopium.Parser
-		pr   Printer
-		w    gopium.Writer
-		skip bool
-		ctx  context.Context
-		r    map[string][]byte
-		err  error
+		xp  gopium.Parser
+		ctx context.Context
+		p   gopium.Printer
+		w   gopium.Writer
+		r   map[string][]byte
+		err error
 	}{
 		"empty pkg should print nothing": {
-			p:   data.NewParser("empty"),
-			pr:  Goprint(0, 4, true),
+			xp:  data.NewParser("empty"),
 			ctx: context.Background(),
+			p:   fmtio.NewGoprinter(0, 4, true),
 			r: map[string][]byte{
 				"tests_data_empty_file.go": []byte(`
 //+build tests_data
@@ -38,10 +38,10 @@ package empty
 `),
 			},
 		},
-		"single struct pkg should print the struct": {
-			p:   data.NewParser("single"),
-			pr:  Goprint(0, 4, false),
+		"single struct pkg should print and persists the struct": {
+			xp:  data.NewParser("single"),
 			ctx: context.Background(),
+			p:   fmtio.NewGoprinter(0, 4, false),
 			r: map[string][]byte{
 				"tests_data_single_file.go": []byte(`
 //+build tests_data
@@ -56,42 +56,34 @@ type Single struct {
 `),
 			},
 		},
-		"single struct pkg should print nothing on canceled context": {
-			p:   data.NewParser("single"),
-			pr:  Goprint(0, 4, false),
+		"single struct pkg should persist nothing on canceled context": {
+			xp:  data.NewParser("single"),
 			ctx: cctx,
+			p:   fmtio.NewGoprinter(0, 4, false),
 			r:   map[string][]byte{},
 			err: context.Canceled,
 		},
-		"single struct pkg should print nothing on canceled context in printer": {
-			p:    data.NewParser("single"),
-			pr:   Goprint(0, 4, false),
-			skip: true,
-			ctx:  cctx,
-			r:    map[string][]byte{},
-			err:  context.Canceled,
-		},
-		"single struct pkg should print nothing on persist error": {
-			p:   data.NewParser("single"),
-			pr:  Goprint(0, 4, false),
+		"single struct pkg should persist nothing on persist error": {
+			xp:  data.NewParser("single"),
 			ctx: context.Background(),
+			p:   fmtio.NewGoprinter(0, 4, false),
 			w:   (&mocks.Writer{Gerr: errors.New("test-1")}),
 			r:   map[string][]byte{},
 			err: errors.New("test-1"),
 		},
-		"single struct pkg should print nothing on printer error": {
-			p:   data.NewParser("single"),
-			pr:  mocks.Printer{Err: errors.New("test-2")}.Printer,
+		"single struct pkg should persist nothing on printer error": {
+			xp:  data.NewParser("single"),
 			ctx: context.Background(),
+			p:   mocks.Printer{Err: errors.New("test-2")},
 			r: map[string][]byte{
 				"tests_data_single_file.go": []byte(``),
 			},
 			err: errors.New("test-2"),
 		},
-		"multi structs pkg should print all expected levels structs": {
-			p:   data.NewParser("multi"),
-			pr:  Goprint(0, 4, false),
+		"multi structs pkg should persist all expected levels structs": {
+			xp:  data.NewParser("multi"),
 			ctx: context.Background(),
+			p:   fmtio.NewGoprinter(0, 4, false),
 			r: map[string][]byte{
 				"tests_data_multi_file-1.go": []byte(`
 //+build tests_data
@@ -200,16 +192,12 @@ type (
 			if writer == nil {
 				writer = w
 			}
-			pkg, loc, err := tcase.p.ParseAst(context.Background())
+			pkg, loc, err := tcase.xp.ParseAst(context.Background())
 			if !reflect.DeepEqual(err, nil) {
 				t.Fatalf("actual %v doesn't equal to expected %v", err, nil)
 			}
 			// exec
-			if tcase.skip {
-				err = tcase.pr(tcase.ctx, &bytes.Buffer{}, loc.Root(), pkg)
-			} else {
-				err = tcase.pr.Save(writer)(tcase.ctx, pkg, loc)
-			}
+			err = Package{}.Persist(tcase.ctx, tcase.p, writer, loc, pkg)
 			// check
 			if !reflect.DeepEqual(err, tcase.err) {
 				t.Errorf("actual %v doesn't equal to expected %v", err, tcase.err)

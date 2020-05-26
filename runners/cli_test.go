@@ -19,7 +19,7 @@ import (
 	"golang.org/x/tools/go/packages"
 )
 
-func TestCliNew(t *testing.T) {
+func TestNewCli(t *testing.T) {
 	// prepare
 	m, err := typepkg.NewMavenGoTypes("gc", "amd64", 2, 4, 8)
 	if !reflect.DeepEqual(err, nil) {
@@ -90,7 +90,7 @@ func TestCliNew(t *testing.T) {
 						BuildFlags: []string{},
 					},
 					Exposer: m,
-					Printer: nil, // fmtio.Goprint(4, 4, true),
+					Printer: nil,
 					Deep:    true,
 					Bref:    true,
 				},
@@ -137,7 +137,7 @@ func TestCliNew(t *testing.T) {
 						BuildFlags: []string{},
 					},
 					Exposer: m,
-					Printer: nil, // fmtio.Goprint(4, 4, true),
+					Printer: nil,
 					Deep:    true,
 					Bref:    true,
 				},

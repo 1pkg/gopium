@@ -4,7 +4,6 @@ import (
 	"fmt"
 
 	"1pkg/gopium"
-	"1pkg/gopium/fmtio"
 )
 
 // list of registered types walkers
@@ -28,7 +27,7 @@ const (
 type Builder struct {
 	Parser  gopium.Parser
 	Exposer gopium.Exposer
-	Printer fmtio.Printer
+	Printer gopium.Printer
 	Deep    bool
 	Bref    bool
 }

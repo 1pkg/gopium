@@ -11,7 +11,7 @@ import (
 	"1pkg/gopium/tests"
 )
 
-func TestBytes(t *testing.T) {
+func TestXbytes(t *testing.T) {
 	// prepare
 	table := map[string]struct {
 		fmt gopium.Xbytes

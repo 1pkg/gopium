@@ -73,7 +73,7 @@ func NewCli(
 		root = build.Default.GOPATH
 	}
 	// set up parser
-	p := &typepkg.ParserXToolPackagesAst{
+	xp := &typepkg.ParserXToolPackagesAst{
 		Pattern:    pkg,
 		Root:       root,
 		Path:       path,
@@ -83,7 +83,7 @@ func NewCli(
 		BuildFlags: bflags,
 	}
 	// set up printer
-	pr := fmtio.Goprint(indent, tabwidth, usespace)
+	p := fmtio.NewGoprinter(indent, tabwidth, usespace)
 	// compile regexp
 	cregex, err := regexp.Compile(regex)
 	if err != nil {
@@ -98,9 +98,9 @@ func NewCli(
 	}
 	// set walker and strategy builders
 	wb := walkers.Builder{
-		Parser:  p,
+		Parser:  xp,
 		Exposer: m,
-		Printer: pr,
+		Printer: p,
 		Deep:    deep,
 		Bref:    backref,
 	}
