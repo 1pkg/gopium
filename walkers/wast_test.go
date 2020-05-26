@@ -10,8 +10,8 @@ import (
 	"testing"
 
 	"1pkg/gopium"
-	"1pkg/gopium/astutil"
 	"1pkg/gopium/fmtio"
+	"1pkg/gopium/fmtio/astutil"
 	"1pkg/gopium/strategies"
 	"1pkg/gopium/tests/data"
 	"1pkg/gopium/tests/mocks"
