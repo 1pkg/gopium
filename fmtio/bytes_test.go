@@ -14,7 +14,7 @@ import (
 func TestBytes(t *testing.T) {
 	// prepare
 	table := map[string]struct {
-		fmt Bytes
+		fmt gopium.Xbytes
 		f   collections.Flat
 		r   []byte
 		err error
@@ -333,7 +333,7 @@ Test,doctest,comtest,test-2,test_type,12,4,,false,false,,
 	for name, tcase := range table {
 		t.Run(name, func(t *testing.T) {
 			// exec
-			r, err := tcase.fmt(tcase.f)
+			r, err := tcase.fmt(tcase.f.Sorted())
 			// check
 			if !reflect.DeepEqual(err, tcase.err) {
 				t.Errorf("actual %v doesn't equal to expected %v", err, tcase.err)

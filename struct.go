@@ -77,3 +77,10 @@ func PadField(pad int64) Field {
 		Align: 1,
 	}
 }
+
+// Categorized defines abstraction for
+// categorized structures collection
+type Categorized interface {
+	Full() map[string]Struct
+	Cat(string) (map[string]Struct, bool)
+}

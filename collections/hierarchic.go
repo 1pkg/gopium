@@ -51,15 +51,23 @@ func (h Hierarchic) Push(key string, cat string, sts ...gopium.Struct) {
 
 // Cat returns hierarchic categoty
 // flat collection if any exists
-func (h Hierarchic) Cat(cat string) (Flat, bool) {
+func (h Hierarchic) Cat(cat string) (map[string]gopium.Struct, bool) {
 	// remove root cat from the cat
 	cat = strings.Replace(cat, h.rcat, "", 1)
 	flat, ok := h.cats[cat]
 	return flat, ok
 }
 
-// Flat converts hierarchic collection to flat collection
-func (h Hierarchic) Flat() Flat {
+// Catflat returns hierarchic categoty
+// flat collection if any exists
+func (h Hierarchic) Catflat(cat string) (Flat, bool) {
+	// cat flat is just alias to cat
+	f, ok := h.Cat(cat)
+	return Flat(f), ok
+}
+
+// Full converts hierarchic collection to flat collection
+func (h Hierarchic) Full() map[string]gopium.Struct {
 	// collect all structs by key
 	flat := make(Flat)
 	for _, lsts := range h.cats {
@@ -68,6 +76,12 @@ func (h Hierarchic) Flat() Flat {
 		}
 	}
 	return flat
+}
+
+// Flat converts hierarchic collection to flat collection
+func (h Hierarchic) Flat() Flat {
+	// flat is just alias to full
+	return Flat(h.Full())
 }
 
 // Rcat finds root category that

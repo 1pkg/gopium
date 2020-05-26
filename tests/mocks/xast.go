@@ -7,12 +7,12 @@ import (
 	"1pkg/gopium"
 )
 
-// XWalker defines mock ast xwalker implementation
-type XWalker struct {
+// Xwalker defines mock ast xwalker implementation
+type Xwalker struct {
 	Err error
 }
 
 // Walk mock implementation
-func (w XWalker) Walk(context.Context, ast.Node, gopium.XAction, gopium.XComparator) (ast.Node, error) {
+func (w Xwalker) Walk(context.Context, ast.Node, gopium.Xaction, gopium.Xcomparator) (ast.Node, error) {
 	return nil, w.Err
 }
