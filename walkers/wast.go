@@ -33,7 +33,7 @@ var (
 // wast defines packages walker ast sync implementation
 type wast struct {
 	// inner visiting parameters
-	apply  astutil.Apply
+	apply  gopium.Xapply
 	writer gopium.CategoryWriter
 	// external visiting parameters
 	parser  gopium.Parser

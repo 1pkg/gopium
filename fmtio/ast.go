@@ -10,11 +10,6 @@ import (
 	"1pkg/gopium"
 )
 
-// Ast defines abstraction for
-// formatting original ast type spec
-// accordingly to gopium struct
-type Ast func(*ast.TypeSpec, gopium.Struct) error
-
 // FSPT implements ast and combines:
 // - flatten helper
 // - fpadfilter helper
@@ -33,7 +28,7 @@ var FSPT = combine(
 
 // combine helps to pipe several
 // ast helpers to single ast func
-func combine(funcs ...Ast) Ast {
+func combine(funcs ...gopium.Xast) gopium.Xast {
 	return func(ts *ast.TypeSpec, st gopium.Struct) error {
 		// check that we are working with ast struct type
 		if _, ok := ts.Type.(*ast.StructType); !ok {

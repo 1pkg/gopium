@@ -41,7 +41,7 @@ var (
 // wout defines packages walker out implementation
 type wout struct {
 	// inner visiting parameters
-	fmt    fmtio.Bytes
+	fmt    gopium.Xbytes
 	writer gopium.Writer
 	// external visiting parameters
 	parser  gopium.TypeParser
@@ -111,7 +111,7 @@ func (w wout) write(ctx context.Context, h collections.Hierarchic) error {
 		return nil
 	}
 	// apply formatter
-	buf, err := w.fmt(f)
+	buf, err := w.fmt(f.Sorted())
 	// in case any error happened
 	// in formatter return error back
 	if err != nil {

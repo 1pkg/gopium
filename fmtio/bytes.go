@@ -9,34 +9,30 @@ import (
 	"strconv"
 	"strings"
 
-	"1pkg/gopium/collections"
+	"1pkg/gopium"
 )
-
-// Bytes defines abstraction for formatting
-// gopium flat collection to byte slice
-type Bytes func(collections.Flat) ([]byte, error)
 
 // Jsonb defines bytes implementation
 // which uses json marshal with indent
 // to serialize flat collection to byte slice
-func Jsonb(f collections.Flat) ([]byte, error) {
+func Jsonb(sts []gopium.Struct) ([]byte, error) {
 	// just use json marshal with indent
-	return json.MarshalIndent(f.Sorted(), "", "\t")
+	return json.MarshalIndent(sts, "", "\t")
 }
 
 // Xmlb defines bytes implementation
 // which uses xml marshal with indent
 // to serialize flat collection to byte slice
-func Xmlb(f collections.Flat) ([]byte, error) {
+func Xmlb(sts []gopium.Struct) ([]byte, error) {
 	// just use xml marshal with indent
-	return xml.MarshalIndent(f.Sorted(), "", "\t")
+	return xml.MarshalIndent(sts, "", "\t")
 }
 
 // Csvb defines bytes implementation
 // which serializes flat collection
 // to formatted csv byte slice
-func Csvb(rw io.ReadWriter) Bytes {
-	return func(f collections.Flat) ([]byte, error) {
+func Csvb(rw io.ReadWriter) gopium.Xbytes {
+	return func(sts []gopium.Struct) ([]byte, error) {
 		// prepare csv writer
 		w := csv.NewWriter(rw)
 		// write header
@@ -57,7 +53,7 @@ func Csvb(rw io.ReadWriter) Bytes {
 			"Field Doc",
 			"Field Comment",
 		})
-		for _, st := range f.Sorted() {
+		for _, st := range sts {
 			// go through all fields
 			// and write then one by one
 			for _, f := range st.Fields {

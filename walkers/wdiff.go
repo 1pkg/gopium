@@ -20,7 +20,7 @@ var (
 // wdiff defines packages walker difference implementation
 type wdiff struct {
 	// inner visiting parameters
-	fmt    fmtio.Diff
+	fmt    gopium.Xdiff
 	writer gopium.Writer
 	// external visiting parameters
 	parser  gopium.TypeParser

@@ -40,7 +40,7 @@ func TestWast(t *testing.T) {
 		ctx  context.Context
 		r    *regexp.Regexp
 		p    gopium.Parser
-		a    astutil.Apply
+		a    gopium.Xapply
 		w    gopium.CategoryWriter
 		stg  gopium.Strategy
 		deep bool
@@ -136,7 +136,7 @@ type Single struct {
 			ctx: context.Background(),
 			r:   regexp.MustCompile(`.*`),
 			p:   data.NewParser("single"),
-			a:   (&mocks.Apply{Err: errors.New("test-6")}).Apply,
+			a:   (&mocks.Xapply{Err: errors.New("test-6")}).Apply,
 			stg: np,
 			sts: map[string][]byte{},
 			err: errors.New("test-6"),

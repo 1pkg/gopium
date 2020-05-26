@@ -7,7 +7,6 @@ import (
 
 	"1pkg/gopium"
 	"1pkg/gopium/collections"
-	"1pkg/gopium/fmtio"
 
 	"golang.org/x/tools/go/ast/astutil"
 )
@@ -19,7 +18,12 @@ import (
 type walker struct{}
 
 // Walk walker implementation
-func (walker) Walk(ctx context.Context, node ast.Node, act gopium.XAction, cmp gopium.XComparator) (ast.Node, error) {
+func (walker) Walk(
+	ctx context.Context,
+	node ast.Node,
+	a gopium.Xaction,
+	cmp gopium.Xcomparator,
+) (ast.Node, error) {
 	// err tracks error inside astutil apply
 	var err error
 	// apply astutil apply to parsed ast package
@@ -43,7 +47,7 @@ func (walker) Walk(ctx context.Context, node ast.Node, act gopium.XAction, cmp g
 						// and skip irrelevant structs
 						if st, ok := cmp.Check(ts); ok {
 							// apply action to ast
-							err = act.Apply(ts, st)
+							err = a.Apply(ts, st)
 						}
 						// in case we have error
 						// break iteration
@@ -58,7 +62,7 @@ func (walker) Walk(ctx context.Context, node ast.Node, act gopium.XAction, cmp g
 
 // fmtioast defines gopium ast walk
 // action fmtio ast implementation
-type fmtast fmtio.Ast
+type fmtast gopium.Xast
 
 // Apply fmtast implementation
 func (fmt fmtast) Apply(ts *ast.TypeSpec, st gopium.Struct) error {
@@ -82,14 +86,14 @@ func (b *bcollect) Apply(ts *ast.TypeSpec, st gopium.Struct) error {
 	return nil
 }
 
-// pressdoccom defines gopium ast walk
+// pressnote defines gopium ast walk
 // action press doc to file implementation
 // which presses comments from
 // gopium structure to ast file
-type pressdoccom ast.File
+type pressnote ast.File
 
-// Apply pressdoc implementation
-func (pdc *pressdoccom) Apply(ts *ast.TypeSpec, st gopium.Struct) error {
+// Apply pressnote implementation
+func (pdc *pressnote) Apply(ts *ast.TypeSpec, st gopium.Struct) error {
 	// prepare struct docs slice
 	file := ((*ast.File)(pdc))
 	stdocs := make([]*ast.Comment, 0, len(st.Doc))
@@ -150,15 +154,15 @@ func (pdc *pressdoccom) Apply(ts *ast.TypeSpec, st gopium.Struct) error {
 	return nil
 }
 
-// cmpid defines gopium ast walk
+// flatid defines gopium ast walk
 // comparator structs flat ids implementation
-type cmpid struct {
+type flatid struct {
 	loc gopium.Locator
 	sts collections.Flat
 }
 
-// Check cmpid implementation
-func (cmp *cmpid) Check(ts *ast.TypeSpec) (gopium.Struct, bool) {
+// Check flatid implementation
+func (cmp flatid) Check(ts *ast.TypeSpec) (gopium.Struct, bool) {
 	// just check if struct
 	// with such id is inside
 	id := cmp.loc.ID(ts.Pos())
@@ -166,15 +170,22 @@ func (cmp *cmpid) Check(ts *ast.TypeSpec) (gopium.Struct, bool) {
 	return st, ok
 }
 
-// cmpsorted defines gopium ast walk
+// sorted defines gopium ast walk
 // comparator structs flat implementation
 // which uses match on sorted structs name
-type cmpsorted struct {
+type sorted struct {
 	sts []gopium.Struct
 }
 
-// Check cmpsorted implementation
-func (cmp cmpsorted) Check(ts *ast.TypeSpec) (gopium.Struct, bool) {
+// newsorted creates sorted
+// comparator from structs map
+func newsorted(sts map[string]gopium.Struct) *sorted {
+	f := collections.Flat(sts)
+	return &sorted{sts: f.Sorted()}
+}
+
+// Check sorted implementation
+func (cmp sorted) Check(ts *ast.TypeSpec) (gopium.Struct, bool) {
 	// if sorted list is not empty
 	if len(cmp.sts) > 0 {
 		// check the top sorted element name
@@ -187,17 +198,17 @@ func (cmp cmpsorted) Check(ts *ast.TypeSpec) (gopium.Struct, bool) {
 	return gopium.Struct{}, false
 }
 
-// cmpnote defines gopium ast walk
+// hasnote defines gopium ast walk
 // comparator adapter implementation
 // which adapts provided comparator by adding
 // check that structure or any structure's
 // field has any notes attached to them
-type cmpnote struct {
-	cmp gopium.XComparator
+type hasnote struct {
+	cmp gopium.Xcomparator
 }
 
-// Check cmpnote implementation
-func (cmp cmpnote) Check(ts *ast.TypeSpec) (gopium.Struct, bool) {
+// Check hasnote implementation
+func (cmp hasnote) Check(ts *ast.TypeSpec) (gopium.Struct, bool) {
 	// use underlying comparator func
 	// check if we should process struct
 	if st, ok := cmp.cmp.Check(ts); ok {
