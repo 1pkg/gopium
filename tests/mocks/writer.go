@@ -7,13 +7,14 @@ import (
 	"sync"
 
 	"1pkg/gopium"
+	"1pkg/gopium/tests"
 )
 
 // Writer defines mock category writer implementation
 type Writer struct {
 	Gerr  error
 	Cerr  error
-	RWCs  map[string]*RWC
+	RWCs  map[string]*tests.RWC
 	mutex sync.Mutex
 }
 
@@ -25,7 +26,7 @@ func (w *Writer) Generate(loc string) (io.WriteCloser, error) {
 	defer w.mutex.Unlock()
 	w.mutex.Lock()
 	if w.RWCs == nil {
-		w.RWCs = make(map[string]*RWC)
+		w.RWCs = make(map[string]*tests.RWC)
 	}
 	// remove abs part from loc
 	// replace os path separators with underscores
@@ -39,7 +40,7 @@ func (w *Writer) Generate(loc string) (io.WriteCloser, error) {
 	}
 	// otherwise create new rwc
 	// store and return it back
-	rwc := &RWC{}
+	rwc := &tests.RWC{}
 	w.RWCs[loc] = rwc
 	return rwc, w.Gerr
 }

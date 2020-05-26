@@ -8,7 +8,7 @@ import (
 
 	"1pkg/gopium"
 	"1pkg/gopium/collections"
-	"1pkg/gopium/tests/mocks"
+	"1pkg/gopium/tests"
 )
 
 func TestBytes(t *testing.T) {
@@ -243,7 +243,7 @@ Struct Name,Struct Doc,Struct Comment,Field Name,Field Type,Field Size,Field Ali
 `),
 		},
 		"csv should return error on writer error": {
-			fmt: Csvb(&mocks.RWC{Werr: errors.New("test")}),
+			fmt: Csvb(&tests.RWC{Werr: errors.New("test")}),
 			f: collections.Flat{
 				"test-2": gopium.Struct{
 					Name:    "Test",

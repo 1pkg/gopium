@@ -11,6 +11,7 @@ import (
 	"1pkg/gopium"
 	"1pkg/gopium/collections"
 	"1pkg/gopium/strategies"
+	"1pkg/gopium/tests"
 	"1pkg/gopium/tests/data"
 	"1pkg/gopium/tests/mocks"
 	"1pkg/gopium/typepkg"
@@ -168,7 +169,7 @@ func TestVscope(t *testing.T) {
 			err: context.Canceled,
 		},
 		"single struct pkg should visit nothing on canceled context in closures": {
-			ctx: &mocks.Context{After: 2},
+			ctx: &tests.Context{After: 2},
 			r:   regexp.MustCompile(`.*`),
 			m:   m,
 			p:   data.NewParser("single"),
@@ -682,7 +683,7 @@ func TestVdeep(t *testing.T) {
 			err: context.Canceled,
 		},
 		"nested struct pkg should visit nothing on canceled context": {
-			ctx: &mocks.Context{After: 2},
+			ctx: &tests.Context{After: 2},
 			r:   regexp.MustCompile(`.*`),
 			m:   m,
 			p:   data.NewParser("nested"),

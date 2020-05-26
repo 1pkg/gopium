@@ -5,9 +5,9 @@ import (
 	"regexp"
 
 	"1pkg/gopium"
-	"1pkg/gopium/astutil"
 	"1pkg/gopium/collections"
 	"1pkg/gopium/fmtio"
+	"1pkg/gopium/fmtio/astutil"
 )
 
 // list of wast presets

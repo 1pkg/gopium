@@ -11,6 +11,7 @@ import (
 
 	"1pkg/gopium"
 	"1pkg/gopium/strategies"
+	"1pkg/gopium/tests"
 	"1pkg/gopium/tests/data"
 	"1pkg/gopium/tests/mocks"
 	"1pkg/gopium/typepkg"
@@ -201,7 +202,7 @@ func TestWdiff(t *testing.T) {
 			r:   regexp.MustCompile(`.*`),
 			p:   data.NewParser("single"),
 			fmt: mocks.Xdiff{}.Diff,
-			w: (&mocks.Writer{RWCs: map[string]*mocks.RWC{
+			w: (&mocks.Writer{RWCs: map[string]*tests.RWC{
 				"tests_data_single_gopium": {Werr: errors.New("test-5")},
 			}}),
 			stg: np,
@@ -213,7 +214,7 @@ func TestWdiff(t *testing.T) {
 			r:   regexp.MustCompile(`.*`),
 			p:   data.NewParser("single"),
 			fmt: mocks.Xdiff{}.Diff,
-			w: (&mocks.Writer{RWCs: map[string]*mocks.RWC{
+			w: (&mocks.Writer{RWCs: map[string]*tests.RWC{
 				"tests_data_single_gopium": {Cerr: errors.New("test-6")},
 			}}),
 			stg: np,

@@ -1,4 +1,4 @@
-package mocks
+package tests
 
 import (
 	"context"
