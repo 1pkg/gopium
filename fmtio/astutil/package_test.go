@@ -30,6 +30,7 @@ func TestPackage(t *testing.T) {
 			xp:  data.NewParser("empty"),
 			ctx: context.Background(),
 			p:   fmtio.NewGoprinter(0, 4, true),
+			w:   &mocks.Writer{},
 			r: map[string][]byte{
 				"tests_data_empty_file.go": []byte(`
 //+build tests_data
@@ -42,6 +43,7 @@ package empty
 			xp:  data.NewParser("single"),
 			ctx: context.Background(),
 			p:   fmtio.NewGoprinter(0, 4, false),
+			w:   &mocks.Writer{},
 			r: map[string][]byte{
 				"tests_data_single_file.go": []byte(`
 //+build tests_data
@@ -60,6 +62,7 @@ type Single struct {
 			xp:  data.NewParser("single"),
 			ctx: cctx,
 			p:   fmtio.NewGoprinter(0, 4, false),
+			w:   &mocks.Writer{},
 			r:   map[string][]byte{},
 			err: context.Canceled,
 		},
@@ -75,6 +78,7 @@ type Single struct {
 			xp:  data.NewParser("single"),
 			ctx: context.Background(),
 			p:   mocks.Printer{Err: errors.New("test-2")},
+			w:   &mocks.Writer{},
 			r: map[string][]byte{
 				"tests_data_single_file.go": []byte(``),
 			},
@@ -84,6 +88,7 @@ type Single struct {
 			xp:  data.NewParser("multi"),
 			ctx: context.Background(),
 			p:   fmtio.NewGoprinter(0, 4, false),
+			w:   &mocks.Writer{},
 			r: map[string][]byte{
 				"tests_data_multi_file-1.go": []byte(`
 //+build tests_data
@@ -187,45 +192,44 @@ type (
 	for name, tcase := range table {
 		t.Run(name, func(t *testing.T) {
 			// prepare
-			writer := tcase.w
-			w := &mocks.Writer{}
-			if writer == nil {
-				writer = w
-			}
 			pkg, loc, err := tcase.xp.ParseAst(context.Background())
 			if !reflect.DeepEqual(err, nil) {
 				t.Fatalf("actual %v doesn't equal to expected %v", err, nil)
 			}
 			// exec
-			err = Package{}.Persist(tcase.ctx, tcase.p, writer, loc, pkg)
+			err = Package{}.Persist(tcase.ctx, tcase.p, tcase.w, loc, pkg)
 			// check
 			if !reflect.DeepEqual(err, tcase.err) {
 				t.Errorf("actual %v doesn't equal to expected %v", err, tcase.err)
 			}
-			for name, rwc := range w.RWCs {
-				// check all struct
-				// against bytes map
-				if st, ok := tcase.r[name]; ok {
-					// read rwc to buffer
-					var buf bytes.Buffer
-					_, err := buf.ReadFrom(rwc)
-					if !reflect.DeepEqual(err, nil) {
-						t.Errorf("actual %v doesn't equal to expected %v", err, nil)
+			// process checks only on success
+			if tcase.err == nil {
+				w := tcase.w.(*mocks.Writer)
+				for name, rwc := range w.RWCs {
+					// check all struct
+					// against bytes map
+					if st, ok := tcase.r[name]; ok {
+						// read rwc to buffer
+						var buf bytes.Buffer
+						_, err := buf.ReadFrom(rwc)
+						if !reflect.DeepEqual(err, nil) {
+							t.Errorf("actual %v doesn't equal to expected %v", err, nil)
+						}
+						// format actual and expected identically
+						actual := strings.Trim(string(buf.Bytes()), "\n")
+						expected := strings.Trim(string(st), "\n")
+						if !reflect.DeepEqual(actual, expected) {
+							t.Errorf("name %v actual %v doesn't equal to expected %v", name, actual, expected)
+						}
+						delete(tcase.r, name)
+					} else {
+						t.Errorf("actual %v doesn't equal to expected %v", name, "")
 					}
-					// format actual and expected identically
-					actual := strings.Trim(string(buf.Bytes()), "\n")
-					expected := strings.Trim(string(st), "\n")
-					if !reflect.DeepEqual(actual, expected) {
-						t.Errorf("name %v actual %v doesn't equal to expected %v", name, actual, expected)
-					}
-					delete(tcase.r, name)
-				} else {
-					t.Errorf("actual %v doesn't equal to expected %v", name, "")
 				}
-			}
-			// check that map has been drained
-			if !reflect.DeepEqual(tcase.r, map[string][]byte{}) {
-				t.Errorf("actual %v doesn't equal to expected %v", tcase.r, map[string][]byte{})
+				// check that map has been drained
+				if !reflect.DeepEqual(tcase.r, map[string][]byte{}) {
+					t.Errorf("actual %v doesn't equal to expected %v", tcase.r, map[string][]byte{})
+				}
 			}
 		})
 	}

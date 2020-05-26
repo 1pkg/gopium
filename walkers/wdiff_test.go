@@ -11,7 +11,6 @@ import (
 
 	"1pkg/gopium"
 	"1pkg/gopium/strategies"
-	"1pkg/gopium/tests"
 	"1pkg/gopium/tests/data"
 	"1pkg/gopium/tests/mocks"
 	"1pkg/gopium/typepkg"
@@ -51,6 +50,7 @@ func TestWdiff(t *testing.T) {
 			r:   regexp.MustCompile(`.*`),
 			p:   data.NewParser("empty"),
 			fmt: mocks.Xdiff{}.Diff,
+			w:   &mocks.Writer{},
 			stg: np,
 			sts: map[string][]byte{},
 		},
@@ -59,6 +59,7 @@ func TestWdiff(t *testing.T) {
 			r:   regexp.MustCompile(`.*`),
 			p:   data.NewParser("single"),
 			fmt: mocks.Xdiff{}.Diff,
+			w:   &mocks.Writer{},
 			stg: np,
 			sts: map[string][]byte{
 				"tests_data_single_gopium": []byte(`
@@ -156,6 +157,7 @@ func TestWdiff(t *testing.T) {
 			r:   regexp.MustCompile(`.*`),
 			p:   data.NewParser("single"),
 			fmt: mocks.Xdiff{}.Diff,
+			w:   &mocks.Writer{},
 			stg: np,
 			sts: map[string][]byte{},
 			err: context.Canceled,
@@ -165,6 +167,7 @@ func TestWdiff(t *testing.T) {
 			r:   regexp.MustCompile(`.*`),
 			p:   mocks.Parser{Typeserr: errors.New("test-1")},
 			fmt: mocks.Xdiff{}.Diff,
+			w:   &mocks.Writer{},
 			stg: np,
 			sts: map[string][]byte{},
 			err: errors.New("test-1"),
@@ -174,6 +177,7 @@ func TestWdiff(t *testing.T) {
 			r:   regexp.MustCompile(`.*`),
 			p:   data.NewParser("single"),
 			fmt: mocks.Xdiff{}.Diff,
+			w:   &mocks.Writer{},
 			stg: &mocks.Strategy{Err: errors.New("test-2")},
 			sts: map[string][]byte{},
 			err: errors.New("test-2"),
@@ -193,6 +197,7 @@ func TestWdiff(t *testing.T) {
 			r:   regexp.MustCompile(`.*`),
 			p:   data.NewParser("single"),
 			fmt: mocks.Xdiff{Err: errors.New("test-4")}.Diff,
+			w:   &mocks.Writer{},
 			stg: np,
 			sts: map[string][]byte{},
 			err: errors.New("test-4"),
@@ -202,7 +207,7 @@ func TestWdiff(t *testing.T) {
 			r:   regexp.MustCompile(`.*`),
 			p:   data.NewParser("single"),
 			fmt: mocks.Xdiff{}.Diff,
-			w: (&mocks.Writer{RWCs: map[string]*tests.RWC{
+			w: (&mocks.Writer{RWCs: map[string]*mocks.RWC{
 				"tests_data_single_gopium": {Werr: errors.New("test-5")},
 			}}),
 			stg: np,
@@ -214,7 +219,7 @@ func TestWdiff(t *testing.T) {
 			r:   regexp.MustCompile(`.*`),
 			p:   data.NewParser("single"),
 			fmt: mocks.Xdiff{}.Diff,
-			w: (&mocks.Writer{RWCs: map[string]*tests.RWC{
+			w: (&mocks.Writer{RWCs: map[string]*mocks.RWC{
 				"tests_data_single_gopium": {Cerr: errors.New("test-6")},
 			}}),
 			stg: np,
@@ -226,6 +231,7 @@ func TestWdiff(t *testing.T) {
 			r:    regexp.MustCompile(`([AZ])`),
 			p:    data.NewParser("multi"),
 			fmt:  mocks.Xdiff{}.Diff,
+			w:    &mocks.Writer{},
 			stg:  pck,
 			deep: true,
 			sts: map[string][]byte{
@@ -542,6 +548,7 @@ func TestWdiff(t *testing.T) {
 			r:    regexp.MustCompile(`([AZ])`),
 			p:    data.NewParser("multi"),
 			fmt:  mocks.Xdiff{}.Diff,
+			w:    &mocks.Writer{},
 			stg:  pck,
 			bref: true,
 			sts: map[string][]byte{
@@ -777,44 +784,44 @@ func TestWdiff(t *testing.T) {
 	for name, tcase := range table {
 		t.Run(name, func(t *testing.T) {
 			// prepare
-			w := &mocks.Writer{}
 			wdiff := wdiff{
 				fmt:    tcase.fmt,
-				writer: w,
+				writer: tcase.w,
 			}.With(tcase.p, m, tcase.deep, tcase.bref)
-			if tcase.w != nil {
-				wdiff.writer = tcase.w
-			}
 			// exec
 			err := wdiff.Visit(tcase.ctx, tcase.r, tcase.stg)
 			// check
 			if !reflect.DeepEqual(err, tcase.err) {
 				t.Errorf("actual %v doesn't equal to expected %v", err, tcase.err)
 			}
-			for id, rwc := range w.RWCs {
-				// check all struct
-				// against bytes map
-				if st, ok := tcase.sts[id]; ok {
-					// read rwc to buffer
-					var buf bytes.Buffer
-					_, err := buf.ReadFrom(rwc)
-					if !reflect.DeepEqual(err, nil) {
-						t.Errorf("actual %v doesn't equal to expected %v", err, nil)
+			// process checks only on success
+			if tcase.err == nil {
+				w := tcase.w.(*mocks.Writer)
+				for id, rwc := range w.RWCs {
+					// check all struct
+					// against bytes map
+					if st, ok := tcase.sts[id]; ok {
+						// read rwc to buffer
+						var buf bytes.Buffer
+						_, err := buf.ReadFrom(rwc)
+						if !reflect.DeepEqual(err, nil) {
+							t.Errorf("actual %v doesn't equal to expected %v", err, nil)
+						}
+						// format actual and expected identically
+						actual := strings.Trim(string(buf.Bytes()), "\n")
+						expected := strings.Trim(string(st), "\n")
+						if !reflect.DeepEqual(actual, expected) {
+							t.Errorf("id %v actual %v doesn't equal to expected %v", id, actual, expected)
+						}
+						delete(tcase.sts, id)
+					} else {
+						t.Errorf("actual %v doesn't equal to expected %v", id, "")
 					}
-					// format actual and expected identically
-					actual := strings.Trim(string(buf.Bytes()), "\n")
-					expected := strings.Trim(string(st), "\n")
-					if !reflect.DeepEqual(actual, expected) {
-						t.Errorf("id %v actual %v doesn't equal to expected %v", id, actual, expected)
-					}
-					delete(tcase.sts, id)
-				} else {
-					t.Errorf("actual %v doesn't equal to expected %v", id, "")
 				}
-			}
-			// check that map has been drained
-			if !reflect.DeepEqual(tcase.sts, map[string][]byte{}) {
-				t.Errorf("actual %v doesn't equal to expected %v", tcase.sts, map[string][]byte{})
+				// check that map has been drained
+				if !reflect.DeepEqual(tcase.sts, map[string][]byte{}) {
+					t.Errorf("actual %v doesn't equal to expected %v", tcase.sts, map[string][]byte{})
+				}
 			}
 		})
 	}

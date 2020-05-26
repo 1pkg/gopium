@@ -55,6 +55,7 @@ func TestWast(t *testing.T) {
 			p:   data.NewParser("empty"),
 			a:   astutil.UFFN,
 			sp:  astutil.Package{},
+			w:   &mocks.Writer{},
 			stg: np,
 			sts: map[string][]byte{},
 		},
@@ -64,6 +65,7 @@ func TestWast(t *testing.T) {
 			p:   data.NewParser("single"),
 			a:   astutil.UFFN,
 			sp:  astutil.Package{},
+			w:   &mocks.Writer{},
 			stg: np,
 			sts: map[string][]byte{
 				"tests_data_single_file.go": []byte(`
@@ -85,6 +87,7 @@ type Single struct {
 			p:   data.NewParser("single"),
 			a:   astutil.UFFN,
 			sp:  astutil.Package{},
+			w:   &mocks.Writer{},
 			stg: np,
 			sts: map[string][]byte{},
 			err: context.Canceled,
@@ -95,6 +98,7 @@ type Single struct {
 			p:   mocks.Parser{Typeserr: errors.New("test-1")},
 			a:   astutil.UFFN,
 			sp:  astutil.Package{},
+			w:   &mocks.Writer{},
 			stg: np,
 			sts: map[string][]byte{},
 			err: errors.New("test-1"),
@@ -105,6 +109,7 @@ type Single struct {
 			p:   mocks.Parser{Parser: data.NewParser("single"), Asterr: errors.New("test-2")},
 			a:   astutil.UFFN,
 			sp:  astutil.Package{},
+			w:   &mocks.Writer{},
 			stg: np,
 			sts: map[string][]byte{},
 			err: errors.New("test-2"),
@@ -115,6 +120,7 @@ type Single struct {
 			p:   data.NewParser("single"),
 			a:   astutil.UFFN,
 			sp:  astutil.Package{},
+			w:   &mocks.Writer{},
 			stg: &mocks.Strategy{Err: errors.New("test-3")},
 			sts: map[string][]byte{},
 			err: errors.New("test-3"),
@@ -147,6 +153,7 @@ type Single struct {
 			p:   data.NewParser("single"),
 			a:   (&mocks.Xapply{Err: errors.New("test-6")}).Apply,
 			sp:  astutil.Package{},
+			w:   &mocks.Writer{},
 			stg: np,
 			sts: map[string][]byte{},
 			err: errors.New("test-6"),
@@ -157,6 +164,7 @@ type Single struct {
 			p:   data.NewParser("single"),
 			a:   astutil.UFFN,
 			sp:  mocks.Persister{Err: errors.New("test-7")},
+			w:   &mocks.Writer{},
 			stg: np,
 			sts: map[string][]byte{},
 			err: errors.New("test-7"),
@@ -167,6 +175,7 @@ type Single struct {
 			p:    data.NewParser("multi"),
 			a:    astutil.UFFN,
 			sp:   astutil.Package{},
+			w:    &mocks.Writer{},
 			stg:  pck,
 			deep: true,
 			sts: map[string][]byte{
@@ -255,6 +264,7 @@ type (
 			p:    data.NewParser("multi"),
 			a:    astutil.UFFN,
 			sp:   astutil.Package{},
+			w:    &mocks.Writer{},
 			stg:  pck,
 			bref: true,
 			sts: map[string][]byte{
@@ -341,45 +351,45 @@ type (
 	for name, tcase := range table {
 		t.Run(name, func(t *testing.T) {
 			// prepare
-			w := &mocks.Writer{}
 			wast := wast{
 				apply:     tcase.a,
 				persister: tcase.sp,
-				writer:    w,
+				writer:    tcase.w,
 			}.With(tcase.p, m, p, tcase.deep, tcase.bref)
-			if tcase.w != nil {
-				wast.writer = tcase.w
-			}
 			// exec
 			err := wast.Visit(tcase.ctx, tcase.r, tcase.stg)
 			// check
 			if !reflect.DeepEqual(err, tcase.err) {
 				t.Errorf("actual %v doesn't equal to expected %v", err, tcase.err)
 			}
-			for id, rwc := range w.RWCs {
-				// check all struct
-				// against bytes map
-				if st, ok := tcase.sts[id]; ok {
-					// read rwc to buffer
-					var buf bytes.Buffer
-					_, err := buf.ReadFrom(rwc)
-					if !reflect.DeepEqual(err, nil) {
-						t.Errorf("actual %v doesn't equal to expected %v", err, nil)
+			// process checks only on success
+			if tcase.err == nil {
+				w := tcase.w.(*mocks.Writer)
+				for id, rwc := range w.RWCs {
+					// check all struct
+					// against bytes map
+					if st, ok := tcase.sts[id]; ok {
+						// read rwc to buffer
+						var buf bytes.Buffer
+						_, err := buf.ReadFrom(rwc)
+						if !reflect.DeepEqual(err, nil) {
+							t.Errorf("actual %v doesn't equal to expected %v", err, nil)
+						}
+						// format actual and expected identically
+						actual := strings.Trim(string(buf.Bytes()), "\n")
+						expected := strings.Trim(string(st), "\n")
+						if !reflect.DeepEqual(actual, expected) {
+							t.Errorf("id %v actual %v doesn't equal to expected %v", id, actual, expected)
+						}
+						delete(tcase.sts, id)
+					} else {
+						t.Errorf("actual %v doesn't equal to expected %v", id, "")
 					}
-					// format actual and expected identically
-					actual := strings.Trim(string(buf.Bytes()), "\n")
-					expected := strings.Trim(string(st), "\n")
-					if !reflect.DeepEqual(actual, expected) {
-						t.Errorf("id %v actual %v doesn't equal to expected %v", id, actual, expected)
-					}
-					delete(tcase.sts, id)
-				} else {
-					t.Errorf("actual %v doesn't equal to expected %v", id, "")
 				}
-			}
-			// check that map has been drained
-			if !reflect.DeepEqual(tcase.sts, map[string][]byte{}) {
-				t.Errorf("actual %v doesn't equal to expected %v", tcase.sts, map[string][]byte{})
+				// check that map has been drained
+				if !reflect.DeepEqual(tcase.sts, map[string][]byte{}) {
+					t.Errorf("actual %v doesn't equal to expected %v", tcase.sts, map[string][]byte{})
+				}
 			}
 		})
 	}

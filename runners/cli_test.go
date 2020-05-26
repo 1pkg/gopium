@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"1pkg/gopium"
+	"1pkg/gopium/fmtio"
 	"1pkg/gopium/strategies"
 	"1pkg/gopium/tests/mocks"
 	"1pkg/gopium/typepkg"
@@ -90,7 +91,7 @@ func TestNewCli(t *testing.T) {
 						BuildFlags: []string{},
 					},
 					Exposer: m,
-					Printer: nil,
+					Printer: fmtio.NewGoprinter(4, 4, true),
 					Deep:    true,
 					Bref:    true,
 				},
@@ -137,7 +138,7 @@ func TestNewCli(t *testing.T) {
 						BuildFlags: []string{},
 					},
 					Exposer: m,
-					Printer: nil,
+					Printer: fmtio.NewGoprinter(4, 4, true),
 					Deep:    true,
 					Bref:    true,
 				},
@@ -218,13 +219,6 @@ func TestNewCli(t *testing.T) {
 				tcase.usespace,
 				tcase.timeout,
 			)
-			// prepare
-			// we can't compare functions directly in go
-			// which is printer inside walker builder
-			// so apply this hack to make them comparable
-			if cli != nil {
-				cli.wb = tcase.cli.wb
-			}
 			// check
 			if !reflect.DeepEqual(cli, tcase.cli) {
 				t.Errorf("actual %v doesn't equal to expected %v", cli, tcase.cli)

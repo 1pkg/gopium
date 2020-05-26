@@ -4,20 +4,74 @@ import (
 	"bytes"
 	"context"
 	"go/ast"
+	"go/token"
 	"reflect"
 	"strings"
 	"testing"
-
-	"1pkg/gopium"
-	"1pkg/gopium/tests/data"
 )
 
 func TestGoprinter(t *testing.T) {
 	// prepare
+	node := &ast.StructType{
+		Fields: &ast.FieldList{
+			List: []*ast.Field{
+				{
+					Names: []*ast.Ident{
+						{
+							Name: "test-removed",
+						},
+						{
+							Name: "_",
+						},
+					},
+					Type: &ast.Ident{
+						Name: "string",
+					},
+					Tag: &ast.BasicLit{
+						Kind:  token.STRING,
+						Value: "test",
+					},
+				},
+				{
+					Names: []*ast.Ident{
+						{
+							Name: "test-1",
+						},
+						{
+							Name: "test-2",
+						},
+					},
+					Type: &ast.Ident{
+						Name: "int64",
+					},
+					Doc: &ast.CommentGroup{
+						List: []*ast.Comment{
+							{
+								Text: "// random",
+							},
+						},
+					},
+				},
+				{
+					Names: []*ast.Ident{
+						{
+							Name: "_",
+						},
+					},
+					Type: &ast.Ident{
+						Name: "float32",
+					},
+					Tag: &ast.BasicLit{
+						Kind:  token.STRING,
+						Value: "tag",
+					},
+				},
+			},
+		},
+	}
 	cctx, cancel := context.WithCancel(context.Background())
 	cancel()
 	table := map[string]struct {
-		p        gopium.Parser
 		indent   int
 		tabwidth int
 		usespace bool
@@ -25,56 +79,33 @@ func TestGoprinter(t *testing.T) {
 		r        []byte
 		err      error
 	}{
-		"empty pkg should print nothing": {
-			p:        data.NewParser("empty"),
-			indent:   0,
-			tabwidth: 4,
-			usespace: false,
-			ctx:      context.Background(),
-			r: []byte(`
-//+build tests_data
-
-package empty
-`),
-		},
 		"single struct pkg should print the struct": {
-			p:        data.NewParser("single"),
 			indent:   0,
 			tabwidth: 4,
 			usespace: false,
 			ctx:      context.Background(),
 			r: []byte(`
-//+build tests_data
-
-package single
-
-type Single struct {
-	A	string
-	B	string
-	C	string
+struct {
+	test-removed, _	string	test// random
+	test-1, test-2	int64
+	_				float32	tag
 }
 `),
 		},
 		"single struct pkg should print the struct with indent": {
-			p:        data.NewParser("single"),
 			indent:   1,
 			tabwidth: 8,
 			usespace: true,
 			ctx:      context.Background(),
 			r: []byte(`
-        //+build tests_data
-
-        package single
-
-        type Single struct {
-                A       string
-                B       string
-                C       string
+        struct {
+                test-removed, _ string  test// random
+                test-1, test-2  int64
+                _               float32 tag
         }
 `),
 		},
 		"single struct pkg should print nothing on canceled context": {
-			p:        data.NewParser("single"),
 			indent:   0,
 			tabwidth: 4,
 			usespace: false,
@@ -85,19 +116,10 @@ type Single struct {
 	}
 	for name, tcase := range table {
 		t.Run(name, func(t *testing.T) {
-			// prepare
-			buf := &bytes.Buffer{}
-			pkg, loc, err := tcase.p.ParseAst(context.Background())
-			if !reflect.DeepEqual(err, nil) {
-				t.Fatalf("actual %v doesn't equal to expected %v", err, nil)
-			}
 			// exec
+			var buf bytes.Buffer
 			p := NewGoprinter(tcase.indent, tcase.tabwidth, tcase.usespace)
-			// get the only package file
-			var file ast.Node
-			for _, file = range pkg.Files {
-			}
-			err = p.Print(tcase.ctx, buf, loc.Root(), file)
+			err := p.Print(tcase.ctx, &buf, token.NewFileSet(), node)
 			// check
 			if !reflect.DeepEqual(err, tcase.err) {
 				t.Errorf("actual %v doesn't equal to expected %v", err, tcase.err)

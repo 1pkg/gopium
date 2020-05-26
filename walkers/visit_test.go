@@ -11,7 +11,6 @@ import (
 	"1pkg/gopium"
 	"1pkg/gopium/collections"
 	"1pkg/gopium/strategies"
-	"1pkg/gopium/tests"
 	"1pkg/gopium/tests/data"
 	"1pkg/gopium/tests/mocks"
 	"1pkg/gopium/typepkg"
@@ -82,7 +81,7 @@ func TestWithVisit(t *testing.T) {
 			// check
 			// we can't compare functions directly in go
 			// so apply this hack to compare with nil
-			if gvisit == nil {
+			if reflect.DeepEqual(gvisit, nil) {
 				t.Errorf("actual %v doesn't equal to expected not %v", gvisit, nil)
 			}
 		})
@@ -169,7 +168,7 @@ func TestVscope(t *testing.T) {
 			err: context.Canceled,
 		},
 		"single struct pkg should visit nothing on canceled context in closures": {
-			ctx: &tests.Context{After: 2},
+			ctx: &mocks.Context{After: 2},
 			r:   regexp.MustCompile(`.*`),
 			m:   m,
 			p:   data.NewParser("single"),
@@ -683,7 +682,7 @@ func TestVdeep(t *testing.T) {
 			err: context.Canceled,
 		},
 		"nested struct pkg should visit nothing on canceled context": {
-			ctx: &tests.Context{After: 2},
+			ctx: &mocks.Context{After: 2},
 			r:   regexp.MustCompile(`.*`),
 			m:   m,
 			p:   data.NewParser("nested"),
