@@ -14,9 +14,9 @@ import (
 	"1pkg/gopium/tests/mocks"
 )
 
-func TestAst(t *testing.T) {
+func TestXast(t *testing.T) {
 	// prepare
-	p := Goprint(0, 4, false)
+	p := NewGoprinter(0, 4, false)
 	table := map[string]struct {
 		fmt gopium.Xast
 		ts  *ast.TypeSpec
@@ -350,7 +350,7 @@ test struct {// random
 			// exec
 			var buf bytes.Buffer
 			err := tcase.fmt(tcase.ts, tcase.st)
-			perr := p(context.Background(), &buf, token.NewFileSet(), tcase.ts)
+			perr := p.Print(context.Background(), &buf, token.NewFileSet(), tcase.ts)
 			// check
 			if !reflect.DeepEqual(perr, nil) {
 				t.Errorf("actual %v doesn't equal to expected %v", perr, nil)

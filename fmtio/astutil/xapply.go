@@ -29,7 +29,7 @@ var UFFN = combine(
 		&typepkg.ParserXToolPackagesAst{
 			ModeAst: parser.ParseComments | parser.AllErrors,
 		},
-		fmtio.Goprint(0, 4, false),
+		fmtio.NewGoprinter(0, 4, false),
 	),
 )
 
@@ -188,7 +188,7 @@ func filter(w gopium.Xwalker) gopium.Xapply {
 // to update all definitions position
 // and ingest docs and comments directly
 // to file with correct calculated positions
-func note(w gopium.Xwalker, p gopium.AstParser, pr fmtio.Printer) gopium.Xapply {
+func note(w gopium.Xwalker, xp gopium.AstParser, p gopium.Printer) gopium.Xapply {
 	return func(
 		ctx context.Context,
 		pkg *ast.Package,
@@ -216,12 +216,12 @@ func note(w gopium.Xwalker, p gopium.AstParser, pr fmtio.Printer) gopium.Xapply 
 			group.Go(func() error {
 				// print ast to buffer
 				var buf bytes.Buffer
-				if err := pr(gctx, &buf, loc.Root(), file); err != nil {
+				if err := p.Print(gctx, &buf, loc.Root(), file); err != nil {
 					return err
 				}
 				// parse ast back to file
 				// and push child fset to locator
-				pkg, nloc, err := p.ParseAst(gctx, buf.Bytes()...)
+				pkg, nloc, err := xp.ParseAst(gctx, buf.Bytes()...)
 				if err != nil {
 					return err
 				}

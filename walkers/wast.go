@@ -13,42 +13,47 @@ import (
 // list of wast presets
 var (
 	aststd = wast{
-		apply:  astutil.UFFN,
-		writer: fmtio.Origin{Writter: fmtio.Stdout{}},
+		apply:     astutil.UFFN,
+		persister: astutil.Package{},
+		writer:    fmtio.Origin{Writter: fmtio.Stdout{}},
 	}
 	astgo = wast{
-		apply:  astutil.UFFN,
-		writer: fmtio.Origin{Writter: fmtio.Files{Ext: "go"}},
+		apply:     astutil.UFFN,
+		persister: astutil.Package{},
+		writer:    fmtio.Origin{Writter: fmtio.Files{Ext: "go"}},
 	}
 	astgotree = wast{
-		apply:  astutil.UFFN,
-		writer: &fmtio.Suffix{Writter: fmtio.Files{Ext: "go"}, Suffix: "gopium"},
+		apply:     astutil.UFFN,
+		persister: astutil.Package{},
+		writer:    &fmtio.Suffix{Writter: fmtio.Files{Ext: "go"}, Suffix: "gopium"},
 	}
 	astgopium = wast{
-		apply:  astutil.UFFN,
-		writer: fmtio.Origin{Writter: fmtio.Files{Ext: "gopium"}},
+		apply:     astutil.UFFN,
+		persister: astutil.Package{},
+		writer:    fmtio.Origin{Writter: fmtio.Files{Ext: "gopium"}},
 	}
 )
 
 // wast defines packages walker ast sync implementation
 type wast struct {
 	// inner visiting parameters
-	apply  gopium.Xapply
-	writer gopium.CategoryWriter
+	apply     gopium.Xapply
+	persister gopium.Persister
+	writer    gopium.CategoryWriter
 	// external visiting parameters
 	parser  gopium.Parser
 	exposer gopium.Exposer
-	printer fmtio.Printer
+	printer gopium.Printer
 	deep    bool
 	bref    bool
 }
 
 // With erich wast walker with external visiting parameters
 // parser, exposer, printer instances and additional visiting flags
-func (w wast) With(p gopium.Parser, exp gopium.Exposer, pr fmtio.Printer, deep bool, bref bool) wast {
-	w.parser = p
+func (w wast) With(xp gopium.Parser, exp gopium.Exposer, p gopium.Printer, deep bool, bref bool) wast {
+	w.parser = xp
 	w.exposer = exp
-	w.printer = pr
+	w.printer = p
 	w.deep = deep
 	w.bref = bref
 	return w
@@ -120,9 +125,8 @@ func (w wast) write(ctx context.Context, h collections.Hierarchic) error {
 	if err := w.writer.Category(h.Rcat()); err != nil {
 		return err
 	}
-	// build and run persist helper
+	// run persister with printer
 	// in case any error happened
 	// just return error back
-	p := w.printer.Save(w.writer)
-	return p(ctx, pkg, loc)
+	return w.persister.Persist(ctx, w.printer, w.writer, loc, pkg)
 }
