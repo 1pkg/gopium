@@ -50,7 +50,7 @@ func TestWdiff(t *testing.T) {
 			r:   regexp.MustCompile(`.*`),
 			p:   data.NewParser("empty"),
 			fmt: mocks.Xdiff{}.Diff,
-			w:   &mocks.Writer{},
+			w:   data.Writer{Writer: &mocks.Writer{}},
 			stg: np,
 			sts: map[string][]byte{},
 		},
@@ -59,7 +59,7 @@ func TestWdiff(t *testing.T) {
 			r:   regexp.MustCompile(`.*`),
 			p:   data.NewParser("single"),
 			fmt: mocks.Xdiff{}.Diff,
-			w:   &mocks.Writer{},
+			w:   data.Writer{Writer: &mocks.Writer{}},
 			stg: np,
 			sts: map[string][]byte{
 				"tests_data_single_gopium": []byte(`
@@ -157,7 +157,7 @@ func TestWdiff(t *testing.T) {
 			r:   regexp.MustCompile(`.*`),
 			p:   data.NewParser("single"),
 			fmt: mocks.Xdiff{}.Diff,
-			w:   &mocks.Writer{},
+			w:   data.Writer{Writer: &mocks.Writer{}},
 			stg: np,
 			sts: map[string][]byte{},
 			err: context.Canceled,
@@ -167,7 +167,7 @@ func TestWdiff(t *testing.T) {
 			r:   regexp.MustCompile(`.*`),
 			p:   mocks.Parser{Typeserr: errors.New("test-1")},
 			fmt: mocks.Xdiff{}.Diff,
-			w:   &mocks.Writer{},
+			w:   data.Writer{Writer: &mocks.Writer{}},
 			stg: np,
 			sts: map[string][]byte{},
 			err: errors.New("test-1"),
@@ -177,7 +177,7 @@ func TestWdiff(t *testing.T) {
 			r:   regexp.MustCompile(`.*`),
 			p:   data.NewParser("single"),
 			fmt: mocks.Xdiff{}.Diff,
-			w:   &mocks.Writer{},
+			w:   data.Writer{Writer: &mocks.Writer{}},
 			stg: &mocks.Strategy{Err: errors.New("test-2")},
 			sts: map[string][]byte{},
 			err: errors.New("test-2"),
@@ -187,7 +187,7 @@ func TestWdiff(t *testing.T) {
 			r:   regexp.MustCompile(`.*`),
 			p:   data.NewParser("single"),
 			fmt: mocks.Xdiff{}.Diff,
-			w:   (&mocks.Writer{Gerr: errors.New("test-3")}),
+			w:   data.Writer{Writer: (&mocks.Writer{Gerr: errors.New("test-3")})},
 			stg: np,
 			sts: map[string][]byte{},
 			err: errors.New("test-3"),
@@ -197,7 +197,7 @@ func TestWdiff(t *testing.T) {
 			r:   regexp.MustCompile(`.*`),
 			p:   data.NewParser("single"),
 			fmt: mocks.Xdiff{Err: errors.New("test-4")}.Diff,
-			w:   &mocks.Writer{},
+			w:   data.Writer{Writer: &mocks.Writer{}},
 			stg: np,
 			sts: map[string][]byte{},
 			err: errors.New("test-4"),
@@ -207,9 +207,9 @@ func TestWdiff(t *testing.T) {
 			r:   regexp.MustCompile(`.*`),
 			p:   data.NewParser("single"),
 			fmt: mocks.Xdiff{}.Diff,
-			w: (&mocks.Writer{RWCs: map[string]*mocks.RWC{
+			w: data.Writer{Writer: (&mocks.Writer{RWCs: map[string]*mocks.RWC{
 				"tests_data_single_gopium": {Werr: errors.New("test-5")},
-			}}),
+			}})},
 			stg: np,
 			sts: map[string][]byte{},
 			err: errors.New("test-5"),
@@ -219,9 +219,9 @@ func TestWdiff(t *testing.T) {
 			r:   regexp.MustCompile(`.*`),
 			p:   data.NewParser("single"),
 			fmt: mocks.Xdiff{}.Diff,
-			w: (&mocks.Writer{RWCs: map[string]*mocks.RWC{
+			w: data.Writer{Writer: (&mocks.Writer{RWCs: map[string]*mocks.RWC{
 				"tests_data_single_gopium": {Cerr: errors.New("test-6")},
-			}}),
+			}})},
 			stg: np,
 			sts: map[string][]byte{},
 			err: errors.New("test-6"),
@@ -231,7 +231,7 @@ func TestWdiff(t *testing.T) {
 			r:    regexp.MustCompile(`([AZ])`),
 			p:    data.NewParser("multi"),
 			fmt:  mocks.Xdiff{}.Diff,
-			w:    &mocks.Writer{},
+			w:    data.Writer{Writer: &mocks.Writer{}},
 			stg:  pck,
 			deep: true,
 			sts: map[string][]byte{
@@ -548,7 +548,7 @@ func TestWdiff(t *testing.T) {
 			r:    regexp.MustCompile(`([AZ])`),
 			p:    data.NewParser("multi"),
 			fmt:  mocks.Xdiff{}.Diff,
-			w:    &mocks.Writer{},
+			w:    data.Writer{Writer: &mocks.Writer{}},
 			stg:  pck,
 			bref: true,
 			sts: map[string][]byte{
@@ -796,7 +796,7 @@ func TestWdiff(t *testing.T) {
 			}
 			// process checks only on success
 			if tcase.err == nil {
-				w := tcase.w.(*mocks.Writer)
+				w := (tcase.w.(data.Writer)).Writer.(*mocks.Writer)
 				for id, rwc := range w.RWCs {
 					// check all struct
 					// against bytes map

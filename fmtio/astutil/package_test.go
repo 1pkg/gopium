@@ -30,7 +30,7 @@ func TestPackage(t *testing.T) {
 			xp:  data.NewParser("empty"),
 			ctx: context.Background(),
 			p:   fmtio.NewGoprinter(0, 4, true),
-			w:   &mocks.Writer{},
+			w:   data.Writer{Writer: &mocks.Writer{}},
 			r: map[string][]byte{
 				"tests_data_empty_file.go": []byte(`
 //+build tests_data
@@ -43,7 +43,7 @@ package empty
 			xp:  data.NewParser("single"),
 			ctx: context.Background(),
 			p:   fmtio.NewGoprinter(0, 4, false),
-			w:   &mocks.Writer{},
+			w:   data.Writer{Writer: &mocks.Writer{}},
 			r: map[string][]byte{
 				"tests_data_single_file.go": []byte(`
 //+build tests_data
@@ -62,7 +62,7 @@ type Single struct {
 			xp:  data.NewParser("single"),
 			ctx: cctx,
 			p:   fmtio.NewGoprinter(0, 4, false),
-			w:   &mocks.Writer{},
+			w:   data.Writer{Writer: &mocks.Writer{}},
 			r:   map[string][]byte{},
 			err: context.Canceled,
 		},
@@ -70,7 +70,7 @@ type Single struct {
 			xp:  data.NewParser("single"),
 			ctx: context.Background(),
 			p:   fmtio.NewGoprinter(0, 4, false),
-			w:   (&mocks.Writer{Gerr: errors.New("test-1")}),
+			w:   data.Writer{Writer: (&mocks.Writer{Gerr: errors.New("test-1")})},
 			r:   map[string][]byte{},
 			err: errors.New("test-1"),
 		},
@@ -78,7 +78,7 @@ type Single struct {
 			xp:  data.NewParser("single"),
 			ctx: context.Background(),
 			p:   mocks.Printer{Err: errors.New("test-2")},
-			w:   &mocks.Writer{},
+			w:   data.Writer{Writer: &mocks.Writer{}},
 			r: map[string][]byte{
 				"tests_data_single_file.go": []byte(``),
 			},
@@ -88,7 +88,7 @@ type Single struct {
 			xp:  data.NewParser("multi"),
 			ctx: context.Background(),
 			p:   fmtio.NewGoprinter(0, 4, false),
-			w:   &mocks.Writer{},
+			w:   data.Writer{Writer: &mocks.Writer{}},
 			r: map[string][]byte{
 				"tests_data_multi_file-1.go": []byte(`
 //+build tests_data
@@ -204,7 +204,7 @@ type (
 			}
 			// process checks only on success
 			if tcase.err == nil {
-				w := tcase.w.(*mocks.Writer)
+				w := (tcase.w.(data.Writer)).Writer.(*mocks.Writer)
 				for name, rwc := range w.RWCs {
 					// check all struct
 					// against bytes map
