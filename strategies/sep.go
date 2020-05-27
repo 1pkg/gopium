@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"1pkg/gopium"
+	"1pkg/gopium/collections"
 )
 
 // list of fshare presets
@@ -39,7 +40,7 @@ func (stg sep) Curator(curator gopium.Curator) sep {
 // Apply sep implementation
 func (stg sep) Apply(ctx context.Context, o gopium.Struct) (gopium.Struct, error) {
 	// copy original structure to result
-	r := o.Copy()
+	r := collections.CopyStruct(o)
 	// get separator size
 	sep := stg.curator.SysAlign()
 	// if we wanna use
@@ -52,9 +53,9 @@ func (stg sep) Apply(ctx context.Context, o gopium.Struct) (gopium.Struct, error
 		// add field before or after
 		// structure fields list
 		if stg.top {
-			r.Fields = append([]gopium.Field{gopium.PadField(sep)}, r.Fields...)
+			r.Fields = append([]gopium.Field{collections.PadField(sep)}, r.Fields...)
 		} else {
-			r.Fields = append(r.Fields, gopium.PadField(sep))
+			r.Fields = append(r.Fields, collections.PadField(sep))
 		}
 	}
 	return r, ctx.Err()

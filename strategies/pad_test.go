@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"1pkg/gopium"
+	"1pkg/gopium/collections"
 	"1pkg/gopium/tests/mocks"
 )
 
@@ -46,7 +47,7 @@ func TestPad(t *testing.T) {
 						Name: "test",
 						Size: 8,
 					},
-					gopium.PadField(4),
+					collections.PadField(4),
 				},
 			},
 		},
@@ -72,7 +73,7 @@ func TestPad(t *testing.T) {
 						Size:  8,
 						Align: 5,
 					},
-					gopium.PadField(2),
+					collections.PadField(2),
 				},
 			},
 			err: context.Canceled,
@@ -114,7 +115,7 @@ func TestPad(t *testing.T) {
 						Size:  3,
 						Align: 1,
 					},
-					gopium.PadField(1),
+					collections.PadField(1),
 					{
 						Name:  "test1",
 						Size:  32,
@@ -125,7 +126,7 @@ func TestPad(t *testing.T) {
 						Size:  6,
 						Align: 6,
 					},
-					gopium.PadField(6),
+					collections.PadField(6),
 					{
 						Name:  "test3",
 						Size:  8,
@@ -170,17 +171,17 @@ func TestPad(t *testing.T) {
 						Name: "test2",
 						Size: 7,
 					},
-					gopium.PadField(2),
+					collections.PadField(2),
 					{
 						Name: "test3",
 						Size: 5,
 					},
-					gopium.PadField(4),
+					collections.PadField(4),
 					{
 						Name: "test4",
 						Size: 3,
 					},
-					gopium.PadField(6),
+					collections.PadField(6),
 				},
 			},
 		},
@@ -216,22 +217,22 @@ func TestPad(t *testing.T) {
 						Name: "test1",
 						Size: 9,
 					},
-					gopium.PadField(3),
+					collections.PadField(3),
 					{
 						Name: "test2",
 						Size: 7,
 					},
-					gopium.PadField(5),
+					collections.PadField(5),
 					{
 						Name: "test3",
 						Size: 5,
 					},
-					gopium.PadField(7),
+					collections.PadField(7),
 					{
 						Name: "test4",
 						Size: 3,
 					},
-					gopium.PadField(9),
+					collections.PadField(9),
 				},
 			},
 		},

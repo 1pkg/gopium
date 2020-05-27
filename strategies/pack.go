@@ -5,6 +5,7 @@ import (
 	"sort"
 
 	"1pkg/gopium"
+	"1pkg/gopium/collections"
 )
 
 // list of pack presets
@@ -22,7 +23,7 @@ type pack struct{}
 // Apply pack implementation
 func (stg pack) Apply(ctx context.Context, o gopium.Struct) (gopium.Struct, error) {
 	// copy original structure to result
-	r := o.Copy()
+	r := collections.CopyStruct(o)
 	// execute memory sorting
 	sort.SliceStable(r.Fields, func(i, j int) bool {
 		// first compare aligns of two fields

@@ -5,6 +5,7 @@ import (
 	"math"
 
 	"1pkg/gopium"
+	"1pkg/gopium/collections"
 )
 
 // list of unpack presets
@@ -22,7 +23,7 @@ type unpack struct{}
 // Apply unpack implementation
 func (stg unpack) Apply(ctx context.Context, o gopium.Struct) (gopium.Struct, error) {
 	// copy original structure to result
-	r := o.Copy()
+	r := collections.CopyStruct(o)
 	// execute pack strategy
 	r, err := pck.Apply(ctx, r)
 	if err != nil {

@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"1pkg/gopium"
+	"1pkg/gopium/collections"
 )
 
 // list of fshare presets
@@ -31,7 +32,7 @@ func (stg fshare) Curator(curator gopium.Curator) fshare {
 // Apply fshare implementation
 func (stg fshare) Apply(ctx context.Context, o gopium.Struct) (gopium.Struct, error) {
 	// copy original structure to result
-	r := o.Copy()
+	r := collections.CopyStruct(o)
 	// check that struct has fields
 	// and cache line size is valid
 	if flen, cachel := len(r.Fields), stg.curator.SysCache(stg.line); flen > 0 && cachel > 0 {
@@ -43,7 +44,7 @@ func (stg fshare) Apply(ctx context.Context, o gopium.Struct) (gopium.Struct, er
 			// if padding size is valid
 			if pad := f.Size % cachel; pad > 0 {
 				pad = cachel - pad
-				fields = append(fields, gopium.PadField(pad))
+				fields = append(fields, collections.PadField(pad))
 			}
 		}
 		// update resulted fields

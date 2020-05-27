@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"1pkg/gopium"
+	"1pkg/gopium/collections"
 	"1pkg/gopium/tests/mocks"
 )
 
@@ -46,7 +47,7 @@ func TestSep(t *testing.T) {
 						Name: "test",
 						Size: 8,
 					},
-					gopium.PadField(16),
+					collections.PadField(16),
 				},
 			},
 		},
@@ -70,7 +71,7 @@ func TestSep(t *testing.T) {
 						Name: "test",
 						Size: 8,
 					},
-					gopium.PadField(16),
+					collections.PadField(16),
 				},
 			},
 			err: context.Canceled,
@@ -103,7 +104,7 @@ func TestSep(t *testing.T) {
 			r: gopium.Struct{
 				Name: "test",
 				Fields: []gopium.Field{
-					gopium.PadField(24),
+					collections.PadField(24),
 					{
 						Name: "test1",
 						Size: 32,
@@ -167,7 +168,7 @@ func TestSep(t *testing.T) {
 						Name: "test4",
 						Size: 3,
 					},
-					gopium.PadField(24),
+					collections.PadField(24),
 				},
 			},
 		},
@@ -203,7 +204,7 @@ func TestSep(t *testing.T) {
 			r: gopium.Struct{
 				Name: "test",
 				Fields: []gopium.Field{
-					gopium.PadField(64),
+					collections.PadField(64),
 					{
 						Name: "test1",
 						Size: 32,

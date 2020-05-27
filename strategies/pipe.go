@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"1pkg/gopium"
+	"1pkg/gopium/collections"
 )
 
 // pipe defines strategy implementation
@@ -14,7 +15,7 @@ type pipe []gopium.Strategy
 // Apply pipe implementation
 func (stgs pipe) Apply(ctx context.Context, o gopium.Struct) (gopium.Struct, error) {
 	// copy original structure to result
-	r := o.Copy()
+	r := collections.CopyStruct(o)
 	// go through all inner strategies
 	// and apply them one by one
 	for _, stg := range stgs {

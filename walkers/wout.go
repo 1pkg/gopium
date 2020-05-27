@@ -10,6 +10,13 @@ import (
 	"1pkg/gopium/fmtio"
 )
 
+// list of supported extensions
+const (
+	json = "json"
+	xml  = "xml"
+	csv  = "csv"
+)
+
 // list of wout presets
 var (
 	jsonstd = wout{
@@ -26,15 +33,15 @@ var (
 	}
 	jsonfiles = wout{
 		fmt:    fmtio.Jsonb,
-		writer: fmtio.File{Name: "gopium", Ext: "json"},
+		writer: fmtio.File{Name: gopium.NAME, Ext: json},
 	}
 	xmlfiles = wout{
 		fmt:    fmtio.Xmlb,
-		writer: fmtio.File{Name: "gopium", Ext: "xml"},
+		writer: fmtio.File{Name: gopium.NAME, Ext: xml},
 	}
 	csvfiles = wout{
 		fmt:    fmtio.Csvb(fmtio.Buffer()),
-		writer: fmtio.File{Name: "gopium", Ext: "csv"},
+		writer: fmtio.File{Name: gopium.NAME, Ext: csv},
 	}
 )
 

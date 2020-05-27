@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"1pkg/gopium"
+	"1pkg/gopium/collections"
 )
 
 // list of cache presets
@@ -30,7 +31,7 @@ func (stg cache) Curator(curator gopium.Curator) cache {
 // Apply cache implementation
 func (stg cache) Apply(ctx context.Context, o gopium.Struct) (gopium.Struct, error) {
 	// copy original structure to result
-	r := o.Copy()
+	r := collections.CopyStruct(o)
 	// calculate size of whole structure
 	var size int64
 	for _, f := range r.Fields {
@@ -43,7 +44,7 @@ func (stg cache) Apply(ctx context.Context, o gopium.Struct) (gopium.Struct, err
 		// if padding is valid append it
 		if pad := size % cachel; pad > 0 {
 			pad = cachel - pad
-			r.Fields = append(r.Fields, gopium.PadField(pad))
+			r.Fields = append(r.Fields, collections.PadField(pad))
 		}
 	}
 	return r, ctx.Err()

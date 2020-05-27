@@ -7,10 +7,8 @@ import (
 	"strings"
 
 	"1pkg/gopium"
+	"1pkg/gopium/collections"
 )
-
-// gopium tag name
-const tagname = "gopium"
 
 // list of tag presets
 var (
@@ -44,12 +42,12 @@ func (stg tag) Names(names ...gopium.StrategyName) tag {
 // Apply tag implementation
 func (stg tag) Apply(ctx context.Context, o gopium.Struct) (gopium.Struct, error) {
 	// copy original structure to result
-	r := o.Copy()
+	r := collections.CopyStruct(o)
 	// iterate through all fields
 	for i := range r.Fields {
 		f := &r.Fields[i]
 		// grab the field tag
-		tag, ok := reflect.StructTag(f.Tag).Lookup(tagname)
+		tag, ok := reflect.StructTag(f.Tag).Lookup(gopium.NAME)
 		// build group tag
 		gtag := stg.tag
 		// if we wanna build discrete groups
@@ -66,7 +64,7 @@ func (stg tag) Apply(ctx context.Context, o gopium.Struct) (gopium.Struct, error
 		// in case tag is not empty and
 		// gopium tag doesn't exist - append tag
 		// in case tag is empty - set tag
-		fulltag := fmt.Sprintf(`%s:"%s"`, tagname, gtag)
+		fulltag := fmt.Sprintf(`%s:"%s"`, gopium.NAME, gtag)
 		switch {
 		case ok && stg.force:
 			f.Tag = strings.Replace(f.Tag, tag, gtag, 1)
