@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"1pkg/gopium"
+	"1pkg/gopium/collections"
 
 	"golang.org/x/sync/errgroup"
 )
@@ -54,7 +55,7 @@ func (stg group) Builder(builder Builder) group {
 // Apply group implementation
 func (stg group) Apply(ctx context.Context, o gopium.Struct) (gopium.Struct, error) {
 	// copy original structure to result
-	r := o.Copy()
+	r := collections.CopyStruct(o)
 	// parse tag annotation
 	// into containers groups
 	containers, err := stg.parse(r)
@@ -72,7 +73,7 @@ func (stg group) Apply(ctx context.Context, o gopium.Struct) (gopium.Struct, err
 		container := &containers[i]
 		group.Go(func() error {
 			// apply strategy on struct
-			tmp, err := container.stg.Apply(gctx, container.o.Copy())
+			tmp, err := container.stg.Apply(gctx, collections.CopyStruct(container.o))
 			// in case of any error
 			// just return error back
 			if err != nil {
@@ -120,7 +121,7 @@ func (stg group) parse(st gopium.Struct) ([]container, error) {
 	// go through all struct fields
 	for _, f := range st.Fields {
 		// grab the field tag
-		tag, ok := reflect.StructTag(f.Tag).Lookup(tagname)
+		tag, ok := reflect.StructTag(f.Tag).Lookup(gopium.NAME)
 		// in case tag is empty
 		// or marked as skipped
 		if !ok || tag == tskip {
@@ -145,7 +146,7 @@ func (stg group) parse(st gopium.Struct) ([]container, error) {
 			}
 			// collect strategies and fields
 			gstrategiesnames[tdef] = stgs
-			gfields[tdef] = append(gfields[tdef], f.Copy())
+			gfields[tdef] = append(gfields[tdef], collections.CopyField(f))
 		case 2:
 			group := tokens[0]
 			stgs := tokens[1]
@@ -166,7 +167,7 @@ func (stg group) parse(st gopium.Struct) ([]container, error) {
 			}
 			// collect strategies and fields
 			gstrategiesnames[group] = stgs
-			gfields[group] = append(gfields[group], f.Copy())
+			gfields[group] = append(gfields[group], collections.CopyField(f))
 		default:
 			// return parsing error msg
 			return nil, fmt.Errorf("tag %q can't be parsed, neither as `default` nor named group", f.Tag)
@@ -203,7 +204,7 @@ func (stg group) parse(st gopium.Struct) ([]container, error) {
 		cnt.grp = grp
 		// set container original
 		// struct and its fields
-		cnt.o = st.Copy()
+		cnt.o = collections.CopyStruct(st)
 		cnt.o.Fields = fields
 		// if group has strategy set it
 		// otherwise set nil strategy

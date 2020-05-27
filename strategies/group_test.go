@@ -7,6 +7,7 @@ import (
 	"testing"
 
 	"1pkg/gopium"
+	"1pkg/gopium/collections"
 	"1pkg/gopium/tests/mocks"
 )
 
@@ -410,23 +411,23 @@ func TestGroup(t *testing.T) {
 						Tag:     `gopium:"group:def-2;comment_fields_annotate,explicit_padings_system_alignment,cache_rounding_cpu_l1"`,
 						Comment: []string{"// field size: 8 bytes; field align: 4 bytes; - 🌺 gopium @1pkg"},
 					},
-					gopium.PadField(4),
+					collections.PadField(4),
 					{
 						Name:  "test-4",
 						Size:  8,
 						Align: 4,
 						Tag:   `gopium:"comment_struct_stamp,cache_rounding_cpu_l1,explicit_padings_system_alignment"`,
 					},
-					gopium.PadField(4),
+					collections.PadField(4),
 					{
 						Name:  "test-5",
 						Size:  8,
 						Align: 4,
 						Tag:   `gopium:"comment_struct_stamp,cache_rounding_cpu_l1,explicit_padings_system_alignment"`,
 					},
-					gopium.PadField(4),
-					gopium.PadField(8),
-					gopium.PadField(4),
+					collections.PadField(4),
+					collections.PadField(8),
+					collections.PadField(4),
 				},
 			},
 		},

@@ -5,6 +5,7 @@ import (
 	"sort"
 
 	"1pkg/gopium"
+	"1pkg/gopium/collections"
 )
 
 // list of emb presets
@@ -23,7 +24,7 @@ type emb struct {
 // Apply emb implementation
 func (stg emb) Apply(ctx context.Context, o gopium.Struct) (gopium.Struct, error) {
 	// copy original structure to result
-	r := o.Copy()
+	r := collections.CopyStruct(o)
 	// then execute embedded sorting
 	sort.SliceStable(r.Fields, func(i, j int) bool {
 		if r.Fields[i].Embedded == r.Fields[j].Embedded {

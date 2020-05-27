@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"1pkg/gopium"
+	"1pkg/gopium/collections"
 	"1pkg/gopium/tests/mocks"
 )
 
@@ -46,7 +47,7 @@ func TestFshare(t *testing.T) {
 						Name: "test",
 						Size: 8,
 					},
-					gopium.PadField(8),
+					collections.PadField(8),
 				},
 			},
 		},
@@ -70,7 +71,7 @@ func TestFshare(t *testing.T) {
 						Name: "test",
 						Size: 8,
 					},
-					gopium.PadField(8),
+					collections.PadField(8),
 				},
 			},
 			err: context.Canceled,
@@ -107,22 +108,22 @@ func TestFshare(t *testing.T) {
 						Name: "test1",
 						Size: 32,
 					},
-					gopium.PadField(32),
+					collections.PadField(32),
 					{
 						Name: "test2",
 						Size: 8,
 					},
-					gopium.PadField(56),
+					collections.PadField(56),
 					{
 						Name: "test3",
 						Size: 8,
 					},
-					gopium.PadField(56),
+					collections.PadField(56),
 					{
 						Name: "test4",
 						Size: 3,
 					},
-					gopium.PadField(61),
+					collections.PadField(61),
 				},
 			},
 		},
@@ -158,12 +159,12 @@ func TestFshare(t *testing.T) {
 						Name: "test2",
 						Size: 8,
 					},
-					gopium.PadField(8),
+					collections.PadField(8),
 					{
 						Name: "test3",
 						Size: 8,
 					},
-					gopium.PadField(8),
+					collections.PadField(8),
 				},
 			},
 		},

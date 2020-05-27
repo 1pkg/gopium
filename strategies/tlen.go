@@ -5,6 +5,7 @@ import (
 	"sort"
 
 	"1pkg/gopium"
+	"1pkg/gopium/collections"
 )
 
 // list of length presets
@@ -23,7 +24,7 @@ type tlen struct {
 // Apply tlen implementation
 func (stg tlen) Apply(ctx context.Context, o gopium.Struct) (gopium.Struct, error) {
 	// copy original structure to result
-	r := o.Copy()
+	r := collections.CopyStruct(o)
 	// then execute len sorting
 	sort.SliceStable(r.Fields, func(i, j int) bool {
 		// sort depends on type of ordering

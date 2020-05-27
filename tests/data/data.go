@@ -9,6 +9,7 @@ import (
 	"go/types"
 	"io"
 	"os"
+	"path"
 	"path/filepath"
 	"strings"
 	"sync"
@@ -18,6 +19,22 @@ import (
 
 	"golang.org/x/tools/go/packages"
 )
+
+var Gopium string
+
+// sets gopium data path
+func init() {
+	// grabs running root path
+	p, err := filepath.Abs(".")
+	if err != nil {
+		panic(err)
+	}
+	// until we rich project root
+	for path.Base(p) != gopium.NAME {
+		p = path.Dir(p)
+	}
+	Gopium = p
+}
 
 // init types cache map and sync
 var (
@@ -42,7 +59,7 @@ type Parser struct {
 func NewParser(pkg string) gopium.Parser {
 	p := &typepkg.ParserXToolPackagesAst{
 		Pattern:    fmt.Sprintf("tests/data/%s", pkg),
-		Path:       filepath.Join(gopium.Root(), "tests", "data", pkg),
+		Path:       filepath.Join(Gopium, "tests", "data", pkg),
 		ModeTypes:  packages.LoadAllSyntax,
 		ModeAst:    parser.ParseComments | parser.AllErrors,
 		BuildFlags: []string{"-tags=tests_data"},
@@ -149,7 +166,7 @@ func purify(loc string) string {
 	// remove abs part from loc
 	// replace os path separators
 	// with underscores and trim them
-	loc = strings.Replace(loc, gopium.Root(), "", 1)
+	loc = strings.Replace(loc, Gopium, "", 1)
 	loc = strings.ReplaceAll(loc, string(os.PathSeparator), "_")
 	return strings.Trim(loc, "_")
 }

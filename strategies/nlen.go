@@ -5,6 +5,7 @@ import (
 	"sort"
 
 	"1pkg/gopium"
+	"1pkg/gopium/collections"
 )
 
 // list of nlen presets
@@ -23,7 +24,7 @@ type nlen struct {
 // Apply nlen implementation
 func (stg nlen) Apply(ctx context.Context, o gopium.Struct) (gopium.Struct, error) {
 	// copy original structure to result
-	r := o.Copy()
+	r := collections.CopyStruct(o)
 	// then execute len sorting
 	sort.SliceStable(r.Fields, func(i, j int) bool {
 		// sort depends on type of ordering

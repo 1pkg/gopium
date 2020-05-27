@@ -4,6 +4,7 @@ import (
 	"context"
 	"log"
 	"os"
+	"os/signal"
 	"runtime"
 
 	"1pkg/gopium"
@@ -311,13 +312,37 @@ By default any previous visited types have affect on future relevant visits.
 	)
 }
 
+// signals creates context with cancelation
+// which listens to provided list of signals
+func signals(ctx context.Context, sigs ...os.Signal) (context.Context, context.CancelFunc) {
+	// prepare global context
+	// with cancelation
+	// on system signals
+	ctx, cancel := context.WithCancel(ctx)
+	// run separate listener goroutine
+	go func() {
+		defer cancel()
+		// prepare signal chan for
+		// global context cancelation
+		sig := make(chan os.Signal, 1)
+		signal.Notify(sig, sigs...)
+		// on signal or cancelation
+		// stop the goroutine
+		select {
+		case <-ctx.Done():
+		case <-sig:
+		}
+	}()
+	return ctx, cancel
+}
+
 // main gopium cli entry point
 func main() {
 	// explicitly set number of threads
 	// to number of logical cpu
 	runtime.GOMAXPROCS(runtime.NumCPU())
 	// prepare context with signals cancelation
-	ctx, cancel := gopium.ContextWithSignals(
+	ctx, cancel := signals(
 		context.Background(),
 		os.Interrupt,
 		os.Kill,

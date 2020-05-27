@@ -5,6 +5,7 @@ import (
 	"regexp"
 
 	"1pkg/gopium"
+	"1pkg/gopium/collections"
 )
 
 // list of filter presets
@@ -41,7 +42,7 @@ type filter struct {
 // Apply filter implementation
 func (stg filter) Apply(ctx context.Context, o gopium.Struct) (gopium.Struct, error) {
 	// copy original structure to result
-	r := o.Copy()
+	r := collections.CopyStruct(o)
 	// prepare filtered fields slice
 	if flen := len(r.Fields); flen > 0 {
 		fields := make([]gopium.Field, 0, flen)

@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"1pkg/gopium"
+	"1pkg/gopium/collections"
 )
 
 // list of stamp presets
@@ -22,7 +23,7 @@ type stamp struct {
 // Apply stamp implementation
 func (stg stamp) Apply(ctx context.Context, o gopium.Struct) (gopium.Struct, error) {
 	// copy original structure to result
-	r := o.Copy()
+	r := collections.CopyStruct(o)
 	// create stamp
 	stamp := fmt.Sprintf(
 		"// struct has been auto curated - %s",

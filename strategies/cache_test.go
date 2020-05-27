@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"1pkg/gopium"
+	"1pkg/gopium/collections"
 	"1pkg/gopium/tests/mocks"
 )
 
@@ -46,7 +47,7 @@ func TestCache(t *testing.T) {
 						Name: "test",
 						Size: 8,
 					},
-					gopium.PadField(8),
+					collections.PadField(8),
 				},
 			},
 		},
@@ -70,7 +71,7 @@ func TestCache(t *testing.T) {
 						Name: "test",
 						Size: 8,
 					},
-					gopium.PadField(8),
+					collections.PadField(8),
 				},
 			},
 			err: context.Canceled,
@@ -119,7 +120,7 @@ func TestCache(t *testing.T) {
 						Name: "test4",
 						Size: 3,
 					},
-					gopium.PadField(13),
+					collections.PadField(13),
 				},
 			},
 		},
