@@ -130,7 +130,7 @@ func TestVscope(t *testing.T) {
 			p:   data.NewParser("single"),
 			stg: np,
 			sts: map[string]gopium.Struct{
-				"69d1b1f6914a4723e9f257a6cd1574c884926322f9752266313574339fb42c09:5": gopium.Struct{
+				"tests_data_single_file.go:5": gopium.Struct{
 					Name: "Single",
 					Fields: []gopium.Field{
 						{
@@ -183,7 +183,7 @@ func TestVscope(t *testing.T) {
 			p:   data.NewParser("flat"),
 			stg: np,
 			sts: map[string]gopium.Struct{
-				"5d0d7742eeb0d6f3cb8427bb08256e87d0424f896b95b2eb636f2bbc15a819f3:10": gopium.Struct{
+				"tests_data_flat_file.go:10": gopium.Struct{
 					Name: "A",
 					Fields: []gopium.Field{
 						{
@@ -194,7 +194,7 @@ func TestVscope(t *testing.T) {
 						},
 					},
 				},
-				"5d0d7742eeb0d6f3cb8427bb08256e87d0424f896b95b2eb636f2bbc15a819f3:16": gopium.Struct{
+				"tests_data_flat_file.go:16": gopium.Struct{
 					Name: "b",
 					Fields: []gopium.Field{
 						{
@@ -213,7 +213,7 @@ func TestVscope(t *testing.T) {
 						},
 					},
 				},
-				"5d0d7742eeb0d6f3cb8427bb08256e87d0424f896b95b2eb636f2bbc15a819f3:21": gopium.Struct{
+				"tests_data_flat_file.go:21": gopium.Struct{
 					Name: "C",
 					Fields: []gopium.Field{
 						{
@@ -231,7 +231,7 @@ func TestVscope(t *testing.T) {
 						},
 					},
 				},
-				"5d0d7742eeb0d6f3cb8427bb08256e87d0424f896b95b2eb636f2bbc15a819f3:29": gopium.Struct{
+				"tests_data_flat_file.go:29": gopium.Struct{
 					Name: "c1",
 					Fields: []gopium.Field{
 						{
@@ -249,7 +249,7 @@ func TestVscope(t *testing.T) {
 						},
 					},
 				},
-				"5d0d7742eeb0d6f3cb8427bb08256e87d0424f896b95b2eb636f2bbc15a819f3:32": gopium.Struct{
+				"tests_data_flat_file.go:32": gopium.Struct{
 					Name: "D",
 					Fields: []gopium.Field{
 						{
@@ -272,7 +272,7 @@ func TestVscope(t *testing.T) {
 						},
 					},
 				},
-				"5d0d7742eeb0d6f3cb8427bb08256e87d0424f896b95b2eb636f2bbc15a819f3:41": gopium.Struct{
+				"tests_data_flat_file.go:41": gopium.Struct{
 					Name: "AZ",
 					Fields: []gopium.Field{
 						{
@@ -361,7 +361,7 @@ func TestVscope(t *testing.T) {
 			p:   data.NewParser("flat"),
 			stg: np,
 			sts: map[string]gopium.Struct{
-				"5d0d7742eeb0d6f3cb8427bb08256e87d0424f896b95b2eb636f2bbc15a819f3:10": gopium.Struct{
+				"tests_data_flat_file.go:10": gopium.Struct{
 					Name: "A",
 					Fields: []gopium.Field{
 						{
@@ -372,7 +372,7 @@ func TestVscope(t *testing.T) {
 						},
 					},
 				},
-				"5d0d7742eeb0d6f3cb8427bb08256e87d0424f896b95b2eb636f2bbc15a819f3:41": gopium.Struct{
+				"tests_data_flat_file.go:41": gopium.Struct{
 					Name: "AZ",
 					Fields: []gopium.Field{
 						{
@@ -405,7 +405,7 @@ func TestVscope(t *testing.T) {
 			p:   data.NewParser("nested"),
 			stg: np,
 			sts: map[string]gopium.Struct{
-				"1eb0ce14d4988dd0b9fad2ef7db3292389223ff50754c84d38978c5a195145d1:7": gopium.Struct{
+				"tests_data_nested_file.go:7": gopium.Struct{
 					Name: "A",
 					Fields: []gopium.Field{
 						{
@@ -416,7 +416,7 @@ func TestVscope(t *testing.T) {
 						},
 					},
 				},
-				"1eb0ce14d4988dd0b9fad2ef7db3292389223ff50754c84d38978c5a195145d1:11": gopium.Struct{
+				"tests_data_nested_file.go:11": gopium.Struct{
 					Name: "b",
 					Fields: []gopium.Field{
 						{
@@ -435,7 +435,7 @@ func TestVscope(t *testing.T) {
 						},
 					},
 				},
-				"1eb0ce14d4988dd0b9fad2ef7db3292389223ff50754c84d38978c5a195145d1:16": gopium.Struct{
+				"tests_data_nested_file.go:16": gopium.Struct{
 					Name: "C",
 					Fields: []gopium.Field{
 						{
@@ -453,7 +453,7 @@ func TestVscope(t *testing.T) {
 						},
 					},
 				},
-				"1eb0ce14d4988dd0b9fad2ef7db3292389223ff50754c84d38978c5a195145d1:63": gopium.Struct{
+				"tests_data_nested_file.go:63": gopium.Struct{
 					Name: "Z",
 					Fields: []gopium.Field{
 						{
@@ -486,7 +486,7 @@ func TestVscope(t *testing.T) {
 			p:   data.NewParser("multi"),
 			stg: pck,
 			sts: map[string]gopium.Struct{
-				"bfd7fe67723126ba2d003cfca83b5aae0ef21f47c1c85c3cf2537d9c4d343349:9": gopium.Struct{
+				"tests_data_multi_file-1.go:9": gopium.Struct{
 					Name: "A",
 					Fields: []gopium.Field{
 						{
@@ -497,7 +497,7 @@ func TestVscope(t *testing.T) {
 						},
 					},
 				},
-				"cf40e2dbf1d874e57ba7627559a91195095ddd58ddb4174c83cbe06eb63c7dca:17": gopium.Struct{
+				"tests_data_multi_file-3.go:17": gopium.Struct{
 					Name: "AZ",
 					Fields: []gopium.Field{
 						{
@@ -521,7 +521,7 @@ func TestVscope(t *testing.T) {
 						},
 					},
 				},
-				"cf40e2dbf1d874e57ba7627559a91195095ddd58ddb4174c83cbe06eb63c7dca:27": gopium.Struct{
+				"tests_data_multi_file-3.go:27": gopium.Struct{
 					Name: "Zeze",
 					Fields: []gopium.Field{
 						{
@@ -644,7 +644,7 @@ func TestVdeep(t *testing.T) {
 			p:   data.NewParser("single"),
 			stg: np,
 			sts: map[string]gopium.Struct{
-				"69d1b1f6914a4723e9f257a6cd1574c884926322f9752266313574339fb42c09:5": gopium.Struct{
+				"tests_data_single_file.go:5": gopium.Struct{
 					Name: "Single",
 					Fields: []gopium.Field{
 						{
@@ -697,7 +697,7 @@ func TestVdeep(t *testing.T) {
 			p:   data.NewParser("flat"),
 			stg: np,
 			sts: map[string]gopium.Struct{
-				"5d0d7742eeb0d6f3cb8427bb08256e87d0424f896b95b2eb636f2bbc15a819f3:10": gopium.Struct{
+				"tests_data_flat_file.go:10": gopium.Struct{
 					Name: "A",
 					Fields: []gopium.Field{
 						{
@@ -708,7 +708,7 @@ func TestVdeep(t *testing.T) {
 						},
 					},
 				},
-				"5d0d7742eeb0d6f3cb8427bb08256e87d0424f896b95b2eb636f2bbc15a819f3:16": gopium.Struct{
+				"tests_data_flat_file.go:16": gopium.Struct{
 					Name: "b",
 					Fields: []gopium.Field{
 						{
@@ -727,7 +727,7 @@ func TestVdeep(t *testing.T) {
 						},
 					},
 				},
-				"5d0d7742eeb0d6f3cb8427bb08256e87d0424f896b95b2eb636f2bbc15a819f3:21": gopium.Struct{
+				"tests_data_flat_file.go:21": gopium.Struct{
 					Name: "C",
 					Fields: []gopium.Field{
 						{
@@ -745,7 +745,7 @@ func TestVdeep(t *testing.T) {
 						},
 					},
 				},
-				"5d0d7742eeb0d6f3cb8427bb08256e87d0424f896b95b2eb636f2bbc15a819f3:29": gopium.Struct{
+				"tests_data_flat_file.go:29": gopium.Struct{
 					Name: "c1",
 					Fields: []gopium.Field{
 						{
@@ -763,7 +763,7 @@ func TestVdeep(t *testing.T) {
 						},
 					},
 				},
-				"5d0d7742eeb0d6f3cb8427bb08256e87d0424f896b95b2eb636f2bbc15a819f3:32": gopium.Struct{
+				"tests_data_flat_file.go:32": gopium.Struct{
 					Name: "D",
 					Fields: []gopium.Field{
 						{
@@ -786,7 +786,7 @@ func TestVdeep(t *testing.T) {
 						},
 					},
 				},
-				"5d0d7742eeb0d6f3cb8427bb08256e87d0424f896b95b2eb636f2bbc15a819f3:41": gopium.Struct{
+				"tests_data_flat_file.go:41": gopium.Struct{
 					Name: "AZ",
 					Fields: []gopium.Field{
 						{
@@ -875,7 +875,7 @@ func TestVdeep(t *testing.T) {
 			p:   data.NewParser("flat"),
 			stg: np,
 			sts: map[string]gopium.Struct{
-				"5d0d7742eeb0d6f3cb8427bb08256e87d0424f896b95b2eb636f2bbc15a819f3:10": gopium.Struct{
+				"tests_data_flat_file.go:10": gopium.Struct{
 					Name: "A",
 					Fields: []gopium.Field{
 						{
@@ -886,7 +886,7 @@ func TestVdeep(t *testing.T) {
 						},
 					},
 				},
-				"5d0d7742eeb0d6f3cb8427bb08256e87d0424f896b95b2eb636f2bbc15a819f3:41": gopium.Struct{
+				"tests_data_flat_file.go:41": gopium.Struct{
 					Name: "AZ",
 					Fields: []gopium.Field{
 						{
@@ -919,7 +919,7 @@ func TestVdeep(t *testing.T) {
 			p:   data.NewParser("nested"),
 			stg: np,
 			sts: map[string]gopium.Struct{
-				"1eb0ce14d4988dd0b9fad2ef7db3292389223ff50754c84d38978c5a195145d1:7": gopium.Struct{
+				"tests_data_nested_file.go:7": gopium.Struct{
 					Name: "A",
 					Fields: []gopium.Field{
 						{
@@ -930,7 +930,7 @@ func TestVdeep(t *testing.T) {
 						},
 					},
 				},
-				"1eb0ce14d4988dd0b9fad2ef7db3292389223ff50754c84d38978c5a195145d1:11": gopium.Struct{
+				"tests_data_nested_file.go:11": gopium.Struct{
 					Name: "b",
 					Fields: []gopium.Field{
 						{
@@ -949,7 +949,7 @@ func TestVdeep(t *testing.T) {
 						},
 					},
 				},
-				"1eb0ce14d4988dd0b9fad2ef7db3292389223ff50754c84d38978c5a195145d1:16": gopium.Struct{
+				"tests_data_nested_file.go:16": gopium.Struct{
 					Name: "C",
 					Fields: []gopium.Field{
 						{
@@ -967,7 +967,7 @@ func TestVdeep(t *testing.T) {
 						},
 					},
 				},
-				"1eb0ce14d4988dd0b9fad2ef7db3292389223ff50754c84d38978c5a195145d1:25": gopium.Struct{
+				"tests_data_nested_file.go:25": gopium.Struct{
 					Name: "B",
 					Fields: []gopium.Field{
 						{
@@ -979,7 +979,7 @@ func TestVdeep(t *testing.T) {
 						},
 					},
 				},
-				"1eb0ce14d4988dd0b9fad2ef7db3292389223ff50754c84d38978c5a195145d1:28": gopium.Struct{
+				"tests_data_nested_file.go:28": gopium.Struct{
 					Name: "b1",
 					Fields: []gopium.Field{
 						{
@@ -998,7 +998,7 @@ func TestVdeep(t *testing.T) {
 						},
 					},
 				},
-				"1eb0ce14d4988dd0b9fad2ef7db3292389223ff50754c84d38978c5a195145d1:37": gopium.Struct{
+				"tests_data_nested_file.go:37": gopium.Struct{
 					Name: "A",
 					Fields: []gopium.Field{
 						{
@@ -1009,7 +1009,7 @@ func TestVdeep(t *testing.T) {
 						},
 					},
 				},
-				"1eb0ce14d4988dd0b9fad2ef7db3292389223ff50754c84d38978c5a195145d1:40": gopium.Struct{
+				"tests_data_nested_file.go:40": gopium.Struct{
 					Name: "a1",
 					Fields: []gopium.Field{
 						{
@@ -1020,7 +1020,7 @@ func TestVdeep(t *testing.T) {
 						},
 					},
 				},
-				"1eb0ce14d4988dd0b9fad2ef7db3292389223ff50754c84d38978c5a195145d1:46": gopium.Struct{
+				"tests_data_nested_file.go:46": gopium.Struct{
 					Name: "a1",
 					Fields: []gopium.Field{
 						{
@@ -1031,7 +1031,7 @@ func TestVdeep(t *testing.T) {
 						},
 					},
 				},
-				"1eb0ce14d4988dd0b9fad2ef7db3292389223ff50754c84d38978c5a195145d1:63": gopium.Struct{
+				"tests_data_nested_file.go:63": gopium.Struct{
 					Name: "Z",
 					Fields: []gopium.Field{
 						{
@@ -1064,7 +1064,7 @@ func TestVdeep(t *testing.T) {
 			p:   data.NewParser("multi"),
 			stg: pck,
 			sts: map[string]gopium.Struct{
-				"bfd7fe67723126ba2d003cfca83b5aae0ef21f47c1c85c3cf2537d9c4d343349:9": gopium.Struct{
+				"tests_data_multi_file-1.go:9": gopium.Struct{
 					Name: "A",
 					Fields: []gopium.Field{
 						{
@@ -1075,7 +1075,7 @@ func TestVdeep(t *testing.T) {
 						},
 					},
 				},
-				"cf40e2dbf1d874e57ba7627559a91195095ddd58ddb4174c83cbe06eb63c7dca:17": gopium.Struct{
+				"tests_data_multi_file-3.go:17": gopium.Struct{
 					Name: "AZ",
 					Fields: []gopium.Field{
 						{
@@ -1099,7 +1099,7 @@ func TestVdeep(t *testing.T) {
 						},
 					},
 				},
-				"cf40e2dbf1d874e57ba7627559a91195095ddd58ddb4174c83cbe06eb63c7dca:27": gopium.Struct{
+				"tests_data_multi_file-3.go:27": gopium.Struct{
 					Name: "Zeze",
 					Fields: []gopium.Field{
 						{
@@ -1134,7 +1134,7 @@ func TestVdeep(t *testing.T) {
 						},
 					},
 				},
-				"bfd7fe67723126ba2d003cfca83b5aae0ef21f47c1c85c3cf2537d9c4d343349:29": gopium.Struct{
+				"tests_data_multi_file-1.go:29": gopium.Struct{
 					Name: "TestAZ",
 					Fields: []gopium.Field{
 						{

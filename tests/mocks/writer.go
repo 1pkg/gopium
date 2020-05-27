@@ -2,11 +2,7 @@ package mocks
 
 import (
 	"io"
-	"os"
-	"strings"
 	"sync"
-
-	"1pkg/gopium"
 )
 
 // Writer defines mock category writer implementation
@@ -17,7 +13,7 @@ type Writer struct {
 	mutex sync.Mutex
 }
 
-// Writer mock implementation
+// Generate mock implementation
 func (w *Writer) Generate(loc string) (io.WriteCloser, error) {
 	// lock rwcs access
 	// and init them if they
@@ -27,11 +23,6 @@ func (w *Writer) Generate(loc string) (io.WriteCloser, error) {
 	if w.RWCs == nil {
 		w.RWCs = make(map[string]*RWC)
 	}
-	// remove abs part from loc
-	// replace os path separators with underscores
-	loc = strings.Replace(loc, gopium.Root(), "", 1)
-	loc = strings.ReplaceAll(loc, string(os.PathSeparator), "_")
-	loc = strings.Trim(loc, "_")
 	// if loc is inside existed rwcs
 	// just return found rwc back
 	if rwc, ok := w.RWCs[loc]; ok {

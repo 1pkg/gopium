@@ -55,7 +55,7 @@ func TestWast(t *testing.T) {
 			p:   data.NewParser("empty"),
 			a:   astutil.UFFN,
 			sp:  astutil.Package{},
-			w:   &mocks.Writer{},
+			w:   data.Writer{Writer: &mocks.Writer{}},
 			stg: np,
 			sts: map[string][]byte{},
 		},
@@ -65,7 +65,7 @@ func TestWast(t *testing.T) {
 			p:   data.NewParser("single"),
 			a:   astutil.UFFN,
 			sp:  astutil.Package{},
-			w:   &mocks.Writer{},
+			w:   data.Writer{Writer: &mocks.Writer{}},
 			stg: np,
 			sts: map[string][]byte{
 				"tests_data_single_file.go": []byte(`
@@ -87,7 +87,7 @@ type Single struct {
 			p:   data.NewParser("single"),
 			a:   astutil.UFFN,
 			sp:  astutil.Package{},
-			w:   &mocks.Writer{},
+			w:   data.Writer{Writer: &mocks.Writer{}},
 			stg: np,
 			sts: map[string][]byte{},
 			err: context.Canceled,
@@ -98,7 +98,7 @@ type Single struct {
 			p:   mocks.Parser{Typeserr: errors.New("test-1")},
 			a:   astutil.UFFN,
 			sp:  astutil.Package{},
-			w:   &mocks.Writer{},
+			w:   data.Writer{Writer: &mocks.Writer{}},
 			stg: np,
 			sts: map[string][]byte{},
 			err: errors.New("test-1"),
@@ -109,7 +109,7 @@ type Single struct {
 			p:   mocks.Parser{Parser: data.NewParser("single"), Asterr: errors.New("test-2")},
 			a:   astutil.UFFN,
 			sp:  astutil.Package{},
-			w:   &mocks.Writer{},
+			w:   data.Writer{Writer: &mocks.Writer{}},
 			stg: np,
 			sts: map[string][]byte{},
 			err: errors.New("test-2"),
@@ -120,7 +120,7 @@ type Single struct {
 			p:   data.NewParser("single"),
 			a:   astutil.UFFN,
 			sp:  astutil.Package{},
-			w:   &mocks.Writer{},
+			w:   data.Writer{Writer: &mocks.Writer{}},
 			stg: &mocks.Strategy{Err: errors.New("test-3")},
 			sts: map[string][]byte{},
 			err: errors.New("test-3"),
@@ -131,7 +131,7 @@ type Single struct {
 			p:   data.NewParser("single"),
 			a:   astutil.UFFN,
 			sp:  astutil.Package{},
-			w:   (&mocks.Writer{Gerr: errors.New("test-4")}),
+			w:   data.Writer{Writer: (&mocks.Writer{Gerr: errors.New("test-4")})},
 			stg: np,
 			sts: map[string][]byte{},
 			err: errors.New("test-4"),
@@ -142,7 +142,7 @@ type Single struct {
 			p:   data.NewParser("single"),
 			a:   astutil.UFFN,
 			sp:  astutil.Package{},
-			w:   (&mocks.Writer{Cerr: errors.New("test-5")}),
+			w:   data.Writer{Writer: (&mocks.Writer{Cerr: errors.New("test-5")})},
 			stg: np,
 			sts: map[string][]byte{},
 			err: errors.New("test-5"),
@@ -153,7 +153,7 @@ type Single struct {
 			p:   data.NewParser("single"),
 			a:   (&mocks.Xapply{Err: errors.New("test-6")}).Apply,
 			sp:  astutil.Package{},
-			w:   &mocks.Writer{},
+			w:   data.Writer{Writer: &mocks.Writer{}},
 			stg: np,
 			sts: map[string][]byte{},
 			err: errors.New("test-6"),
@@ -164,7 +164,7 @@ type Single struct {
 			p:   data.NewParser("single"),
 			a:   astutil.UFFN,
 			sp:  mocks.Persister{Err: errors.New("test-7")},
-			w:   &mocks.Writer{},
+			w:   data.Writer{Writer: &mocks.Writer{}},
 			stg: np,
 			sts: map[string][]byte{},
 			err: errors.New("test-7"),
@@ -175,7 +175,7 @@ type Single struct {
 			p:    data.NewParser("multi"),
 			a:    astutil.UFFN,
 			sp:   astutil.Package{},
-			w:    &mocks.Writer{},
+			w:    data.Writer{Writer: &mocks.Writer{}},
 			stg:  pck,
 			deep: true,
 			sts: map[string][]byte{
@@ -264,7 +264,7 @@ type (
 			p:    data.NewParser("multi"),
 			a:    astutil.UFFN,
 			sp:   astutil.Package{},
-			w:    &mocks.Writer{},
+			w:    data.Writer{Writer: &mocks.Writer{}},
 			stg:  pck,
 			bref: true,
 			sts: map[string][]byte{
@@ -364,7 +364,7 @@ type (
 			}
 			// process checks only on success
 			if tcase.err == nil {
-				w := tcase.w.(*mocks.Writer)
+				w := (tcase.w.(data.Writer)).Writer.(*mocks.Writer)
 				for id, rwc := range w.RWCs {
 					// check all struct
 					// against bytes map

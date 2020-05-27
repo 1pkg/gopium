@@ -50,7 +50,7 @@ func TestWout(t *testing.T) {
 			r:   regexp.MustCompile(`.*`),
 			p:   data.NewParser("empty"),
 			fmt: mocks.Xbytes{}.Bytes,
-			w:   &mocks.Writer{},
+			w:   data.Writer{Writer: &mocks.Writer{}},
 			stg: np,
 			sts: map[string][]byte{},
 		},
@@ -59,7 +59,7 @@ func TestWout(t *testing.T) {
 			r:   regexp.MustCompile(`.*`),
 			p:   data.NewParser("single"),
 			fmt: mocks.Xbytes{}.Bytes,
-			w:   &mocks.Writer{},
+			w:   data.Writer{Writer: &mocks.Writer{}},
 			stg: np,
 			sts: map[string][]byte{
 				"tests_data_single_gopium": []byte(`
@@ -113,7 +113,7 @@ func TestWout(t *testing.T) {
 			r:   regexp.MustCompile(`.*`),
 			p:   data.NewParser("single"),
 			fmt: mocks.Xbytes{}.Bytes,
-			w:   &mocks.Writer{},
+			w:   data.Writer{Writer: &mocks.Writer{}},
 			stg: np,
 			sts: map[string][]byte{},
 			err: context.Canceled,
@@ -123,7 +123,7 @@ func TestWout(t *testing.T) {
 			r:   regexp.MustCompile(`.*`),
 			p:   mocks.Parser{Typeserr: errors.New("test-1")},
 			fmt: mocks.Xbytes{}.Bytes,
-			w:   &mocks.Writer{},
+			w:   data.Writer{Writer: &mocks.Writer{}},
 			stg: np,
 			sts: map[string][]byte{},
 			err: errors.New("test-1"),
@@ -133,7 +133,7 @@ func TestWout(t *testing.T) {
 			r:   regexp.MustCompile(`.*`),
 			p:   data.NewParser("single"),
 			fmt: mocks.Xbytes{}.Bytes,
-			w:   &mocks.Writer{},
+			w:   data.Writer{Writer: &mocks.Writer{}},
 			stg: &mocks.Strategy{Err: errors.New("test-2")},
 			sts: map[string][]byte{},
 			err: errors.New("test-2"),
@@ -143,7 +143,7 @@ func TestWout(t *testing.T) {
 			r:   regexp.MustCompile(`.*`),
 			p:   data.NewParser("single"),
 			fmt: mocks.Xbytes{}.Bytes,
-			w:   (&mocks.Writer{Gerr: errors.New("test-3")}),
+			w:   data.Writer{Writer: (&mocks.Writer{Gerr: errors.New("test-3")})},
 			stg: np,
 			sts: map[string][]byte{},
 			err: errors.New("test-3"),
@@ -153,7 +153,7 @@ func TestWout(t *testing.T) {
 			r:   regexp.MustCompile(`.*`),
 			p:   data.NewParser("single"),
 			fmt: mocks.Xbytes{Err: errors.New("test-4")}.Bytes,
-			w:   &mocks.Writer{},
+			w:   data.Writer{Writer: &mocks.Writer{}},
 			stg: np,
 			sts: map[string][]byte{},
 			err: errors.New("test-4"),
@@ -163,9 +163,9 @@ func TestWout(t *testing.T) {
 			r:   regexp.MustCompile(`.*`),
 			p:   data.NewParser("single"),
 			fmt: mocks.Xbytes{}.Bytes,
-			w: (&mocks.Writer{RWCs: map[string]*mocks.RWC{
+			w: data.Writer{Writer: (&mocks.Writer{RWCs: map[string]*mocks.RWC{
 				"tests_data_single_gopium": {Werr: errors.New("test-5")},
-			}}),
+			}})},
 			stg: np,
 			sts: map[string][]byte{},
 			err: errors.New("test-5"),
@@ -175,9 +175,9 @@ func TestWout(t *testing.T) {
 			r:   regexp.MustCompile(`.*`),
 			p:   data.NewParser("single"),
 			fmt: mocks.Xbytes{}.Bytes,
-			w: (&mocks.Writer{RWCs: map[string]*mocks.RWC{
+			w: data.Writer{Writer: (&mocks.Writer{RWCs: map[string]*mocks.RWC{
 				"tests_data_single_gopium": {Cerr: errors.New("test-6")},
-			}}),
+			}})},
 			stg: np,
 			sts: map[string][]byte{},
 			err: errors.New("test-6"),
@@ -187,7 +187,7 @@ func TestWout(t *testing.T) {
 			r:    regexp.MustCompile(`([AZ])`),
 			p:    data.NewParser("multi"),
 			fmt:  mocks.Xbytes{}.Bytes,
-			w:    &mocks.Writer{},
+			w:    data.Writer{Writer: &mocks.Writer{}},
 			stg:  pck,
 			deep: true,
 			sts: map[string][]byte{
@@ -351,7 +351,7 @@ func TestWout(t *testing.T) {
 			r:    regexp.MustCompile(`([AZ])`),
 			p:    data.NewParser("multi"),
 			fmt:  mocks.Xbytes{}.Bytes,
-			w:    &mocks.Writer{},
+			w:    data.Writer{Writer: &mocks.Writer{}},
 			stg:  pck,
 			bref: true,
 			sts: map[string][]byte{
@@ -486,7 +486,7 @@ func TestWout(t *testing.T) {
 			}
 			// process checks only on success
 			if tcase.err == nil {
-				w := tcase.w.(*mocks.Writer)
+				w := (tcase.w.(data.Writer)).Writer.(*mocks.Writer)
 				for id, rwc := range w.RWCs {
 					// check all struct
 					// against bytes map
