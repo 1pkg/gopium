@@ -54,7 +54,7 @@ func (stg tag) Apply(ctx context.Context, o gopium.Struct) (gopium.Struct, error
 		if stg.discrete {
 			// use default group tag
 			// and append index of field to it
-			group := fmt.Sprintf("%s-%d", tdef, i+1)
+			group := fmt.Sprintf("%s-%d", gopium.NAME, i+1)
 			gtag = fmt.Sprintf("group:%s;%s", group, stg.tag)
 		}
 		// in case gopium tag already exists

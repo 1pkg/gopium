@@ -13,12 +13,6 @@ import (
 	"golang.org/x/sync/errgroup"
 )
 
-// list of tag presets
-const (
-	tskip = "-"
-	tdef  = "default"
-)
-
 // list of group presets
 var (
 	ptgrp = group{}
@@ -84,7 +78,7 @@ func (stg group) Apply(ctx context.Context, o gopium.Struct) (gopium.Struct, err
 			container.r = tmp
 			// if we faced default group
 			// update result comment and doc
-			if container.grp == tdef {
+			if container.grp == "" {
 				r = tmp
 			}
 			return nil
@@ -124,8 +118,8 @@ func (stg group) parse(st gopium.Struct) ([]container, error) {
 		tag, ok := reflect.StructTag(f.Tag).Lookup(gopium.NAME)
 		// in case tag is empty
 		// or marked as skipped
-		if !ok || tag == tskip {
-			gfields[tskip] = append(gfields[tskip], f)
+		if !ok || tag == "-" {
+			gfields["-"] = append(gfields["-"], f)
 			continue
 		}
 		// trim all excess separators
@@ -136,17 +130,16 @@ func (stg group) parse(st gopium.Struct) ([]container, error) {
 		case 1:
 			stgs := tokens[0]
 			// check that strategies list is consistent
-			if gstg, ok := gstrategiesnames[tdef]; ok && gstg != stgs {
+			if gstg, ok := gstrategiesnames[""]; ok && gstg != stgs {
 				return nil, fmt.Errorf(
-					"inconsistent strategies list %q for field %q in group %q",
+					"inconsistent strategies list %q for field %q in default group",
 					stgs,
 					f.Name,
-					tdef,
 				)
 			}
 			// collect strategies and fields
-			gstrategiesnames[tdef] = stgs
-			gfields[tdef] = append(gfields[tdef], collections.CopyField(f))
+			gstrategiesnames[""] = stgs
+			gfields[""] = append(gfields[""], collections.CopyField(f))
 		case 2:
 			group := tokens[0]
 			stgs := tokens[1]
