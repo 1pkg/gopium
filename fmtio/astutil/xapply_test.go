@@ -89,7 +89,7 @@ func TestXapply(t *testing.T) {
 	)
 	cctx, cancel := context.WithCancel(context.Background())
 	cancel()
-	p := fmtio.NewGoprinter(0, 4, false)
+	p := fmtio.Gofmt{}
 	sp := Package{}
 	table := map[string]struct {
 		p   gopium.Parser
@@ -119,11 +119,11 @@ package note
 // Note doc
 // test-doc
 type Note struct {
-	C	string
+	C string
 	// test-pad
-	_	[8]byte
-	A	string
-}	// test-com
+	_ [8]byte
+	A string
+} // test-com
 // some comment
 
 // last comment
@@ -135,10 +135,10 @@ package note
 
 /**/
 type DocCom struct {
-	f complex128	// f com 1
+	f complex128 // f com 1
 	// f com 2
 	// f com 3
-}	// doc com
+} // doc com
 `),
 			},
 		},
@@ -155,10 +155,10 @@ package note
 
 // Note doc
 type Note struct {
-	C	string
-	_	[8]byte
-	A	string
-}	// some comment
+	C string
+	_ [8]byte
+	A string
+} // some comment
 
 // last comment
 `),
@@ -170,7 +170,7 @@ package note
 /**/
 type DocCom struct {
 	f complex128
-}	// doc com
+} // doc com
 `),
 			},
 		},
@@ -216,7 +216,7 @@ type DocCom struct {
 				&typepkg.ParserXToolPackagesAst{
 					ModeAst: parser.ParseComments | parser.AllErrors,
 				},
-				fmtio.NewGoprinter(0, 4, false),
+				fmtio.Gofmt{},
 			),
 			ctx: cctx,
 			r:   map[string][]byte{},
@@ -229,7 +229,7 @@ type DocCom struct {
 				&typepkg.ParserXToolPackagesAst{
 					ModeAst: parser.ParseComments | parser.AllErrors,
 				},
-				fmtio.NewGoprinter(0, 4, false),
+				fmtio.Gofmt{},
 			),
 			h:   lh,
 			ctx: context.Background(),
@@ -241,7 +241,7 @@ type DocCom struct {
 			a: note(
 				walker{},
 				mocks.Parser{Asterr: errors.New("test-1")},
-				fmtio.NewGoprinter(0, 4, false),
+				fmtio.Gofmt{},
 			),
 			ctx: context.Background(),
 			r:   map[string][]byte{},

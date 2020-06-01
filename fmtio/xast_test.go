@@ -16,7 +16,7 @@ import (
 
 func TestXast(t *testing.T) {
 	// prepare
-	p := NewGoprinter(0, 4, false)
+	p := Gofmt{}
 	table := map[string]struct {
 		fmt gopium.Xast
 		ts  *ast.TypeSpec
@@ -152,13 +152,13 @@ func TestXast(t *testing.T) {
 			},
 			r: []byte(`
 test struct {
-	test-1	string	'test-1'
-	test-2	string	'test-2'
-	test-3	string	'test-3'
-	test-4	int64
-	test-5	int64// random
+	test-1 string 'test-1'
+	test-2 string 'test-2'
+	test-3 string 'test-3'
+	test-4 int64
+	test-5 int64// random
 	// random
-	float32	embedded
+	float32 embedded
 }
 `),
 		},
@@ -241,8 +241,8 @@ test struct {
 			},
 			r: []byte(`
 test struct {// random
-	test-2	int64
-	test-1	int64// random
+	test-2 int64
+	test-1 int64// random
 }
 `),
 		},
@@ -336,11 +336,11 @@ test struct {// random
 			},
 			r: []byte(`
 test struct {// random
-	test-1	int64
-	test-2	int64
-	_		[// random
-	10]byte	'btag'
-	_	[8]byte
+	test-1  int64
+	test-2  int64
+	_       [// random
+	10]byte 'btag'
+	_ [8]byte
 }
 `),
 		},

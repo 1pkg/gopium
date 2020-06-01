@@ -29,7 +29,7 @@ func TestPackage(t *testing.T) {
 		"empty pkg should print nothing": {
 			xp:  data.NewParser("empty"),
 			ctx: context.Background(),
-			p:   fmtio.NewGoprinter(0, 4, true),
+			p:   fmtio.Gofmt{},
 			w:   data.Writer{Writer: &mocks.Writer{}},
 			r: map[string][]byte{
 				"tests_data_empty_file.go": []byte(`
@@ -42,7 +42,7 @@ package empty
 		"single struct pkg should print and persists the struct": {
 			xp:  data.NewParser("single"),
 			ctx: context.Background(),
-			p:   fmtio.NewGoprinter(0, 4, false),
+			p:   fmtio.Gofmt{},
 			w:   data.Writer{Writer: &mocks.Writer{}},
 			r: map[string][]byte{
 				"tests_data_single_file.go": []byte(`
@@ -51,9 +51,9 @@ package empty
 package single
 
 type Single struct {
-	A	string
-	B	string
-	C	string
+	A string
+	B string
+	C string
 }
 `),
 			},
@@ -61,7 +61,7 @@ type Single struct {
 		"single struct pkg should persist nothing on canceled context": {
 			xp:  data.NewParser("single"),
 			ctx: cctx,
-			p:   fmtio.NewGoprinter(0, 4, false),
+			p:   fmtio.Gofmt{},
 			w:   data.Writer{Writer: &mocks.Writer{}},
 			r:   map[string][]byte{},
 			err: context.Canceled,
@@ -69,7 +69,7 @@ type Single struct {
 		"single struct pkg should persist nothing on persist error": {
 			xp:  data.NewParser("single"),
 			ctx: context.Background(),
-			p:   fmtio.NewGoprinter(0, 4, false),
+			p:   fmtio.Gofmt{},
 			w:   data.Writer{Writer: (&mocks.Writer{Gerr: errors.New("test-1")})},
 			r:   map[string][]byte{},
 			err: errors.New("test-1"),
@@ -87,7 +87,7 @@ type Single struct {
 		"multi structs pkg should persist all expected levels structs": {
 			xp:  data.NewParser("multi"),
 			ctx: context.Background(),
-			p:   fmtio.NewGoprinter(0, 4, false),
+			p:   fmtio.Gofmt{},
 			w:   data.Writer{Writer: &mocks.Writer{}},
 			r: map[string][]byte{
 				"tests_data_multi_file-1.go": []byte(`
@@ -107,22 +107,22 @@ var a1 string = strings.Join([]string{"a", "b", "c"}, "|")
 
 type b struct {
 	A
-	b	float64
+	b float64
 }
 
 type C struct {
-	c	[]string
-	A	struct {
-		b	b
-		z	A
+	c []string
+	A struct {
+		b b
+		z A
 	}
 }
 
 func scope() {
 	type TestAZ struct {
-		a	bool
-		D	A
-		z	bool
+		a bool
+		D A
+		z bool
 	}
 }
 `),
@@ -140,7 +140,7 @@ func scope1() error {
 	type b1 b
 	type b2 struct {
 		A
-		b	float64
+		b float64
 	}
 	return errors.New("test data")
 }
@@ -154,18 +154,18 @@ type c1 C
 
 // table := []struct{A string}{{A: "test"}}
 type D struct {
-	t	[13]byte
-	b	bool
-	_	int64
+	t [13]byte
+	b bool
+	_ int64
 }
 
 /* ggg := func (interface{}){} */
 type AW func() error
 
 type AZ struct {
-	a	bool
-	D	D
-	z	bool
+	a bool
+	D D
+	z bool
 }
 
 type ze interface {
@@ -176,14 +176,14 @@ type Zeze struct {
 	ze
 	D
 	AZ
-	AWA	D
+	AWA D
 }
 
 // test comment
 type (
-	d1	int64
-	d2	float64
-	d3	string
+	d1 int64
+	d2 float64
+	d3 string
 )
 `),
 			},
