@@ -33,6 +33,7 @@ var (
 	pindent   int
 	ptabwidth int
 	pusespace bool
+	pusegofmt bool
 	// gopium global vars
 	timeout int
 )
@@ -180,6 +181,7 @@ Notes:
 				pindent,
 				ptabwidth,
 				pusespace,
+				pusegofmt,
 				// gopium global vars
 				timeout,
 			)
@@ -301,6 +303,17 @@ By default any previous visited types have affect on future relevant visits.
 		"s",
 		false,
 		"Gopium printer use space flag, flag that defines if all formatting should be done by spaces.",
+	)
+	// set printer_use_gofmt flag
+	cli.Flags().BoolVarP(
+		&pusegofmt,
+		"printer_use_gofmt",
+		"g",
+		true,
+		`
+Gopium printer use gofmt flag, flag that defines if canonical gofmt tool should be used for formatting.
+By default it overrides other printer formatting parameters.
+`,
 	)
 	// set timeout flag
 	cli.Flags().IntVarP(

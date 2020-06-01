@@ -46,13 +46,14 @@ func TestNewCli(t *testing.T) {
 		indent   int
 		tabwidth int
 		usespace bool
+		usegofmt bool
 		// global vars
 		timeout int
 		// test vars
 		cli *Cli
 		err error
 	}{
-		"new cli cli should expected cli on valid parameters": {
+		"new cli should return expected cli on valid parameters": {
 			// target platform vars
 			compiler:  "gc",
 			arch:      "amd64",
@@ -100,7 +101,56 @@ func TestNewCli(t *testing.T) {
 				snames: []gopium.StrategyName{"test-stg"},
 			},
 		},
-		"new cli cli should expected cli on valid parameters with abs path": {
+		"new cli should return expected cli on valid parameters with gofmt": {
+			// target platform vars
+			compiler:  "gc",
+			arch:      "amd64",
+			cpucaches: []int{2, 4, 8},
+			// package parser vars
+			pkg:    "test-pkg",
+			path:   "test-path",
+			benvs:  []string{},
+			bflags: []string{},
+			// walker vars
+			walker:  "test-w",
+			regex:   `.*`,
+			deep:    true,
+			backref: true,
+			stgs:    []string{"test-stg"},
+			// printer vars
+			indent:   4,
+			tabwidth: 4,
+			usespace: true,
+			usegofmt: true,
+			// global vars
+			timeout: 5,
+			// test vars
+			cli: &Cli{
+				v: visitor{
+					regex:   regexp.MustCompile(`.*`),
+					timeout: 5 * time.Second,
+				},
+				wb: walkers.Builder{
+					Parser: &typepkg.ParserXToolPackagesAst{
+						Pattern:    "test-pkg",
+						Root:       build.Default.GOPATH,
+						Path:       "test-path",
+						ModeTypes:  packages.LoadAllSyntax,
+						ModeAst:    parser.ParseComments | parser.AllErrors,
+						BuildEnv:   []string{},
+						BuildFlags: []string{},
+					},
+					Exposer: m,
+					Printer: fmtio.Gofmt{},
+					Deep:    true,
+					Bref:    true,
+				},
+				sb:     strategies.Builder{Curator: m},
+				wname:  "test-w",
+				snames: []gopium.StrategyName{"test-stg"},
+			},
+		},
+		"new cli should return expected cli on valid parameters with abs path": {
 			// target platform vars
 			compiler:  "gc",
 			arch:      "amd64",
@@ -217,6 +267,7 @@ func TestNewCli(t *testing.T) {
 				tcase.indent,
 				tcase.tabwidth,
 				tcase.usespace,
+				tcase.usegofmt,
 				tcase.timeout,
 			)
 			// check

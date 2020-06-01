@@ -29,7 +29,7 @@ var UFFN = combine(
 		&typepkg.ParserXToolPackagesAst{
 			ModeAst: parser.ParseComments | parser.AllErrors,
 		},
-		fmtio.NewGoprinter(0, 4, false),
+		fmtio.Gofmt{},
 	),
 )
 

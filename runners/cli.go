@@ -50,7 +50,8 @@ func NewCli(
 	// gopium printer vars
 	indent,
 	tabwidth int,
-	usespace bool,
+	usespace,
+	usegofmt bool,
 	// gopium global vars
 	timeout int,
 ) (*Cli, error) {
@@ -83,7 +84,12 @@ func NewCli(
 		BuildFlags: bflags,
 	}
 	// set up printer
-	p := fmtio.NewGoprinter(indent, tabwidth, usespace)
+	var p gopium.Printer
+	if usegofmt {
+		p = fmtio.Gofmt{}
+	} else {
+		p = fmtio.NewGoprinter(indent, tabwidth, usespace)
+	}
 	// compile regexp
 	cregex, err := regexp.Compile(regex)
 	if err != nil {

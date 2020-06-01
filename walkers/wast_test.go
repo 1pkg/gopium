@@ -35,7 +35,7 @@ func TestWast(t *testing.T) {
 	if !reflect.DeepEqual(err, nil) {
 		t.Fatalf("actual %v doesn't equal to %v", err, nil)
 	}
-	p := fmtio.NewGoprinter(0, 4, false)
+	p := fmtio.Gofmt{}
 	table := map[string]struct {
 		ctx  context.Context
 		r    *regexp.Regexp
@@ -74,9 +74,9 @@ func TestWast(t *testing.T) {
 package single
 
 type Single struct {
-	A	string
-	B	string
-	C	string
+	A string
+	B string
+	C string
 }
 `),
 			},
@@ -196,22 +196,22 @@ var a1 string = strings.Join([]string{"a", "b", "c"}, "|")
 
 type b struct {
 	A
-	b	float64
+	b float64
 }
 
 type C struct {
-	c	[]string
-	A	struct {
-		b	b
-		z	A
+	c []string
+	A struct {
+		b b
+		z A
 	}
 }
 
 func scope() {
 	type TestAZ struct {
-		D	A
-		a	bool
-		z	bool
+		D A
+		a bool
+		z bool
 	}
 }
 `),
@@ -224,18 +224,18 @@ type c1 C
 
 // table := []struct{A string}{{A: "test"}}
 type D struct {
-	t	[13]byte
-	b	bool
-	_	int64
+	t [13]byte
+	b bool
+	_ int64
 }
 
 /* ggg := func (interface{}){} */
 type AW func() error
 
 type AZ struct {
-	D	D
-	a	bool
-	z	bool
+	D D
+	a bool
+	z bool
 }
 
 type ze interface {
@@ -246,14 +246,14 @@ type Zeze struct {
 	ze
 	D
 	AZ
-	AWA	D
+	AWA D
 }
 
 // test comment
 type (
-	d1	int64
-	d2	float64
-	d3	string
+	d1 int64
+	d2 float64
+	d3 string
 )
 `),
 			},
@@ -285,22 +285,22 @@ var a1 string = strings.Join([]string{"a", "b", "c"}, "|")
 
 type b struct {
 	A
-	b	float64
+	b float64
 }
 
 type C struct {
-	c	[]string
-	A	struct {
-		b	b
-		z	A
+	c []string
+	A struct {
+		b b
+		z A
 	}
 }
 
 func scope() {
 	type TestAZ struct {
-		a	bool
-		D	A
-		z	bool
+		a bool
+		D A
+		z bool
 	}
 }
 `),
@@ -313,18 +313,18 @@ type c1 C
 
 // table := []struct{A string}{{A: "test"}}
 type D struct {
-	t	[13]byte
-	b	bool
-	_	int64
+	t [13]byte
+	b bool
+	_ int64
 }
 
 /* ggg := func (interface{}){} */
 type AW func() error
 
 type AZ struct {
-	D	D
-	a	bool
-	z	bool
+	D D
+	a bool
+	z bool
 }
 
 type ze interface {
@@ -335,14 +335,14 @@ type Zeze struct {
 	ze
 	D
 	AZ
-	AWA	D
+	AWA D
 }
 
 // test comment
 type (
-	d1	int64
-	d2	float64
-	d3	string
+	d1 int64
+	d2 float64
+	d3 string
 )
 `),
 			},
