@@ -48,7 +48,7 @@ function patchgo() {
 			},
 			{
 				name: 'go-outline',
-				importPath: 'github.com/ramya-rao-a/go-outline',
+				importPath: 'github.com/1pkg/goutline',
 				isImportant: true,
 				description: '',
 			},
@@ -67,12 +67,22 @@ function patchgo() {
 			case 'go-outline':
 				return {
 					name: 'go-outline',
-					importPath: 'github.com/ramya-rao-a/go-outline',
+					importPath: 'github.com/1pkg/goutline',
 					isImportant: true,
 					description: '',
 				}
 		}
 		return null
+	}
+	// patch util go module
+	// to update go-outline binary path
+	let putil = goutil as any
+	let getBinPath = goutil.getBinPath
+	putil.getBinPath = (tool: string): string => {
+		if (tool == 'go-outline') {
+			tool = 'goutline'
+		}
+		return getBinPath(tool)
 	}
 	// patch status go module
 	// to replace out chan with gopium chan
@@ -127,7 +137,7 @@ class Codelens implements vscode.CodeLensProvider {
 					if (pkg) {
 						// then collect all codelens for package and structs
 						const pdir = path.dirname(document.fileName)
-						return [...this.package(pdir, pkg), ...this.structs(pdir, pkg)]
+						return [...this.package(pdir, pkg), ...this.structs(pdir, pkg, symbols)]
 					}
 					return []
 				})
@@ -152,20 +162,20 @@ class Codelens implements vscode.CodeLensProvider {
 		return codelens
 	}
 	// package collects all structs codelens
-	private structs(path: string, pkg: vscode.DocumentSymbol): vscode.CodeLens[] {
+	private structs(path: string, pkg: vscode.DocumentSymbol, symbols: vscode.DocumentSymbol[]): vscode.CodeLens[] {
 		let codelens: vscode.CodeLens[] = []
 		// go through all package children
-		for (const child of pkg.children) {
+		for (const symbol of symbols) {
 			// if chils is struct collect codelens
-			if (child.kind == vscode.SymbolKind.Struct) {
+			if (symbol.kind == vscode.SymbolKind.Struct) {
 				// for all global settings actions presets
 				// add new package codelens
 				for (const preset in gsettings.presets) {
 					codelens.push(
-						new vscode.CodeLens(child.range, {
+						new vscode.CodeLens(symbol.range, {
 							title: `gopium ${preset}`,
 							command: 'gopium',
-							arguments: [preset, path, pkg.name, child.name],
+							arguments: [preset, path, pkg.name, symbol.name],
 							tooltip: `gopium struct action ${preset}`,
 						}),
 					)
