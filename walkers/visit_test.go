@@ -93,7 +93,7 @@ func TestVscope(t *testing.T) {
 	cctx, cancel := context.WithCancel(context.Background())
 	cancel()
 	b := strategies.Builder{}
-	np, err := b.Build(strategies.Nope)
+	np, err := b.Build(strategies.Ignore)
 	if !reflect.DeepEqual(err, nil) {
 		t.Fatalf("actual %v doesn't equal to %v", err, nil)
 	}
@@ -607,7 +607,7 @@ func TestVdeep(t *testing.T) {
 	cctx, cancel := context.WithCancel(context.Background())
 	cancel()
 	b := strategies.Builder{}
-	np, err := b.Build(strategies.Nope)
+	np, err := b.Build(strategies.Ignore)
 	if !reflect.DeepEqual(err, nil) {
 		t.Fatalf("actual %v doesn't equal to %v", err, nil)
 	}

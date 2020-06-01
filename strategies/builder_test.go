@@ -214,13 +214,13 @@ func TestBuilder(t *testing.T) {
 			names: []gopium.StrategyName{FNotExp},
 			stg:   pipe([]gopium.Strategy{fnotexp}),
 		},
-		"`nope` name should return expected strategy": {
-			names: []gopium.StrategyName{Nope},
-			stg:   pipe([]gopium.Strategy{np}),
+		"`ignore` name should return expected strategy": {
+			names: []gopium.StrategyName{Ignore},
+			stg:   pipe([]gopium.Strategy{ignr}),
 		},
-		"`void` name should return expected strategy": {
-			names: []gopium.StrategyName{Void},
-			stg:   pipe([]gopium.Strategy{vd}),
+		"`discard` name should return expected strategy": {
+			names: []gopium.StrategyName{Discard},
+			stg:   pipe([]gopium.Strategy{dis}),
 		},
 		"empty name should return empty pipe": {
 			stg: pipe{},
@@ -230,11 +230,11 @@ func TestBuilder(t *testing.T) {
 			err:   fmt.Errorf(`strategy "test" wasn't found`),
 		},
 		"complex name should return expected strategy": {
-			names: []gopium.StrategyName{Void, Nope, AddTagS},
-			stg:   pipe([]gopium.Strategy{vd, np, tags.Names(Void, Nope, AddTagS)}),
+			names: []gopium.StrategyName{Discard, Ignore, AddTagS},
+			stg:   pipe([]gopium.Strategy{dis, ignr, tags.Names(Discard, Ignore, AddTagS)}),
 		},
 		"invalid name inside complex name should return builder error": {
-			names: []gopium.StrategyName{Void, Nope, "test", AddTagS},
+			names: []gopium.StrategyName{Discard, Ignore, "test", AddTagS},
 			err:   fmt.Errorf(`strategy "test" wasn't found`),
 		},
 	}

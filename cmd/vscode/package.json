@@ -260,8 +260,8 @@
 										"filter_not_embedded",
 										"filter_exported",
 										"filter_not_exported",
-										"nope",
-										"void"
+										"ignore",
+										"discard"
 									]
 								},
 								"description": "Gopium strategies list for single action preset."
