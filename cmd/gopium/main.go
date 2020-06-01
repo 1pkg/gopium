@@ -147,8 +147,8 @@ Gopium supports next strategies:
  - filter_exported (filters out all structure exported fields)
  - filter_not_exported (filters out all structure not exported fields)
 
- - nope (does nothing by returning original structure)
- - void (does nothing by returning void struct)
+ - ignore (does nothing by returning original structure)
+ - discards (discards struct fields by returning void struct)
 
 Notes:
  - it might be useful to use filter_pads in pipes with other strategies to clean paddings first

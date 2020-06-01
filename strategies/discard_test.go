@@ -71,7 +71,7 @@ func TestVoid(t *testing.T) {
 	for name, tcase := range table {
 		t.Run(name, func(t *testing.T) {
 			// exec
-			r, err := vd.Apply(tcase.ctx, tcase.o)
+			r, err := dis.Apply(tcase.ctx, tcase.o)
 			// check
 			if !reflect.DeepEqual(r, tcase.r) {
 				t.Errorf("actual %v doesn't equal to expected %v", r, tcase.r)

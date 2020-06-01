@@ -64,8 +64,8 @@ const (
 	FNotEmb gopium.StrategyName = "filter_not_embedded"
 	FExp    gopium.StrategyName = "filter_exported"
 	FNotExp gopium.StrategyName = "filter_not_exported"
-	Nope    gopium.StrategyName = "nope"
-	Void    gopium.StrategyName = "void"
+	Ignore  gopium.StrategyName = "ignore"
+	Discard gopium.StrategyName = "discard"
 )
 
 // Builder defines types gopium.StrategyBuilder implementation
@@ -185,10 +185,10 @@ func (b Builder) Build(names ...gopium.StrategyName) (gopium.Strategy, error) {
 			stg = fexp
 		case FNotExp:
 			stg = fnotexp
-		case Nope:
-			stg = np
-		case Void:
-			stg = vd
+		case Ignore:
+			stg = ignr
+		case Discard:
+			stg = dis
 		default:
 			return nil, fmt.Errorf("strategy %q wasn't found", name)
 		}

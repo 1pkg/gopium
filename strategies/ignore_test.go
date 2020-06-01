@@ -107,7 +107,7 @@ func TestNope(t *testing.T) {
 	for name, tcase := range table {
 		t.Run(name, func(t *testing.T) {
 			// exec
-			r, err := np.Apply(tcase.ctx, tcase.o)
+			r, err := ignr.Apply(tcase.ctx, tcase.o)
 			// check
 			if !reflect.DeepEqual(r, tcase.r) {
 				t.Errorf("actual %v doesn't equal to expected %v", r, tcase.r)

@@ -200,11 +200,11 @@ func (stg group) parse(st gopium.Struct) ([]container, error) {
 		cnt.o = collections.CopyStruct(st)
 		cnt.o.Fields = fields
 		// if group has strategy set it
-		// otherwise set nil strategy
+		// otherwise ignore that group
 		if stg, ok := gstrategies[grp]; ok {
 			cnt.stg = stg
 		} else {
-			cnt.stg = np
+			cnt.stg = ignr
 		}
 		// append current container to result
 		containers = append(containers, cnt)
