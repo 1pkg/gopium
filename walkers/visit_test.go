@@ -2,7 +2,6 @@ package walkers
 
 import (
 	"context"
-	"go/token"
 	"go/types"
 	"reflect"
 	"regexp"
@@ -298,61 +297,14 @@ func TestVscope(t *testing.T) {
 				},
 			},
 		},
-		"flat struct pkg should visit the struct on same loc": {
+		"flat struct pkg should visit nothing on same loc": {
 			ctx: context.Background(),
 			r:   regexp.MustCompile(`.*`),
 			m:   m,
 			p:   data.NewParser("flat"),
-			loc: mocks.Locator{
-				Poses: map[token.Pos]mocks.Pos{
-					token.Pos(1799681): {ID: "test-1", Loc: "test"},
-					token.Pos(1799769): {ID: "test-2", Loc: "test"},
-					token.Pos(1799802): {ID: "test-1", Loc: "test"},
-					token.Pos(1799860): {ID: "test-2", Loc: "test"},
-					token.Pos(1799915): {ID: "test-1", Loc: "test"},
-					token.Pos(1800016): {ID: "test-1", Loc: "test"},
-
-					token.Pos(1953758): {ID: "test-1", Loc: "test"},
-					token.Pos(1953846): {ID: "test-2", Loc: "test"},
-					token.Pos(1953879): {ID: "test-1", Loc: "test"},
-					token.Pos(1953937): {ID: "test-2", Loc: "test"},
-					token.Pos(1953992): {ID: "test-1", Loc: "test"},
-					token.Pos(1954093): {ID: "test-1", Loc: "test"},
-				},
-			},
+			loc: mocks.Locator{},
 			stg: np,
-			sts: map[string]gopium.Struct{
-				"test-1": gopium.Struct{
-					Name: "A",
-					Fields: []gopium.Field{
-						{
-							Name:  "a",
-							Type:  "int64",
-							Size:  8,
-							Align: 8,
-						},
-					},
-				},
-				"test-2": gopium.Struct{
-					Name: "b",
-					Fields: []gopium.Field{
-						{
-							Name:     "A",
-							Type:     "1pkg/gopium/tests/data/flat.A",
-							Size:     8,
-							Align:    8,
-							Exported: true,
-							Embedded: true,
-						},
-						{
-							Name:  "b",
-							Type:  "float64",
-							Size:  8,
-							Align: 8,
-						},
-					},
-				},
-			},
+			sts: make(map[string]gopium.Struct),
 		},
 		"flat struct pkg should visit only expected structs with regex": {
 			ctx: context.Background(),
@@ -568,6 +520,7 @@ func TestVscope(t *testing.T) {
 			}
 			ref := collections.NewReference(true)
 			m := &maven{exp: m, loc: loc, ref: ref}
+			m.store.Store("", struct{}{})
 			if tcase.loc != nil {
 				m.loc = tcase.loc
 			}
@@ -812,61 +765,14 @@ func TestVdeep(t *testing.T) {
 				},
 			},
 		},
-		"flat struct pkg should visit the struct on same loc": {
+		"flat struct pkg should visit nothing on same loc": {
 			ctx: context.Background(),
 			r:   regexp.MustCompile(`.*`),
 			m:   m,
 			p:   data.NewParser("flat"),
-			loc: mocks.Locator{
-				Poses: map[token.Pos]mocks.Pos{
-					token.Pos(1799681): {ID: "test-1", Loc: "test"},
-					token.Pos(1799769): {ID: "test-2", Loc: "test"},
-					token.Pos(1799802): {ID: "test-1", Loc: "test"},
-					token.Pos(1799860): {ID: "test-2", Loc: "test"},
-					token.Pos(1799915): {ID: "test-1", Loc: "test"},
-					token.Pos(1800016): {ID: "test-1", Loc: "test"},
-
-					token.Pos(1953758): {ID: "test-1", Loc: "test"},
-					token.Pos(1953846): {ID: "test-2", Loc: "test"},
-					token.Pos(1953879): {ID: "test-1", Loc: "test"},
-					token.Pos(1953937): {ID: "test-2", Loc: "test"},
-					token.Pos(1953992): {ID: "test-1", Loc: "test"},
-					token.Pos(1954093): {ID: "test-1", Loc: "test"},
-				},
-			},
+			loc: mocks.Locator{},
 			stg: np,
-			sts: map[string]gopium.Struct{
-				"test-1": gopium.Struct{
-					Name: "A",
-					Fields: []gopium.Field{
-						{
-							Name:  "a",
-							Type:  "int64",
-							Size:  8,
-							Align: 8,
-						},
-					},
-				},
-				"test-2": gopium.Struct{
-					Name: "b",
-					Fields: []gopium.Field{
-						{
-							Name:     "A",
-							Type:     "1pkg/gopium/tests/data/flat.A",
-							Size:     8,
-							Align:    8,
-							Exported: true,
-							Embedded: true,
-						},
-						{
-							Name:  "b",
-							Type:  "float64",
-							Size:  8,
-							Align: 8,
-						},
-					},
-				},
-			},
+			sts: make(map[string]gopium.Struct),
 		},
 		"flat struct pkg should visit only expected structs with regex": {
 			ctx: context.Background(),
@@ -1170,6 +1076,7 @@ func TestVdeep(t *testing.T) {
 			}
 			ref := collections.NewReference(true)
 			m := &maven{exp: m, loc: loc, ref: ref}
+			m.store.Store("", struct{}{})
 			if tcase.loc != nil {
 				m.loc = tcase.loc
 			}
