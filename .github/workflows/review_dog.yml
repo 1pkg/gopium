@@ -1,8 +1,8 @@
-name: reviewdog
+name: review_dog
 on: [pull_request]
 jobs:
   govet:
-    name: runner / govet
+    name: govet
     runs-on: ubuntu-latest
     steps:
       - name: Check out code into the Go module directory
@@ -13,7 +13,7 @@ jobs:
           golangci_lint_flags: "--disable-all -E govet"
           tool_name: govet
   golint:
-    name: runner / golint
+    name: golint
     runs-on: ubuntu-latest
     steps:
       - name: Check out code into the Go module directory
@@ -25,7 +25,7 @@ jobs:
           tool_name: golint
           level: warning
   misspell:
-    name: runner / misspell
+    name: misspell
     runs-on: ubuntu-latest
     steps:
       - name: Check out code into the Go module directory
