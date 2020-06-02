@@ -185,7 +185,7 @@ func newsorted(sts map[string]gopium.Struct) *sorted {
 }
 
 // Check sorted implementation
-func (cmp sorted) Check(ts *ast.TypeSpec) (gopium.Struct, bool) {
+func (cmp *sorted) Check(ts *ast.TypeSpec) (gopium.Struct, bool) {
 	// if sorted list is not empty
 	if len(cmp.sts) > 0 {
 		// check the top sorted element name
