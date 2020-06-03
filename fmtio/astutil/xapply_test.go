@@ -26,7 +26,7 @@ func TestXapply(t *testing.T) {
 		filepath.Join(data.Gopium, "tests", "data", "note", "file-1.go"),
 		gopium.Struct{
 			Name:    "Note",
-			Doc:     []string{"// test-doc"},
+			Doc:     []string{"// test-doc", "// test-doc-doc"},
 			Comment: []string{"// test-com"},
 			Fields: []gopium.Field{
 				{
@@ -37,7 +37,7 @@ func TestXapply(t *testing.T) {
 					Name: "_",
 					Type: "[]byte",
 					Size: 8,
-					Doc:  []string{"// test-pad"},
+					Doc:  []string{"// test-pad", "// test-pad-pad"},
 				},
 				{
 					Name: "A",
@@ -117,10 +117,10 @@ func TestXapply(t *testing.T) {
 package note
 
 // Note doc
-// test-doc
+// test-doc test-doc-doc
 type Note struct {
 	C string
-	// test-pad
+	// test-pad test-pad-pad
 	_ [8]byte
 	A string
 } // test-com
@@ -133,11 +133,8 @@ type Note struct {
 
 package note
 
-/**/
 type DocCom struct {
-	f complex128 // f com 1
-	// f com 2
-	// f com 3
+	f complex128 // f com 1 f com 2 f com 3
 } // doc com
 `),
 			},
@@ -167,9 +164,10 @@ type Note struct {
 
 package note
 
-/**/
+/* 1pkg - 🌺 gopium @1pkg */
 type DocCom struct {
 	f complex128
+	// 🌺 gopium @1pkg
 } // doc com
 `),
 			},

@@ -2,8 +2,10 @@ package astutil
 
 import (
 	"context"
+	"fmt"
 	"go/ast"
 	"go/token"
+	"strings"
 
 	"1pkg/gopium"
 	"1pkg/gopium/collections"
@@ -78,10 +80,11 @@ type bcollect struct {
 // Apply bcollect implementation
 func (b *bcollect) Apply(ts *ast.TypeSpec, st gopium.Struct) error {
 	// collect structs boundaries
-	tts := ts.Type.(*ast.StructType)
 	b.bs = append(b.bs, collections.Boundary{
-		First: tts.Fields.Opening,
-		Last:  tts.Fields.Closing,
+		// start position of name - len of `type` keyword
+		First: ts.Name.Pos() - token.Pos(6),
+		// end position of type decl
+		Last: ts.Type.End(),
 	})
 	return nil
 }
@@ -96,59 +99,54 @@ type pressnote ast.File
 func (pdc *pressnote) Apply(ts *ast.TypeSpec, st gopium.Struct) error {
 	// prepare struct docs slice
 	file := ((*ast.File)(pdc))
-	stdocs := make([]*ast.Comment, 0, len(st.Doc))
-	// collect all docs from resulted structure
-	for _, doc := range st.Doc {
+	// if it has at least one doc
+	if len(st.Doc) >= 1 {
 		// doc position is position of name - len of `type` keyword
 		slash := ts.Name.Pos() - token.Pos(6)
-		sdoc := ast.Comment{Slash: slash, Text: doc}
-		stdocs = append(stdocs, &sdoc)
+		// collect all docs from resulted structure
+		doc := fmt.Sprintf("//%s", strings.ReplaceAll(strings.Join(st.Doc, ""), "//", ""))
+		// update file comments list
+		file.Comments = append(file.Comments, &ast.CommentGroup{List: []*ast.Comment{
+			&ast.Comment{Slash: slash, Text: doc},
+		}})
 	}
-	// update file comments list
-	if len(stdocs) > 0 {
-		file.Comments = append(file.Comments, &ast.CommentGroup{List: stdocs})
-	}
-	// prepare struct comments slice
-	stcoms := make([]*ast.Comment, 0, len(st.Comment))
-	// collect all comments from resulted structure
-	for _, com := range st.Comment {
+	// if it has at least one comment
+	if len(st.Comment) >= 1 {
 		// comment position is end of type decl
 		slash := ts.Type.End()
-		scom := ast.Comment{Slash: slash, Text: com}
-		stcoms = append(stcoms, &scom)
-	}
-	// update file comments list
-	if len(stcoms) > 0 {
-		file.Comments = append(file.Comments, &ast.CommentGroup{List: stcoms})
+		// collect all comments from resulted structure
+		com := fmt.Sprintf("//%s", strings.ReplaceAll(strings.Join(st.Comment, ""), "//", ""))
+		// update file comments list
+		file.Comments = append(file.Comments, &ast.CommentGroup{List: []*ast.Comment{
+			&ast.Comment{Slash: slash, Text: com},
+		}})
 	}
 	// go through all resulted structure fields
 	tts := ts.Type.(*ast.StructType)
 	for index, field := range st.Fields {
 		// get the field from ast
 		astfield := tts.Fields.List[index]
-		// collect all docs from resulted structure
-		fdocs := make([]*ast.Comment, 0, len(field.Doc))
-		for _, doc := range field.Doc {
+		// if it has at least one doc
+		if len(field.Doc) >= 1 {
 			// doc position is position of name - 1
 			slash := astfield.Pos() - token.Pos(1)
-			fdoc := ast.Comment{Slash: slash, Text: doc}
-			fdocs = append(fdocs, &fdoc)
+			// collect all docs from resulted field
+			doc := fmt.Sprintf("//%s", strings.ReplaceAll(strings.Join(field.Doc, ""), "//", ""))
+			// update file comments list
+			file.Comments = append(file.Comments, &ast.CommentGroup{List: []*ast.Comment{
+				&ast.Comment{Slash: slash, Text: doc},
+			}})
 		}
-		// update file comments list
-		if len(fdocs) > 0 {
-			file.Comments = append(file.Comments, &ast.CommentGroup{List: fdocs})
-		}
-		// collect all comments from resulted structure
-		fcoms := make([]*ast.Comment, 0, len(field.Comment))
-		for _, com := range field.Comment {
+		// if it has at least one comment
+		if len(field.Comment) >= 1 {
 			// comment position is end of field type
 			slash := astfield.Type.End()
-			fcom := ast.Comment{Slash: slash, Text: com}
-			fcoms = append(fcoms, &fcom)
-		}
-		// update file comments list
-		if len(fcoms) > 0 {
-			file.Comments = append(file.Comments, &ast.CommentGroup{List: fcoms})
+			// collect all comments from resulted field
+			com := fmt.Sprintf("//%s", strings.ReplaceAll(strings.Join(field.Comment, ""), "//", ""))
+			// update file comments list
+			file.Comments = append(file.Comments, &ast.CommentGroup{List: []*ast.Comment{
+				&ast.Comment{Slash: slash, Text: com},
+			}})
 		}
 	}
 	return nil
