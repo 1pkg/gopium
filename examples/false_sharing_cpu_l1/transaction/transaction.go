@@ -1,4 +1,4 @@
-package false_sharing_cpu_l1
+package transaction
 
 import (
 	"math"

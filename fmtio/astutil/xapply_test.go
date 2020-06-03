@@ -13,6 +13,7 @@ import (
 	"1pkg/gopium"
 	"1pkg/gopium/collections"
 	"1pkg/gopium/fmtio"
+	"1pkg/gopium/tests"
 	"1pkg/gopium/tests/data"
 	"1pkg/gopium/tests/mocks"
 	"1pkg/gopium/typepkg"
@@ -20,10 +21,10 @@ import (
 
 func TestXapply(t *testing.T) {
 	// prepare
-	lh := collections.NewHierarchic(data.Gopium)
+	lh := collections.NewHierarchic(tests.Gopium)
 	lh.Push(
 		"tests_data_note_file-1.go:6",
-		filepath.Join(data.Gopium, "tests", "data", "note", "file-1.go"),
+		filepath.Join(tests.Gopium, "tests", "data", "note", "file-1.go"),
 		gopium.Struct{
 			Name:    "Note",
 			Doc:     []string{"// test-doc", "// test-doc-doc"},
@@ -48,7 +49,7 @@ func TestXapply(t *testing.T) {
 	)
 	lh.Push(
 		"tests_data_note_file-2.go:6",
-		filepath.Join(data.Gopium, "tests", "data", "note", "file-2.go"),
+		filepath.Join(tests.Gopium, "tests", "data", "note", "file-2.go"),
 		gopium.Struct{
 			Name: "DocCom",
 			Fields: []gopium.Field{
@@ -60,10 +61,10 @@ func TestXapply(t *testing.T) {
 			},
 		},
 	)
-	ldc := collections.NewHierarchic(data.Gopium)
+	ldc := collections.NewHierarchic(tests.Gopium)
 	ldc.Push(
 		"tests_data_note_file-1.go:6",
-		filepath.Join(data.Gopium, "tests", "data", "note", "file-1.go"),
+		filepath.Join(tests.Gopium, "tests", "data", "note", "file-1.go"),
 		gopium.Struct{
 			Name: "Note",
 			Fields: []gopium.Field{
@@ -85,7 +86,7 @@ func TestXapply(t *testing.T) {
 	)
 	ldc.Push(
 		"tests_data_note_file-2.go:6",
-		filepath.Join(data.Gopium, "tests", "data", "note", "file-2.go"),
+		filepath.Join(tests.Gopium, "tests", "data", "note", "file-2.go"),
 	)
 	cctx, cancel := context.WithCancel(context.Background())
 	cancel()

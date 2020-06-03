@@ -1,4 +1,4 @@
-package original
+package transaction
 
 import (
 	"math"
@@ -10,18 +10,22 @@ import (
 // transaction defines business transaction
 // struct has been auto curated - 🌺 gopium @1pkg
 type transaction struct {
-	void     bool
-	amount   float64
-	serial   uint64
-	skip     bool
-	discount float64
-} // struct size: 26 bytes; struct align: 8 bytes; - 🌺 gopium @1pkg
+	void     bool     `gopium:"explicit_padings_type_natural,cache_rounding_cpu_l1,add_tag_group_soft,comment_struct_annotate,doc_struct_stamp"`
+	_        [7]byte  `gopium:"explicit_padings_type_natural,cache_rounding_cpu_l1,add_tag_group_soft,comment_struct_annotate,doc_struct_stamp"`
+	amount   float64  `gopium:"explicit_padings_type_natural,cache_rounding_cpu_l1,add_tag_group_soft,comment_struct_annotate,doc_struct_stamp"`
+	serial   uint64   `gopium:"explicit_padings_type_natural,cache_rounding_cpu_l1,add_tag_group_soft,comment_struct_annotate,doc_struct_stamp"`
+	skip     bool     `gopium:"explicit_padings_type_natural,cache_rounding_cpu_l1,add_tag_group_soft,comment_struct_annotate,doc_struct_stamp"`
+	_        [7]byte  `gopium:"explicit_padings_type_natural,cache_rounding_cpu_l1,add_tag_group_soft,comment_struct_annotate,doc_struct_stamp"`
+	discount float64  `gopium:"explicit_padings_type_natural,cache_rounding_cpu_l1,add_tag_group_soft,comment_struct_annotate,doc_struct_stamp"`
+	_        [24]byte `gopium:"explicit_padings_type_natural,cache_rounding_cpu_l1,add_tag_group_soft,comment_struct_annotate,doc_struct_stamp"`
+} // struct size: 64 bytes; struct align: 8 bytes; - 🌺 gopium @1pkg
 
 // aggregate defines compressed set of transactions
 // struct has been auto curated - 🌺 gopium @1pkg
 type aggregate struct {
-	total float64
-} // struct size: 8 bytes; struct align: 8 bytes; - 🌺 gopium @1pkg
+	total float64  `gopium:"explicit_padings_type_natural,cache_rounding_cpu_l1,add_tag_group_soft,comment_struct_annotate,doc_struct_stamp"`
+	_     [56]byte `gopium:"explicit_padings_type_natural,cache_rounding_cpu_l1,add_tag_group_soft,comment_struct_annotate,doc_struct_stamp"`
+} // struct size: 64 bytes; struct align: 8 bytes; - 🌺 gopium @1pkg
 
 // generate creates n pseudo random transactions
 func generate(number uint) []transaction {

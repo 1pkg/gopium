@@ -1,0 +1,29 @@
+name: lint_build_test
+on: [push, pull_request]
+jobs:
+  lint_build_test:
+    env:
+      GOPATH: ${{ github.workspace }}
+    strategy:
+      matrix:
+        go-version: [1.13.x, 1.14.x]
+        platform: [ubuntu-latest, macos-latest, windows-latest]
+    runs-on: ${{ matrix.platform }}
+    steps:
+      - name: install go
+        uses: actions/setup-go@v2
+        with:
+          go-version: ${{ matrix.go-version }}
+      - name: checkout
+        uses: actions/checkout@v2
+      - name: lint
+        run: |
+          go get -u golang.org/x/lint/golint
+          go get -u github.com/client9/misspell/cmd/misspell
+          go vet -v ./...
+          golint -set_exit_status $(go list ./...)
+          misspell -error ./**/*.go
+      - name: build
+        run: go build ./...
+      - name: test
+        run: go test -v -race -count=1 -coverprofile test.cover ./...

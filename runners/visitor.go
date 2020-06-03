@@ -11,7 +11,7 @@ import (
 
 // visitor defines helper
 // that coordinates runner stages
-// to finaly make visiting
+// to finally make visiting
 // - strategy building
 // - walker building
 // - visiting

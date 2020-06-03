@@ -16,6 +16,7 @@ import (
 	"testing"
 
 	"1pkg/gopium"
+	"1pkg/gopium/tests"
 
 	"golang.org/x/tools/go/packages"
 )
@@ -48,7 +49,11 @@ func TestParserXToolPackagesAstTypes(t *testing.T) {
 				ModeTypes: packages.LoadAllSyntax,
 			},
 			ctx: context.Background(),
-			err: errors.New("couldn't exec 'go [-e -json -compiled=true -test=true -export=false -deps=true -find=false -- ]': chdir test: no such file or directory *os.PathError"),
+			err: tests.OnOS(
+				"windows",
+				errors.New("couldn't exec 'go [-e -json -compiled=true -test=true -export=false -deps=true -find=false -- ]': chdir test: The system cannot find the file specified. *os.PathError"),
+				errors.New("couldn't exec 'go [-e -json -compiled=true -test=true -export=false -deps=true -find=false -- ]': chdir test: no such file or directory *os.PathError"),
+			).(error),
 		},
 		"invalid pattern with relative path should return parser error": {
 			p: ParserXToolPackagesAst{
