@@ -3,13 +3,15 @@ package mocks
 import (
 	"context"
 	"regexp"
+	"time"
 
 	"1pkg/gopium"
 )
 
 // Walker defines mock walker implementation
 type Walker struct {
-	Err error
+	Wait time.Duration
+	Err  error
 }
 
 // Visit mock implementation
@@ -17,6 +19,9 @@ func (w Walker) Visit(ctx context.Context, regex *regexp.Regexp, stg gopium.Stra
 	// check error at start
 	if w.Err != nil {
 		return w.Err
+	}
+	if w.Wait > 0 {
+		time.Sleep(w.Wait)
 	}
 	// return context error otherwise
 	return ctx.Err()

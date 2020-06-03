@@ -13,6 +13,7 @@ import (
 	"1pkg/gopium"
 	"1pkg/gopium/fmtio"
 	"1pkg/gopium/strategies"
+	"1pkg/gopium/tests"
 	"1pkg/gopium/tests/mocks"
 	"1pkg/gopium/typepkg"
 	"1pkg/gopium/walkers"
@@ -181,7 +182,7 @@ func TestNewCli(t *testing.T) {
 				wb: walkers.Builder{
 					Parser: &typepkg.ParserXToolPackagesAst{
 						Pattern:    "test-pkg",
-						Path:       "/test-path",
+						Path:       tests.OnOS("windows", "c:\\test-path", "/test-path").(string),
 						ModeTypes:  packages.LoadAllSyntax,
 						ModeAst:    parser.ParseComments | parser.AllErrors,
 						BuildEnv:   []string{},
@@ -314,7 +315,7 @@ func TestCliRun(t *testing.T) {
 			cli: &Cli{
 				v:  visitor{timeout: time.Nanosecond},
 				sb: mocks.StrategyBuilder{Strategy: &mocks.Strategy{}},
-				wb: mocks.WalkerBuilder{Walker: mocks.Walker{}},
+				wb: mocks.WalkerBuilder{Walker: mocks.Walker{Wait: 100 * time.Nanosecond}},
 			},
 			err: errors.New("visiting error happened context deadline exceeded"),
 		},

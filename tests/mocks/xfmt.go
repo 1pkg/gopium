@@ -35,7 +35,7 @@ func (fmt Xast) Ast(*ast.TypeSpec, gopium.Struct) error {
 	return fmt.Err
 }
 
-// Diff defines mock diff implementation
+// Xdiff defines mock xdiff implementation
 type Xdiff struct {
 	Err error
 }

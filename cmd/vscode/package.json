@@ -26,10 +26,7 @@
 		"vscode:prepublish": "npm run compile",
 		"compile": "tsc -p ./",
 		"watch": "tsc -watch -p ./",
-		"pretest": "npm run compile",
-		"lint": "node ./node_modules/tslint/bin/tslint --project tsconfig.json",
-		"fix-lint": "node ./node_modules/tslint/bin/tslint --fix --project tsconfig.json",
-		"format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\""
+		"lint": "node ./node_modules/tslint/bin/tslint --project tsconfig.json"
 	},
 	"extensionDependencies": [],
 	"dependencies": {

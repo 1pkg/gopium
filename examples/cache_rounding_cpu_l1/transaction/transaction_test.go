@@ -1,4 +1,4 @@
-package memory_pack
+package transaction
 
 import "testing"
 
@@ -10,7 +10,7 @@ func BenchmarkGenerate(b *testing.B) {
 }
 
 func BenchmarkNormalize(b *testing.B) {
-	// generate one millon of transactions
+	// generate one million of transactions
 	// and reset benchmark timer
 	transactions := generate(1000000)
 	b.ResetTimer()
@@ -21,7 +21,7 @@ func BenchmarkNormalize(b *testing.B) {
 }
 
 func BenchmarkCompress(b *testing.B) {
-	// generate one millon of normalized transactions
+	// generate one million of normalized transactions
 	// and reset benchmark timer
 	transactions := normalize(generate(1000000))
 	b.ResetTimer()

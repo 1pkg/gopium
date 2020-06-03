@@ -2,7 +2,7 @@ package collections
 
 import (
 	"fmt"
-	"path"
+	"path/filepath"
 	"sort"
 	"strings"
 
@@ -96,7 +96,7 @@ func (h Hierarchic) Rcat() string {
 	// go through cats
 	var rcat string
 	for _, cat := range cats {
-		cat = path.Dir(cat)
+		cat = filepath.Dir(cat)
 		switch {
 		case cat == ".":
 			// just skip empty dir

@@ -3,7 +3,6 @@ package fmtio
 import (
 	"fmt"
 	"os"
-	"path"
 	"path/filepath"
 	"reflect"
 	"testing"
@@ -146,7 +145,7 @@ func TestCategoryWriter(t *testing.T) {
 			if tcase.path != "" {
 				defer func() {
 					os.Remove(tcase.path)
-					os.Remove(path.Dir(tcase.path))
+					os.Remove(filepath.Dir(tcase.path))
 				}()
 				if _, err := os.Stat(tcase.path); !reflect.DeepEqual(err, nil) {
 					t.Errorf("actual %v doesn't equal to expected %v", err, nil)
