@@ -8,11 +8,9 @@ import (
 	"go/scanner"
 	"go/token"
 	"go/types"
-	"os"
 	"path/filepath"
 	"reflect"
 	"sync"
-	"syscall"
 	"testing"
 
 	"1pkg/gopium"
@@ -51,8 +49,8 @@ func TestParserXToolPackagesAstTypes(t *testing.T) {
 			ctx: context.Background(),
 			err: tests.OnOS(
 				"windows",
-				errors.New("couldn't exec 'go [-e -json -compiled=true -test=true -export=false -deps=true -find=false -- ]': chdir test: The system cannot find the file specified. *os.PathError"),
-				errors.New("couldn't exec 'go [-e -json -compiled=true -test=true -export=false -deps=true -find=false -- ]': chdir test: no such file or directory *os.PathError"),
+				errors.New("couldn't run 'go': chdir test: The system cannot find the file specified"),
+				errors.New("couldn't run 'go': chdir test: no such file or directory"),
 			).(error),
 		},
 		"invalid pattern with relative path should return parser error": {
@@ -170,6 +168,11 @@ type Single struct {
 					t.Errorf("actual %v doesn't equal to expected %v", loc, tcase.loc)
 				}
 				if !reflect.DeepEqual(err, tcase.err) {
+					// skip the case when error messages are equal
+					if (err != nil && tcase.err != nil) &&
+						(reflect.DeepEqual(err.Error(), tcase.err.Error())) {
+						return
+					}
 					t.Errorf("actual %v doesn't equal to expected %v", err, tcase.err)
 				}
 			})
@@ -202,7 +205,7 @@ func TestParserXToolPackagesAstAst(t *testing.T) {
 				ModeAst: parser.ParseComments | parser.AllErrors,
 			},
 			ctx: context.Background(),
-			err: &os.PathError{Op: "open", Path: "test", Err: syscall.Errno(2)},
+			err: errors.New("open test: no such file or directory"),
 		},
 		"invalid pattern with relative path should return parser error": {
 			p: ParserXToolPackagesAst{
@@ -356,6 +359,11 @@ type Single struct {
 				t.Errorf("actual %v doesn't equal to expected %v", loc, tcase.loc)
 			}
 			if !reflect.DeepEqual(err, tcase.err) {
+				// skip the case when error messages are equal
+				if (err != nil && tcase.err != nil) &&
+					(reflect.DeepEqual(err.Error(), tcase.err.Error())) {
+					return
+				}
 				t.Errorf("actual %v doesn't equal to expected %v", err, tcase.err)
 			}
 		})
