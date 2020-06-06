@@ -252,7 +252,8 @@ type DocCom struct {
 				walker{},
 				&typepkg.ParserXToolPackagesAst{
 					ModeAst: parser.ParseComments | parser.AllErrors,
-				}, mocks.Printer{Err: errors.New("test-2")},
+				},
+				mocks.Printer{Err: errors.New("test-2")},
 			),
 			ctx: context.Background(),
 			r:   map[string][]byte{},

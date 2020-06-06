@@ -3,6 +3,7 @@ package typepkg
 import (
 	"context"
 	"errors"
+	"fmt"
 	"go/ast"
 	"go/parser"
 	"go/scanner"
@@ -22,11 +23,11 @@ import (
 func TestParserXToolPackagesAstTypes(t *testing.T) {
 	// prepare
 	var wg sync.WaitGroup
-	pdir, err := filepath.Abs("./..")
+	pdir, err := filepath.Abs("..")
 	if !reflect.DeepEqual(err, nil) {
 		t.Fatalf("actual %v doesn't equal to %v", err, nil)
 	}
-	sdir, err := filepath.Abs("./")
+	sdir, err := filepath.Abs(".")
 	if !reflect.DeepEqual(err, nil) {
 		t.Fatalf("actual %v doesn't equal to %v", err, nil)
 	}
@@ -43,20 +44,20 @@ func TestParserXToolPackagesAstTypes(t *testing.T) {
 		"invalid folder should return parser error": {
 			p: ParserXToolPackagesAst{
 				Pattern:   "test",
-				Path:      "./test",
+				Path:      "test",
 				ModeTypes: packages.LoadAllSyntax,
 			},
 			ctx: context.Background(),
 			err: tests.OnOS(
 				"windows",
-				errors.New("couldn't run 'go': chdir test: The system cannot find the file specified"),
-				errors.New("couldn't run 'go': chdir test: no such file or directory"),
+				fmt.Errorf("%s", "couldn't run 'go': chdir test: The system cannot find the file specified."),
+				fmt.Errorf("%s", "couldn't run 'go': chdir test: no such file or directory"),
 			).(error),
 		},
 		"invalid pattern with relative path should return parser error": {
 			p: ParserXToolPackagesAst{
 				Pattern:   "test",
-				Path:      "./..",
+				Path:      "..",
 				ModeTypes: packages.LoadAllSyntax,
 			},
 			ctx: context.Background(),
@@ -75,7 +76,7 @@ func TestParserXToolPackagesAstTypes(t *testing.T) {
 		"empty types mode should return expected empty parser package": {
 			p: ParserXToolPackagesAst{
 				Pattern: "1pkg/gopium",
-				Path:    "./..",
+				Path:    "..",
 			},
 			ctx: context.Background(),
 			loc: NewLocator(nil),
@@ -83,7 +84,7 @@ func TestParserXToolPackagesAstTypes(t *testing.T) {
 		"valid pattern and path and mode should return expected parser package": {
 			p: ParserXToolPackagesAst{
 				Pattern:   "1pkg/gopium",
-				Path:      "./..",
+				Path:      "..",
 				ModeTypes: packages.LoadAllSyntax,
 			},
 			ctx: context.Background(),
@@ -113,7 +114,7 @@ func TestParserXToolPackagesAstTypes(t *testing.T) {
 		"valid pattern and path and mode should return expected parser package skip src": {
 			p: ParserXToolPackagesAst{
 				Pattern:   "1pkg/gopium",
-				Path:      "./..",
+				Path:      "..",
 				ModeTypes: packages.LoadAllSyntax,
 			},
 			ctx: context.Background(),
@@ -134,7 +135,7 @@ type Single struct {
 		"valid pattern and path and mode should return parser error on canceled context": {
 			p: ParserXToolPackagesAst{
 				Pattern:   "1pkg/gopium",
-				Path:      "./..",
+				Path:      "..",
 				ModeTypes: packages.LoadAllSyntax,
 			},
 			ctx: cctx,
@@ -184,7 +185,7 @@ type Single struct {
 
 func TestParserXToolPackagesAstAst(t *testing.T) {
 	// prepare
-	pdir, err := filepath.Abs("./..")
+	pdir, err := filepath.Abs("..")
 	if !reflect.DeepEqual(err, nil) {
 		t.Fatalf("actual %v doesn't equal to %v", err, nil)
 	}
@@ -201,16 +202,20 @@ func TestParserXToolPackagesAstAst(t *testing.T) {
 		"invalid folder should return parser error": {
 			p: ParserXToolPackagesAst{
 				Pattern: "test",
-				Path:    "./test",
+				Path:    "test",
 				ModeAst: parser.ParseComments | parser.AllErrors,
 			},
 			ctx: context.Background(),
-			err: errors.New("open test: no such file or directory"),
+			err: tests.OnOS(
+				"windows",
+				fmt.Errorf("%s", "open test: The system cannot find the file specified."),
+				fmt.Errorf("%s", "open test: no such file or directory"),
+			).(error),
 		},
 		"invalid pattern with relative path should return parser error": {
 			p: ParserXToolPackagesAst{
 				Pattern: "1pkg/gopium",
-				Path:    "./..",
+				Path:    "..",
 				ModeAst: parser.ParseComments | parser.AllErrors,
 			},
 			ctx: context.Background(),
@@ -239,7 +244,7 @@ func TestParserXToolPackagesAstAst(t *testing.T) {
 		"valid pattern and path and empty ast mode should return expected parser ast": {
 			p: ParserXToolPackagesAst{
 				Pattern: "gopium",
-				Path:    "./..",
+				Path:    "..",
 			},
 			ctx: context.Background(),
 			pkg: &ast.Package{},
@@ -248,7 +253,7 @@ func TestParserXToolPackagesAstAst(t *testing.T) {
 		"valid pattern and path and mode should return expected parser ast": {
 			p: ParserXToolPackagesAst{
 				Pattern: "gopium",
-				Path:    "./..",
+				Path:    "..",
 				ModeAst: parser.ParseComments | parser.AllErrors,
 			},
 			ctx: context.Background(),
@@ -258,7 +263,7 @@ func TestParserXToolPackagesAstAst(t *testing.T) {
 		"valid pattern and path and mode should return expected parser ast with src": {
 			p: ParserXToolPackagesAst{
 				Pattern: "gopium",
-				Path:    "./..",
+				Path:    "..",
 				ModeAst: parser.ParseComments | parser.AllErrors,
 			},
 			ctx: context.Background(),
@@ -284,7 +289,7 @@ type Single struct {
 		"valid pattern and path and mode should return parser error with invalid src": {
 			p: ParserXToolPackagesAst{
 				Pattern: "gopium",
-				Path:    "./..",
+				Path:    "..",
 				ModeAst: parser.ParseComments | parser.AllErrors,
 			},
 			ctx: context.Background(),
@@ -306,7 +311,7 @@ invalid gocode
 		"invalid pattern with relative path should return expected parser ast with src": {
 			p: ParserXToolPackagesAst{
 				Pattern: "1pkg/gopium",
-				Path:    "./..",
+				Path:    "..",
 				ModeAst: parser.ParseComments | parser.AllErrors,
 			},
 			ctx: context.Background(),
@@ -332,7 +337,7 @@ type Single struct {
 		"valid pattern and path and mode should return parser error on canceled context": {
 			p: ParserXToolPackagesAst{
 				Pattern: "gopium",
-				Path:    "./..",
+				Path:    "..",
 				ModeAst: parser.ParseComments | parser.AllErrors,
 			},
 			ctx: cctx,

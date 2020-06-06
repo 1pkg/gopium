@@ -5,6 +5,7 @@ import (
 	"log"
 	"os"
 	"os/signal"
+	"path/filepath"
 	"runtime"
 
 	"1pkg/gopium"
@@ -224,7 +225,7 @@ For now only 3 lines of cache are supported by strategies.
 		&ppath,
 		"package_path",
 		"p",
-		"src/{{package}}",
+		filepath.Join("src", "{{package}}"),
 		`
 Gopium go package path, relative path to root of the package is expected.
 To obtain fill path, package path is concatenated with current GOPATH env var.

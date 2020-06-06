@@ -12,11 +12,11 @@ import (
 
 func TestWriter(t *testing.T) {
 	// prepare
-	pdir, err := filepath.Abs("./..")
+	pdir, err := filepath.Abs("..")
 	if !reflect.DeepEqual(err, nil) {
 		t.Fatalf("actual %v doesn't equal to %v", err, nil)
 	}
-	pfile, err := filepath.Abs("./../opium.go")
+	pfile, err := filepath.Abs(filepath.Join("..", "opium.go"))
 	if !reflect.DeepEqual(err, nil) {
 		t.Fatalf("actual %v doesn't equal to %v", err, nil)
 	}
@@ -99,11 +99,11 @@ func TestWriter(t *testing.T) {
 
 func TestCategoryWriter(t *testing.T) {
 	// prepare
-	pdir, err := filepath.Abs("./..")
+	pdir, err := filepath.Abs("..")
 	if !reflect.DeepEqual(err, nil) {
 		t.Fatalf("actual %v doesn't equal to %v", err, nil)
 	}
-	pfile, err := filepath.Abs("./../opium.go")
+	pfile, err := filepath.Abs(filepath.Join("..", "opium.go"))
 	if !reflect.DeepEqual(err, nil) {
 		t.Fatalf("actual %v doesn't equal to %v", err, nil)
 	}
