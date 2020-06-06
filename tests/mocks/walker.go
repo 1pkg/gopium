@@ -20,6 +20,7 @@ func (w Walker) Visit(ctx context.Context, regex *regexp.Regexp, stg gopium.Stra
 	if w.Err != nil {
 		return w.Err
 	}
+	// sleep for duration if any
 	if w.Wait > 0 {
 		time.Sleep(w.Wait)
 	}

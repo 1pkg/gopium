@@ -2,7 +2,7 @@ package walkers
 
 import (
 	"context"
-	"fmt"
+	"path/filepath"
 	"regexp"
 
 	"1pkg/gopium"
@@ -125,7 +125,7 @@ func (w wout) write(ctx context.Context, h collections.Hierarchic) error {
 		return err
 	}
 	// generate writer
-	loc := fmt.Sprintf("%s/gopium", h.Rcat())
+	loc := filepath.Join(h.Rcat(), "gopium")
 	writer, err := w.writer.Generate(loc)
 	if err != nil {
 		return err

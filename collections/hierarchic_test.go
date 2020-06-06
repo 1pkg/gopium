@@ -1,6 +1,8 @@
 package collections
 
 import (
+	"os"
+	"path/filepath"
 	"reflect"
 	"testing"
 
@@ -9,10 +11,10 @@ import (
 
 func TestHierarchicPushCat(t *testing.T) {
 	// prepare
-	h := NewHierarchic("prefix/")
-	h.Push("test-1", "prefix/test-1", gopium.Struct{Name: "test-1"})
-	h.Push("test-2", "prefix/test-2")
-	h.Push("test-3", "prefix/test-2", gopium.Struct{Name: "test-2"}, gopium.Struct{Name: "test-3"})
+	h := NewHierarchic("prefix" + string(os.PathSeparator))
+	h.Push("test-1", filepath.Join("prefix", "test-1"), gopium.Struct{Name: "test-1"})
+	h.Push("test-2", filepath.Join("prefix", "test-2"))
+	h.Push("test-3", filepath.Join("prefix", "test-2"), gopium.Struct{Name: "test-2"}, gopium.Struct{Name: "test-3"})
 	h.Push("test-4", "test-2", gopium.Struct{Name: "test-4"})
 	h.Push("test-5", "test-3")
 	table := map[string]struct {
@@ -30,7 +32,7 @@ func TestHierarchicPushCat(t *testing.T) {
 			ok:  true,
 		},
 		"prefix/test-1 cat should return expected flat collection": {
-			cat: "prefix/test-1",
+			cat: filepath.Join("prefix", "test-1"),
 			f:   Flat{"test-1": gopium.Struct{Name: "test-1"}},
 			ok:  true,
 		},
@@ -44,7 +46,7 @@ func TestHierarchicPushCat(t *testing.T) {
 			ok: true,
 		},
 		"prefix/test-2 cat should return expected flat collection": {
-			cat: "prefix/test-2",
+			cat: filepath.Join("prefix", "test-2"),
 			f: Flat{
 				"test-3-0": gopium.Struct{Name: "test-2"},
 				"test-3-1": gopium.Struct{Name: "test-3"},
@@ -53,7 +55,7 @@ func TestHierarchicPushCat(t *testing.T) {
 			ok: true,
 		},
 		"p/test-2 cat should return empty flat collection": {
-			cat: "p/test-2",
+			cat: filepath.Join("p", "test-1"),
 			f:   Flat(nil),
 		},
 		"test-3 cat should return empty flat collection": {
@@ -138,18 +140,18 @@ func TestHierarchicFlatRcatLen(t *testing.T) {
 		},
 		"multiple overlapping cats multiple items hierarchic collection should return multiple items flat collection": {
 			h: Hierarchic{cats: map[string]Flat{
-				"loc/test/123": {
+				filepath.Join("loc", "test", "123"): {
 					"1-test": gopium.Struct{Name: "test1"},
 					"2-test": gopium.Struct{Name: "test2"},
 				},
-				"loc/test/abcd": {
+				filepath.Join("loc", "test", "abcd"): {
 					"3-test": gopium.Struct{Name: "test3"},
 					"4-test": gopium.Struct{Name: "test4"},
 				},
-				"loc/test/test/test/test": {
+				filepath.Join("loc", "test", "test", "test", "test"): {
 					"5-test": gopium.Struct{Name: "test5"},
 				},
-				"loc/test/abcd/test/123": {
+				filepath.Join("loc", "test", "abcd", "test", "123"): {
 					"6-test": gopium.Struct{Name: "test6"},
 				},
 			}},
@@ -161,23 +163,23 @@ func TestHierarchicFlatRcatLen(t *testing.T) {
 				"5-test": gopium.Struct{Name: "test5"},
 				"6-test": gopium.Struct{Name: "test6"},
 			},
-			rcat: "loc/test",
+			rcat: filepath.Join("loc", "test"),
 			len:  6,
 		},
 		"multiple non overlapping cats multiple items hierarchic collection should return multiple items flat collection": {
 			h: Hierarchic{cats: map[string]Flat{
-				"loc1/test/123": {
+				filepath.Join("loc1", "test", "123"): {
 					"1-test": gopium.Struct{Name: "test1"},
 					"2-test": gopium.Struct{Name: "test2"},
 				},
-				"loc/test2/abcd": {
+				filepath.Join("loc", "test2", "abcd"): {
 					"3-test": gopium.Struct{Name: "test3"},
 					"4-test": gopium.Struct{Name: "test4"},
 				},
-				"loc3/test/test/test/test": {
+				filepath.Join("loc3", "test", "test", "test", "test"): {
 					"5-test": gopium.Struct{Name: "test5"},
 				},
-				"loc/test/abcd/test/123": {
+				filepath.Join("loc", "test", "abcd", "test", "123"): {
 					"6-test": gopium.Struct{Name: "test6"},
 				},
 			}},

@@ -168,7 +168,7 @@ func filter(w gopium.Xwalker) gopium.Xapply {
 						// and it locates between struct's
 						// start and end points skip it
 						if strings.Contains(com.Text, gopium.STAMP) &&
-							(bc.bs.Inside(com.Slash-1) || bc.bs.Inside(com.Slash+token.Pos(len(com.Text)))) {
+							(bc.bs.Inside(com.Slash-1) || bc.bs.Inside(com.Slash+token.Pos(len(com.Text)+1))) {
 							continue
 						}
 						// otherwise append comment to slice

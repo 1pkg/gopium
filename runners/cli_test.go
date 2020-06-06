@@ -158,7 +158,7 @@ func TestNewCli(t *testing.T) {
 			cpucaches: []int{2, 4, 8},
 			// package parser vars
 			pkg:    "test-pkg",
-			path:   "/test-path",
+			path:   tests.OnOS("windows", "c:\\test-path", "/test-path").(string),
 			benvs:  []string{},
 			bflags: []string{},
 			// walker vars
@@ -315,7 +315,7 @@ func TestCliRun(t *testing.T) {
 			cli: &Cli{
 				v:  visitor{timeout: time.Nanosecond},
 				sb: mocks.StrategyBuilder{Strategy: &mocks.Strategy{}},
-				wb: mocks.WalkerBuilder{Walker: mocks.Walker{Wait: 100 * time.Nanosecond}},
+				wb: mocks.WalkerBuilder{Walker: mocks.Walker{Wait: 100 * time.Millisecond}},
 			},
 			err: errors.New("visiting error happened context deadline exceeded"),
 		},
