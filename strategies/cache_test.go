@@ -47,12 +47,35 @@ func TestCache(t *testing.T) {
 						Name: "test",
 						Size: 8,
 					},
+				},
+			},
+		},
+		"non empty struct should be applied to expected aligned struct with full cahce": {
+			cache: fcachel2,
+			c:     mocks.Maven{SCache: []int64{16, 16, 16}},
+			ctx:   context.Background(),
+			o: gopium.Struct{
+				Name: "test",
+				Fields: []gopium.Field{
+					{
+						Name: "test",
+						Size: 8,
+					},
+				},
+			},
+			r: gopium.Struct{
+				Name: "test",
+				Fields: []gopium.Field{
+					{
+						Name: "test",
+						Size: 8,
+					},
 					collections.PadField(8),
 				},
 			},
 		},
 		"non empty struct should be applied to expected aligned struct on canceled context": {
-			cache: cachel3,
+			cache: fcachel3,
 			c:     mocks.Maven{SCache: []int64{16, 16, 16}},
 			ctx:   cctx,
 			o: gopium.Struct{
@@ -256,6 +279,78 @@ func TestCache(t *testing.T) {
 					},
 					collections.PadField(5),
 					collections.PadField(8),
+				},
+			},
+		},
+		"struct with pads should be applied to expected aligned struct div cache line": {
+			cache: cachel2,
+			c:     mocks.Maven{SCache: []int64{16, 32, 64}},
+			ctx:   context.Background(),
+			o: gopium.Struct{
+				Name: "test",
+				Fields: []gopium.Field{
+					{
+						Name:  "test1",
+						Size:  3,
+						Align: 1,
+					},
+					{
+						Name:  "test2",
+						Size:  8,
+						Align: 6,
+					},
+				},
+			},
+			r: gopium.Struct{
+				Name: "test",
+				Fields: []gopium.Field{
+					{
+						Name:  "test1",
+						Size:  3,
+						Align: 1,
+					},
+					{
+						Name:  "test2",
+						Size:  8,
+						Align: 6,
+					},
+					collections.PadField(2),
+				},
+			},
+		},
+		"struct with pads should be applied to expected aligned struct full cache line": {
+			cache: fcachel2,
+			c:     mocks.Maven{SCache: []int64{16, 32, 64}},
+			ctx:   context.Background(),
+			o: gopium.Struct{
+				Name: "test",
+				Fields: []gopium.Field{
+					{
+						Name:  "test1",
+						Size:  3,
+						Align: 1,
+					},
+					{
+						Name:  "test2",
+						Size:  8,
+						Align: 6,
+					},
+				},
+			},
+			r: gopium.Struct{
+				Name: "test",
+				Fields: []gopium.Field{
+					{
+						Name:  "test1",
+						Size:  3,
+						Align: 1,
+					},
+					{
+						Name:  "test2",
+						Size:  8,
+						Align: 6,
+					},
+					collections.PadField(18),
 				},
 			},
 		},
