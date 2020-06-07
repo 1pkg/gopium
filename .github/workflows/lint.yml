@@ -1,14 +1,14 @@
-name: lint_build_test
+name: lint
 on: [push, pull_request]
 jobs:
-  lint_build_test:
+  lint:
     strategy:
       matrix:
         go-version: [1.13.x, 1.14.x]
         platform: [ubuntu-latest, macos-latest, windows-latest]
     runs-on: ${{ matrix.platform }}
     steps:
-      - name: install go
+      - name: setup
         uses: actions/setup-go@v2
         with:
           go-version: ${{ matrix.go-version }}
@@ -21,9 +21,3 @@ jobs:
           go vet -v ./...
           golint -set_exit_status $(go list ./...)
           misspell -error ./**/*.go
-      - name: build
-        run: |
-          cd cmd/gopium
-          go build ./...
-      - name: test
-        run: go test -v -race -count=1 -coverprofile test.cover ./...
