@@ -136,14 +136,6 @@ func TestBuilder(t *testing.T) {
 			names: []gopium.StrategyName{StNoteCom},
 			stg:   pipe([]gopium.Strategy{stnotecom}),
 		},
-		"`doc_struct_stamp` name should return expected strategy": {
-			names: []gopium.StrategyName{StampDoc},
-			stg:   pipe([]gopium.Strategy{stampdoc}),
-		},
-		"`comment_struct_stamp` name should return expected strategy": {
-			names: []gopium.StrategyName{StampCom},
-			stg:   pipe([]gopium.Strategy{stampcom}),
-		},
 		// lexicographical, length, embedded, exported sorts
 		"`name_lexicographical_ascending` name should return expected strategy": {
 			names: []gopium.StrategyName{NLexAsc},
@@ -153,14 +145,6 @@ func TestBuilder(t *testing.T) {
 			names: []gopium.StrategyName{NLexDesc},
 			stg:   pipe([]gopium.Strategy{nlexdesc}),
 		},
-		"`name_length_ascending` name should return expected strategy": {
-			names: []gopium.StrategyName{NLenAsc},
-			stg:   pipe([]gopium.Strategy{nlenasc}),
-		},
-		"`name_length_descending` name should return expected strategy": {
-			names: []gopium.StrategyName{NLenDesc},
-			stg:   pipe([]gopium.Strategy{nlendesc}),
-		},
 		"`type_lexicographical_ascending` name should return expected strategy": {
 			names: []gopium.StrategyName{TLexAsc},
 			stg:   pipe([]gopium.Strategy{tlexasc}),
@@ -169,58 +153,14 @@ func TestBuilder(t *testing.T) {
 			names: []gopium.StrategyName{TLexDesc},
 			stg:   pipe([]gopium.Strategy{tlexdesc}),
 		},
-		"`type_length_ascending` name should return expected strategy": {
-			names: []gopium.StrategyName{TLenAsc},
-			stg:   pipe([]gopium.Strategy{tlenasc}),
-		},
-		"`type_length_descending` name should return expected strategy": {
-			names: []gopium.StrategyName{TLenDesc},
-			stg:   pipe([]gopium.Strategy{tlendesc}),
-		},
-		"`embedded_ascending` name should return expected strategy": {
-			names: []gopium.StrategyName{EmbAsc},
-			stg:   pipe([]gopium.Strategy{embasc}),
-		},
-		"`embedded_descending` name should return expected strategy": {
-			names: []gopium.StrategyName{EmbDesc},
-			stg:   pipe([]gopium.Strategy{embdesc}),
-		},
-		"`exported_ascending` name should return expected strategy": {
-			names: []gopium.StrategyName{ExpAsc},
-			stg:   pipe([]gopium.Strategy{expasc}),
-		},
-		"`exported_descending` name should return expected strategy": {
-			names: []gopium.StrategyName{ExpDesc},
-			stg:   pipe([]gopium.Strategy{expdesc}),
-		},
 		// filters and others
 		"`filter_pads` name should return expected strategy": {
 			names: []gopium.StrategyName{FPad},
 			stg:   pipe([]gopium.Strategy{fpad}),
 		},
-		"`filter_embedded` name should return expected strategy": {
-			names: []gopium.StrategyName{FEmb},
-			stg:   pipe([]gopium.Strategy{femb}),
-		},
-		"`filter_not_embedded` name should return expected strategy": {
-			names: []gopium.StrategyName{FNotEmb},
-			stg:   pipe([]gopium.Strategy{fnotemb}),
-		},
-		"`filter_exported` name should return expected strategy": {
-			names: []gopium.StrategyName{FExp},
-			stg:   pipe([]gopium.Strategy{fexp}),
-		},
-		"`filter_not_exported` name should return expected strategy": {
-			names: []gopium.StrategyName{FNotExp},
-			stg:   pipe([]gopium.Strategy{fnotexp}),
-		},
 		"`ignore` name should return expected strategy": {
 			names: []gopium.StrategyName{Ignore},
 			stg:   pipe([]gopium.Strategy{ignr}),
-		},
-		"`discard` name should return expected strategy": {
-			names: []gopium.StrategyName{Discard},
-			stg:   pipe([]gopium.Strategy{dis}),
 		},
 		"empty name should return empty pipe": {
 			stg: pipe{},
@@ -230,11 +170,11 @@ func TestBuilder(t *testing.T) {
 			err:   fmt.Errorf(`strategy "test" wasn't found`),
 		},
 		"complex name should return expected strategy": {
-			names: []gopium.StrategyName{Discard, Ignore, AddTagS},
-			stg:   pipe([]gopium.Strategy{dis, ignr, tags.Names(Discard, Ignore, AddTagS)}),
+			names: []gopium.StrategyName{Ignore, AddTagS},
+			stg:   pipe([]gopium.Strategy{ignr, tags.Names(Ignore, AddTagS)}),
 		},
 		"invalid name inside complex name should return builder error": {
-			names: []gopium.StrategyName{Discard, Ignore, "test", AddTagS},
+			names: []gopium.StrategyName{Ignore, "test", AddTagS},
 			err:   fmt.Errorf(`strategy "test" wasn't found`),
 		},
 	}

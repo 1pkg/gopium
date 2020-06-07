@@ -69,17 +69,12 @@ Gopium supports next walkers:
  - ast_go_tree (directly syncs result as go code to copy package)
  - ast_gopium (directly syncs result as go code to copy gopium files)
 
- - json_std (prints json encoded result to stdout)
- - xml_std (prints xml encoded result to stdout)
- - csv_std (prints csv encoded result to stdout)
- - md_table_std (prints markdown table encoded result to stdout)
  - json_file (prints json encoded results to single file inside package directory)
  - xml_file (prints xml encoded results to single file inside package directory)
  - csv_file (prints csv encoded results to single file inside package directory)
  - md_table_file (prints markdown table encoded results to single file inside package directory)
 
- - size_diff_md_table_std (prints markdown table encoded encoded size difference of results to origin to stdout)
- - size_diff_md_table_file (prints markdown table encoded encoded size difference of results to origin to single file inside package directory)
+ - size_align_md_table_file (prints markdown table encoded encoded size and align difference of results to single file inside package directory)
 
 Gopium supports next strategies: 
  - process_tag_group (uses gopium fields tags annotation in order to process different set of strategies
@@ -131,31 +126,14 @@ Gopium supports next strategies:
  - comment_fields_annotate adds align and size comment annotation for each structure field)
  - doc_struct_annotate (adds aggregated align and size doc annotation for structure)
  - comment_struct_annotate (adds aggregated align and size comment annotation for structure)
- - doc_struct_stamp (adds doc gopium stamp to structure)
- - comment_struct_stamp (adds comment gopium stamp to structure)
 
  - name_lexicographical_ascending (sorts fields accordingly to their names in ascending order)
  - name_lexicographical_descending (sorts fields accordingly to their names descending order)
- - name_length_ascending (sorts fields accordingly to their names length in ascending order)
- - name_length_descending (sorts fields accordingly to their names length in descending order)
  - type_lexicographical_ascending (sorts fields accordingly to their types in ascending order)
  - type_lexicographical_descending (sorts fields accordingly to their types in descending order)
- - type_length_ascending (sorts fields accordingly to their types length in ascending order)
- - type_length_descending (sorts fields accordingly to their types length in descending order)
-
- - embedded_ascending (sorts fields accordingly to their embedded flag in ascending order)
- - embedded_descending (sorts fields accordingly to their embedded flag in descending order)
- - exported_ascending (sorts fields accordingly to their exported flag in ascending order)
- - exported_descending (sorts fields accordingly to their exported flag in descending order)
 
  - filter_pads (filters out all structure padding fields)
- - filter_embedded (filters out all structure embedded fields)
- - filter_not_embedded (filters out all structure not embedded fields)
- - filter_exported (filters out all structure exported fields)
- - filter_not_exported (filters out all structure not exported fields)
-
  - ignore (does nothing by returning original structure)
- - discards (discards struct fields by returning void struct)
 
 Notes:
  - it might be useful to use filter_pads in pipes with other strategies to clean paddings first

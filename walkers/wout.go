@@ -12,22 +12,6 @@ import (
 
 // list of wout presets
 var (
-	jsonstd = wout{
-		fmt:    fmtio.Jsonb,
-		writer: fmtio.Stdout{},
-	}
-	xmlstd = wout{
-		fmt:    fmtio.Xmlb,
-		writer: fmtio.Stdout{},
-	}
-	csvstd = wout{
-		fmt:    fmtio.Csvb(fmtio.Buffer()),
-		writer: fmtio.Stdout{},
-	}
-	mdtstd = wout{
-		fmt:    fmtio.Mdtb,
-		writer: fmtio.Stdout{},
-	}
 	jsonfile = wout{
 		fmt:    fmtio.Jsonb,
 		writer: fmtio.File{Name: gopium.NAME, Ext: fmtio.JSON},
