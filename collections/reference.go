@@ -14,7 +14,7 @@ type Reference struct {
 // NewReference creates reference instance
 // accordingly to passed nil flag
 func NewReference(actual bool) *Reference {
-	// in case we wanna use
+	// in case we want to use
 	// nil reference instance
 	if !actual {
 		return nil

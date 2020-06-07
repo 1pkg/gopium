@@ -43,8 +43,7 @@ func (stg sep) Apply(ctx context.Context, o gopium.Struct) (gopium.Struct, error
 	r := collections.CopyStruct(o)
 	// get separator size
 	sep := stg.curator.SysAlign()
-	// if we wanna use
-	// non max system separator
+	// set separator based on sys flag
 	if !stg.sys {
 		sep = stg.curator.SysCache(stg.line)
 	}

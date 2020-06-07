@@ -124,8 +124,8 @@ Gopium supports next strategies:
 
  - doc_fields_annotate (adds align and size doc annotation for each structure field)
  - comment_fields_annotate adds align and size comment annotation for each structure field)
- - doc_struct_annotate (adds aggregated align and size doc annotation for whole structure)
- - comment_struct_annotate (adds aggregated align and size comment annotation for whole structure)
+ - doc_struct_annotate (adds aggregated align and size doc annotation for structure)
+ - comment_struct_annotate (adds aggregated align and size comment annotation for structure)
  - doc_struct_stamp (adds doc gopium stamp to structure)
  - comment_struct_stamp (adds comment gopium stamp to structure)
 

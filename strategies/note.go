@@ -19,8 +19,7 @@ var (
 // note defines strategy implementation
 // that adds size doc or comment annotation
 // for each structure field
-// and aggregated size annotation
-// for whole structure
+// and aggregated size annotation for structure
 type note struct {
 	doc   bool
 	field bool
@@ -30,37 +29,55 @@ type note struct {
 func (stg note) Apply(ctx context.Context, o gopium.Struct) (gopium.Struct, error) {
 	// copy original structure to result
 	r := collections.CopyStruct(o)
-	// note each field with size comment
-	var size, align int64
-	for i := range r.Fields {
-		f := &r.Fields[i]
-		// note only in field mode
-		if stg.field {
-			note := fmt.Sprintf(
-				"// field size: %d bytes; field align: %d bytes; - %s",
-				f.Size,
-				f.Align,
-				gopium.STAMP,
-			)
-			if stg.doc {
-				f.Doc = append(f.Doc, note)
-			} else {
-				f.Comment = append(f.Comment, note)
+	// preset defaults
+	var size, alsize, align int64 = 0, 0, 1
+	// prepare fields slice
+	if flen := len(r.Fields); flen > 0 {
+		// note each field with size comment
+		rfields := make([]gopium.Field, 0, flen)
+		collections.WalkStruct(r, 0, func(pad int64, fields ...gopium.Field) {
+			// add pad to aligned size
+			alsize += pad
+			for _, f := range fields {
+				// note only in field mode
+				if stg.field {
+					// create note comment
+					note := fmt.Sprintf(
+						"// field size: %d bytes; field align: %d bytes; - %s",
+						f.Size,
+						f.Align,
+						gopium.STAMP,
+					)
+					if stg.doc {
+						f.Doc = append(f.Doc, note)
+					} else {
+						f.Comment = append(f.Comment, note)
+					}
+				}
+				// add field size to both sizes
+				size += f.Size
+				alsize += f.Size
+				// update struct align size
+				// if field align size is bigger
+				if f.Align > align {
+					align = f.Align
+				}
+				// append field to result
+				rfields = append(rfields, f)
 			}
-		}
-		// calculate total size and align
-		size += f.Size
-		if align < f.Align {
-			align = f.Align
-		}
+		})
+		// update result fields
+		r.Fields = rfields
 	}
-	// note whole structure with size comment
+	// note structure with size comment
 	// note only in non field mode
 	if !stg.field {
+		// create note comment
 		note := fmt.Sprintf(
-			"// struct size: %d bytes; struct align: %d bytes; - %s",
+			"// struct size: %d bytes; struct align: %d bytes; struct aligned size: %d bytes; - %s",
 			size,
 			align,
+			alsize,
 			gopium.STAMP,
 		)
 		if stg.doc {
