@@ -199,9 +199,13 @@
 									"json_std",
 									"xml_std",
 									"csv_std",
+									"md_table_std",
 									"json_file",
 									"xml_file",
-									"csv_file"
+									"csv_file",
+									"md_table_file",
+									"size_diff_md_table_std",
+									"size_diff_md_table_file"
 								],
 								"description": "Gopium walker for single action preset."
 							},

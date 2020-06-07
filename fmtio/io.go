@@ -6,6 +6,14 @@ import (
 	"os"
 )
 
+// list of supported extensions
+const (
+	JSON = "json"
+	XML  = "xml"
+	CSV  = "csv"
+	MD   = "md"
+)
+
 // stdout defines tiny wrapper for
 // os stdout stream that couldn't be closed
 type stdout struct{}

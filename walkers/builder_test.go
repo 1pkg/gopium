@@ -91,27 +91,64 @@ func TestBuilder(t *testing.T) {
 				b.Bref,
 			),
 		},
-		"`json_files` name should return expected walker": {
+		"`mdt_std` name should return expected walker": {
+			name: MdtStd,
+			w: mdtstd.With(
+				b.Parser,
+				b.Exposer,
+				b.Deep,
+				b.Bref,
+			),
+		},
+		"`json_file` name should return expected walker": {
 			name: JsonbFile,
-			w: jsonfiles.With(
+			w: jsonfile.With(
 				b.Parser,
 				b.Exposer,
 				b.Deep,
 				b.Bref,
 			),
 		},
-		"`xml_files` name should return expected walker": {
+		"`xml_file` name should return expected walker": {
 			name: XmlbFile,
-			w: xmlfiles.With(
+			w: xmlfile.With(
 				b.Parser,
 				b.Exposer,
 				b.Deep,
 				b.Bref,
 			),
 		},
-		"`csv_files` name should return expected walker": {
+		"`csv_file` name should return expected walker": {
 			name: CsvbFile,
-			w: csvfiles.With(
+			w: csvfile.With(
+				b.Parser,
+				b.Exposer,
+				b.Deep,
+				b.Bref,
+			),
+		},
+		"`mdt_file` name should return expected walker": {
+			name: MdtFile,
+			w: mdtfile.With(
+				b.Parser,
+				b.Exposer,
+				b.Deep,
+				b.Bref,
+			),
+		},
+		// wdiff walkers
+		"`size_diff_md_table_std` name should return expected walker": {
+			name: SizeDiffMdtStd,
+			w: satmdstd.With(
+				b.Parser,
+				b.Exposer,
+				b.Deep,
+				b.Bref,
+			),
+		},
+		"`size_diff_md_table_file` name should return expected walker": {
+			name: SizeDiffMdtFile,
+			w: satmdfile.With(
 				b.Parser,
 				b.Exposer,
 				b.Deep,

@@ -72,9 +72,14 @@ Gopium supports next walkers:
  - json_std (prints json encoded result to stdout)
  - xml_std (prints xml encoded result to stdout)
  - csv_std (prints csv encoded result to stdout)
- - json_file (prints json encoded result to files inside package directory)
- - xml_file (prints xml encoded result to files inside package directory)
- - csv_file (prints csv encoded result to files inside package directory)
+ - md_table_std (prints markdown table encoded result to stdout)
+ - json_file (prints json encoded results to single file inside package directory)
+ - xml_file (prints xml encoded results to single file inside package directory)
+ - csv_file (prints csv encoded results to single file inside package directory)
+ - md_table_file (prints markdown table encoded results to single file inside package directory)
+
+ - size_diff_md_table_std (prints markdown table encoded encoded size difference of results to origin to stdout)
+ - size_diff_md_table_file (prints markdown table encoded encoded size difference of results to origin to single file inside package directory)
 
 Gopium supports next strategies: 
  - process_tag_group (uses gopium fields tags annotation in order to process different set of strategies

@@ -17,9 +17,14 @@ const (
 	JsonbStd  gopium.WalkerName = "json_std"
 	XmlbStd   gopium.WalkerName = "xml_std"
 	CsvbStd   gopium.WalkerName = "csv_std"
+	MdtStd    gopium.WalkerName = "md_table_std"
 	JsonbFile gopium.WalkerName = "json_file"
 	XmlbFile  gopium.WalkerName = "xml_file"
 	CsvbFile  gopium.WalkerName = "csv_file"
+	MdtFile   gopium.WalkerName = "md_table_file"
+	// wdiff walkers
+	SizeDiffMdtStd  gopium.WalkerName = "size_diff_md_table_std"
+	SizeDiffMdtFile gopium.WalkerName = "size_diff_md_table_file"
 )
 
 // Builder defines types gopium.WalkerBuilder implementation
@@ -90,22 +95,51 @@ func (b Builder) Build(name gopium.WalkerName) (gopium.Walker, error) {
 			b.Deep,
 			b.Bref,
 		), nil
+	case MdtStd:
+		return mdtstd.With(
+			b.Parser,
+			b.Exposer,
+			b.Deep,
+			b.Bref,
+		), nil
 	case JsonbFile:
-		return jsonfiles.With(
+		return jsonfile.With(
 			b.Parser,
 			b.Exposer,
 			b.Deep,
 			b.Bref,
 		), nil
 	case XmlbFile:
-		return xmlfiles.With(
+		return xmlfile.With(
 			b.Parser,
 			b.Exposer,
 			b.Deep,
 			b.Bref,
 		), nil
 	case CsvbFile:
-		return csvfiles.With(
+		return csvfile.With(
+			b.Parser,
+			b.Exposer,
+			b.Deep,
+			b.Bref,
+		), nil
+	case MdtFile:
+		return mdtfile.With(
+			b.Parser,
+			b.Exposer,
+			b.Deep,
+			b.Bref,
+		), nil
+	// wdiff walkers
+	case SizeDiffMdtStd:
+		return satmdstd.With(
+			b.Parser,
+			b.Exposer,
+			b.Deep,
+			b.Bref,
+		), nil
+	case SizeDiffMdtFile:
+		return satmdfile.With(
 			b.Parser,
 			b.Exposer,
 			b.Deep,

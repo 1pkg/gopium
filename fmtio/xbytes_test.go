@@ -38,7 +38,7 @@ func TestXbytes(t *testing.T) {
 ]
 `),
 		},
-		"json should return expected result for non collection": {
+		"json should return expected result for non empty collection": {
 			fmt: Jsonb,
 			f: collections.Flat{
 				"test-2": gopium.Struct{
@@ -151,7 +151,7 @@ func TestXbytes(t *testing.T) {
 </Struct>
 `),
 		},
-		"xml should return valid expected for non collection": {
+		"xml should return valid expected result for non empty collection": {
 			fmt: Xmlb,
 			f: collections.Flat{
 				"test-2": gopium.Struct{
@@ -327,6 +327,66 @@ Struct Name,Struct Doc,Struct Comment,Field Name,Field Type,Field Size,Field Ali
 Test-1,,,test-3,test,1,1,,false,false,,
 Test,doctest,comtest,test-1,string,16,8,test-tag,true,true,fdoctest,fcomtest
 Test,doctest,comtest,test-2,test_type,12,4,,false,false,,
+`),
+		},
+		"md table should return expected result for empty collection": {
+			fmt: Mdtb,
+			f:   collections.Flat{},
+			r:   []byte(``),
+		},
+		"md table should return expected result for empty struct in collection": {
+			fmt: Mdtb,
+			f:   collections.Flat{"test": gopium.Struct{}},
+			r: []byte(`
+| Struct Name | Struct Doc | Struct Comment | Field Name | Field Type | Field Size | Field Align | Field Tag | Field Exported | Field Embedded | Field Doc | Field Comment |
+| :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+`),
+		},
+		"md table should return expected result for non empty collection": {
+			fmt: Mdtb,
+			f: collections.Flat{
+				"test-2": gopium.Struct{
+					Name:    "Test",
+					Doc:     []string{"doctest"},
+					Comment: []string{"comtest"},
+					Fields: []gopium.Field{
+						{
+							Name:     "test-1",
+							Type:     "string",
+							Size:     16,
+							Align:    8,
+							Tag:      "test-tag",
+							Exported: true,
+							Embedded: true,
+							Doc:      []string{"fdoctest"},
+							Comment:  []string{"fcomtest"},
+						},
+						{
+							Name:  "test-2",
+							Type:  "test_type",
+							Size:  12,
+							Align: 4,
+						},
+					},
+				},
+				"test-1": gopium.Struct{
+					Name: "Test-1",
+					Fields: []gopium.Field{
+						{
+							Name:  "test-3",
+							Type:  "test",
+							Size:  1,
+							Align: 1,
+						},
+					},
+				},
+			},
+			r: []byte(`
+| Struct Name | Struct Doc | Struct Comment | Field Name | Field Type | Field Size | Field Align | Field Tag | Field Exported | Field Embedded | Field Doc | Field Comment |
+| :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+| Test-1 |  |  | test-3 | test | 1 | 1 |  | false | false |  |  |
+| Test | doctest | comtest | test-1 | string | 16 | 8 | test-tag | true | true | fdoctest | fcomtest |
+| Test | doctest | comtest | test-2 | test_type | 12 | 4 |  | false | false |  |  |
 `),
 		},
 	}
