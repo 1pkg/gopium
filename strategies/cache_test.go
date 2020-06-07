@@ -163,6 +163,102 @@ func TestCache(t *testing.T) {
 				},
 			},
 		},
+		"struct with pads should be applied to expected aligned struct": {
+			cache: cachel2,
+			c:     mocks.Maven{SCache: []int64{16, 32, 64}},
+			ctx:   context.Background(),
+			o: gopium.Struct{
+				Name: "test",
+				Fields: []gopium.Field{
+					{
+						Name:  "test1",
+						Size:  3,
+						Align: 1,
+					},
+					{
+						Name:  "test2",
+						Size:  8,
+						Align: 8,
+					},
+					{
+						Name:  "test3",
+						Size:  3,
+						Align: 1,
+					},
+				},
+			},
+			r: gopium.Struct{
+				Name: "test",
+				Fields: []gopium.Field{
+					{
+						Name:  "test1",
+						Size:  3,
+						Align: 1,
+					},
+					{
+						Name:  "test2",
+						Size:  8,
+						Align: 8,
+					},
+					{
+						Name:  "test3",
+						Size:  3,
+						Align: 1,
+					},
+					collections.PadField(13),
+				},
+			},
+		},
+		"struct with explicit pads should be applied to expected aligned struct": {
+			cache: cachel2,
+			c:     mocks.Maven{SCache: []int64{16, 32, 64}},
+			ctx:   context.Background(),
+			o: gopium.Struct{
+				Name: "test",
+				Fields: []gopium.Field{
+					{
+						Name:  "test1",
+						Size:  3,
+						Align: 1,
+					},
+					collections.PadField(5),
+					{
+						Name:  "test2",
+						Size:  8,
+						Align: 8,
+					},
+					{
+						Name:  "test3",
+						Size:  3,
+						Align: 1,
+					},
+					collections.PadField(5),
+				},
+			},
+			r: gopium.Struct{
+				Name: "test",
+				Fields: []gopium.Field{
+					{
+						Name:  "test1",
+						Size:  3,
+						Align: 1,
+					},
+					collections.PadField(5),
+					{
+						Name:  "test2",
+						Size:  8,
+						Align: 8,
+					},
+					{
+						Name:  "test3",
+						Size:  3,
+						Align: 1,
+					},
+					collections.PadField(5),
+					collections.PadField(8),
+				},
+			},
+		},
 	}
 	for name, tcase := range table {
 		t.Run(name, func(t *testing.T) {

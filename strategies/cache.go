@@ -32,17 +32,26 @@ func (stg cache) Curator(curator gopium.Curator) cache {
 func (stg cache) Apply(ctx context.Context, o gopium.Struct) (gopium.Struct, error) {
 	// copy original structure to result
 	r := collections.CopyStruct(o)
-	// calculate size of whole structure
-	var size int64
-	for _, f := range r.Fields {
-		size += f.Size
-	}
+	// calculate aligned size of structure
+	var alsize int64
+	collections.WalkStruct(r, 0, func(pad int64, fields ...gopium.Field) {
+		// add pad to aligned size
+		// only if it's not last pad
+		if len(fields) > 0 {
+			alsize += pad
+		}
+		// go through all fields
+		for _, f := range fields {
+			// add field size aligned sizes
+			alsize += f.Size
+		}
+	})
 	// check if cache line size is valid
 	if cachel := stg.curator.SysCache(stg.line); cachel > 0 {
 		// get number of padding bytes
 		// to fill cpu cache line
 		// if padding is valid append it
-		if pad := size % cachel; pad > 0 {
+		if pad := alsize % cachel; pad > 0 {
 			pad = cachel - pad
 			r.Fields = append(r.Fields, collections.PadField(pad))
 		}

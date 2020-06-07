@@ -50,7 +50,7 @@ func (stg tag) Apply(ctx context.Context, o gopium.Struct) (gopium.Struct, error
 		tag, ok := reflect.StructTag(f.Tag).Lookup(gopium.NAME)
 		// build group tag
 		gtag := stg.tag
-		// if we wanna build discrete groups
+		// if we want to build discrete groups
 		if stg.discrete {
 			// use default group tag
 			// and append index of field to it

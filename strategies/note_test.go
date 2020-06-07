@@ -71,7 +71,7 @@ func TestNote(t *testing.T) {
 			note: stnotedoc,
 			ctx:  context.Background(),
 			r: gopium.Struct{
-				Doc: []string{"// struct size: 0 bytes; struct align: 0 bytes; - 🌺 gopium @1pkg"},
+				Doc: []string{"// struct size: 0 bytes; struct align: 1 bytes; struct aligned size: 0 bytes; - 🌺 gopium @1pkg"},
 			},
 		},
 		"non empty struct should be applied to itself with expected doc struct": {
@@ -87,7 +87,7 @@ func TestNote(t *testing.T) {
 			},
 			r: gopium.Struct{
 				Name: "test",
-				Doc:  []string{"// struct size: 0 bytes; struct align: 0 bytes; - 🌺 gopium @1pkg"},
+				Doc:  []string{"// struct size: 0 bytes; struct align: 1 bytes; struct aligned size: 0 bytes; - 🌺 gopium @1pkg"},
 				Fields: []gopium.Field{
 					{
 						Name: "test",
@@ -108,7 +108,7 @@ func TestNote(t *testing.T) {
 			},
 			r: gopium.Struct{
 				Name:    "test",
-				Comment: []string{"// struct size: 0 bytes; struct align: 0 bytes; - 🌺 gopium @1pkg"},
+				Comment: []string{"// struct size: 0 bytes; struct align: 1 bytes; struct aligned size: 0 bytes; - 🌺 gopium @1pkg"},
 				Fields: []gopium.Field{
 					{
 						Name: "test",
@@ -221,6 +221,57 @@ func TestNote(t *testing.T) {
 				},
 			},
 		},
+		"complex struct with pads should be applied to itself with expected comment fields": {
+			note: fnotecom,
+			ctx:  context.Background(),
+			o: gopium.Struct{
+				Name:    "test",
+				Comment: []string{"test"},
+				Fields: []gopium.Field{
+					{
+						Name:  "test1",
+						Size:  3,
+						Align: 1,
+					},
+					{
+						Name:  "test2",
+						Type:  "float64",
+						Size:  8,
+						Align: 8,
+					},
+					{
+						Name:  "test3",
+						Size:  3,
+						Align: 1,
+					},
+				},
+			},
+			r: gopium.Struct{
+				Name:    "test",
+				Comment: []string{"test"},
+				Fields: []gopium.Field{
+					{
+						Name:    "test1",
+						Size:    3,
+						Align:   1,
+						Comment: []string{"// field size: 3 bytes; field align: 1 bytes; - 🌺 gopium @1pkg"},
+					},
+					{
+						Name:    "test2",
+						Type:    "float64",
+						Size:    8,
+						Align:   8,
+						Comment: []string{"// field size: 8 bytes; field align: 8 bytes; - 🌺 gopium @1pkg"},
+					},
+					{
+						Name:    "test3",
+						Size:    3,
+						Align:   1,
+						Comment: []string{"// field size: 3 bytes; field align: 1 bytes; - 🌺 gopium @1pkg"},
+					},
+				},
+			},
+		},
 		"complex struct should be applied to itself with expected doc struct": {
 			note: stnotedoc,
 			ctx:  context.Background(),
@@ -249,7 +300,7 @@ func TestNote(t *testing.T) {
 			},
 			r: gopium.Struct{
 				Name: "test",
-				Doc:  []string{"test", "// struct size: 16 bytes; struct align: 8 bytes; - 🌺 gopium @1pkg"},
+				Doc:  []string{"test", "// struct size: 16 bytes; struct align: 8 bytes; struct aligned size: 16 bytes; - 🌺 gopium @1pkg"},
 				Fields: []gopium.Field{
 					{
 						Name:  "test1",
@@ -299,7 +350,7 @@ func TestNote(t *testing.T) {
 			},
 			r: gopium.Struct{
 				Name:    "test",
-				Comment: []string{"test", "// struct size: 16 bytes; struct align: 8 bytes; - 🌺 gopium @1pkg"},
+				Comment: []string{"test", "// struct size: 16 bytes; struct align: 8 bytes; struct aligned size: 16 bytes; - 🌺 gopium @1pkg"},
 				Fields: []gopium.Field{
 					{
 						Name:  "test1",
@@ -317,6 +368,54 @@ func TestNote(t *testing.T) {
 						Type:  "float64",
 						Size:  8,
 						Align: 8,
+					},
+				},
+			},
+		},
+		"complex struct with pads should be applied to itself with expected comment struct": {
+			note: stnotecom,
+			ctx:  context.Background(),
+			o: gopium.Struct{
+				Name:    "test",
+				Comment: []string{"test"},
+				Fields: []gopium.Field{
+					{
+						Name:  "test1",
+						Size:  3,
+						Align: 1,
+					},
+					{
+						Name:  "test2",
+						Type:  "float64",
+						Size:  8,
+						Align: 8,
+					},
+					{
+						Name:  "test3",
+						Size:  3,
+						Align: 1,
+					},
+				},
+			},
+			r: gopium.Struct{
+				Name:    "test",
+				Comment: []string{"test", "// struct size: 14 bytes; struct align: 8 bytes; struct aligned size: 24 bytes; - 🌺 gopium @1pkg"},
+				Fields: []gopium.Field{
+					{
+						Name:  "test1",
+						Size:  3,
+						Align: 1,
+					},
+					{
+						Name:  "test2",
+						Type:  "float64",
+						Size:  8,
+						Align: 8,
+					},
+					{
+						Name:  "test3",
+						Size:  3,
+						Align: 1,
 					},
 				},
 			},

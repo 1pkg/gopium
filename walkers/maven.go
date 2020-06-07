@@ -102,7 +102,7 @@ func (m *maven) refsa(t types.Type) sizealign {
 		}
 		// n > 0
 		sa := m.refsa(tp.Elem())
-		sa.size = align(sa.size, sa.align)*(n-1) + sa.size
+		sa.size = collections.Align(sa.size, sa.align)*(n-1) + sa.size
 		return sa
 	case *types.Named:
 		// in case it's not a struct skip it
@@ -132,45 +132,9 @@ func (m *maven) refst(name string) func(gopium.Struct) {
 	m.ref.Alloc(name)
 	// return the pushing closure
 	return func(st gopium.Struct) {
-		// preset defaults
-		var stsize, stalign, offset int64 = 0, 1, 0
-		// calculate total struct size and align
-		for _, f := range st.Fields {
-			// update struct align size
-			if f.Align > stalign {
-				stalign = f.Align
-			}
-			// check that align size is valid
-			if f.Align > 0 {
-				// calculate align with padding
-				alpad := align(offset, f.Align)
-				// if padding is valid append it
-				if pad := alpad - offset; pad > 0 {
-					stsize += pad
-				}
-				// increment structure offset
-				offset = alpad + f.Size
-			}
-			stsize += f.Size
-		}
-		// check if struct align size is valid
-		// and append final padding to structure
-		if stalign > 0 {
-			// calculate align with padding
-			alpad := align(offset, stalign)
-			// if padding is valid append it
-			if pad := alpad - offset; pad > 0 {
-				stsize += pad
-			}
-		}
+		// calculate structure align and aligned size
+		stsize, stalign := collections.SizeAlign(st)
 		// set ref key size and align
 		m.ref.Set(name, sizealign{size: stsize, align: stalign})
 	}
-}
-
-// align returns the smallest y >= x such that y % a == 0.
-// note: copied from `go/types/sizes.go`
-func align(x int64, a int64) int64 {
-	y := x + a - 1
-	return y - y%a
 }
