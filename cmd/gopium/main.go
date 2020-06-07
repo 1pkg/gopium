@@ -83,9 +83,12 @@ Gopium supports next strategies:
  - memory_pack (rearranges structure fields to obtain optimal memory utilization)
  - memory_unpack (rearranges structure field list to obtain inflated memory utilization)
 	
- - cache_rounding_cpu_l1 (fits structure into cpu cache line #1 by adding bottom rounding cpu cache padding)
- - cache_rounding_cpu_l2 (fits structure into cpu cache line #2 by adding bottom rounding cpu cache padding)
- - cache_rounding_cpu_l3 (fits structure into cpu cache line #3 by adding bottom rounding cpu cache padding)
+ - cache_rounding_cpu_l1 (fits structure into cpu cache line #1 by adding bottom partial rounding cpu cache padding)
+ - cache_rounding_cpu_l2 (fits structure into cpu cache line #2 by adding bottom partial rounding cpu cache padding)
+ - cache_rounding_cpu_l3 (fits structure into cpu cache line #3 by adding bottom partial rounding cpu cache padding)
+ - full_cache_rounding_cpu_l1 (fits structure into full cpu cache line #1 by adding bottom rounding cpu cache padding)
+ - full_cache_rounding_cpu_l2 (fits structure into full cpu cache line #2 by adding bottom rounding cpu cache padding)
+ - full_cache_rounding_cpu_l3 (fits structure into full cpu cache line #3 by adding bottom rounding cpu cache padding)
 
  - false_sharing_cpu_l1 (guards structure from false sharing by adding extra cpu cache line #1 paddings
 	for each structure field)

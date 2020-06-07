@@ -61,6 +61,18 @@ func TestBuilder(t *testing.T) {
 			names: []gopium.StrategyName{CacheL3},
 			stg:   pipe([]gopium.Strategy{cachel3.Curator(b.Curator)}),
 		},
+		"`full_cache_rounding_cpu_l1` name should return expected strategy": {
+			names: []gopium.StrategyName{FcacheL1},
+			stg:   pipe([]gopium.Strategy{fcachel1.Curator(b.Curator)}),
+		},
+		"`full_cache_rounding_cpu_l2` name should return expected strategy": {
+			names: []gopium.StrategyName{FcacheL2},
+			stg:   pipe([]gopium.Strategy{fcachel2.Curator(b.Curator)}),
+		},
+		"`full_cache_rounding_cpu_l3` name should return expected strategy": {
+			names: []gopium.StrategyName{FcacheL3},
+			stg:   pipe([]gopium.Strategy{fcachel3.Curator(b.Curator)}),
+		},
 		// top, bottom separate pads
 		"`separate_padding_system_alignment_top` name should return expected strategy": {
 			names: []gopium.StrategyName{SepSysT},

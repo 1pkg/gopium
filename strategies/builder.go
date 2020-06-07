@@ -19,9 +19,12 @@ const (
 	FShareL2 gopium.StrategyName = "false_sharing_cpu_l2"
 	FShareL3 gopium.StrategyName = "false_sharing_cpu_l3"
 	// cache line pad roundings
-	CacheL1 gopium.StrategyName = "cache_rounding_cpu_l1"
-	CacheL2 gopium.StrategyName = "cache_rounding_cpu_l2"
-	CacheL3 gopium.StrategyName = "cache_rounding_cpu_l3"
+	CacheL1  gopium.StrategyName = "cache_rounding_cpu_l1"
+	CacheL2  gopium.StrategyName = "cache_rounding_cpu_l2"
+	CacheL3  gopium.StrategyName = "cache_rounding_cpu_l3"
+	FcacheL1 gopium.StrategyName = "full_cache_rounding_cpu_l1"
+	FcacheL2 gopium.StrategyName = "full_cache_rounding_cpu_l2"
+	FcacheL3 gopium.StrategyName = "full_cache_rounding_cpu_l3"
 	// top, bottom separate pads
 	SepSysT gopium.StrategyName = "separate_padding_system_alignment_top"
 	SepL1T  gopium.StrategyName = "separate_padding_cpu_l1_top"
@@ -91,6 +94,12 @@ func (b Builder) Build(names ...gopium.StrategyName) (gopium.Strategy, error) {
 			stg = cachel2.Curator(b.Curator)
 		case CacheL3:
 			stg = cachel3.Curator(b.Curator)
+		case FcacheL1:
+			stg = fcachel1.Curator(b.Curator)
+		case FcacheL2:
+			stg = fcachel2.Curator(b.Curator)
+		case FcacheL3:
+			stg = fcachel3.Curator(b.Curator)
 		// top, bottom separate pads
 		case SepSysT:
 			stg = sepsyst.Curator(b.Curator)

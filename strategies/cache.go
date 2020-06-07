@@ -9,9 +9,12 @@ import (
 
 // list of cache presets
 var (
-	cachel1 = cache{line: 1}
-	cachel2 = cache{line: 2}
-	cachel3 = cache{line: 3}
+	cachel1  = cache{line: 1, div: true}
+	cachel2  = cache{line: 2, div: true}
+	cachel3  = cache{line: 3, div: true}
+	fcachel1 = cache{line: 1, div: false}
+	fcachel2 = cache{line: 2, div: false}
+	fcachel3 = cache{line: 3, div: false}
 )
 
 // cache defines strategy implementation
@@ -20,6 +23,7 @@ var (
 type cache struct {
 	curator gopium.Curator
 	line    uint
+	div     bool
 }
 
 // Curator erich cache strategy with curator instance
@@ -48,6 +52,16 @@ func (stg cache) Apply(ctx context.Context, o gopium.Struct) (gopium.Struct, err
 	})
 	// check if cache line size is valid
 	if cachel := stg.curator.SysCache(stg.line); cachel > 0 {
+		// if fractional cache line is allowed
+		if stg.div {
+			// find smallest size of fraction for cache line
+			if alsize > 0 && cachel > alsize {
+				for cachel >= alsize {
+					cachel /= 2
+				}
+				cachel *= 2
+			}
+		}
 		// get number of padding bytes
 		// to fill cpu cache line
 		// if padding is valid append it
