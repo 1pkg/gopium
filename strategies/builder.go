@@ -43,29 +43,14 @@ const (
 	FNoteCom  gopium.StrategyName = "comment_fields_annotate"
 	StNoteDoc gopium.StrategyName = "doc_struct_annotate"
 	StNoteCom gopium.StrategyName = "comment_struct_annotate"
-	StampDoc  gopium.StrategyName = "doc_struct_stamp"
-	StampCom  gopium.StrategyName = "comment_struct_stamp"
 	// lexicographical, length, embedded, exported sorts
 	NLexAsc  gopium.StrategyName = "name_lexicographical_ascending"
 	NLexDesc gopium.StrategyName = "name_lexicographical_descending"
-	NLenAsc  gopium.StrategyName = "name_length_ascending"
-	NLenDesc gopium.StrategyName = "name_length_descending"
 	TLexAsc  gopium.StrategyName = "type_lexicographical_ascending"
 	TLexDesc gopium.StrategyName = "type_lexicographical_descending"
-	TLenAsc  gopium.StrategyName = "type_length_ascending"
-	TLenDesc gopium.StrategyName = "type_length_descending"
-	EmbAsc   gopium.StrategyName = "embedded_ascending"
-	EmbDesc  gopium.StrategyName = "embedded_descending"
-	ExpAsc   gopium.StrategyName = "exported_ascending"
-	ExpDesc  gopium.StrategyName = "exported_descending"
 	// filters and others
-	FPad    gopium.StrategyName = "filter_pads"
-	FEmb    gopium.StrategyName = "filter_embedded"
-	FNotEmb gopium.StrategyName = "filter_not_embedded"
-	FExp    gopium.StrategyName = "filter_exported"
-	FNotExp gopium.StrategyName = "filter_not_exported"
-	Ignore  gopium.StrategyName = "ignore"
-	Discard gopium.StrategyName = "discard"
+	FPad   gopium.StrategyName = "filter_pads"
+	Ignore gopium.StrategyName = "ignore"
 )
 
 // Builder defines types gopium.StrategyBuilder implementation
@@ -145,50 +130,20 @@ func (b Builder) Build(names ...gopium.StrategyName) (gopium.Strategy, error) {
 			stg = stnotedoc
 		case StNoteCom:
 			stg = stnotecom
-		case StampDoc:
-			stg = stampdoc
-		case StampCom:
-			stg = stampcom
 		// lexicographical, length, embedded, exported sorts
 		case NLexAsc:
 			stg = nlexasc
 		case NLexDesc:
 			stg = nlexdesc
-		case NLenAsc:
-			stg = nlenasc
-		case NLenDesc:
-			stg = nlendesc
 		case TLexAsc:
 			stg = tlexasc
 		case TLexDesc:
 			stg = tlexdesc
-		case TLenAsc:
-			stg = tlenasc
-		case TLenDesc:
-			stg = tlendesc
-		case EmbAsc:
-			stg = embasc
-		case EmbDesc:
-			stg = embdesc
-		case ExpAsc:
-			stg = expasc
-		case ExpDesc:
-			stg = expdesc
 		// filters and others
 		case FPad:
 			stg = fpad
-		case FEmb:
-			stg = femb
-		case FNotEmb:
-			stg = fnotemb
-		case FExp:
-			stg = fexp
-		case FNotExp:
-			stg = fnotexp
 		case Ignore:
 			stg = ignr
-		case Discard:
-			stg = dis
 		default:
 			return nil, fmt.Errorf("strategy %q wasn't found", name)
 		}

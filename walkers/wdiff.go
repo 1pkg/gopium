@@ -12,10 +12,6 @@ import (
 
 // list of wdiff presets
 var (
-	satmdstd = wdiff{
-		fmt:    fmtio.SizeAlignMdt,
-		writer: fmtio.Stdout{},
-	}
 	satmdfile = wdiff{
 		fmt:    fmtio.SizeAlignMdt,
 		writer: fmtio.File{Name: gopium.NAME, Ext: fmtio.MD},

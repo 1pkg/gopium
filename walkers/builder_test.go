@@ -64,42 +64,6 @@ func TestBuilder(t *testing.T) {
 			),
 		},
 		// wout walkers
-		"`json_std` name should return expected walker": {
-			name: JsonbStd,
-			w: jsonstd.With(
-				b.Parser,
-				b.Exposer,
-				b.Deep,
-				b.Bref,
-			),
-		},
-		"`xml_std` name should return expected walker": {
-			name: XmlbStd,
-			w: xmlstd.With(
-				b.Parser,
-				b.Exposer,
-				b.Deep,
-				b.Bref,
-			),
-		},
-		"`csv_std` name should return expected walker": {
-			name: CsvbStd,
-			w: csvstd.With(
-				b.Parser,
-				b.Exposer,
-				b.Deep,
-				b.Bref,
-			),
-		},
-		"`mdt_std` name should return expected walker": {
-			name: MdtStd,
-			w: mdtstd.With(
-				b.Parser,
-				b.Exposer,
-				b.Deep,
-				b.Bref,
-			),
-		},
 		"`json_file` name should return expected walker": {
 			name: JsonbFile,
 			w: jsonfile.With(
@@ -137,17 +101,8 @@ func TestBuilder(t *testing.T) {
 			),
 		},
 		// wdiff walkers
-		"`size_diff_md_table_std` name should return expected walker": {
-			name: SizeDiffMdtStd,
-			w: satmdstd.With(
-				b.Parser,
-				b.Exposer,
-				b.Deep,
-				b.Bref,
-			),
-		},
-		"`size_diff_md_table_file` name should return expected walker": {
-			name: SizeDiffMdtFile,
+		"`size_align_md_table_file` name should return expected walker": {
+			name: SizeAlignMdtFile,
 			w: satmdfile.With(
 				b.Parser,
 				b.Exposer,
