@@ -47,15 +47,14 @@ func init() {
 		Use:     "gopium walker package strategy#1 strategy#2 strategy#3 ...",
 		Short:   gopium.STAMP,
 		Version: gopium.VERSION,
-		Example: "gopium -E -r ^A json_std 1pkg/gopium filter_pads memory_pack separate_padding_cpu_l1_top separate_padding_cpu_l1_bottom",
+		Example: "gopium -r ^A json_std 1pkg/gopium filter_pads memory_pack separate_padding_cpu_l1_top separate_padding_cpu_l1_bottom",
 		Long: `
-Gopium is the tool which was designed to automate and simplify non trivial actions on structs, like:
- - cpu cache alignment
- - memory packing
- - false sharing guarding
- - auto annotation
- - generic fields management
- - other relevant activities
+Gopium is the tool that was designed to automate and simplify some common performance transformations for structs, as:
+- cpu cache alignment
+- memory packing
+- false sharing guarding
+- auto annotation
+- generic fields management, etc.
 
 In order to use gopium cli you need to provide at least package name (full package name is expected),
 list of strategies which is applied one by one and single walker.
