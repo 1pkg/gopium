@@ -4,7 +4,7 @@ import (
 	"context"
 	"go/ast"
 
-	"1pkg/gopium"
+	"1pkg/gopium/gopium"
 )
 
 // Persister defines mock pesister implementation

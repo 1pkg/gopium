@@ -4,7 +4,7 @@ import (
 	"reflect"
 	"testing"
 
-	"1pkg/gopium"
+	"1pkg/gopium/gopium"
 )
 
 func TestFlatSorted(t *testing.T) {

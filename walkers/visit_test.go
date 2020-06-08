@@ -7,7 +7,7 @@ import (
 	"regexp"
 	"testing"
 
-	"1pkg/gopium"
+	"1pkg/gopium/gopium"
 	"1pkg/gopium/collections"
 	"1pkg/gopium/strategies"
 	"1pkg/gopium/tests/data"

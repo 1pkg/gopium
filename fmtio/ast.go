@@ -7,7 +7,7 @@ import (
 	"sort"
 	"strconv"
 
-	"1pkg/gopium"
+	"1pkg/gopium/gopium"
 )
 
 // FSPT implements ast and combines:
@@ -28,7 +28,7 @@ var FSPT = combine(
 
 // combine helps to pipe several
 // ast helpers to single ast func
-func combine(funcs ...gopium.Xast) gopium.Xast {
+func combine(funcs ...gopium.Ast) gopium.Ast {
 	return func(ts *ast.TypeSpec, st gopium.Struct) error {
 		// check that we are working with ast struct type
 		if _, ok := ts.Type.(*ast.StructType); !ok {

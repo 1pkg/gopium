@@ -11,7 +11,7 @@ import (
 	"strconv"
 	"strings"
 
-	"1pkg/gopium"
+	"1pkg/gopium/gopium"
 )
 
 // Jsonb defines bytes implementation
@@ -33,7 +33,7 @@ func Xmlb(sts []gopium.Struct) ([]byte, error) {
 // Csvb defines bytes implementation
 // which serializes flat collection
 // to formatted csv byte slice
-func Csvb(rw io.ReadWriter) gopium.Xbytes {
+func Csvb(rw io.ReadWriter) gopium.Bytes {
 	return func(sts []gopium.Struct) ([]byte, error) {
 		// prepare csv writer
 		w := csv.NewWriter(rw)

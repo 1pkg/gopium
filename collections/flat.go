@@ -5,7 +5,7 @@ import (
 	"sort"
 	"strings"
 
-	"1pkg/gopium"
+	"1pkg/gopium/gopium"
 )
 
 // Flat defines strucs flat collection

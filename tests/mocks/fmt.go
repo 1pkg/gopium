@@ -5,17 +5,17 @@ import (
 	"encoding/json"
 	"go/ast"
 
-	"1pkg/gopium"
 	"1pkg/gopium/collections"
+	"1pkg/gopium/gopium"
 )
 
-// Xbytes defines mock fmtio bytes implementation
-type Xbytes struct {
+// Bytes defines mock fmtio bytes implementation
+type Bytes struct {
 	Err error
 }
 
 // Bytes mock implementation
-func (fmt Xbytes) Bytes(sts []gopium.Struct) ([]byte, error) {
+func (fmt Bytes) Bytes(sts []gopium.Struct) ([]byte, error) {
 	// in case we have error
 	// return it back
 	if fmt.Err != nil {
@@ -25,23 +25,23 @@ func (fmt Xbytes) Bytes(sts []gopium.Struct) ([]byte, error) {
 	return json.MarshalIndent(sts, "", "\t")
 }
 
-// Xast defines mock ast type spec implementation
-type Xast struct {
+// Ast defines mock ast type spec implementation
+type Ast struct {
 	Err error
 }
 
 // Ast mock implementation
-func (fmt Xast) Ast(*ast.TypeSpec, gopium.Struct) error {
+func (fmt Ast) Ast(*ast.TypeSpec, gopium.Struct) error {
 	return fmt.Err
 }
 
-// Xdiff defines mock xdiff implementation
-type Xdiff struct {
+// Diff defines mock diff implementation
+type Diff struct {
 	Err error
 }
 
 // Diff mock implementation
-func (fmt Xdiff) Diff(o gopium.Categorized, r gopium.Categorized) ([]byte, error) {
+func (fmt Diff) Diff(o gopium.Categorized, r gopium.Categorized) ([]byte, error) {
 	// in case we have error
 	// return it back
 	if fmt.Err != nil {
@@ -53,12 +53,12 @@ func (fmt Xdiff) Diff(o gopium.Categorized, r gopium.Categorized) ([]byte, error
 	return json.MarshalIndent(data, "", "\t")
 }
 
-// Xapply defines mock xapply implementation
-type Xapply struct {
+// Apply defines mock apply implementation
+type Apply struct {
 	Err error
 }
 
 // Apply mock implementation
-func (a Xapply) Apply(context.Context, *ast.Package, gopium.Locator, gopium.Categorized) (*ast.Package, error) {
+func (a Apply) Apply(context.Context, *ast.Package, gopium.Locator, gopium.Categorized) (*ast.Package, error) {
 	return nil, a.Err
 }

@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"math"
 
-	"1pkg/gopium"
+	"1pkg/gopium/gopium"
 )
 
 // OnPadFields defines pad fields callback that

@@ -3,7 +3,7 @@ package strategies
 import (
 	"context"
 
-	"1pkg/gopium"
+	"1pkg/gopium/gopium"
 )
 
 // list of ignore presets

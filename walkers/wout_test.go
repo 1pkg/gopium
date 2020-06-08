@@ -9,7 +9,7 @@ import (
 	"strings"
 	"testing"
 
-	"1pkg/gopium"
+	"1pkg/gopium/gopium"
 	"1pkg/gopium/strategies"
 	"1pkg/gopium/tests/data"
 	"1pkg/gopium/tests/mocks"
@@ -37,7 +37,7 @@ func TestWout(t *testing.T) {
 		ctx  context.Context
 		r    *regexp.Regexp
 		p    gopium.TypeParser
-		fmt  gopium.Xbytes
+		fmt  gopium.Bytes
 		w    gopium.Writer
 		stg  gopium.Strategy
 		deep bool
@@ -49,7 +49,7 @@ func TestWout(t *testing.T) {
 			ctx: context.Background(),
 			r:   regexp.MustCompile(`.*`),
 			p:   data.NewParser("empty"),
-			fmt: mocks.Xbytes{}.Bytes,
+			fmt: mocks.Bytes{}.Bytes,
 			w:   data.Writer{Writer: &mocks.Writer{}},
 			stg: np,
 			sts: map[string][]byte{},
@@ -58,7 +58,7 @@ func TestWout(t *testing.T) {
 			ctx: context.Background(),
 			r:   regexp.MustCompile(`.*`),
 			p:   data.NewParser("single"),
-			fmt: mocks.Xbytes{}.Bytes,
+			fmt: mocks.Bytes{}.Bytes,
 			w:   data.Writer{Writer: &mocks.Writer{}},
 			stg: np,
 			sts: map[string][]byte{
@@ -112,7 +112,7 @@ func TestWout(t *testing.T) {
 			ctx: cctx,
 			r:   regexp.MustCompile(`.*`),
 			p:   data.NewParser("single"),
-			fmt: mocks.Xbytes{}.Bytes,
+			fmt: mocks.Bytes{}.Bytes,
 			w:   data.Writer{Writer: &mocks.Writer{}},
 			stg: np,
 			sts: map[string][]byte{},
@@ -122,7 +122,7 @@ func TestWout(t *testing.T) {
 			ctx: context.Background(),
 			r:   regexp.MustCompile(`.*`),
 			p:   mocks.Parser{Typeserr: errors.New("test-1")},
-			fmt: mocks.Xbytes{}.Bytes,
+			fmt: mocks.Bytes{}.Bytes,
 			w:   data.Writer{Writer: &mocks.Writer{}},
 			stg: np,
 			sts: map[string][]byte{},
@@ -132,7 +132,7 @@ func TestWout(t *testing.T) {
 			ctx: context.Background(),
 			r:   regexp.MustCompile(`.*`),
 			p:   data.NewParser("single"),
-			fmt: mocks.Xbytes{}.Bytes,
+			fmt: mocks.Bytes{}.Bytes,
 			w:   data.Writer{Writer: &mocks.Writer{}},
 			stg: &mocks.Strategy{Err: errors.New("test-2")},
 			sts: map[string][]byte{},
@@ -142,7 +142,7 @@ func TestWout(t *testing.T) {
 			ctx: context.Background(),
 			r:   regexp.MustCompile(`.*`),
 			p:   data.NewParser("single"),
-			fmt: mocks.Xbytes{}.Bytes,
+			fmt: mocks.Bytes{}.Bytes,
 			w:   data.Writer{Writer: (&mocks.Writer{Gerr: errors.New("test-3")})},
 			stg: np,
 			sts: map[string][]byte{},
@@ -152,7 +152,7 @@ func TestWout(t *testing.T) {
 			ctx: context.Background(),
 			r:   regexp.MustCompile(`.*`),
 			p:   data.NewParser("single"),
-			fmt: mocks.Xbytes{Err: errors.New("test-4")}.Bytes,
+			fmt: mocks.Bytes{Err: errors.New("test-4")}.Bytes,
 			w:   data.Writer{Writer: &mocks.Writer{}},
 			stg: np,
 			sts: map[string][]byte{},
@@ -162,7 +162,7 @@ func TestWout(t *testing.T) {
 			ctx: context.Background(),
 			r:   regexp.MustCompile(`.*`),
 			p:   data.NewParser("single"),
-			fmt: mocks.Xbytes{}.Bytes,
+			fmt: mocks.Bytes{}.Bytes,
 			w: data.Writer{Writer: (&mocks.Writer{RWCs: map[string]*mocks.RWC{
 				"tests_data_single_gopium": {Werr: errors.New("test-5")},
 			}})},
@@ -174,7 +174,7 @@ func TestWout(t *testing.T) {
 			ctx: context.Background(),
 			r:   regexp.MustCompile(`.*`),
 			p:   data.NewParser("single"),
-			fmt: mocks.Xbytes{}.Bytes,
+			fmt: mocks.Bytes{}.Bytes,
 			w: data.Writer{Writer: (&mocks.Writer{RWCs: map[string]*mocks.RWC{
 				"tests_data_single_gopium": {Cerr: errors.New("test-6")},
 			}})},
@@ -186,7 +186,7 @@ func TestWout(t *testing.T) {
 			ctx:  context.Background(),
 			r:    regexp.MustCompile(`([AZ])`),
 			p:    data.NewParser("multi"),
-			fmt:  mocks.Xbytes{}.Bytes,
+			fmt:  mocks.Bytes{}.Bytes,
 			w:    data.Writer{Writer: &mocks.Writer{}},
 			stg:  pck,
 			deep: true,
@@ -350,7 +350,7 @@ func TestWout(t *testing.T) {
 			ctx:  context.Background(),
 			r:    regexp.MustCompile(`([AZ])`),
 			p:    data.NewParser("multi"),
-			fmt:  mocks.Xbytes{}.Bytes,
+			fmt:  mocks.Bytes{}.Bytes,
 			w:    data.Writer{Writer: &mocks.Writer{}},
 			stg:  pck,
 			bref: true,

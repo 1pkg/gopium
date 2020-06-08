@@ -9,9 +9,9 @@ import (
 	"strings"
 	"testing"
 
-	"1pkg/gopium"
 	"1pkg/gopium/fmtio"
 	"1pkg/gopium/fmtio/astutil"
+	"1pkg/gopium/gopium"
 	"1pkg/gopium/strategies"
 	"1pkg/gopium/tests/data"
 	"1pkg/gopium/tests/mocks"
@@ -40,7 +40,7 @@ func TestWast(t *testing.T) {
 		ctx  context.Context
 		r    *regexp.Regexp
 		p    gopium.Parser
-		a    gopium.Xapply
+		a    gopium.Apply
 		sp   gopium.Persister
 		w    gopium.CategoryWriter
 		stg  gopium.Strategy
@@ -151,7 +151,7 @@ type Single struct {
 			ctx: context.Background(),
 			r:   regexp.MustCompile(`.*`),
 			p:   data.NewParser("single"),
-			a:   (&mocks.Xapply{Err: errors.New("test-6")}).Apply,
+			a:   (&mocks.Apply{Err: errors.New("test-6")}).Apply,
 			sp:  astutil.Package{},
 			w:   data.Writer{Writer: &mocks.Writer{}},
 			stg: np,

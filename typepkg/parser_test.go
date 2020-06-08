@@ -9,12 +9,13 @@ import (
 	"go/scanner"
 	"go/token"
 	"go/types"
+	"path"
 	"path/filepath"
 	"reflect"
 	"sync"
 	"testing"
 
-	"1pkg/gopium"
+	"1pkg/gopium/gopium"
 	"1pkg/gopium/tests"
 
 	"golang.org/x/tools/go/packages"
@@ -23,7 +24,7 @@ import (
 func TestParserXToolPackagesAstTypes(t *testing.T) {
 	// prepare
 	var wg sync.WaitGroup
-	pdir, err := filepath.Abs("..")
+	pdir, err := filepath.Abs(filepath.Join("..", "gopium"))
 	if !reflect.DeepEqual(err, nil) {
 		t.Fatalf("actual %v doesn't equal to %v", err, nil)
 	}
@@ -57,16 +58,16 @@ func TestParserXToolPackagesAstTypes(t *testing.T) {
 		"invalid pattern with relative path should return parser error": {
 			p: ParserXToolPackagesAst{
 				Pattern:   "test",
-				Path:      "..",
+				Path:      path.Join("..", "gopium"),
 				ModeTypes: packages.LoadAllSyntax,
 			},
 			ctx: context.Background(),
-			err: errors.New(`package "test" wasn't found at ".."`),
+			err: fmt.Errorf(`package "test" wasn't found at "%s"`, path.Join("..", "gopium")),
 		},
-		"invalid pattern with root path should return expected parser package": {
+		"invalid pattern with abs path should return expected parser package": {
 			p: ParserXToolPackagesAst{
-				Pattern:   "1pkg/gopium",
-				Root:      pdir,
+				Pattern:   "1pkg/gopium/gopium",
+				Path:      pdir,
 				ModeTypes: packages.LoadAllSyntax,
 			},
 			ctx: context.Background(),
@@ -75,16 +76,16 @@ func TestParserXToolPackagesAstTypes(t *testing.T) {
 		},
 		"empty types mode should return expected empty parser package": {
 			p: ParserXToolPackagesAst{
-				Pattern: "1pkg/gopium",
-				Path:    "..",
+				Pattern: "1pkg/gopium/gopium",
+				Path:    path.Join("..", "gopium"),
 			},
 			ctx: context.Background(),
 			loc: NewLocator(nil),
 		},
 		"valid pattern and path and mode should return expected parser package": {
 			p: ParserXToolPackagesAst{
-				Pattern:   "1pkg/gopium",
-				Path:      "..",
+				Pattern:   "1pkg/gopium/gopium",
+				Path:      path.Join("..", "gopium"),
 				ModeTypes: packages.LoadAllSyntax,
 			},
 			ctx: context.Background(),
@@ -93,7 +94,7 @@ func TestParserXToolPackagesAstTypes(t *testing.T) {
 		},
 		"valid pattern and path and mode should return expected parser package on abs path": {
 			p: ParserXToolPackagesAst{
-				Pattern:   "1pkg/gopium",
+				Pattern:   "1pkg/gopium/gopium",
 				Path:      pdir,
 				ModeTypes: packages.LoadAllSyntax,
 			},
@@ -113,8 +114,8 @@ func TestParserXToolPackagesAstTypes(t *testing.T) {
 		},
 		"valid pattern and path and mode should return expected parser package skip src": {
 			p: ParserXToolPackagesAst{
-				Pattern:   "1pkg/gopium",
-				Path:      "..",
+				Pattern:   "1pkg/gopium/gopium",
+				Path:      path.Join("..", "gopium"),
 				ModeTypes: packages.LoadAllSyntax,
 			},
 			ctx: context.Background(),
@@ -134,8 +135,8 @@ type Single struct {
 		},
 		"valid pattern and path and mode should return parser error on canceled context": {
 			p: ParserXToolPackagesAst{
-				Pattern:   "1pkg/gopium",
-				Path:      "..",
+				Pattern:   "1pkg/gopium/gopium",
+				Path:      path.Join("..", "gopium"),
 				ModeTypes: packages.LoadAllSyntax,
 			},
 			ctx: cctx,
@@ -185,7 +186,7 @@ type Single struct {
 
 func TestParserXToolPackagesAstAst(t *testing.T) {
 	// prepare
-	pdir, err := filepath.Abs("..")
+	pdir, err := filepath.Abs(filepath.Join("..", "gopium"))
 	if !reflect.DeepEqual(err, nil) {
 		t.Fatalf("actual %v doesn't equal to %v", err, nil)
 	}
@@ -214,12 +215,12 @@ func TestParserXToolPackagesAstAst(t *testing.T) {
 		},
 		"invalid pattern with relative path should return parser error": {
 			p: ParserXToolPackagesAst{
-				Pattern: "1pkg/gopium",
-				Path:    "..",
+				Pattern: "1pkg/gopium/gopium",
+				Path:    ".",
 				ModeAst: parser.ParseComments | parser.AllErrors,
 			},
 			ctx: context.Background(),
-			err: errors.New(`package "1pkg/gopium" wasn't found at ".."`),
+			err: errors.New(`package "1pkg/gopium/gopium" wasn't found at "."`),
 		},
 		"valid pattern with root path should return expected parser ast": {
 			p: ParserXToolPackagesAst{
@@ -233,7 +234,7 @@ func TestParserXToolPackagesAstAst(t *testing.T) {
 		},
 		"invalid pattern with full path should return expected parser ast": {
 			p: ParserXToolPackagesAst{
-				Pattern: "1pkg/gopium",
+				Pattern: "1pkg/gopium/1gopium",
 				Path:    pdir,
 				ModeAst: parser.ParseComments | parser.AllErrors,
 			},
@@ -244,7 +245,7 @@ func TestParserXToolPackagesAstAst(t *testing.T) {
 		"valid pattern and path and empty ast mode should return expected parser ast": {
 			p: ParserXToolPackagesAst{
 				Pattern: "gopium",
-				Path:    "..",
+				Path:    filepath.Join("..", "gopium"),
 			},
 			ctx: context.Background(),
 			pkg: &ast.Package{},
@@ -253,7 +254,7 @@ func TestParserXToolPackagesAstAst(t *testing.T) {
 		"valid pattern and path and mode should return expected parser ast": {
 			p: ParserXToolPackagesAst{
 				Pattern: "gopium",
-				Path:    "..",
+				Path:    filepath.Join("..", "gopium"),
 				ModeAst: parser.ParseComments | parser.AllErrors,
 			},
 			ctx: context.Background(),
@@ -263,7 +264,7 @@ func TestParserXToolPackagesAstAst(t *testing.T) {
 		"valid pattern and path and mode should return expected parser ast with src": {
 			p: ParserXToolPackagesAst{
 				Pattern: "gopium",
-				Path:    "..",
+				Path:    filepath.Join("..", "gopium"),
 				ModeAst: parser.ParseComments | parser.AllErrors,
 			},
 			ctx: context.Background(),
@@ -289,7 +290,7 @@ type Single struct {
 		"valid pattern and path and mode should return parser error with invalid src": {
 			p: ParserXToolPackagesAst{
 				Pattern: "gopium",
-				Path:    "..",
+				Path:    filepath.Join("..", "gopium"),
 				ModeAst: parser.ParseComments | parser.AllErrors,
 			},
 			ctx: context.Background(),
@@ -310,8 +311,8 @@ invalid gocode
 		},
 		"invalid pattern with relative path should return expected parser ast with src": {
 			p: ParserXToolPackagesAst{
-				Pattern: "1pkg/gopium",
-				Path:    "..",
+				Pattern: "1pkg/gopium/1gopium",
+				Path:    filepath.Join("..", "gopium"),
 				ModeAst: parser.ParseComments | parser.AllErrors,
 			},
 			ctx: context.Background(),
@@ -337,7 +338,7 @@ type Single struct {
 		"valid pattern and path and mode should return parser error on canceled context": {
 			p: ParserXToolPackagesAst{
 				Pattern: "gopium",
-				Path:    "..",
+				Path:    filepath.Join("..", "gopium"),
 				ModeAst: parser.ParseComments | parser.AllErrors,
 			},
 			ctx: cctx,

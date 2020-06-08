@@ -5,11 +5,11 @@ import (
 	"strings"
 	"testing"
 
-	"1pkg/gopium"
 	"1pkg/gopium/collections"
+	"1pkg/gopium/gopium"
 )
 
-func TestXdiff(t *testing.T) {
+func TestDiff(t *testing.T) {
 	// prepare
 	oh := collections.NewHierarchic("")
 	rh := collections.NewHierarchic("")
@@ -56,7 +56,7 @@ func TestXdiff(t *testing.T) {
 		},
 	})
 	table := map[string]struct {
-		fmt gopium.Xdiff
+		fmt gopium.Diff
 		o   gopium.Categorized
 		r   gopium.Categorized
 		b   []byte

@@ -3,7 +3,7 @@ package strategies
 import (
 	"fmt"
 
-	"1pkg/gopium"
+	"1pkg/gopium/gopium"
 )
 
 // list of registered types strategies

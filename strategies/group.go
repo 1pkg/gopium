@@ -7,7 +7,7 @@ import (
 	"sort"
 	"strings"
 
-	"1pkg/gopium"
+	"1pkg/gopium/gopium"
 	"1pkg/gopium/collections"
 
 	"golang.org/x/sync/errgroup"

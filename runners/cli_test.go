@@ -10,7 +10,7 @@ import (
 	"testing"
 	"time"
 
-	"1pkg/gopium"
+	"1pkg/gopium/gopium"
 	"1pkg/gopium/fmtio"
 	"1pkg/gopium/strategies"
 	"1pkg/gopium/tests"

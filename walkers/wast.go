@@ -4,10 +4,10 @@ import (
 	"context"
 	"regexp"
 
-	"1pkg/gopium"
 	"1pkg/gopium/collections"
 	"1pkg/gopium/fmtio"
 	"1pkg/gopium/fmtio/astutil"
+	"1pkg/gopium/gopium"
 )
 
 // list of supported extensions
@@ -43,7 +43,7 @@ var (
 // wast defines packages walker ast sync implementation
 type wast struct {
 	// inner visiting parameters
-	apply     gopium.Xapply
+	apply     gopium.Apply
 	persister gopium.Persister
 	writer    gopium.CategoryWriter
 	// external visiting parameters

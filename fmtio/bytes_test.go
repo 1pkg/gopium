@@ -6,15 +6,15 @@ import (
 	"strings"
 	"testing"
 
-	"1pkg/gopium"
+	"1pkg/gopium/gopium"
 	"1pkg/gopium/collections"
 	"1pkg/gopium/tests/mocks"
 )
 
-func TestXbytes(t *testing.T) {
+func TestBytes(t *testing.T) {
 	// prepare
 	table := map[string]struct {
-		fmt gopium.Xbytes
+		fmt gopium.Bytes
 		f   collections.Flat
 		r   []byte
 		err error

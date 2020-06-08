@@ -6,7 +6,7 @@ import (
 	"regexp"
 	"testing"
 
-	"1pkg/gopium"
+	"1pkg/gopium/gopium"
 )
 
 func TestFilter(t *testing.T) {

@@ -5,9 +5,9 @@ import (
 	"path/filepath"
 	"regexp"
 
-	"1pkg/gopium"
 	"1pkg/gopium/collections"
 	"1pkg/gopium/fmtio"
+	"1pkg/gopium/gopium"
 )
 
 // list of wout presets
@@ -33,7 +33,7 @@ var (
 // wout defines packages walker out implementation
 type wout struct {
 	// inner visiting parameters
-	fmt    gopium.Xbytes
+	fmt    gopium.Bytes
 	writer gopium.Writer
 	// external visiting parameters
 	parser  gopium.TypeParser

@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"1pkg/gopium"
+	"1pkg/gopium/gopium"
 )
 
 // Stdout defines writer implementation
