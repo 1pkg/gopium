@@ -6,6 +6,8 @@
 
 [![gopium](gopher.png)](https://github.com/1pkg/gopium)
 
+![](vscode.gif)
+
 ## Introduction
 
 Gopium is the tool that was designed to automate and simplify some common performance transformations for structs, as:
