@@ -10,15 +10,15 @@ import (
 	"strings"
 	"testing"
 
-	"1pkg/gopium"
+	"1pkg/gopium/gopium"
 	"1pkg/gopium/tests/mocks"
 )
 
-func TestXast(t *testing.T) {
+func TestAst(t *testing.T) {
 	// prepare
 	p := Gofmt{}
 	table := map[string]struct {
-		fmt gopium.Xast
+		fmt gopium.Ast
 		ts  *ast.TypeSpec
 		st  gopium.Struct
 		r   []byte
@@ -43,7 +43,7 @@ func TestXast(t *testing.T) {
 			err: errors.New(`type "test" is not valid structure`),
 		},
 		"struct type should return error on ast error": {
-			fmt: combine(flatten, mocks.Xast{Err: errors.New("test")}.Ast),
+			fmt: combine(flatten, mocks.Ast{Err: errors.New("test")}.Ast),
 			ts: &ast.TypeSpec{
 				Name: &ast.Ident{
 					Name: "test",

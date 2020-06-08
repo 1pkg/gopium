@@ -10,16 +10,16 @@ import (
 	"strings"
 	"testing"
 
-	"1pkg/gopium"
 	"1pkg/gopium/collections"
 	"1pkg/gopium/fmtio"
+	"1pkg/gopium/gopium"
 	"1pkg/gopium/tests"
 	"1pkg/gopium/tests/data"
 	"1pkg/gopium/tests/mocks"
 	"1pkg/gopium/typepkg"
 )
 
-func TestXapply(t *testing.T) {
+func TestApply(t *testing.T) {
 	// prepare
 	lh := collections.NewHierarchic(tests.Gopium)
 	lh.Push(
@@ -94,7 +94,7 @@ func TestXapply(t *testing.T) {
 	sp := Package{}
 	table := map[string]struct {
 		p   gopium.Parser
-		a   gopium.Xapply
+		a   gopium.Apply
 		ctx context.Context
 		h   collections.Hierarchic
 		r   map[string][]byte
@@ -182,28 +182,28 @@ type DocCom struct {
 		},
 		"note struct pkg should apply nothing on canceled context fast": {
 			p:   data.NewParser("note"),
-			a:   ufmt(walker{}, mocks.Xast{}.Ast),
+			a:   ufmt(walk, mocks.Ast{}.Ast),
 			ctx: cctx,
 			r:   map[string][]byte{},
 			err: context.Canceled,
 		},
 		"note struct pkg should apply nothing on canceled context filter": {
 			p:   data.NewParser("note"),
-			a:   filter(walker{}),
+			a:   filter(walk),
 			ctx: cctx,
 			r:   map[string][]byte{},
 			err: context.Canceled,
 		},
 		"note struct pkg should apply nothing on canceled context filter after walk": {
 			p:   data.NewParser("note"),
-			a:   filter(mocks.Xwalker{}),
+			a:   filter(mocks.Walk{}.Walk),
 			ctx: cctx,
 			r:   map[string][]byte{},
 			err: context.Canceled,
 		},
 		"note struct pkg should apply nothing on walk error filter": {
 			p:   data.NewParser("note"),
-			a:   filter(mocks.Xwalker{Err: errors.New("walk-test")}),
+			a:   filter(mocks.Walk{Err: errors.New("walk-test")}.Walk),
 			ctx: context.Background(),
 			r:   map[string][]byte{},
 			err: errors.New("walk-test"),
@@ -211,7 +211,7 @@ type DocCom struct {
 		"note struct pkg should apply nothing on canceled context note": {
 			p: data.NewParser("note"),
 			a: note(
-				walker{},
+				walk,
 				&typepkg.ParserXToolPackagesAst{
 					ModeAst: parser.ParseComments | parser.AllErrors,
 				},
@@ -224,7 +224,7 @@ type DocCom struct {
 		"note struct pkg should apply nothing on canceled context after walk note": {
 			p: data.NewParser("note"),
 			a: note(
-				mocks.Xwalker{Err: errors.New("walk-test")},
+				mocks.Walk{Err: errors.New("walk-test")}.Walk,
 				&typepkg.ParserXToolPackagesAst{
 					ModeAst: parser.ParseComments | parser.AllErrors,
 				},
@@ -238,7 +238,7 @@ type DocCom struct {
 		"note struct pkg should apply nothing on parser error": {
 			p: data.NewParser("note"),
 			a: note(
-				walker{},
+				walk,
 				mocks.Parser{Asterr: errors.New("test-1")},
 				fmtio.Gofmt{},
 			),
@@ -249,7 +249,7 @@ type DocCom struct {
 		"note struct pkg should apply nothing on printer error": {
 			p: data.NewParser("note"),
 			a: note(
-				walker{},
+				walk,
 				&typepkg.ParserXToolPackagesAst{
 					ModeAst: parser.ParseComments | parser.AllErrors,
 				},
@@ -262,8 +262,8 @@ type DocCom struct {
 		"note struct pkg should apply nothing on apply error": {
 			p: data.NewParser("note"),
 			a: combine(
-				mocks.Xapply{Err: errors.New("test-3")}.Apply,
-				filter(walker{}),
+				mocks.Apply{Err: errors.New("test-3")}.Apply,
+				filter(walk),
 			),
 			ctx: context.Background(),
 			r:   map[string][]byte{},

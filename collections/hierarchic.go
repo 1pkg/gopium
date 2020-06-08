@@ -6,7 +6,7 @@ import (
 	"sort"
 	"strings"
 
-	"1pkg/gopium"
+	"1pkg/gopium/gopium"
 )
 
 // Hierarchic defines strucs hierarchic collection

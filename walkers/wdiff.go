@@ -5,9 +5,9 @@ import (
 	"path/filepath"
 	"regexp"
 
-	"1pkg/gopium"
 	"1pkg/gopium/collections"
 	"1pkg/gopium/fmtio"
+	"1pkg/gopium/gopium"
 )
 
 // list of wdiff presets
@@ -21,7 +21,7 @@ var (
 // wdiff defines packages walker difference implementation
 type wdiff struct {
 	// inner visiting parameters
-	fmt    gopium.Xdiff
+	fmt    gopium.Diff
 	writer gopium.Writer
 	// external visiting parameters
 	parser  gopium.TypeParser

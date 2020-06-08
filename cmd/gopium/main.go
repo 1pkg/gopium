@@ -8,7 +8,7 @@ import (
 	"path/filepath"
 	"runtime"
 
-	"1pkg/gopium"
+	"1pkg/gopium/gopium"
 	"1pkg/gopium/runners"
 
 	"github.com/spf13/cobra"

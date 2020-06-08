@@ -7,24 +7,21 @@ import (
 	"go/token"
 	"strings"
 
-	"1pkg/gopium"
 	"1pkg/gopium/collections"
+	"1pkg/gopium/gopium"
 
 	"golang.org/x/tools/go/ast/astutil"
 )
 
-// walker defines gopium ast xwalker implementation
+// walk defines gopium ast walker implementation
 // that walks through ast struct type
 // nodes with comparator function and
 // apply some custom action on them
-type walker struct{}
-
-// Walk walker implementation
-func (walker) Walk(
+func walk(
 	ctx context.Context,
 	node ast.Node,
-	a gopium.Xaction,
-	cmp gopium.Xcomparator,
+	v gopium.Visitor,
+	cmp gopium.Comparator,
 ) (ast.Node, error) {
 	// err tracks error inside astutil apply
 	var err error
@@ -48,8 +45,8 @@ func (walker) Walk(
 						// should be visited
 						// and skip irrelevant structs
 						if st, ok := cmp.Check(ts); ok {
-							// apply action to ast
-							err = a.Apply(ts, st)
+							// visit ast node
+							err = v.Visit(ts, st)
 						}
 						// in case we have error
 						// break iteration
@@ -64,10 +61,10 @@ func (walker) Walk(
 
 // fmtioast defines gopium ast walk
 // action fmtio ast implementation
-type fmtast gopium.Xast
+type fmtast gopium.Ast
 
-// Apply fmtast implementation
-func (fmt fmtast) Apply(ts *ast.TypeSpec, st gopium.Struct) error {
+// Visit fmtast implementation
+func (fmt fmtast) Visit(ts *ast.TypeSpec, st gopium.Struct) error {
 	return fmt(ts, st)
 }
 
@@ -77,8 +74,8 @@ type bcollect struct {
 	bs collections.Boundaries
 }
 
-// Apply bcollect implementation
-func (b *bcollect) Apply(ts *ast.TypeSpec, st gopium.Struct) error {
+// Visit bcollect implementation
+func (b *bcollect) Visit(ts *ast.TypeSpec, st gopium.Struct) error {
 	// collect structs boundaries
 	b.bs = append(b.bs, collections.Boundary{
 		// start position of name - len of `type` keyword
@@ -95,8 +92,8 @@ func (b *bcollect) Apply(ts *ast.TypeSpec, st gopium.Struct) error {
 // gopium structure to ast file
 type pressnote ast.File
 
-// Apply pressnote implementation
-func (pdc *pressnote) Apply(ts *ast.TypeSpec, st gopium.Struct) error {
+// Visit pressnote implementation
+func (pdc *pressnote) Visit(ts *ast.TypeSpec, st gopium.Struct) error {
 	// prepare struct docs slice
 	file := ((*ast.File)(pdc))
 	// if it has at least one doc
@@ -202,7 +199,7 @@ func (cmp *sorted) Check(ts *ast.TypeSpec) (gopium.Struct, bool) {
 // check that structure or any structure's
 // field has any notes attached to them
 type hasnote struct {
-	cmp gopium.Xcomparator
+	cmp gopium.Comparator
 }
 
 // Check hasnote implementation

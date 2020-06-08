@@ -3,7 +3,7 @@ package data
 import (
 	"io"
 
-	"1pkg/gopium"
+	"1pkg/gopium/gopium"
 )
 
 // Writer defines tests data writter implementation

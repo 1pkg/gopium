@@ -9,7 +9,7 @@ import (
 	"path/filepath"
 	"sync"
 
-	"1pkg/gopium"
+	"1pkg/gopium/gopium"
 	"1pkg/gopium/tests"
 	"1pkg/gopium/typepkg"
 

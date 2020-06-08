@@ -4,7 +4,7 @@ import (
 	"context"
 	"regexp"
 
-	"1pkg/gopium"
+	"1pkg/gopium/gopium"
 	"1pkg/gopium/collections"
 )
 

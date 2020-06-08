@@ -7,7 +7,7 @@ import (
 	"go/token"
 	"sync"
 
-	"1pkg/gopium"
+	"1pkg/gopium/gopium"
 )
 
 // Locator defines abstraction that helps

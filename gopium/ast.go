@@ -5,22 +5,20 @@ import (
 	"go/ast"
 )
 
-// Xwalker defines ast walker function abstraction
+// Walk defines ast walker function abstraction
 // that walks through type spec ast nodes with provided
 // comparator function and applies some custom action
-type Xwalker interface {
-	Walk(context.Context, ast.Node, Xaction, Xcomparator) (ast.Node, error)
-}
+type Walk func(context.Context, ast.Node, Visitor, Comparator) (ast.Node, error)
 
-// Xaction defines xwalker action abstraction
+// Visitor defines walker action abstraction
 // that applies custom action on ast type spec node
-type Xaction interface {
-	Apply(*ast.TypeSpec, Struct) error
+type Visitor interface {
+	Visit(*ast.TypeSpec, Struct) error
 }
 
-// Xcomparator defines xwalker comparator abstraction
+// Comparator defines walker comparator abstraction
 // that checks if ast type spec node needs to be visitted
 // and returns relevant gopium struct and existing flag
-type Xcomparator interface {
+type Comparator interface {
 	Check(*ast.TypeSpec) (Struct, bool)
 }

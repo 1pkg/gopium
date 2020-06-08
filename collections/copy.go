@@ -1,6 +1,6 @@
 package collections
 
-import "1pkg/gopium"
+import "1pkg/gopium/gopium"
 
 // CopyField defines helper that
 // deep copies provided field
