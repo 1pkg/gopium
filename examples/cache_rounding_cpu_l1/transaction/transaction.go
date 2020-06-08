@@ -8,24 +8,21 @@ import (
 )
 
 // transaction defines business transaction
-// struct has been auto curated - 🌺 gopium @1pkg
 type transaction struct {
-	void     bool     `gopium:"explicit_padings_type_natural,cache_rounding_cpu_l1,add_tag_group_soft,comment_struct_annotate,doc_struct_stamp"`
-	_        [7]byte  `gopium:"explicit_padings_type_natural,cache_rounding_cpu_l1,add_tag_group_soft,comment_struct_annotate,doc_struct_stamp"`
-	amount   float64  `gopium:"explicit_padings_type_natural,cache_rounding_cpu_l1,add_tag_group_soft,comment_struct_annotate,doc_struct_stamp"`
-	serial   uint64   `gopium:"explicit_padings_type_natural,cache_rounding_cpu_l1,add_tag_group_soft,comment_struct_annotate,doc_struct_stamp"`
-	skip     bool     `gopium:"explicit_padings_type_natural,cache_rounding_cpu_l1,add_tag_group_soft,comment_struct_annotate,doc_struct_stamp"`
-	_        [7]byte  `gopium:"explicit_padings_type_natural,cache_rounding_cpu_l1,add_tag_group_soft,comment_struct_annotate,doc_struct_stamp"`
-	discount float64  `gopium:"explicit_padings_type_natural,cache_rounding_cpu_l1,add_tag_group_soft,comment_struct_annotate,doc_struct_stamp"`
-	_        [24]byte `gopium:"explicit_padings_type_natural,cache_rounding_cpu_l1,add_tag_group_soft,comment_struct_annotate,doc_struct_stamp"`
-} // struct size: 64 bytes; struct align: 8 bytes; - 🌺 gopium @1pkg
+	void     bool     `gopium:"filter_pads,explicit_padings_system_alignment,cache_rounding_cpu_l1,comment_struct_annotate,add_tag_group_force"`
+	_        [7]byte  `gopium:"filter_pads,explicit_padings_system_alignment,cache_rounding_cpu_l1,comment_struct_annotate,add_tag_group_force"`
+	amount   float64  `gopium:"filter_pads,explicit_padings_system_alignment,cache_rounding_cpu_l1,comment_struct_annotate,add_tag_group_force"`
+	serial   uint64   `gopium:"filter_pads,explicit_padings_system_alignment,cache_rounding_cpu_l1,comment_struct_annotate,add_tag_group_force"`
+	skip     bool     `gopium:"filter_pads,explicit_padings_system_alignment,cache_rounding_cpu_l1,comment_struct_annotate,add_tag_group_force"`
+	_        [7]byte  `gopium:"filter_pads,explicit_padings_system_alignment,cache_rounding_cpu_l1,comment_struct_annotate,add_tag_group_force"`
+	discount float64  `gopium:"filter_pads,explicit_padings_system_alignment,cache_rounding_cpu_l1,comment_struct_annotate,add_tag_group_force"`
+	_        [24]byte `gopium:"filter_pads,explicit_padings_system_alignment,cache_rounding_cpu_l1,comment_struct_annotate,add_tag_group_force"`
+} // struct size: 64 bytes; struct align: 8 bytes; struct aligned size: 64 bytes; - 🌺 gopium @1pkg
 
 // aggregate defines compressed set of transactions
-// struct has been auto curated - 🌺 gopium @1pkg
 type aggregate struct {
-	total float64  `gopium:"explicit_padings_type_natural,cache_rounding_cpu_l1,add_tag_group_soft,comment_struct_annotate,doc_struct_stamp"`
-	_     [56]byte `gopium:"explicit_padings_type_natural,cache_rounding_cpu_l1,add_tag_group_soft,comment_struct_annotate,doc_struct_stamp"`
-} // struct size: 64 bytes; struct align: 8 bytes; - 🌺 gopium @1pkg
+	total float64 `gopium:"filter_pads,explicit_padings_system_alignment,cache_rounding_cpu_l1,comment_struct_annotate,add_tag_group_force"`
+} // struct size: 8 bytes; struct align: 8 bytes; struct aligned size: 8 bytes; - 🌺 gopium @1pkg
 
 // generate creates n pseudo random transactions
 func generate(number uint) []transaction {
