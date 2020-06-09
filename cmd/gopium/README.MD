@@ -1,0 +1,100 @@
+# Gopium 🌺 CLI
+
+Gopium CLI is the cobra cli tool for [Gopium](../../README.MD) that was designed to automate and simplify some common performance transformations for structs, such as:
+
+- cpu cache alignment
+- memory packing
+- false sharing guarding
+- auto annotation
+- generic fields management, etc.
+
+In order to use gopium cli you need to provide at least package name (full package name is expected), list of strategies which is applied one by one and single walker.
+Outcome of execution is fully defined by list of strategies and walker combination.
+List of strategies modifies structs inside the package, walker facilitates and insures, that outcome is formatted written to one of provided destinations.
+
+```bash
+gopium walker package strategy_1 strategy_2 strategy_3 ...
+```
+
+## Walkers and Formatters
+
+Gopium provides next walkers:
+
+- ast_std (prints result as go code to stdout)
+- ast_go (directly syncs result as go code to orinal file)
+- ast_go_tree (directly syncs result as go code to copy package)
+- ast_gopium (directly syncs result as go code to copy gopium files)
+- json_file (prints json encoded results to single file inside package directory)
+- xml_file (prints xml encoded results to single file inside package directory)
+- csv_file (prints csv encoded results to single file inside package directory)
+- md_table_file (prints markdown table encoded results to single file inside package directory)
+- size_align_md_table_file (prints markdown table encoded encoded size and align difference of results to single file inside package directory)
+
+## Strategies and Transformations
+
+Gopium provides next strategies:
+
+- process_tag_group (uses gopium fields tags annotation in order to process different set of strategies on different groups and then combine results in single struct result)
+- memory_pack (rearranges structure fields to obtain optimal memory utilization)
+- memory_unpack (rearranges structure field list to obtain inflated memory utilization)
+- cache_rounding_cpu_l1 (fits structure into cpu cache line #1 by adding bottom partial rounding cpu cache padding)
+- cache_rounding_cpu_l2 (fits structure into cpu cache line #2 by adding bottom partial rounding cpu cache padding)
+- cache_rounding_cpu_l3 (fits structure into cpu cache line #3 by adding bottom partial rounding cpu cache padding)
+- full_cache_rounding_cpu_l1 (fits structure into full cpu cache line #1 by adding bottom rounding cpu cache padding)
+- full_cache_rounding_cpu_l2 (fits structure into full cpu cache line #2 by adding bottom rounding cpu cache padding)
+- full_cache_rounding_cpu_l3 (fits structure into full cpu cache line #3 by adding bottom rounding cpu cache padding)
+- false_sharing_cpu_l1 (guards structure from false sharing by adding extra cpu cache line #1 paddings for each structure field)
+- false_sharing_cpu_l2 (guards structure from false sharing by adding extra cpu cache line #1 paddings for each structure field)
+- false_sharing_cpu_l3 (guards structure from false sharing by adding extra cpu cache line #1 paddings for each structure field)
+- separate_padding_system_alignment_top (separates structure with extra system alignment padding by adding the padding at the top)
+- separate_padding_cpu_l1_top (separates structure with extra cpu cache line #1 padding by adding the padding at the top)
+- separate_padding_cpu_l2_top (separates structure with extra cpu cache line #2 padding by adding the padding at the top)
+- separate_padding_cpu_l3_top (separates structure with extra cpu cache line #3 padding by adding the padding at the top)
+- separate_padding_system_alignment_bottom (separates structure with extra system alignment padding by adding the padding at the bottom)
+- separate_padding_cpu_l1_bottom (separates structure with extra cpu cache line #1 padding by adding the padding at the bottom)
+- separate_padding_cpu_l2_bottom (separates structure with extra cpu cache line #2 padding by adding the padding at the bottom)
+- separate_padding_cpu_l3_bottom (separates structure with extra cpu cache line #3 padding by adding the padding at the bottom)
+- explicit_padings_system_alignment (explicitly aligns each structure field to system alignment padding by adding missing paddings for each field)
+- explicit_padings_type_natural (explicitly aligns each structure field to max type alignment padding by adding missing paddings for each field)
+- add_tag_group_soft (adds gopium fields tags annotation if no previous annotation found)
+- add_tag_group_force (adds gopium fields tags annotation if previous annotation found overwrites it)
+- add_tag_group_discrete (discretely adds gopium fields tags annotation if no previous annotation found)
+- add_tag_group_force_discrete (discretely adds gopium fields tags annotation if previous annotation found overwrites it)
+- remove_tag_group (removes gopium fields tags annotation)
+- doc_fields_annotate (adds align and size doc annotation for each structure field)
+- comment_fields_annotate adds align and size comment annotation for each structure field)
+- doc_struct_annotate (adds aggregated align and size doc annotation for structure)
+- comment_struct_annotate (adds aggregated align and size comment annotation for structure)
+- name_lexicographical_ascending (sorts fields accordingly to their names in ascending order)
+- name_lexicographical_descending (sorts fields accordingly to their names descending order)
+- type_lexicographical_ascending (sorts fields accordingly to their types in ascending order)
+- type_lexicographical_descending (sorts fields accordingly to their types in descending order)
+- filter_pads (filters out all structure padding fields)
+- ignore (does nothing by returning original structure)
+
+## Additional Notes
+
+- it might be useful to use filter_pads in pipes with other strategies to clean paddings first
+- process_tag_group currently supports only next fields tags annotation formats:
+- gopium:"stg,stg,stg" processed as default group
+- gopium:"group:def;stg,stg,stg" processed as named group
+- by specifying tag_type you can automatically generate fields tags annotation suitable for process_tag_group
+
+## Options and Flags
+
+|             Full             | Short |   Type   |     Default     | Description                                                                                                                                                                                                                                        |
+| :--------------------------: | :---: | :------: | :-------------: | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+|      --target_compiler       |  -c   |  string  |       gc        | Gopium target platform compiler, possible values are: gc or gccgo.                                                                                                                                                                                 |
+|    --target_architecture     |  -a   |  string  |      amd64      | Gopium target platform architecture, possible values are: 386, arm, arm64, amd64, mips, etc.                                                                                                                                                       |
+| target_cpu_cache_lines_sizes |  -l   |  []int   |  [64, 64, 64]   | Gopium target platform CPU cache line sizes in bytes, cache line size is set one by one l1,l2,l3,... For now only 3 lines of cache are supported by strategies.                                                                                    |
+|        --package_path        |  -p   |  string  | src/{{package}} | Gopium go package path, either relative or absolute path to root of the package is expected. To obtain full path from relative, package path is concatenated with current GOPATH env var. Template {{package}} part is replaced with package name. |
+|     --package_build_envs     |  -e   | []string |       [ ]       | Gopium go package build envs, additional list of building envs is expected.                                                                                                                                                                        |
+|    --package_build_flags     |  -f   | []string |       [ ]       | Gopium go package build flags, additional list of building flags is expected.                                                                                                                                                                      |
+|       --walker_regexp        |  -r   |  string  |       .\*       | Gopium walker regexp, regexp that defines which structures are subjects for visiting. Visiting is done only if structure name matches the regexp.                                                                                                  |
+|        --walker_deep         |  -d   |   bool   |      true       | Gopium walker deep flag, flag that defines type of nested scopes visiting. By default it visits all nested scopes.                                                                                                                                 |
+|       --walker_backref       |  -b   |   bool   |      true       | Gopium walker backref flag, flag that defines type of names referencing. By default any previous visited types have affect on future relevant visits.                                                                                              |
+|       --printer_indent       |  -i   |   int    |        0        | Gopium printer width of tab, defines the least code indent.                                                                                                                                                                                        |
+|     --printer_tab_width      |  -w   |   int    |        8        | Gopium printer width of tab, defines width of tab in spaces for printer.                                                                                                                                                                           |
+|     --printer_use_space      |  -s   |   bool   |      false      | Gopium printer use space flag, flag that defines if all formatting should be done by spaces.                                                                                                                                                       |
+|     --printer_use_gofmt      |  -g   |   bool   |      true       | Gopium printer use gofmt flag, flag that defines if canonical gofmt tool should be used for formatting. By default it is used and overrides other printer formatting parameters.                                                                   |
+|           timeout            |  -t   |   int    |        0        | Gopium global timeout of cli command in seconds, considered only if value greater than 0.                                                                                                                                                          |
