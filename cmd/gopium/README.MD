@@ -16,6 +16,8 @@ List of strategies modifies structs inside the package, walker facilitates and i
 gopium walker package strategy_1 strategy_2 strategy_3 ...
 ```
 
+Gopium also has rich vscode extension to provide better experience for usage and simplify interactions with cli tool, [see more](../vscode/README.MD).
+
 ## Walkers and Formatters
 
 Gopium provides next walkers:

@@ -22,22 +22,22 @@ gopium walker package strategy_1 strategy_2 strategy_3 ...
 ```
 
 - All Gopium transformations results and artifacts could be differently formatted and routed to multiple outputs, among which are: direct overwriting or copying to go (code) ast, multiple options for code formatting and printing, comparison tables for results, common textual data serialization formats, [and more](cmd/gopium/README.MD#walkers-and-formatters).
-- Gopium has rich [extension]() for vscode to provide better experience for usage and simplify interactions with tool, [see more]().
+- Gopium has rich vscode extension to provide better experience for usage and simplify interactions with tool, [see more](cmd/vscode/README.MD).
   ![](vscode.gif)
 - Gopium supports target configs variety, in case if you need optimizations for specific platform or hardware, such as: target compiler, target architecture, target cpu cache lines sizes, [and more](cmd/gopium/README.MD#options-and-flags).
 - Gopium has optional go structs tag literals to keep and reproduce gopium transformations inside your code base, also tags are intended to be used as structs fields grouping mechanism if you need to apply different transformation to different fields groups inside one structure, [see more](cmd/gopium/README.MD#strategies-and-transformations).
 
 ## Installation and Usage
 
-To install and update gopium cli use:
+To install Gopium VSCode Extension use [vscode marketplace](https://marketplace.visualstudio.com/items?itemName=golang.Gopium).
+
+To install and update Gopium CLI use:
 
 ```bash
 go get -u github.com/1pkg/gopium/cmd/gopium
 ```
 
-To install gopium vscode extension go to [extension page]().
-
-Gopium usage examples:
+Gopium CLI usage examples:
 
 ```bash
 # exec transformations against all structs starting A inside 1pkg/gopium/gopium package
