@@ -82,8 +82,14 @@ gopium -a arm -l 8 8 8 ast_go_tree 1pkg/gopium/gopium false_sharing_cpu_l1
     BenchmarkCompress-8   	      13	 130450557 ns/op	     209 B/op	       3 allocs/op
 ```
 
-See [examples](examples) for more examples and benchmarks details.  
-See [docs](https://pkg.go.dev/github.com/1pkg/gopium?tab=doc) for godoc.
+See [examples](examples) and [godoc](https://pkg.go.dev/github.com/1pkg/gopium?tab=doc) for more examples benchmarks details and godoc.  
+Gopium is inspired by this [paper](https://www.usenix.org/legacy/publications/library/proceedings/als00/2000papers/papers/full_papers/sears/sears_html/index.html), inside you can find list of techniques that Gopium tries to automate.
+
+## Contribution
+
+Do you have an idea to improve Gopium? -> [Create an issue](https://github.com/1pkg/gopium/issues/new/choose)
+Have you discovered a bug? -> [Create an issue](https://github.com/1pkg/gopium/issues/new/choose)
+Have you already coded something for Gopium? -> [Create a pull request](https://github.com/1pkg/gopium/compare).
 
 ## Licence
 
