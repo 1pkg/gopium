@@ -12,9 +12,9 @@
 		"Formatters",
 		"Other"
 	],
-	"icon": "logo.png",
+	"icon": "../../gopher.png",
 	"galleryBanner": {
-		"color": "#ff5656",
+		"color": "#bb2113",
 		"theme": "dark"
 	},
 	"private": true,
