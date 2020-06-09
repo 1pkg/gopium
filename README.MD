@@ -14,18 +14,18 @@ Gopium is the tool that was designed to automate and simplify common structs per
 
 ## Features
 
-- Gopium provides numbers of common transformations for structs, such as: cpu cache alignment, memory packing, false sharing guarding, [and more]().
+- Gopium provides numbers of common transformations for structs, such as: cpu cache alignment, memory packing, false sharing guarding, [and more](cmd/gopium/README.MD#strategies-and-transformations).
 - All Gopium transformations could be combined together to build optimal actions for your specific code and needs.
 
 ```bash
-gopium ast_go pkg filter_pads memory_pack separate_padding_system_alignment_top
+gopium walker package strategy_1 strategy_2 strategy_3 ...
 ```
 
-- All Gopium transformations results and artifacts could be differently formatted and routed to multiple outputs, among which are: direct overwriting or copying to go (code) ast, multiple options for code formatting and printing, comparison tables for results, common textual data serialization formats, [and more]().
+- All Gopium transformations results and artifacts could be differently formatted and routed to multiple outputs, among which are: direct overwriting or copying to go (code) ast, multiple options for code formatting and printing, comparison tables for results, common textual data serialization formats, [and more](cmd/gopium/README.MD#walkers-and-formatters).
 - Gopium has rich [extension]() for vscode to provide better experience for usage and simplify interactions with tool, [see more]().
   ![](vscode.gif)
-- Gopium supports target configs variety, in case if you need optimizations for specific platform or hardware, such as: target compiler, target architecture, target cpu cache lines sizes, [and more]().
-- Gopium has optional go structs tag literals to keep and reproduce gopium transformations inside your code base, also tags are intended to be used as structs fields grouping mechanism if you need to apply different transformation to different fields groups inside one structure, [see more]().
+- Gopium supports target configs variety, in case if you need optimizations for specific platform or hardware, such as: target compiler, target architecture, target cpu cache lines sizes, [and more](cmd/gopium/README.MD#options-and-flags).
+- Gopium has optional go structs tag literals to keep and reproduce gopium transformations inside your code base, also tags are intended to be used as structs fields grouping mechanism if you need to apply different transformation to different fields groups inside one structure, [see more](cmd/gopium/README.MD#strategies-and-transformations).
 
 ## Installation and Usage
 

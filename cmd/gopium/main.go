@@ -44,12 +44,12 @@ var (
 func init() {
 	// set root cli command app
 	cli = &cobra.Command{
-		Use:     "gopium walker package strategy#1 strategy#2 strategy#3 ...",
+		Use:     "gopium walker package strategy_1 strategy_2 strategy_3 ...",
 		Short:   gopium.STAMP,
 		Version: gopium.VERSION,
 		Example: "gopium -r ^A json_std 1pkg/gopium filter_pads memory_pack separate_padding_cpu_l1_top separate_padding_cpu_l1_bottom",
 		Long: `
-Gopium is the tool that was designed to automate and simplify some common performance transformations for structs, as:
+Gopium is the tool that was designed to automate and simplify some common performance transformations for structs, such as:
 - cpu cache alignment
 - memory packing
 - false sharing guarding
@@ -60,9 +60,9 @@ In order to use gopium cli you need to provide at least package name (full packa
 list of strategies which is applied one by one and single walker.
 Outcome of execution is fully defined by list of strategies and walker combination.
 List of strategies modifies structs inside the package, walker facilitates and insures,
-that outcome is written to one of supported destinations.
+that outcome is formatted and written to one of provided destinations.
 
-Gopium supports next walkers: 
+Gopium provides next walkers: 
  - ast_std (prints result as go code to stdout)
  - ast_go (directly syncs result as go code to orinal file)
  - ast_go_tree (directly syncs result as go code to copy package)
@@ -73,9 +73,10 @@ Gopium supports next walkers:
  - csv_file (prints csv encoded results to single file inside package directory)
  - md_table_file (prints markdown table encoded results to single file inside package directory)
 
- - size_align_md_table_file (prints markdown table encoded encoded size and align difference of results to single file inside package directory)
+ - size_align_md_table_file (prints markdown table encoded encoded size and align difference of results to single file
+	inside package directory)
 
-Gopium supports next strategies: 
+Gopium provides next strategies: 
  - process_tag_group (uses gopium fields tags annotation in order to process different set of strategies
 	on different groups and then combine results in single struct result)
 
@@ -212,8 +213,8 @@ For now only 3 lines of cache are supported by strategies.
 		"p",
 		filepath.Join("src", "{{package}}"),
 		`
-Gopium go package path, relative path to root of the package is expected.
-To obtain fill path, package path is concatenated with current GOPATH env var.
+Gopium go package path, either relative or absolute path to root of the package is expected.
+To obtain full path from relative, package path is concatenated with current GOPATH env var.
 Template {{package}} part is replaced with package name.
 		`,
 	)
@@ -240,7 +241,7 @@ Template {{package}} part is replaced with package name.
 		"r",
 		".*",
 		`
-GopiumGopium walker regexp, regexp that defines which structures are subjects for visiting.
+Gopium walker regexp, regexp that defines which structures are subjects for visiting.
 Visiting is done only if structure name matches the regexp.
 		`,
 	)
@@ -298,7 +299,7 @@ By default any previous visited types have affect on future relevant visits.
 		true,
 		`
 Gopium printer use gofmt flag, flag that defines if canonical gofmt tool should be used for formatting.
-By default it overrides other printer formatting parameters.
+By default it is used and overrides other printer formatting parameters.
 `,
 	)
 	// set timeout flag
@@ -307,7 +308,7 @@ By default it overrides other printer formatting parameters.
 		"timeout",
 		"t",
 		0,
-		"Gopium global timeout of cli command in seconds, considered only if value > 0.",
+		"Gopium global timeout of cli command in seconds, considered only if value greater than 0.",
 	)
 }
 
