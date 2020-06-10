@@ -13,6 +13,7 @@ func TestDiff(t *testing.T) {
 	// prepare
 	oh := collections.NewHierarchic("")
 	rh := collections.NewHierarchic("")
+	rhb := collections.NewHierarchic("")
 	oh.Push("test", "test", gopium.Struct{
 		Name: "test",
 		Fields: []gopium.Field{
@@ -55,6 +56,46 @@ func TestDiff(t *testing.T) {
 			},
 		},
 	})
+	rhb.Push("test", "test", gopium.Struct{
+		Name: "test",
+		Fields: []gopium.Field{
+			{
+				Name:  "test2",
+				Type:  "float64",
+				Size:  8,
+				Align: 8,
+			},
+			{
+				Name:  "test2",
+				Type:  "float64",
+				Size:  8,
+				Align: 8,
+			},
+			{
+				Name:  "test2",
+				Type:  "float64",
+				Size:  8,
+				Align: 8,
+			},
+			{
+				Name:  "test2",
+				Type:  "float64",
+				Size:  8,
+				Align: 8,
+			},
+		},
+	})
+	rhb.Push("test1", "test1", gopium.Struct{
+		Name: "test",
+		Fields: []gopium.Field{
+			{
+				Name:  "test2",
+				Type:  "float64",
+				Size:  8,
+				Align: 8,
+			},
+		},
+	})
 	table := map[string]struct {
 		fmt gopium.Diff
 		o   gopium.Categorized
@@ -67,7 +108,7 @@ func TestDiff(t *testing.T) {
 			o:   collections.NewHierarchic(""),
 			r:   collections.NewHierarchic(""),
 			b: []byte(`
-| Struct Name | Original Size With Pad | Original Align | Current Size With Pad | Current Align |
+| Struct Name | Original Size with Pad | Current Size with Pad | Absolute Difference | Relative Difference |
 | :---: | :---: | :---: | :---: | :---: |
 `),
 		},
@@ -76,9 +117,21 @@ func TestDiff(t *testing.T) {
 			o:   oh,
 			r:   rh,
 			b: []byte(`
-| Struct Name | Original Size With Pad | Original Align | Current Size With Pad | Current Align |
+| Struct Name | Original Size with Pad | Current Size with Pad | Absolute Difference | Relative Difference |
 | :---: | :---: | :---: | :---: | :---: |
-| test | 24 | 8 | 16 | 8 |
+| test | 24 bytes | 16 bytes | -8 bytes | -33.33% |
+| Total | 24 bytes | 16 bytes | -8 bytes | -33.33% |
+`),
+		},
+		"md table should return expected result for non empty overlapping collections": {
+			fmt: SizeAlignMdt,
+			o:   oh,
+			r:   rhb,
+			b: []byte(`
+| Struct Name | Original Size with Pad | Current Size with Pad | Absolute Difference | Relative Difference |
+| :---: | :---: | :---: | :---: | :---: |
+| test | 24 bytes | 32 bytes | +8 bytes | +33.33% |
+| Total | 24 bytes | 32 bytes | +8 bytes | +33.33% |
 `),
 		},
 	}
