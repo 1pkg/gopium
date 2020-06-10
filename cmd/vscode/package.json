@@ -1,7 +1,8 @@
 {
 	"name": "gopium",
 	"displayName": "gopium",
-	"description": "Extension that supports gopium tool vscode integration.",
+	"publisher": "1pkg",
+	"description": "Gopium vscode extension that provides better experience for usage and simplify interactions with Gopium CLI.",
 	"author": {
 		"name": "Kostiantyn Masliuk - github.com/1pkg"
 	},
@@ -12,7 +13,7 @@
 		"Formatters",
 		"Other"
 	],
-	"icon": "../../gopher.png",
+	"icon": "gopher-copy.png",
 	"galleryBanner": {
 		"color": "#bb2113",
 		"theme": "dark"
