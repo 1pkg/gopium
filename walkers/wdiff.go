@@ -12,9 +12,13 @@ import (
 
 // list of wdiff presets
 var (
-	satmdfile = wdiff{
+	samdtfile = wdiff{
 		fmt:    fmtio.SizeAlignMdt,
 		writer: fmtio.File{Name: gopium.NAME, Ext: fmtio.MD},
+	}
+	fhtmltfile = wdiff{
+		fmt:    fmtio.FieldsHtmlt,
+		writer: fmtio.File{Name: gopium.NAME, Ext: fmtio.HTML},
 	}
 )
 

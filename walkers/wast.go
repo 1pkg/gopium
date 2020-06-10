@@ -10,12 +10,6 @@ import (
 	"1pkg/gopium/gopium"
 )
 
-// list of supported extensions
-const (
-	extgo     = "go"
-	extgopium = gopium.NAME
-)
-
 // list of wast presets
 var (
 	aststd = wast{
@@ -26,17 +20,17 @@ var (
 	astgo = wast{
 		apply:     astutil.UFFN,
 		persister: astutil.Package{},
-		writer:    fmtio.Origin{Writter: fmtio.Files{Ext: extgo}},
+		writer:    fmtio.Origin{Writter: fmtio.Files{Ext: fmtio.GO}},
 	}
 	astgotree = wast{
 		apply:     astutil.UFFN,
 		persister: astutil.Package{},
-		writer:    &fmtio.Suffix{Writter: fmtio.Files{Ext: extgo}, Suffix: gopium.NAME},
+		writer:    &fmtio.Suffix{Writter: fmtio.Files{Ext: fmtio.GO}, Suffix: gopium.NAME},
 	}
 	astgopium = wast{
 		apply:     astutil.UFFN,
 		persister: astutil.Package{},
-		writer:    fmtio.Origin{Writter: fmtio.Files{Ext: extgopium}},
+		writer:    fmtio.Origin{Writter: fmtio.Files{Ext: fmtio.GOPIUM}},
 	}
 )
 

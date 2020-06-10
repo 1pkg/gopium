@@ -103,7 +103,16 @@ func TestBuilder(t *testing.T) {
 		// wdiff walkers
 		"`size_align_md_table_file` name should return expected walker": {
 			name: SizeAlignMdtFile,
-			w: satmdfile.With(
+			w: samdtfile.With(
+				b.Parser,
+				b.Exposer,
+				b.Deep,
+				b.Bref,
+			),
+		},
+		"`fields_html_table_file` name should return expected walker": {
+			name: FieldsHtmltFile,
+			w: fhtmltfile.With(
 				b.Parser,
 				b.Exposer,
 				b.Deep,
