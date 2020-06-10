@@ -4,9 +4,9 @@ import "go/token"
 
 // Boundary defines sorted pos pair type
 type Boundary struct {
-	First token.Pos
-	Last  token.Pos
-}
+	First token.Pos `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1,comment_struct_annotate,add_tag_group_force"`
+	Last  token.Pos `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1,comment_struct_annotate,add_tag_group_force"`
+} // struct size: 16 bytes; struct align: 8 bytes; struct aligned size: 16 bytes; - 🌺 gopium @1pkg
 
 // Less checks if pos strictly less then boundary
 func (b Boundary) Less(p token.Pos) bool {

@@ -4,8 +4,8 @@ import (
 	"context"
 	"regexp"
 
-	"1pkg/gopium/gopium"
 	"1pkg/gopium/collections"
+	"1pkg/gopium/gopium"
 )
 
 // list of filter presets
@@ -20,8 +20,9 @@ var (
 // that filters out all structure fields
 // that matches provided criteria
 type filter struct {
-	nregex, tregex *regexp.Regexp
-}
+	nregex *regexp.Regexp `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1,comment_struct_annotate,add_tag_group_force"`
+	tregex *regexp.Regexp `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1,comment_struct_annotate,add_tag_group_force"`
+} // struct size: 16 bytes; struct align: 8 bytes; struct aligned size: 16 bytes; - 🌺 gopium @1pkg
 
 // Apply filter implementation
 func (stg filter) Apply(ctx context.Context, o gopium.Struct) (gopium.Struct, error) {

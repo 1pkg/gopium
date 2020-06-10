@@ -59,8 +59,8 @@ const (
 // Builder defines types gopium.StrategyBuilder implementation
 // that uses gopium.Curator as an exposer and related strategies
 type Builder struct {
-	Curator gopium.Curator
-}
+	Curator gopium.Curator `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1,comment_struct_annotate,add_tag_group_force"`
+} // struct size: 16 bytes; struct align: 8 bytes; struct aligned size: 16 bytes; - 🌺 gopium @1pkg
 
 // Build Builder implementation
 func (b Builder) Build(names ...gopium.StrategyName) (gopium.Strategy, error) {

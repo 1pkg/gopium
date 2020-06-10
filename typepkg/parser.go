@@ -25,14 +25,15 @@ import (
 // Note: ParserXToolPackagesAst is big struct
 // so it should be passed via pointer
 type ParserXToolPackagesAst struct {
-	Pattern    string
-	Path       string
-	Root       string
-	ModeTypes  packages.LoadMode
-	ModeAst    parser.Mode
-	BuildEnv   []string
-	BuildFlags []string
-}
+	BuildEnv   []string          `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1,comment_struct_annotate,add_tag_group_force"`
+	BuildFlags []string          `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1,comment_struct_annotate,add_tag_group_force"`
+	Pattern    string            `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1,comment_struct_annotate,add_tag_group_force"`
+	Path       string            `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1,comment_struct_annotate,add_tag_group_force"`
+	Root       string            `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1,comment_struct_annotate,add_tag_group_force"`
+	ModeTypes  packages.LoadMode `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1,comment_struct_annotate,add_tag_group_force"`
+	ModeAst    parser.Mode       `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1,comment_struct_annotate,add_tag_group_force"`
+	_          [16]byte          `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1,comment_struct_annotate,add_tag_group_force"`
+} // struct size: 128 bytes; struct align: 8 bytes; struct aligned size: 128 bytes; - 🌺 gopium @1pkg
 
 // ParseTypes ParserXToolPackagesAst implementation
 func (p *ParserXToolPackagesAst) ParseTypes(ctx context.Context, _ ...byte) (*types.Package, gopium.Locator, error) {

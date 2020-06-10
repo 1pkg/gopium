@@ -10,8 +10,8 @@ import (
 	"strings"
 	"time"
 
-	"1pkg/gopium/gopium"
 	"1pkg/gopium/fmtio"
+	"1pkg/gopium/gopium"
 	"1pkg/gopium/strategies"
 	"1pkg/gopium/typepkg"
 	"1pkg/gopium/walkers"
@@ -22,12 +22,13 @@ import (
 // Cli defines cli runner implementation
 // that is able to run full gopium cli application
 type Cli struct {
-	v      visitor
-	wb     gopium.WalkerBuilder
-	sb     gopium.StrategyBuilder
-	wname  gopium.WalkerName
-	snames []gopium.StrategyName
-}
+	snames []gopium.StrategyName  `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1,comment_struct_annotate,add_tag_group_force"`
+	v      visitor                `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1,comment_struct_annotate,add_tag_group_force"`
+	wb     gopium.WalkerBuilder   `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1,comment_struct_annotate,add_tag_group_force"`
+	sb     gopium.StrategyBuilder `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1,comment_struct_annotate,add_tag_group_force"`
+	wname  gopium.WalkerName      `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1,comment_struct_annotate,add_tag_group_force"`
+	_      [40]byte               `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1,comment_struct_annotate,add_tag_group_force"`
+} // struct size: 128 bytes; struct align: 8 bytes; struct aligned size: 128 bytes; - 🌺 gopium @1pkg
 
 // NewCli helps to spawn new cli application runner
 // from list of received parameters or returns error

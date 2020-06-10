@@ -7,8 +7,8 @@ import (
 	"sort"
 	"strings"
 
-	"1pkg/gopium/gopium"
 	"1pkg/gopium/collections"
+	"1pkg/gopium/gopium"
 
 	"golang.org/x/sync/errgroup"
 )
@@ -29,16 +29,17 @@ var (
 // `gopium:"stg,stg,stg"` processed as `default` group
 // `gopium:"group:def;stg,stg,stg"` processed as named group
 type group struct {
-	builder Builder
-}
+	builder Builder `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1,comment_struct_annotate,add_tag_group_force"`
+} // struct size: 16 bytes; struct align: 8 bytes; struct aligned size: 16 bytes; - 🌺 gopium @1pkg
 
 // container carries sing group data
 type container struct {
-	grp string
-	o   gopium.Struct
-	r   gopium.Struct
-	stg gopium.Strategy
-}
+	o   gopium.Struct   `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1,comment_struct_annotate,add_tag_group_force"`
+	r   gopium.Struct   `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1,comment_struct_annotate,add_tag_group_force"`
+	grp string          `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1,comment_struct_annotate,add_tag_group_force"`
+	stg gopium.Strategy `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1,comment_struct_annotate,add_tag_group_force"`
+	_   [48]byte        `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1,comment_struct_annotate,add_tag_group_force"`
+} // struct size: 256 bytes; struct align: 8 bytes; struct aligned size: 256 bytes; - 🌺 gopium @1pkg
 
 // Curator erich group strategy with builder instance
 func (stg group) Builder(builder Builder) group {

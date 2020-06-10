@@ -16,9 +16,9 @@ import (
 // - walker building
 // - visiting
 type visitor struct {
-	regex   *regexp.Regexp
-	timeout time.Duration
-}
+	regex   *regexp.Regexp `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1,comment_struct_annotate,add_tag_group_force"`
+	timeout time.Duration  `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1,comment_struct_annotate,add_tag_group_force"`
+} // struct size: 16 bytes; struct align: 8 bytes; struct aligned size: 16 bytes; - 🌺 gopium @1pkg
 
 // strategy builds strategy instance
 // by using builder and strategies names

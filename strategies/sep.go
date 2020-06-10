@@ -3,8 +3,8 @@ package strategies
 import (
 	"context"
 
-	"1pkg/gopium/gopium"
 	"1pkg/gopium/collections"
+	"1pkg/gopium/gopium"
 )
 
 // list of fshare presets
@@ -25,11 +25,12 @@ var (
 // by adding the padding at the top
 // or the padding at the bottom
 type sep struct {
-	curator gopium.Curator
-	line    uint
-	sys     bool
-	top     bool
-}
+	curator gopium.Curator `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1,comment_struct_annotate,add_tag_group_force"`
+	line    uint           `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1,comment_struct_annotate,add_tag_group_force"`
+	sys     bool           `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1,comment_struct_annotate,add_tag_group_force"`
+	top     bool           `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1,comment_struct_annotate,add_tag_group_force"`
+	_       [6]byte        `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1,comment_struct_annotate,add_tag_group_force"`
+} // struct size: 32 bytes; struct align: 8 bytes; struct aligned size: 32 bytes; - 🌺 gopium @1pkg
 
 // Curator erich sep strategy with curator instance
 func (stg sep) Curator(curator gopium.Curator) sep {

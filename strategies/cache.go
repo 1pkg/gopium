@@ -3,8 +3,8 @@ package strategies
 import (
 	"context"
 
-	"1pkg/gopium/gopium"
 	"1pkg/gopium/collections"
+	"1pkg/gopium/gopium"
 )
 
 // list of cache presets
@@ -21,10 +21,11 @@ var (
 // that fits structure into cpu cache line
 // by adding bottom rounding cpu cache padding
 type cache struct {
-	curator gopium.Curator
-	line    uint
-	div     bool
-}
+	curator gopium.Curator `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1,comment_struct_annotate,add_tag_group_force"`
+	line    uint           `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1,comment_struct_annotate,add_tag_group_force"`
+	div     bool           `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1,comment_struct_annotate,add_tag_group_force"`
+	_       [7]byte        `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1,comment_struct_annotate,add_tag_group_force"`
+} // struct size: 32 bytes; struct align: 8 bytes; struct aligned size: 32 bytes; - 🌺 gopium @1pkg
 
 // Curator erich cache strategy with curator instance
 func (stg cache) Curator(curator gopium.Curator) cache {
@@ -56,7 +57,7 @@ func (stg cache) Apply(ctx context.Context, o gopium.Struct) (gopium.Struct, err
 		if stg.div {
 			// find smallest size of fraction for cache line
 			if alsize > 0 && cachel > alsize {
-				for cachel >= alsize {
+				for cachel >= alsize && cachel > 1 {
 					cachel /= 2
 				}
 				cachel *= 2

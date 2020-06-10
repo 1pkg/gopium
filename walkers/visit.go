@@ -6,19 +6,20 @@ import (
 	"regexp"
 	"sync"
 
-	"1pkg/gopium/gopium"
 	"1pkg/gopium/collections"
+	"1pkg/gopium/gopium"
 )
 
 // applied encapsulates visited by strategy
 // structs results: id, loc, origin, result structs and error
 type applied struct {
-	ID  string
-	Loc string
-	O   gopium.Struct
-	R   gopium.Struct
-	Err error
-}
+	O   gopium.Struct `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1,comment_struct_annotate,add_tag_group_force"`
+	R   gopium.Struct `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1,comment_struct_annotate,add_tag_group_force"`
+	ID  string        `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1,comment_struct_annotate,add_tag_group_force"`
+	Loc string        `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1,comment_struct_annotate,add_tag_group_force"`
+	Err error         `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1,comment_struct_annotate,add_tag_group_force"`
+	_   [32]byte      `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1,comment_struct_annotate,add_tag_group_force"`
+} // struct size: 256 bytes; struct align: 8 bytes; struct aligned size: 256 bytes; - 🌺 gopium @1pkg
 
 // appliedCh defines abstraction that helps
 // keep applied stream results

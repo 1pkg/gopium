@@ -36,17 +36,16 @@ var (
 
 // wast defines packages walker ast sync implementation
 type wast struct {
-	// inner visiting parameters
-	apply     gopium.Apply
-	persister gopium.Persister
-	writer    gopium.CategoryWriter
-	// external visiting parameters
-	parser  gopium.Parser
-	exposer gopium.Exposer
-	printer gopium.Printer
-	deep    bool
-	bref    bool
-}
+	persister gopium.Persister      `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1,comment_struct_annotate,add_tag_group_force"`
+	writer    gopium.CategoryWriter `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1,comment_struct_annotate,add_tag_group_force"`
+	parser    gopium.Parser         `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1,comment_struct_annotate,add_tag_group_force"`
+	exposer   gopium.Exposer        `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1,comment_struct_annotate,add_tag_group_force"`
+	printer   gopium.Printer        `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1,comment_struct_annotate,add_tag_group_force"`
+	apply     gopium.Apply          `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1,comment_struct_annotate,add_tag_group_force"`
+	deep      bool                  `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1,comment_struct_annotate,add_tag_group_force"`
+	bref      bool                  `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1,comment_struct_annotate,add_tag_group_force"`
+	_         [38]byte              `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1,comment_struct_annotate,add_tag_group_force"`
+} // struct size: 128 bytes; struct align: 8 bytes; struct aligned size: 128 bytes; - 🌺 gopium @1pkg
 
 // With erich wast walker with external visiting parameters
 // parser, exposer, printer instances and additional visiting flags
