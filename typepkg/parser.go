@@ -83,7 +83,7 @@ func (p *ParserXToolPackagesAst) ParseTypes(ctx context.Context, _ ...byte) (*ty
 		switch plen {
 		case 1:
 			return pkgs[0].Types, NewLocator(fset), nil
-		case 3:
+		default:
 			return pkgs[1].Types, NewLocator(fset), nil
 		}
 	}
@@ -140,11 +140,11 @@ func (p *ParserXToolPackagesAst) ParseAst(ctx context.Context, src ...byte) (*as
 	// package pattern or
 	// last component of path
 	// note: len of pkgs should aways be equal to 1
-	if pkg, ok := pkgs[p.Pattern]; len(pkgs) == 1 && ok {
+	if pkg, ok := pkgs[p.Pattern]; len(pkgs) >= 1 && ok {
 		return pkg, NewLocator(fset), nil
 	}
 	pkg := filepath.Base(p.Path)
-	if pkg, ok := pkgs[pkg]; len(pkgs) == 1 && ok {
+	if pkg, ok := pkgs[pkg]; len(pkgs) >= 1 && ok {
 		return pkg, NewLocator(fset), nil
 	}
 	return nil, nil, fmt.Errorf("package %q wasn't found at %q", p.Pattern, dir)
