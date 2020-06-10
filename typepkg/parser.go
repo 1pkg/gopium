@@ -69,6 +69,8 @@ func (p *ParserXToolPackagesAst) ParseTypes(ctx context.Context, _ ...byte) (*ty
 	src := fmt.Sprintf("src%s", string(os.PathSeparator))
 	if parts := strings.SplitN(p.Path, src, 2); len(parts) == 2 {
 		path = parts[1]
+		// fix package name for windows
+		path = strings.ReplaceAll(path, string(os.PathSeparator), "/")
 	}
 	// check parse results
 	// it should be equal to
