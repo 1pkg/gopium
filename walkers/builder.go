@@ -20,6 +20,7 @@ const (
 	MdtFile   gopium.WalkerName = "md_table_file"
 	// wdiff walkers
 	SizeAlignMdtFile gopium.WalkerName = "size_align_md_table_file"
+	FieldsHtmltFile  gopium.WalkerName = "fields_html_table_file"
 )
 
 // Builder defines types gopium.WalkerBuilder implementation
@@ -99,7 +100,14 @@ func (b Builder) Build(name gopium.WalkerName) (gopium.Walker, error) {
 		), nil
 	// wdiff walkers
 	case SizeAlignMdtFile:
-		return satmdfile.With(
+		return samdtfile.With(
+			b.Parser,
+			b.Exposer,
+			b.Deep,
+			b.Bref,
+		), nil
+	case FieldsHtmltFile:
+		return fhtmltfile.With(
 			b.Parser,
 			b.Exposer,
 			b.Deep,

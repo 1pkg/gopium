@@ -22,15 +22,16 @@ Gopium also has rich vscode extension to provide better experience for usage and
 
 Gopium provides next walkers:
 
-- ast_std (prints result as go code to stdout)
 - ast_go (directly syncs result as go code to orinal file)
 - ast_go_tree (directly syncs result as go code to copy package)
+- ast_std (prints result as go code to stdout)
 - ast_gopium (directly syncs result as go code to copy gopium files)
 - json_file (prints json encoded results to single file inside package directory)
 - xml_file (prints xml encoded results to single file inside package directory)
 - csv_file (prints csv encoded results to single file inside package directory)
 - md_table_file (prints markdown table encoded results to single file inside package directory)
-- size_align_md_table_file (prints markdown table encoded encoded size and align difference of results to single file inside package directory)
+- size_align_md_table_file (prints markdown encoded table of sizes and aligns difference for results to single file inside package directory)
+- fields_html_table_file (prints html encoded table of fields difference for results to single file inside package directory)
 
 ## Strategies and Transformations
 
@@ -78,8 +79,8 @@ Gopium provides next strategies:
 
 - it might be useful to use filter_pads in pipes with other strategies to clean paddings first
 - process_tag_group currently supports only next fields tags annotation formats:
-- gopium:"stg,stg,stg" processed as default group
-- gopium:"group:def;stg,stg,stg" processed as named group
+  - gopium:"stg,stg,stg" processed as default group
+  - gopium:"group:def;stg,stg,stg" processed as named group
 - by specifying tag_type you can automatically generate fields tags annotation suitable for process_tag_group
 
 ## Options and Flags

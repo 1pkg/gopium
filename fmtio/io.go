@@ -8,10 +8,13 @@ import (
 
 // list of supported extensions
 const (
-	JSON = "json"
-	XML  = "xml"
-	CSV  = "csv"
-	MD   = "md"
+	GOPIUM = "gopium"
+	GO     = "go"
+	JSON   = "json"
+	XML    = "xml"
+	CSV    = "csv"
+	MD     = "md"
+	HTML   = "html"
 )
 
 // stdout defines tiny wrapper for

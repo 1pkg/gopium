@@ -192,15 +192,16 @@
 							"walker": {
 								"type": "string",
 								"enum": [
-									"ast_std",
 									"ast_go",
 									"ast_go_tree",
+									"ast_std",
 									"ast_gopium",
 									"json_file",
 									"xml_file",
 									"csv_file",
 									"md_table_file",
-									"size_align_md_table_file"
+									"size_align_md_table_file",
+									"fields_html_table_file"
 								],
 								"description": "Gopium walker for single action preset."
 							},
