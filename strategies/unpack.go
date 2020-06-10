@@ -4,8 +4,8 @@ import (
 	"context"
 	"math"
 
-	"1pkg/gopium/gopium"
 	"1pkg/gopium/collections"
+	"1pkg/gopium/gopium"
 )
 
 // list of unpack presets
@@ -18,7 +18,7 @@ var (
 // to obtain inflated memory utilization
 // by sorting fields accordingly
 // to their aligns and sizes in some order
-type unpack struct{}
+type unpack struct{} // struct size: 0 bytes; struct align: 1 bytes; struct aligned size: 0 bytes; - 🌺 gopium @1pkg
 
 // Apply unpack implementation
 func (stg unpack) Apply(ctx context.Context, o gopium.Struct) (gopium.Struct, error) {

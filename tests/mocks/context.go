@@ -7,9 +7,9 @@ import (
 
 // Context defines mock context implementation
 type Context struct {
-	After   int
-	current int
-}
+	After   int `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1,comment_struct_annotate,add_tag_group_force"`
+	current int `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1,comment_struct_annotate,add_tag_group_force"`
+} // struct size: 16 bytes; struct align: 8 bytes; struct aligned size: 16 bytes; - 🌺 gopium @1pkg
 
 // Deadline mock implementation
 func (ctx Context) Deadline() (deadline time.Time, ok bool) {

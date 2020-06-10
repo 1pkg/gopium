@@ -3,8 +3,8 @@ package strategies
 import (
 	"context"
 
-	"1pkg/gopium/gopium"
 	"1pkg/gopium/collections"
+	"1pkg/gopium/gopium"
 )
 
 // list of pad presets
@@ -18,9 +18,10 @@ var (
 // to system or type alignment padding
 // by adding missing paddings for each field
 type pad struct {
-	curator gopium.Curator
-	sys     bool
-}
+	curator gopium.Curator `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1,comment_struct_annotate,add_tag_group_force"`
+	sys     bool           `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1,comment_struct_annotate,add_tag_group_force"`
+	_       [15]byte       `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1,comment_struct_annotate,add_tag_group_force"`
+} // struct size: 32 bytes; struct align: 8 bytes; struct aligned size: 32 bytes; - 🌺 gopium @1pkg
 
 // Curator erich pad strategy with curator instance
 func (stg pad) Curator(curator gopium.Curator) pad {

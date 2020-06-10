@@ -6,10 +6,11 @@ import "sync"
 // that helps to set, and get wait for
 // key value pairs
 type Reference struct {
-	vals    map[string]interface{}
-	signals map[string]chan struct{}
-	mutex   sync.Mutex
-}
+	vals    map[string]interface{}   `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1,comment_struct_annotate,add_tag_group_force"`
+	signals map[string]chan struct{} `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1,comment_struct_annotate,add_tag_group_force"`
+	mutex   sync.Mutex               `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1,comment_struct_annotate,add_tag_group_force"`
+	_       [8]byte                  `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1,comment_struct_annotate,add_tag_group_force"`
+} // struct size: 32 bytes; struct align: 8 bytes; struct aligned size: 32 bytes; - 🌺 gopium @1pkg
 
 // NewReference creates reference instance
 // accordingly to passed nil flag

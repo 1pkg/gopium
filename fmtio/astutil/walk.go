@@ -71,8 +71,8 @@ func (fmt fmtast) Visit(ts *ast.TypeSpec, st gopium.Struct) error {
 // bcollect defines gopium ast walk
 // action boundaries collector implementation
 type bcollect struct {
-	bs collections.Boundaries
-}
+	bs collections.Boundaries `gopium:"filter_pads,comment_struct_annotate,add_tag_group_force"`
+} // struct size: 24 bytes; struct align: 8 bytes; struct aligned size: 24 bytes; - 🌺 gopium @1pkg
 
 // Visit bcollect implementation
 func (b *bcollect) Visit(ts *ast.TypeSpec, st gopium.Struct) error {
@@ -152,9 +152,9 @@ func (pdc *pressnote) Visit(ts *ast.TypeSpec, st gopium.Struct) error {
 // flatid defines gopium ast walk
 // comparator structs flat ids implementation
 type flatid struct {
-	loc gopium.Locator
-	sts collections.Flat
-}
+	loc gopium.Locator   `gopium:"filter_pads,comment_struct_annotate,add_tag_group_force"`
+	sts collections.Flat `gopium:"filter_pads,comment_struct_annotate,add_tag_group_force"`
+} // struct size: 24 bytes; struct align: 8 bytes; struct aligned size: 24 bytes; - 🌺 gopium @1pkg
 
 // Check flatid implementation
 func (cmp flatid) Check(ts *ast.TypeSpec) (gopium.Struct, bool) {
@@ -169,8 +169,8 @@ func (cmp flatid) Check(ts *ast.TypeSpec) (gopium.Struct, bool) {
 // comparator structs flat implementation
 // which uses match on sorted structs name
 type sorted struct {
-	sts []gopium.Struct
-}
+	sts []gopium.Struct `gopium:"filter_pads,comment_struct_annotate,add_tag_group_force"`
+} // struct size: 24 bytes; struct align: 8 bytes; struct aligned size: 24 bytes; - 🌺 gopium @1pkg
 
 // newsorted creates sorted
 // comparator from structs map
@@ -199,8 +199,8 @@ func (cmp *sorted) Check(ts *ast.TypeSpec) (gopium.Struct, bool) {
 // check that structure or any structure's
 // field has any notes attached to them
 type hasnote struct {
-	cmp gopium.Comparator
-}
+	cmp gopium.Comparator `gopium:"filter_pads,comment_struct_annotate,add_tag_group_force"`
+} // struct size: 16 bytes; struct align: 8 bytes; struct aligned size: 16 bytes; - 🌺 gopium @1pkg
 
 // Check hasnote implementation
 func (cmp hasnote) Check(ts *ast.TypeSpec) (gopium.Struct, bool) {

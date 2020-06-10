@@ -12,14 +12,14 @@ import (
 // Pos defines mock pos
 // data transfer object
 type Pos struct {
-	ID  string
-	Loc string
-}
+	ID  string `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1,comment_struct_annotate,add_tag_group_force"`
+	Loc string `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1,comment_struct_annotate,add_tag_group_force"`
+} // struct size: 32 bytes; struct align: 8 bytes; struct aligned size: 32 bytes; - 🌺 gopium @1pkg
 
 // Locator defines mock locator implementation
 type Locator struct {
-	Poses map[token.Pos]Pos
-}
+	Poses map[token.Pos]Pos `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1,comment_struct_annotate,add_tag_group_force"`
+} // struct size: 8 bytes; struct align: 8 bytes; struct aligned size: 8 bytes; - 🌺 gopium @1pkg
 
 // ID mock implementation
 func (l Locator) ID(pos token.Pos) string {
@@ -58,10 +58,11 @@ func (l Locator) Root() *token.FileSet {
 
 // Parser defines mock parser implementation
 type Parser struct {
-	Parser   gopium.Parser
-	Typeserr error
-	Asterr   error
-}
+	Parser   gopium.Parser `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1,comment_struct_annotate,add_tag_group_force"`
+	Typeserr error         `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1,comment_struct_annotate,add_tag_group_force"`
+	Asterr   error         `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1,comment_struct_annotate,add_tag_group_force"`
+	_        [16]byte      `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1,comment_struct_annotate,add_tag_group_force"`
+} // struct size: 64 bytes; struct align: 8 bytes; struct aligned size: 64 bytes; - 🌺 gopium @1pkg
 
 // ParseTypes mock implementation
 func (p Parser) ParseTypes(ctx context.Context, src ...byte) (*types.Package, gopium.Locator, error) {

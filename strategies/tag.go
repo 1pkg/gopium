@@ -6,8 +6,8 @@ import (
 	"reflect"
 	"strings"
 
-	"1pkg/gopium/gopium"
 	"1pkg/gopium/collections"
+	"1pkg/gopium/gopium"
 )
 
 // list of tag presets
@@ -22,10 +22,11 @@ var (
 // that adds or updates fields tags annotation
 // that could be processed by group strategy
 type tag struct {
-	tag      string
-	force    bool
-	discrete bool
-}
+	tag      string   `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1,comment_struct_annotate,add_tag_group_force"`
+	force    bool     `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1,comment_struct_annotate,add_tag_group_force"`
+	discrete bool     `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1,comment_struct_annotate,add_tag_group_force"`
+	_        [14]byte `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1,comment_struct_annotate,add_tag_group_force"`
+} // struct size: 32 bytes; struct align: 8 bytes; struct aligned size: 32 bytes; - 🌺 gopium @1pkg
 
 // Names erich tag strategy with strategy names tag
 func (stg tag) Names(names ...gopium.StrategyName) tag {

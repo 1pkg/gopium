@@ -4,8 +4,8 @@ import (
 	"context"
 	"fmt"
 
-	"1pkg/gopium/gopium"
 	"1pkg/gopium/collections"
+	"1pkg/gopium/gopium"
 )
 
 // list of note presets
@@ -21,9 +21,9 @@ var (
 // for each structure field
 // and aggregated size annotation for structure
 type note struct {
-	doc   bool
-	field bool
-}
+	doc   bool `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1,comment_struct_annotate,add_tag_group_force"`
+	field bool `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1,comment_struct_annotate,add_tag_group_force"`
+} // struct size: 2 bytes; struct align: 1 bytes; struct aligned size: 2 bytes; - 🌺 gopium @1pkg
 
 // Apply note implementation
 func (stg note) Apply(ctx context.Context, o gopium.Struct) (gopium.Struct, error) {

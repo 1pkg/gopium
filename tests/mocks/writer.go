@@ -7,11 +7,12 @@ import (
 
 // Writer defines mock category writer implementation
 type Writer struct {
-	Gerr  error
-	Cerr  error
-	RWCs  map[string]*RWC
-	mutex sync.Mutex
-}
+	Gerr  error           `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1,comment_struct_annotate,add_tag_group_force"`
+	Cerr  error           `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1,comment_struct_annotate,add_tag_group_force"`
+	RWCs  map[string]*RWC `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1,comment_struct_annotate,add_tag_group_force"`
+	mutex sync.Mutex      `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1,comment_struct_annotate,add_tag_group_force"`
+	_     [16]byte        `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1,comment_struct_annotate,add_tag_group_force"`
+} // struct size: 64 bytes; struct align: 8 bytes; struct aligned size: 64 bytes; - 🌺 gopium @1pkg
 
 // Generate mock implementation
 func (w *Writer) Generate(loc string) (io.WriteCloser, error) {

@@ -32,15 +32,14 @@ var (
 
 // wout defines packages walker out implementation
 type wout struct {
-	// inner visiting parameters
-	fmt    gopium.Bytes
-	writer gopium.Writer
-	// external visiting parameters
-	parser  gopium.TypeParser
-	exposer gopium.Exposer
-	deep    bool
-	bref    bool
-}
+	writer  gopium.Writer     `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1,comment_struct_annotate,add_tag_group_force"`
+	parser  gopium.TypeParser `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1,comment_struct_annotate,add_tag_group_force"`
+	exposer gopium.Exposer    `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1,comment_struct_annotate,add_tag_group_force"`
+	fmt     gopium.Bytes      `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1,comment_struct_annotate,add_tag_group_force"`
+	deep    bool              `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1,comment_struct_annotate,add_tag_group_force"`
+	bref    bool              `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1,comment_struct_annotate,add_tag_group_force"`
+	_       [6]byte           `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1,comment_struct_annotate,add_tag_group_force"`
+} // struct size: 64 bytes; struct align: 8 bytes; struct aligned size: 64 bytes; - 🌺 gopium @1pkg
 
 // With erich wast walker with external visiting parameters
 // parser, exposer instances and additional visiting flags

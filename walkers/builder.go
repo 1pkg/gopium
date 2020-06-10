@@ -26,12 +26,13 @@ const (
 // Builder defines types gopium.WalkerBuilder implementation
 // that uses parser and exposer to pass it to related walkers
 type Builder struct {
-	Parser  gopium.Parser
-	Exposer gopium.Exposer
-	Printer gopium.Printer
-	Deep    bool
-	Bref    bool
-}
+	Parser  gopium.Parser  `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1,comment_struct_annotate,add_tag_group_force"`
+	Exposer gopium.Exposer `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1,comment_struct_annotate,add_tag_group_force"`
+	Printer gopium.Printer `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1,comment_struct_annotate,add_tag_group_force"`
+	Deep    bool           `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1,comment_struct_annotate,add_tag_group_force"`
+	Bref    bool           `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1,comment_struct_annotate,add_tag_group_force"`
+	_       [14]byte       `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1,comment_struct_annotate,add_tag_group_force"`
+} // struct size: 64 bytes; struct align: 8 bytes; struct aligned size: 64 bytes; - 🌺 gopium @1pkg
 
 // Build Builder implementation
 func (b Builder) Build(name gopium.WalkerName) (gopium.Walker, error) {

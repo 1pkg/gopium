@@ -9,8 +9,8 @@ import (
 
 // Walk defines mock ast walker implementation
 type Walk struct {
-	Err error
-}
+	Err error `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1,comment_struct_annotate,add_tag_group_force"`
+} // struct size: 16 bytes; struct align: 8 bytes; struct aligned size: 16 bytes; - 🌺 gopium @1pkg
 
 // Walk mock implementation
 func (w Walk) Walk(context.Context, ast.Node, gopium.Visitor, gopium.Comparator) (ast.Node, error) {

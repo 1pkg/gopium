@@ -11,8 +11,8 @@ import (
 // Goprinter implements printer by
 // using ast go printer printer
 type Goprinter struct {
-	cfg *printer.Config
-}
+	cfg *printer.Config `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1,comment_struct_annotate,add_tag_group_force"`
+} // struct size: 8 bytes; struct align: 8 bytes; struct aligned size: 8 bytes; - 🌺 gopium @1pkg
 
 // NewGoprinter creates instances of goprinter with configs
 func NewGoprinter(indent int, tabwidth int, usespace bool) Goprinter {

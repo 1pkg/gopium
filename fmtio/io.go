@@ -19,7 +19,7 @@ const (
 
 // stdout defines tiny wrapper for
 // os stdout stream that couldn't be closed
-type stdout struct{}
+type stdout struct{} // struct size: 0 bytes; struct align: 1 bytes; struct aligned size: 0 bytes; - 🌺 gopium @1pkg
 
 // Write just reuses os stdout stream write
 func (stdout) Write(p []byte) (n int, err error) {

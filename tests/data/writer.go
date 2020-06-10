@@ -10,8 +10,8 @@ import (
 // which reuses underlying locator
 // but purifies location generation
 type Writer struct {
-	Writer gopium.CategoryWriter
-}
+	Writer gopium.CategoryWriter `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1,comment_struct_annotate,add_tag_group_force"`
+} // struct size: 16 bytes; struct align: 8 bytes; struct aligned size: 16 bytes; - 🌺 gopium @1pkg
 
 // Generate writer implementation
 func (w Writer) Generate(loc string) (io.WriteCloser, error) {
