@@ -1,4 +1,4 @@
-module 1pkg/gopium
+module github.com/1pkg/gopium
 
 go 1.14
 
