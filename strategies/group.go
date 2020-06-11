@@ -65,6 +65,16 @@ func (stg group) Apply(ctx context.Context, o gopium.Struct) (gopium.Struct, err
 	// go through all containers and apply
 	// all strategies concurently on inner structs
 	for i := range containers {
+		// manage context actions
+		// in case of cancelation
+		// stop execution
+		select {
+		case <-gctx.Done():
+			break
+		default:
+		}
+		// run container processor
+		// in separate goroutine
 		container := &containers[i]
 		group.Go(func() error {
 			// apply strategy on struct
@@ -82,7 +92,7 @@ func (stg group) Apply(ctx context.Context, o gopium.Struct) (gopium.Struct, err
 			if container.grp == "" {
 				r = tmp
 			}
-			return nil
+			return gctx.Err()
 		})
 	}
 	// wait until all strategies

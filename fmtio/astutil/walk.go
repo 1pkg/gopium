@@ -31,16 +31,19 @@ func walk(
 		if gendecl, ok := c.Node().(*ast.GenDecl); ok {
 			for _, spec := range gendecl.Specs {
 				if ts, ok := spec.(*ast.TypeSpec); ok {
-					if _, ok := ts.Type.(*ast.StructType); ok {
-						// manage context actions
-						// in case of cancelation
-						// stop execution
-						select {
-						case <-ctx.Done():
-							err = ctx.Err()
-							return false
-						default:
-						}
+					// manage context actions
+					// in case of cancelation
+					// stop execution
+					select {
+					case <-ctx.Done():
+						err = ctx.Err()
+						return false
+					default:
+					}
+					// there are several scenarios for walk
+					switch ts.Type.(type) {
+					// in case of real structure process it
+					case *ast.StructType:
 						// check that structure
 						// should be visited
 						// and skip irrelevant structs
@@ -48,10 +51,17 @@ func walk(
 							// visit ast node
 							err = v.Visit(ts, st)
 						}
-						// in case we have error
-						// break iteration
-						return err != nil
+					// in case of structure under
+					// secelector or type ident
+					// just do check on comparator
+					case *ast.SelectorExpr:
+						_, _ = cmp.Check(ts)
+					case *ast.Ident:
+						_, _ = cmp.Check(ts)
 					}
+					// in case we have error
+					// break iteration
+					return err != nil
 				}
 			}
 		}
@@ -71,8 +81,9 @@ func (fmt fmtast) Visit(ts *ast.TypeSpec, st gopium.Struct) error {
 // bcollect defines gopium ast walk
 // action boundaries collector implementation
 type bcollect struct {
-	bs collections.Boundaries `gopium:"filter_pads,comment_struct_annotate,add_tag_group_force"`
-} // struct size: 24 bytes; struct align: 8 bytes; struct aligned size: 24 bytes; - 🌺 gopium @1pkg
+	bs collections.Boundaries `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1,comment_struct_annotate,add_tag_group_force"`
+	_  [8]byte                `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1,comment_struct_annotate,add_tag_group_force"`
+} // struct size: 32 bytes; struct align: 8 bytes; struct aligned size: 32 bytes; - 🌺 gopium @1pkg
 
 // Visit bcollect implementation
 func (b *bcollect) Visit(ts *ast.TypeSpec, st gopium.Struct) error {
@@ -152,9 +163,10 @@ func (pdc *pressnote) Visit(ts *ast.TypeSpec, st gopium.Struct) error {
 // flatid defines gopium ast walk
 // comparator structs flat ids implementation
 type flatid struct {
-	loc gopium.Locator   `gopium:"filter_pads,comment_struct_annotate,add_tag_group_force"`
-	sts collections.Flat `gopium:"filter_pads,comment_struct_annotate,add_tag_group_force"`
-} // struct size: 24 bytes; struct align: 8 bytes; struct aligned size: 24 bytes; - 🌺 gopium @1pkg
+	loc gopium.Locator   `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1,comment_struct_annotate,add_tag_group_force"`
+	sts collections.Flat `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1,comment_struct_annotate,add_tag_group_force"`
+	_   [8]byte          `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1,comment_struct_annotate,add_tag_group_force"`
+} // struct size: 32 bytes; struct align: 8 bytes; struct aligned size: 32 bytes; - 🌺 gopium @1pkg
 
 // Check flatid implementation
 func (cmp flatid) Check(ts *ast.TypeSpec) (gopium.Struct, bool) {
@@ -169,8 +181,9 @@ func (cmp flatid) Check(ts *ast.TypeSpec) (gopium.Struct, bool) {
 // comparator structs flat implementation
 // which uses match on sorted structs name
 type sorted struct {
-	sts []gopium.Struct `gopium:"filter_pads,comment_struct_annotate,add_tag_group_force"`
-} // struct size: 24 bytes; struct align: 8 bytes; struct aligned size: 24 bytes; - 🌺 gopium @1pkg
+	sts []gopium.Struct `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1,comment_struct_annotate,add_tag_group_force"`
+	_   [8]byte         `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1,comment_struct_annotate,add_tag_group_force"`
+} // struct size: 32 bytes; struct align: 8 bytes; struct aligned size: 32 bytes; - 🌺 gopium @1pkg
 
 // newsorted creates sorted
 // comparator from structs map
@@ -199,7 +212,7 @@ func (cmp *sorted) Check(ts *ast.TypeSpec) (gopium.Struct, bool) {
 // check that structure or any structure's
 // field has any notes attached to them
 type hasnote struct {
-	cmp gopium.Comparator `gopium:"filter_pads,comment_struct_annotate,add_tag_group_force"`
+	cmp gopium.Comparator `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1,comment_struct_annotate,add_tag_group_force"`
 } // struct size: 16 bytes; struct align: 8 bytes; struct aligned size: 16 bytes; - 🌺 gopium @1pkg
 
 // Check hasnote implementation

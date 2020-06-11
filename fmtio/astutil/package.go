@@ -33,7 +33,7 @@ func (Package) Persist(
 		// stop execution
 		select {
 		case <-gctx.Done():
-			return gctx.Err()
+			break
 		default:
 		}
 		// capture name and file copies
@@ -60,7 +60,10 @@ func (Package) Persist(
 			// flush writer result
 			// in case any error happened
 			// just return error back
-			return writer.Close()
+			if err := writer.Close(); err != nil {
+				return err
+			}
+			return gctx.Err()
 		})
 	}
 	// wait until all writers
