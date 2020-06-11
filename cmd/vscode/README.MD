@@ -3,7 +3,7 @@
 Gopium vscode extension for [Gopium](../../README.MD) provides better experience for usage and simplify interactions with [Gopium CLI](../gopium/README.MD).
 ![](../../vscode.gif)
 
-## Installation and Requirements
+## Requirements and Installation
 
 To install gopium vscode extension go to [vscode marketplace](https://marketplace.visualstudio.com/items?itemName=golang.Gopium).
 
