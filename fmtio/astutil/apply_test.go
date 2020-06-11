@@ -88,6 +88,11 @@ func TestApply(t *testing.T) {
 		"tests_data_note_file-2.go:6",
 		filepath.Join(tests.Gopium, "tests", "data", "note", "file-2.go"),
 	)
+	ldc.Push(
+		"tests_data_note_file-3.go:14",
+		filepath.Join(tests.Gopium, "tests", "data", "note", "file-3.go"),
+		gopium.Struct{Name: "tt"},
+	)
 	cctx, cancel := context.WithCancel(context.Background())
 	cancel()
 	p := fmtio.Gofmt{}
@@ -170,6 +175,22 @@ type DocCom struct {
 	f complex128
 	// 🌺 gopium @1pkg
 } // doc com
+`),
+				"tests_data_note_file-3.go": []byte(`
+//+build tests_data
+
+package note
+
+import "ast"
+
+// random function
+func rnd() int {
+	return -1
+}
+
+type tf rnd
+
+type tt ast.File
 `),
 			},
 		},

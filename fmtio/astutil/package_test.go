@@ -8,8 +8,8 @@ import (
 	"strings"
 	"testing"
 
-	"1pkg/gopium/gopium"
 	"1pkg/gopium/fmtio"
+	"1pkg/gopium/gopium"
 	"1pkg/gopium/tests/data"
 	"1pkg/gopium/tests/mocks"
 )
@@ -71,6 +71,16 @@ type Single struct {
 			ctx: context.Background(),
 			p:   fmtio.Gofmt{},
 			w:   data.Writer{Writer: (&mocks.Writer{Gerr: errors.New("test-1")})},
+			r:   map[string][]byte{},
+			err: errors.New("test-1"),
+		},
+		"single struct pkg should persist nothing on persist flush error": {
+			xp:  data.NewParser("single"),
+			ctx: context.Background(),
+			p:   fmtio.Gofmt{},
+			w: data.Writer{Writer: (&mocks.Writer{RWCs: map[string]*mocks.RWC{
+				"tests_data_single_file.go": {Cerr: errors.New("test-1")},
+			}})},
 			r:   map[string][]byte{},
 			err: errors.New("test-1"),
 		},

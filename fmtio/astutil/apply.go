@@ -149,7 +149,7 @@ func filter(w gopium.Walk) gopium.Apply {
 			// stop execution
 			select {
 			case <-gctx.Done():
-				return nil, gctx.Err()
+				break
 			default:
 			}
 			// capture file copy
@@ -178,10 +178,16 @@ func filter(w gopium.Walk) gopium.Apply {
 					// update comment list
 					comments.List = comlist
 				}
-				return nil
+				return gctx.Err()
 			})
 		}
-		return pkg, group.Wait()
+		// wait until walk is done
+		// in case of any error
+		// just return it back
+		if err := group.Wait(); err != nil {
+			return nil, err
+		}
+		return pkg, nil
 	}
 }
 
@@ -212,7 +218,7 @@ func note(w gopium.Walk, xp gopium.AstParser, p gopium.Printer) gopium.Apply {
 			// stop execution
 			select {
 			case <-gctx.Done():
-				return nil, gctx.Err()
+				break
 			default:
 			}
 			// capture name and file copies
@@ -254,7 +260,7 @@ func note(w gopium.Walk, xp gopium.AstParser, p gopium.Printer) gopium.Apply {
 				// save update file and loc results
 				files.Store(name, file)
 				loc.Fset(name, nloc.Root())
-				return nil
+				return gctx.Err()
 			})
 		}
 		// wait until walk is done
