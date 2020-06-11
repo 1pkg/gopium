@@ -7,6 +7,7 @@ import * as goinstall from './vscode-go/src/goInstallTools'
 import * as gomain from './vscode-go/src/goMain'
 import { GO_MODE } from './vscode-go/src/goMode'
 import * as gooutline from './vscode-go/src/goOutline'
+import * as gopath from './vscode-go/src/goPath'
 import * as gostatus from './vscode-go/src/goStatus'
 import * as gotools from './vscode-go/src/goTools'
 import * as gotelemetry from './vscode-go/src/telemetry'
@@ -77,12 +78,19 @@ function patchgo() {
 	// patch util go module
 	// to update go-outline binary path
 	let putil = goutil as any
-	let getBinPath = goutil.getBinPath
 	putil.getBinPath = (tool: string): string => {
+		// update tool name
 		if (tool == 'go-outline') {
 			tool = 'goutline'
 		}
-		return getBinPath(tool)
+		// copied from original getBinPath
+		// but patches default for alt tools
+		const alt: { [key: string]: string } = goutil.getGoConfig().get('alternateTools', {})
+		return gopath.getBinPathWithPreferredGopath(
+			tool,
+			tool === 'go' ? [] : [goutil.getToolsGopath(), goutil.getCurrentGoPath()],
+			goutil.resolvePath(alt[tool]),
+		)
 	}
 	// patch status go module
 	// to replace out chan with gopium chan
@@ -137,7 +145,12 @@ class Codelens implements vscode.CodeLensProvider {
 					if (pkg) {
 						// then collect all codelens for package and structs
 						const pdir = path.dirname(document.fileName)
-						return [...this.package(pdir, pkg), ...this.structs(pdir, pkg, symbols)]
+						// for tests file don't generate package lens
+						if (document.fileName.endsWith('_test.go')) {
+							return this.structs(pdir, pkg, symbols)
+						} else {
+							return [...this.package(pdir, pkg), ...this.structs(pdir, pkg, symbols)]
+						}
 					}
 					return []
 				})
