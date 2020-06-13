@@ -4,7 +4,7 @@ import (
 	"context"
 	"go/ast"
 
-	"1pkg/gopium/gopium"
+	"github.com/1pkg/gopium/gopium"
 )
 
 // Walk defines mock ast walker implementation

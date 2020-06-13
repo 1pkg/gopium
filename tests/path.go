@@ -3,7 +3,7 @@ package tests
 import (
 	"path/filepath"
 
-	"1pkg/gopium/gopium"
+	"github.com/1pkg/gopium/gopium"
 )
 
 // Gopium defines root gopium path

@@ -6,7 +6,7 @@ import (
 	"regexp"
 	"time"
 
-	"1pkg/gopium/gopium"
+	"github.com/1pkg/gopium/gopium"
 )
 
 // visitor defines helper

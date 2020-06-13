@@ -1,5 +1,7 @@
 module github.com/1pkg/gopium
 
+replace github.com/1pkg/gopium => ./
+
 go 1.14
 
 require (

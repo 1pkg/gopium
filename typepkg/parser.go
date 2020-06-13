@@ -11,7 +11,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"1pkg/gopium/gopium"
+	"github.com/1pkg/gopium/gopium"
 
 	"golang.org/x/tools/go/packages"
 )

@@ -1,10 +1,10 @@
-module 1pkg/gopium/cmd/gopium
+module github.com/1pkg/gopium/cmd/gopium
 
-replace 1pkg/gopium => ./../../
+replace github.com/1pkg/gopium => ./../../
 
 go 1.14
 
 require (
-	1pkg/gopium v0.0.0-00010101000000-000000000000
+	github.com/1pkg/gopium v0.0.0-20200613104448-1ae2632249cf
 	github.com/spf13/cobra v0.0.7
 )

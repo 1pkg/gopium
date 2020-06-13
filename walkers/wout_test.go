@@ -9,11 +9,11 @@ import (
 	"strings"
 	"testing"
 
-	"1pkg/gopium/gopium"
-	"1pkg/gopium/strategies"
-	"1pkg/gopium/tests/data"
-	"1pkg/gopium/tests/mocks"
-	"1pkg/gopium/typepkg"
+	"github.com/1pkg/gopium/gopium"
+	"github.com/1pkg/gopium/strategies"
+	"github.com/1pkg/gopium/tests/data"
+	"github.com/1pkg/gopium/tests/mocks"
+	"github.com/1pkg/gopium/typepkg"
 )
 
 func TestWout(t *testing.T) {
@@ -218,7 +218,7 @@ func TestWout(t *testing.T) {
 		"Fields": [
 			{
 				"Name": "D",
-				"Type": "1pkg/gopium/tests/data/multi.D",
+				"Type": "github.com/1pkg/gopium/tests/data/multi.D",
 				"Size": 24,
 				"Align": 8,
 				"Tag": "",
@@ -258,7 +258,7 @@ func TestWout(t *testing.T) {
 		"Fields": [
 			{
 				"Name": "AZ",
-				"Type": "1pkg/gopium/tests/data/multi.AZ",
+				"Type": "github.com/1pkg/gopium/tests/data/multi.AZ",
 				"Size": 33,
 				"Align": 8,
 				"Tag": "",
@@ -269,7 +269,7 @@ func TestWout(t *testing.T) {
 			},
 			{
 				"Name": "D",
-				"Type": "1pkg/gopium/tests/data/multi.D",
+				"Type": "github.com/1pkg/gopium/tests/data/multi.D",
 				"Size": 24,
 				"Align": 8,
 				"Tag": "",
@@ -280,7 +280,7 @@ func TestWout(t *testing.T) {
 			},
 			{
 				"Name": "AWA",
-				"Type": "1pkg/gopium/tests/data/multi.D",
+				"Type": "github.com/1pkg/gopium/tests/data/multi.D",
 				"Size": 24,
 				"Align": 8,
 				"Tag": "",
@@ -291,7 +291,7 @@ func TestWout(t *testing.T) {
 			},
 			{
 				"Name": "ze",
-				"Type": "1pkg/gopium/tests/data/multi.ze",
+				"Type": "github.com/1pkg/gopium/tests/data/multi.ze",
 				"Size": 16,
 				"Align": 8,
 				"Tag": "",
@@ -309,7 +309,7 @@ func TestWout(t *testing.T) {
 		"Fields": [
 			{
 				"Name": "D",
-				"Type": "1pkg/gopium/tests/data/multi.A",
+				"Type": "github.com/1pkg/gopium/tests/data/multi.A",
 				"Size": 8,
 				"Align": 8,
 				"Tag": "",
@@ -382,7 +382,7 @@ func TestWout(t *testing.T) {
 		"Fields": [
 			{
 				"Name": "D",
-				"Type": "1pkg/gopium/tests/data/multi.D",
+				"Type": "github.com/1pkg/gopium/tests/data/multi.D",
 				"Size": 24,
 				"Align": 8,
 				"Tag": "",
@@ -422,7 +422,7 @@ func TestWout(t *testing.T) {
 		"Fields": [
 			{
 				"Name": "AZ",
-				"Type": "1pkg/gopium/tests/data/multi.AZ",
+				"Type": "github.com/1pkg/gopium/tests/data/multi.AZ",
 				"Size": 32,
 				"Align": 8,
 				"Tag": "",
@@ -433,7 +433,7 @@ func TestWout(t *testing.T) {
 			},
 			{
 				"Name": "D",
-				"Type": "1pkg/gopium/tests/data/multi.D",
+				"Type": "github.com/1pkg/gopium/tests/data/multi.D",
 				"Size": 24,
 				"Align": 8,
 				"Tag": "",
@@ -444,7 +444,7 @@ func TestWout(t *testing.T) {
 			},
 			{
 				"Name": "AWA",
-				"Type": "1pkg/gopium/tests/data/multi.D",
+				"Type": "github.com/1pkg/gopium/tests/data/multi.D",
 				"Size": 24,
 				"Align": 8,
 				"Tag": "",
@@ -455,7 +455,7 @@ func TestWout(t *testing.T) {
 			},
 			{
 				"Name": "ze",
-				"Type": "1pkg/gopium/tests/data/multi.ze",
+				"Type": "github.com/1pkg/gopium/tests/data/multi.ze",
 				"Size": 16,
 				"Align": 8,
 				"Tag": "",

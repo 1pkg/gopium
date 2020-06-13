@@ -5,8 +5,8 @@ import (
 	"encoding/json"
 	"go/ast"
 
-	"1pkg/gopium/collections"
-	"1pkg/gopium/gopium"
+	"github.com/1pkg/gopium/collections"
+	"github.com/1pkg/gopium/gopium"
 )
 
 // Bytes defines mock fmtio bytes implementation

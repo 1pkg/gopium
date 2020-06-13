@@ -10,13 +10,13 @@ import (
 	"strings"
 	"testing"
 
-	"1pkg/gopium/collections"
-	"1pkg/gopium/fmtio"
-	"1pkg/gopium/gopium"
-	"1pkg/gopium/tests"
-	"1pkg/gopium/tests/data"
-	"1pkg/gopium/tests/mocks"
-	"1pkg/gopium/typepkg"
+	"github.com/1pkg/gopium/collections"
+	"github.com/1pkg/gopium/fmtio"
+	"github.com/1pkg/gopium/gopium"
+	"github.com/1pkg/gopium/tests"
+	"github.com/1pkg/gopium/tests/data"
+	"github.com/1pkg/gopium/tests/mocks"
+	"github.com/1pkg/gopium/typepkg"
 )
 
 func TestApply(t *testing.T) {
@@ -181,7 +181,7 @@ type DocCom struct {
 
 package note
 
-import "ast"
+import "github.com/1pkg/gopium/gopium"
 
 // random function
 func rnd() int {
@@ -190,7 +190,7 @@ func rnd() int {
 
 type tf rnd
 
-type tt ast.File
+type tt gopium.Struct
 `),
 			},
 		},

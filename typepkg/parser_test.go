@@ -15,8 +15,8 @@ import (
 	"sync"
 	"testing"
 
-	"1pkg/gopium/gopium"
-	"1pkg/gopium/tests"
+	"github.com/1pkg/gopium/gopium"
+	"github.com/1pkg/gopium/tests"
 
 	"golang.org/x/tools/go/packages"
 )
@@ -66,7 +66,7 @@ func TestParserXToolPackagesAstTypes(t *testing.T) {
 		},
 		"invalid pattern with abs path should return expected parser package": {
 			p: ParserXToolPackagesAst{
-				Pattern:   "1pkg/gopium/gopium",
+				Pattern:   "github.com/1pkg/gopium/gopium",
 				Path:      pdir,
 				ModeTypes: packages.LoadAllSyntax,
 			},
@@ -76,7 +76,7 @@ func TestParserXToolPackagesAstTypes(t *testing.T) {
 		},
 		"empty types mode should return expected empty parser package": {
 			p: ParserXToolPackagesAst{
-				Pattern: "1pkg/gopium/gopium",
+				Pattern: "github.com/1pkg/gopium/gopium",
 				Path:    path.Join("..", "gopium"),
 			},
 			ctx: context.Background(),
@@ -84,7 +84,7 @@ func TestParserXToolPackagesAstTypes(t *testing.T) {
 		},
 		"valid pattern and path and mode should return expected parser package": {
 			p: ParserXToolPackagesAst{
-				Pattern:   "1pkg/gopium/gopium",
+				Pattern:   "github.com/1pkg/gopium/gopium",
 				Path:      path.Join("..", "gopium"),
 				ModeTypes: packages.LoadAllSyntax,
 			},
@@ -94,7 +94,7 @@ func TestParserXToolPackagesAstTypes(t *testing.T) {
 		},
 		"valid pattern and path and mode should return expected parser package on abs path": {
 			p: ParserXToolPackagesAst{
-				Pattern:   "1pkg/gopium/gopium",
+				Pattern:   "github.com/1pkg/gopium/gopium",
 				Path:      pdir,
 				ModeTypes: packages.LoadAllSyntax,
 			},
@@ -104,7 +104,7 @@ func TestParserXToolPackagesAstTypes(t *testing.T) {
 		},
 		"valid pattern and path and mode should return expected parser package with tests": {
 			p: ParserXToolPackagesAst{
-				Pattern:   "1pkg/gopium/typepkg",
+				Pattern:   "github.com/1pkg/gopium/typepkg",
 				Path:      sdir,
 				ModeTypes: packages.LoadAllSyntax,
 			},
@@ -114,7 +114,7 @@ func TestParserXToolPackagesAstTypes(t *testing.T) {
 		},
 		"valid pattern and path and mode should return expected parser package skip src": {
 			p: ParserXToolPackagesAst{
-				Pattern:   "1pkg/gopium/gopium",
+				Pattern:   "github.com/1pkg/gopium/gopium",
 				Path:      path.Join("..", "gopium"),
 				ModeTypes: packages.LoadAllSyntax,
 			},
@@ -135,7 +135,7 @@ type Single struct {
 		},
 		"valid pattern and path and mode should return parser error on canceled context": {
 			p: ParserXToolPackagesAst{
-				Pattern:   "1pkg/gopium/gopium",
+				Pattern:   "github.com/1pkg/gopium/gopium",
 				Path:      path.Join("..", "gopium"),
 				ModeTypes: packages.LoadAllSyntax,
 			},
@@ -215,12 +215,12 @@ func TestParserXToolPackagesAstAst(t *testing.T) {
 		},
 		"invalid pattern with relative path should return parser error": {
 			p: ParserXToolPackagesAst{
-				Pattern: "1pkg/gopium/gopium",
+				Pattern: "github.com/1pkg/gopium/gopium",
 				Path:    ".",
 				ModeAst: parser.ParseComments | parser.AllErrors,
 			},
 			ctx: context.Background(),
-			err: errors.New(`package "1pkg/gopium/gopium" wasn't found at "."`),
+			err: errors.New(`package "github.com/1pkg/gopium/gopium" wasn't found at "."`),
 		},
 		"valid pattern with root path should return expected parser ast": {
 			p: ParserXToolPackagesAst{

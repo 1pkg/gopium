@@ -10,8 +10,8 @@ import (
 	"strings"
 	"testing"
 
-	"1pkg/gopium/gopium"
-	"1pkg/gopium/tests/mocks"
+	"github.com/1pkg/gopium/gopium"
+	"github.com/1pkg/gopium/tests/mocks"
 )
 
 func TestAst(t *testing.T) {

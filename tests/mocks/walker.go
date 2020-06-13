@@ -5,7 +5,7 @@ import (
 	"regexp"
 	"time"
 
-	"1pkg/gopium/gopium"
+	"github.com/1pkg/gopium/gopium"
 )
 
 // Walker defines mock walker implementation

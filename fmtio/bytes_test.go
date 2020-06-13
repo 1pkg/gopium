@@ -6,9 +6,9 @@ import (
 	"strings"
 	"testing"
 
-	"1pkg/gopium/gopium"
-	"1pkg/gopium/collections"
-	"1pkg/gopium/tests/mocks"
+	"github.com/1pkg/gopium/collections"
+	"github.com/1pkg/gopium/gopium"
+	"github.com/1pkg/gopium/tests/mocks"
 )
 
 func TestBytes(t *testing.T) {

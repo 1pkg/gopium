@@ -3,8 +3,8 @@ package strategies
 import (
 	"context"
 
-	"1pkg/gopium/gopium"
-	"1pkg/gopium/collections"
+	"github.com/1pkg/gopium/collections"
+	"github.com/1pkg/gopium/gopium"
 )
 
 // pipe defines strategy implementation

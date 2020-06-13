@@ -7,8 +7,8 @@ import (
 	"go/token"
 	"strings"
 
-	"1pkg/gopium/collections"
-	"1pkg/gopium/gopium"
+	"github.com/1pkg/gopium/collections"
+	"github.com/1pkg/gopium/gopium"
 
 	"golang.org/x/tools/go/ast/astutil"
 )

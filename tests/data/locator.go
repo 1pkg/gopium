@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"go/token"
 
-	"1pkg/gopium/gopium"
+	"github.com/1pkg/gopium/gopium"
 )
 
 // locator defines tests data locator implementation
