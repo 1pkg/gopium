@@ -7,7 +7,7 @@
 [![lint](https://github.com/1pkg/gopium/workflows/lint/badge.svg)](https://github.com/1pkg/gopium/actions?query=workflow%3Alint+branch%3Amaster+)
 [![build](https://github.com/1pkg/gopium/workflows/build/badge.svg)](https://github.com/1pkg/gopium/actions?query=workflow%3Abuild+branch%3Amaster+)
 [![test](https://github.com/1pkg/gopium/workflows/test/badge.svg)](https://github.com/1pkg/gopium/actions?query=workflow%3Atest+branch%3Amaster+)
-[![report](https://goreportcard.com/badge/github.com/1pkg/gopium)](https://goreportcard.com/badge/github.com/1pkg/gopium)
+[![report](https://goreportcard.com/badge/github.com/1pkg/gopium)](https://goreportcard.com/report/github.com/1pkg/gopium)
 [![version](https://img.shields.io/github/go-mod/go-version/1pkg/gopium)](https://github.com/1pkg/gopium/blob/master/go.mod)
 [![license](https://img.shields.io/github/license/1pkg/gopium)](LICENSE)
 
