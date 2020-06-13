@@ -35,7 +35,7 @@ gopium walker package strategy_1 strategy_2 strategy_3 ...
 Gopium was testsed on go1.13 and go1.14, but it's most likely gonna work with other versions too.  
 Note that Gopium is heavily relying on [types](https://golang.org/pkg/go/types/) and [ast](https://golang.org/pkg/go/ast/) packages, and these packages might be slightly different among major go releases.
 
-To install Gopium VSCode Extension use [vscode marketplace](https://marketplace.visualstudio.com/items?itemName=golang.Gopium).
+To install Gopium VSCode Extension use [vscode marketplace](https://marketplace.visualstudio.com/items?itemName=1pkg.gopium).
 
 To install and update Gopium CLI use:
 
