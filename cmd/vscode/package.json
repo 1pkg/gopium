@@ -7,15 +7,15 @@
 		"name": "Kostiantyn Masliuk - github.com/1pkg"
 	},
 	"license": "MIT",
-	"version": "1.0.0",
+	"version": "1.0.1",
 	"categories": [
 		"Programming Languages",
 		"Formatters",
 		"Other"
 	],
-	"icon": "gopher-copy.png",
+	"icon": "gopher.png",
 	"galleryBanner": {
-		"color": "#bb2113",
+		"color": "#ffffff",
 		"theme": "dark"
 	},
 	"private": true,
