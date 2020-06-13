@@ -5,7 +5,7 @@ Gopium vscode extension for [Gopium](../../README.MD) provides better experience
 
 ## Requirements and Installation
 
-To install gopium vscode extension go to [vscode marketplace](https://marketplace.visualstudio.com/items?itemName=golang.Gopium).
+To install gopium vscode extension go to [vscode marketplace](https://marketplace.visualstudio.com/items?itemName=1pkg.gopium).
 
 In order to work, extension requires latest version of [Gopium CLI](../gopium/README.MD) and [Goutline](https://github.com/1pkg/goutline) tools.  
 Extension automatically tries to install required tools if they have been not detected in your system.
