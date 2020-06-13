@@ -62,7 +62,11 @@ func TestParserXToolPackagesAstTypes(t *testing.T) {
 				ModeTypes: packages.LoadAllSyntax,
 			},
 			ctx: context.Background(),
-			err: fmt.Errorf(`package "test" wasn't found at "%s"`, filepath.Join("..", "gopium")),
+			err: tests.OnOS(
+				"windows",
+				fmt.Errorf("%s", `package "test" wasn't found at "..\\gopium"`),
+				fmt.Errorf("%s", `package "test" wasn't found at "../gopium"`),
+			).(error),
 		},
 		"invalid pattern with abs path should return expected parser package": {
 			p: ParserXToolPackagesAst{
