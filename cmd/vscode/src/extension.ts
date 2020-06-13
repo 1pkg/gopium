@@ -7,7 +7,6 @@ import * as goinstall from './vscode-go/src/goInstallTools'
 import * as gomain from './vscode-go/src/goMain'
 import { GO_MODE } from './vscode-go/src/goMode'
 import * as gooutline from './vscode-go/src/goOutline'
-import * as gopath from './vscode-go/src/goPath'
 import * as gostatus from './vscode-go/src/goStatus'
 import * as gotools from './vscode-go/src/goTools'
 import * as gotelemetry from './vscode-go/src/telemetry'
@@ -43,7 +42,7 @@ function patchgo() {
 		return [
 			{
 				name: 'gopium',
-				importPath: 'github.com/1pkg/gopim/cmd/gopim',
+				importPath: 'github.com/1pkg/gopium/cmd/gopium',
 				isImportant: true,
 				description: '',
 			},
@@ -61,7 +60,7 @@ function patchgo() {
 			case 'gopium':
 				return {
 					name: 'gopium',
-					importPath: 'github.com/1pkg/gopim/cmd/gopim',
+					importPath: 'github.com/1pkg/gopium/cmd/gopium',
 					isImportant: true,
 					description: '',
 				}
@@ -78,19 +77,13 @@ function patchgo() {
 	// patch util go module
 	// to update go-outline binary path
 	let putil = goutil as any
+	const getBinPath = goutil.getBinPath
 	putil.getBinPath = (tool: string): string => {
 		// update tool name
 		if (tool == 'go-outline') {
 			tool = 'goutline'
 		}
-		// copied from original getBinPath
-		// but patches default for alt tools
-		const alt: { [key: string]: string } = goutil.getGoConfig().get('alternateTools', {})
-		return gopath.getBinPathWithPreferredGopath(
-			tool,
-			tool === 'go' ? [] : [goutil.getToolsGopath(), goutil.getCurrentGoPath()],
-			goutil.resolvePath(alt[tool]),
-		)
+		return getBinPath(tool)
 	}
 	// patch status go module
 	// to replace out chan with gopium chan
@@ -103,9 +96,9 @@ export async function activate(context: vscode.ExtensionContext) {
 	patchgo()
 	// try to offer to install missing tools
 	await tools.Offer(await tools.Missing())
-	// set global gopim setting
+	// set global gopium setting
 	gsettings = new settings.Workspace()
-	// add gopim actions to vscode
+	// add gopium actions to vscode
 	context.subscriptions.push(
 		// on config update
 		vscode.workspace.onDidChangeConfiguration((e: vscode.ConfigurationChangeEvent) => {
