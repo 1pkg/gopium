@@ -8,10 +8,10 @@ import (
 	"strings"
 	"testing"
 
-	"1pkg/gopium/fmtio"
-	"1pkg/gopium/gopium"
-	"1pkg/gopium/tests/data"
-	"1pkg/gopium/tests/mocks"
+	"github.com/1pkg/gopium/fmtio"
+	"github.com/1pkg/gopium/gopium"
+	"github.com/1pkg/gopium/tests/data"
+	"github.com/1pkg/gopium/tests/mocks"
 )
 
 func TestPackage(t *testing.T) {

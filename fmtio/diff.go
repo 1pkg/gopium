@@ -7,8 +7,8 @@ import (
 	"strings"
 	"text/template"
 
-	"1pkg/gopium/collections"
-	"1pkg/gopium/gopium"
+	"github.com/1pkg/gopium/collections"
+	"github.com/1pkg/gopium/gopium"
 )
 
 const (

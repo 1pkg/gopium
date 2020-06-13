@@ -7,7 +7,7 @@ import (
 	"sort"
 	"strconv"
 
-	"1pkg/gopium/gopium"
+	"github.com/1pkg/gopium/gopium"
 )
 
 // FSPT implements ast and combines:

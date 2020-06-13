@@ -9,9 +9,9 @@ import (
 	"path/filepath"
 	"sync"
 
-	"1pkg/gopium/gopium"
-	"1pkg/gopium/tests"
-	"1pkg/gopium/typepkg"
+	"github.com/1pkg/gopium/gopium"
+	"github.com/1pkg/gopium/tests"
+	"github.com/1pkg/gopium/typepkg"
 
 	"golang.org/x/tools/go/packages"
 )
@@ -39,7 +39,7 @@ type Parser struct {
 // NewParser creates parser for single tests data
 func NewParser(pkg string) gopium.Parser {
 	p := &typepkg.ParserXToolPackagesAst{
-		Pattern:    fmt.Sprintf("1pkg/gopium/tests/data/%s", pkg),
+		Pattern:    fmt.Sprintf("github.com/1pkg/gopium/tests/data/%s", pkg),
 		Path:       filepath.Join(tests.Gopium, "tests", "data", pkg),
 		ModeTypes:  packages.LoadAllSyntax,
 		ModeAst:    parser.ParseComments | parser.AllErrors,

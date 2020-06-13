@@ -4,10 +4,10 @@ import (
 	"context"
 	"regexp"
 
-	"1pkg/gopium/collections"
-	"1pkg/gopium/fmtio"
-	"1pkg/gopium/fmtio/astutil"
-	"1pkg/gopium/gopium"
+	"github.com/1pkg/gopium/collections"
+	"github.com/1pkg/gopium/fmtio"
+	"github.com/1pkg/gopium/fmtio/astutil"
+	"github.com/1pkg/gopium/gopium"
 )
 
 // list of wast presets

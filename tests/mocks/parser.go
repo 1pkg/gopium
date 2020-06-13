@@ -6,7 +6,7 @@ import (
 	"go/token"
 	"go/types"
 
-	"1pkg/gopium/gopium"
+	"github.com/1pkg/gopium/gopium"
 )
 
 // Pos defines mock pos

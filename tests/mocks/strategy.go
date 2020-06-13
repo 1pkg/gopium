@@ -3,7 +3,7 @@ package mocks
 import (
 	"context"
 
-	"1pkg/gopium/gopium"
+	"github.com/1pkg/gopium/gopium"
 )
 
 // Strategy defines mock strategy implementation

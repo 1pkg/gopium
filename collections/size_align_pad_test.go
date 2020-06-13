@@ -4,7 +4,7 @@ import (
 	"reflect"
 	"testing"
 
-	"1pkg/gopium/gopium"
+	"github.com/1pkg/gopium/gopium"
 )
 
 func TestSizeAlign(t *testing.T) {

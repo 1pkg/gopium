@@ -4,8 +4,8 @@ import (
 	"go/types"
 	"sync"
 
-	"1pkg/gopium/collections"
-	"1pkg/gopium/gopium"
+	"github.com/1pkg/gopium/collections"
+	"github.com/1pkg/gopium/gopium"
 )
 
 // sizealign defines data transfer

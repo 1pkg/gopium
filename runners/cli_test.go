@@ -10,13 +10,13 @@ import (
 	"testing"
 	"time"
 
-	"1pkg/gopium/gopium"
-	"1pkg/gopium/fmtio"
-	"1pkg/gopium/strategies"
-	"1pkg/gopium/tests"
-	"1pkg/gopium/tests/mocks"
-	"1pkg/gopium/typepkg"
-	"1pkg/gopium/walkers"
+	"github.com/1pkg/gopium/fmtio"
+	"github.com/1pkg/gopium/gopium"
+	"github.com/1pkg/gopium/strategies"
+	"github.com/1pkg/gopium/tests"
+	"github.com/1pkg/gopium/tests/mocks"
+	"github.com/1pkg/gopium/typepkg"
+	"github.com/1pkg/gopium/walkers"
 
 	"golang.org/x/tools/go/packages"
 )

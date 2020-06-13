@@ -11,7 +11,7 @@ import (
 	"strconv"
 	"strings"
 
-	"1pkg/gopium/gopium"
+	"github.com/1pkg/gopium/gopium"
 )
 
 // Jsonb defines bytes implementation

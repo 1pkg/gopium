@@ -2,7 +2,7 @@
 
 package note
 
-import "ast"
+import "github.com/1pkg/gopium/gopium"
 
 // random function
 func rnd() int {
@@ -11,4 +11,4 @@ func rnd() int {
 
 type tf rnd
 
-type tt ast.File
+type tt gopium.Struct

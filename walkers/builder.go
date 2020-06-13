@@ -3,7 +3,7 @@ package walkers
 import (
 	"fmt"
 
-	"1pkg/gopium/gopium"
+	"github.com/1pkg/gopium/gopium"
 )
 
 // list of registered types walkers

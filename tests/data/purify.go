@@ -4,7 +4,7 @@ import (
 	"os"
 	"strings"
 
-	"1pkg/gopium/tests"
+	"github.com/1pkg/gopium/tests"
 )
 
 // purify helps to transform
