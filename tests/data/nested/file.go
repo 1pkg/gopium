@@ -32,7 +32,7 @@ func scope1() error {
 	return errors.New("test data")
 }
 
-func scope2() struct{A complex64, B int64, C float64} {
+func scope2() struct{A complex64; B int64; C float64} {
 	// name shadowing 
 	type A struct {
 		a int32
@@ -44,7 +44,7 @@ func scope2() struct{A complex64, B int64, C float64} {
 	scope3 := func(v int) {
 		// name shadowing 
 		type a1 struct {
-			i struct{}{}
+			i struct{}
 		}
 	}
 
@@ -55,7 +55,7 @@ func scope2() struct{A complex64, B int64, C float64} {
 		var c1 C
 	}
 
-	return struct{A complex64, B int64, C float64} {}
+	return struct{A complex64; B int64; C float64} {}
 }
 
 var scope5 = func() {}

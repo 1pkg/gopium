@@ -84,17 +84,17 @@ func TestMavenEnum(t *testing.T) {
 	m := maven{
 		exp: mocks.Maven{
 			Types: map[string]mocks.Type{
-				"string": mocks.Type{
+				"string": {
 					Name:  "string",
 					Size:  16,
 					Align: 8,
 				},
-				"test": mocks.Type{
+				"test": {
 					Name:  "test",
 					Size:  24,
 					Align: 20,
 				},
-				"[10]test": mocks.Type{
+				"[10]test": {
 					Name:  "test",
 					Size:  240,
 					Align: 20,
@@ -188,17 +188,17 @@ func TestMavenRefsa(t *testing.T) {
 	m := maven{
 		exp: mocks.Maven{
 			Types: map[string]mocks.Type{
-				"string": mocks.Type{
+				"string": {
 					Name:  "string",
 					Size:  16,
 					Align: 8,
 				},
-				"test": mocks.Type{
+				"test": {
 					Name:  "test",
 					Size:  24,
 					Align: 20,
 				},
-				"[10]test": mocks.Type{
+				"[10]test": {
 					Name:  "test",
 					Size:  240,
 					Align: 20,

@@ -286,7 +286,7 @@ type Single struct {
 			pkg: &ast.Package{
 				Name: "pkg",
 				Files: map[string]*ast.File{
-					"file": &ast.File{},
+					"file": {},
 				},
 			},
 			loc: NewLocator(nil),
@@ -334,7 +334,7 @@ type Single struct {
 			pkg: &ast.Package{
 				Name: "pkg",
 				Files: map[string]*ast.File{
-					"file": &ast.File{},
+					"file": {},
 				},
 			},
 			loc: NewLocator(nil),
