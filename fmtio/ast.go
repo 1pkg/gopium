@@ -183,7 +183,7 @@ func padsync(ts *ast.TypeSpec, st gopium.Struct) error {
 		size := strconv.Itoa(int(f.Size))
 		field := &ast.Field{
 			Names: []*ast.Ident{
-				&ast.Ident{
+				{
 					Name: "_",
 					Obj: &ast.Object{
 						Kind: ast.Var,

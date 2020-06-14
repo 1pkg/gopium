@@ -115,7 +115,7 @@ func (pdc *pressnote) Visit(ts *ast.TypeSpec, st gopium.Struct) error {
 		doc := fmt.Sprintf("//%s", strings.ReplaceAll(strings.Join(st.Doc, ""), "//", ""))
 		// update file comments list
 		file.Comments = append(file.Comments, &ast.CommentGroup{List: []*ast.Comment{
-			&ast.Comment{Slash: slash, Text: doc},
+			{Slash: slash, Text: doc},
 		}})
 	}
 	// if it has at least one comment
@@ -126,7 +126,7 @@ func (pdc *pressnote) Visit(ts *ast.TypeSpec, st gopium.Struct) error {
 		com := fmt.Sprintf("//%s", strings.ReplaceAll(strings.Join(st.Comment, ""), "//", ""))
 		// update file comments list
 		file.Comments = append(file.Comments, &ast.CommentGroup{List: []*ast.Comment{
-			&ast.Comment{Slash: slash, Text: com},
+			{Slash: slash, Text: com},
 		}})
 	}
 	// go through all resulted structure fields
@@ -142,7 +142,7 @@ func (pdc *pressnote) Visit(ts *ast.TypeSpec, st gopium.Struct) error {
 			doc := fmt.Sprintf("//%s", strings.ReplaceAll(strings.Join(field.Doc, ""), "//", ""))
 			// update file comments list
 			file.Comments = append(file.Comments, &ast.CommentGroup{List: []*ast.Comment{
-				&ast.Comment{Slash: slash, Text: doc},
+				{Slash: slash, Text: doc},
 			}})
 		}
 		// if it has at least one comment
@@ -153,7 +153,7 @@ func (pdc *pressnote) Visit(ts *ast.TypeSpec, st gopium.Struct) error {
 			com := fmt.Sprintf("//%s", strings.ReplaceAll(strings.Join(field.Comment, ""), "//", ""))
 			// update file comments list
 			file.Comments = append(file.Comments, &ast.CommentGroup{List: []*ast.Comment{
-				&ast.Comment{Slash: slash, Text: com},
+				{Slash: slash, Text: com},
 			}})
 		}
 	}
