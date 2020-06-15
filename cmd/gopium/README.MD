@@ -12,8 +12,75 @@ In order to use gopium cli you need to provide at least package name (full packa
 Outcome of execution is fully defined by list of strategies and walker combination.
 List of strategies modifies structs inside the package, walker facilitates and insures, that outcome is formatted written to one of provided destinations.
 
+Gopium CLI uses next parameters schema:
+
 ```bash
-gopium walker package strategy_1 strategy_2 strategy_3 ...
+gopium -flag_0 -flag_n walker package strategy_1 strategy_2 strategy_3 ...
+```
+
+where:
+
+- walker defines destination for execution outcome, it should contain one value from [full walkers list](#walkers-and-formatters).
+- package defines target package name for execution, note that full package name is expected.
+- strategies [1..n] define transformations list that should be applied to package, they should contain at least one values from [full transformations list](#strategies-and-transformations).
+- flags [0..n] define modificators for transfromations and walker, see [full flags list](#options-and-flags).
+
+Real Gopium CLI commands examples that have been used to create [examples](../examples):
+
+```bash
+###
+# creates new folder `transaction_gopium` inside /Users/1pkg/proj/src/1pkg/gopium/examples/
+#
+# with all inside structures transformed with:
+# - rearrange structure fields in order to get optimal memory layout
+# - add structure comment size annotation
+# - add gopium tags to structure to save this list of transformation
+# (it saves just list of transformation inside the tags and doesn't affect previous transformation at all, this way this list of strategies could be reused later)
+# (force means override gopium tags even if previous exist)
+#
+# -p defines full path to package `1pkg/gopium/examples/transaction`
+# it could be omitted if full package name would be used instead `gopium ast_go_tree 1pkg/gopium/examples/transaction memory_pack ...`
+###
+gopium ast_go_tree transaction memory_pack comment_struct_annotate add_tag_group_force -p /Users/1pkg/proj/src/1pkg/gopium/examples/transaction
+```
+
+```bash
+###
+# creates new folder `transaction_gopium` inside /Users/1pkg/proj/src/1pkg/gopium/examples/
+#
+# with all structures transformed with:
+# - filter explicit fields paddings
+# - add cache line #1 false sharing paddings after each field
+# - add structure comment size annotation
+# - add gopium tags to structure to save this list of transformation
+# (it saves just list of transformation inside the tags and doesn't affect previous transformation at all, this way this list of strategies could be reused later)
+# (force means override gopium tags even if previous exist)
+#
+# -p defines full path to package `1pkg/gopium/examples/transaction`
+# it could be omitted if full package name would be used instead `gopium ast_go_tree 1pkg/gopium/examples/transaction memory_pack ...`
+###
+gopium ast_go_tree transaction filter_pads false_sharing_cpu_l1 add_tag_group_force -p /Users/1pkg/proj/src/1pkg/gopium/examples/transaction
+```
+
+```bash
+###
+# creates new folder `transaction_gopium` inside /Users/1pkg/proj/src/1pkg/gopium/examples/
+#
+# with all structures transformed to:
+# - filter explicit fields paddings
+# - add explicit system alignment padding after each field
+# - add explicit padding in the end of structure to round its size to cache line #1
+# - add structure comment size annotation
+# - add gopium tags to structure to save this list of transformation
+# (it saves just list of transformation inside the tags and doesn't affect previous transformation at all, this way this list of strategies could be reused later)
+# (force means override gopium tags even if previous exist)
+#
+# -p defines full path to package `1pkg/gopium/examples/transaction`
+# it could be omitted if full package name would be used instead `gopium ast_go_tree 1pkg/gopium/examples/transaction memory_pack ...`
+#
+# -l -l -l defines cache lines #1 #2 #3 sizes that are used for transformations
+###
+gopium -l 64 -l 64 -l 64 ast_go_tree transaction filter_pads explicit_padings_system_alignment cache_rounding_cpu_l1 comment_struct_annotate add_tag_group_force -p /Users/1pkg/proj/src/1pkg/gopium/examples/transaction
 ```
 
 Gopium also has rich vscode extension to provide better experience for usage and simplify interactions with cli tool, [see more](../vscode/README.MD).
