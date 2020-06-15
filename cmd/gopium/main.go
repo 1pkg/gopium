@@ -131,11 +131,13 @@ Gopium provides next strategies:
  - ignore (does nothing by returning original structure)
 
 Notes:
- - it might be useful to use filter_pads in pipes with other strategies to clean paddings first
+ - it might be useful to use filter_pads in pipes with other strategies to clean paddings first.
  - process_tag_group currently supports only next fields tags annotation formats:
   - gopium:"stg,stg,stg" processed as default group
   - gopium:"group:def;stg,stg,stg" processed as named group
- - by specifying tag_type you can automatically generate fields tags annotation suitable for process_tag_group
+ - by specifying tag_type you can automatically generate fields tags annotation suitable for process_tag_group.
+ - add_tag_* strategies just add list of applied transformations to structure fields tags and NOT change results of
+	other strategies, you can execute process_tag_group strategy afterwards to reuse saved strategies list.
 		`,
 		Args: cobra.MinimumNArgs(3),
 		RunE: func(cmd *cobra.Command, args []string) error {

@@ -142,13 +142,52 @@ Gopium provides next strategies:
 - filter_pads (filters out all structure padding fields)
 - ignore (does nothing by returning original structure)
 
+## Gopium and Tags
+
+Gopium CLI usues structure fields tags strategies for two purposes:
+
+- save transformations list for later reuse
+- to have abillity to apply different strategies groups inside one structure
+
+For example by applying `gopium -l 64 -l 128 ast_stg transaction process_tag_group` to:
+
+```go
+// transaction defines business transaction
+type transaction struct {
+	amount   float64 `gopium:"group:critical;filter_pads,false_sharing_cpu_l1,separate_padding_cpu_l2_bottom"`
+	serial   uint64  `gopium:"group:other;memory_pack"`
+	discount float64 `gopium:"group:critical;filter_pads,false_sharing_cpu_l1,separate_padding_cpu_l2_bottom"`
+	void     bool    `gopium:"group:other;memory_pack"`
+	skip     bool    `gopium:"group:other;memory_pack"`
+}
+```
+
+we can expect next Gopium CLI groups result:
+
+```go
+// transaction defines business transaction
+type transaction struct {
+        amount   float64 `gopium:"group:critical;filter_pads,false_sharing_cpu_l1,separate_padding_cpu_l2_bottom"`
+        _        [56]byte
+        discount float64 `gopium:"group:critical;filter_pads,false_sharing_cpu_l1,separate_padding_cpu_l2_bottom"`
+        _        [56]byte
+        _        [64]byte
+        serial   uint64 `gopium:"group:other;memory_pack"`
+        void     bool   `gopium:"group:other;memory_pack"`
+        skip     bool   `gopium:"group:other;memory_pack"`
+}
+```
+
+In this example fields `amount` and `discount` (group `critical`) were processed independently from fields `serial`, `void`, `skip` (group `other`) and two different sets of transformations were applied to each of them.
+
 ## Additional Notes
 
-- it might be useful to use filter_pads in pipes with other strategies to clean paddings first
+- it might be useful to use filter_pads in pipes with other strategies to clean paddings first.
 - process_tag_group currently supports only next fields tags annotation formats:
   - gopium:"stg,stg,stg" processed as default group
   - gopium:"group:def;stg,stg,stg" processed as named group
-- by specifying tag_type you can automatically generate fields tags annotation suitable for process_tag_group
+- by specifying tag_type you can automatically generate fields tags annotation suitable for process_tag_group.
+- `add_tag_*` strategies just add list of applied transformations to structure fields tags and NOT change results of other strategies, you can execute `process_tag_group` strategy afterwards to reuse saved strategies list.
 
 ## Options and Flags
 
