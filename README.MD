@@ -40,7 +40,7 @@ To install Gopium VSCode Extension use [vscode marketplace](https://marketplace.
 To install and update Gopium CLI use:
 
 ```bash
-go get github.com/1pkg/gopium/cmd/gopium
+go get -u github.com/1pkg/gopium/cmd/gopium
 ```
 
 In order to use gopium cli you need to provide at least package name (full package name is expected), list of strategies which is applied one by one and single walker.

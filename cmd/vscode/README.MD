@@ -13,7 +13,7 @@ Extension automatically tries to install required tools if they have been not de
 To install and update gopium cli use:
 
 ```bash
-go get github.com/1pkg/gopium/cmd/gopium
+go get -u github.com/1pkg/gopium/cmd/gopium
 ```
 
 To install and update goutline use:
