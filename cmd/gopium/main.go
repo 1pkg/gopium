@@ -96,14 +96,14 @@ Gopium provides next strategies:
 	for each structure field)
  - separate_padding_system_alignment_top (separates structure with extra system alignment padding by adding
 	the padding at the top)
+- separate_padding_system_alignment_bottom (separates structure with extra system alignment padding by adding
+	the padding at the bottom)
  - separate_padding_cpu_l1_top (separates structure with extra cpu cache line #1 padding by adding
 	the padding at the top)
  - separate_padding_cpu_l2_top (separates structure with extra cpu cache line #2 padding by adding
 	the padding at the top)
  - separate_padding_cpu_l3_top (separates structure with extra cpu cache line #3 padding by adding
 	the padding at the top)
- - separate_padding_system_alignment_bottom (separates structure with extra system alignment padding by adding
-	the padding at the bottom)
  - separate_padding_cpu_l1_bottom (separates structure with extra cpu cache line #1 padding by adding
 	the padding at the bottom)
  - separate_padding_cpu_l2_bottom (separates structure with extra cpu cache line #2 padding by adding
