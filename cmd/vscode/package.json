@@ -197,12 +197,12 @@
 									"ast_go_tree",
 									"ast_std",
 									"ast_gopium",
-									"json_file",
-									"xml_file",
-									"csv_file",
-									"md_table_file",
-									"size_align_md_table_file",
-									"fields_html_table_file"
+									"file_json",
+									"file_xml",
+									"file_csv",
+									"file_md_table",
+									"size_align_file_md_table",
+									"fields_file_html_table"
 								],
 								"description": "Gopium walker for single action preset."
 							},
@@ -214,34 +214,38 @@
 										"process_tag_group",
 										"memory_pack",
 										"memory_unpack",
-										"cache_rounding_cpu_l1",
-										"cache_rounding_cpu_l2",
-										"cache_rounding_cpu_l3",
-										"full_cache_rounding_cpu_l1",
-										"full_cache_rounding_cpu_l2",
-										"full_cache_rounding_cpu_l3",
+										"cache_rounding_cpu_l1_discrete",
+										"cache_rounding_cpu_l2_discrete",
+										"cache_rounding_cpu_l3_discrete",
+										"cache_rounding_bytes_{{uint}}_discrete",
+										"cache_rounding_cpu_l1_full",
+										"cache_rounding_cpu_l2_full",
+										"cache_rounding_cpu_l3_full",
+										"cache_rounding_bytes_{{uint}}_full",
 										"false_sharing_cpu_l1",
 										"false_sharing_cpu_l2",
 										"false_sharing_cpu_l3",
-										"separate_padding_system_alignment_top",
+										"false_sharing_bytes_{{uint}}",
+										"separate_padding_system_alignment_bottom",
 										"separate_padding_cpu_l1_top",
 										"separate_padding_cpu_l2_top",
 										"separate_padding_cpu_l3_top",
-										"separate_padding_system_alignment_bottom",
+										"separate_padding_bytes_{{uint}_top",
 										"separate_padding_cpu_l1_bottom",
 										"separate_padding_cpu_l2_bottom",
 										"separate_padding_cpu_l3_bottom",
-										"explicit_padings_system_alignment",
-										"explicit_padings_type_natural",
+										"separate_padding_bytes_{{uint}_bottom",
+										"explicit_paddings_system_alignment",
+										"explicit_paddings_type_natural",
 										"add_tag_group_soft",
 										"add_tag_group_force",
 										"add_tag_group_discrete",
 										"add_tag_group_force_discrete",
 										"remove_tag_group",
-										"doc_fields_annotate",
-										"comment_fields_annotate",
-										"doc_struct_annotate",
-										"comment_struct_annotate",
+										"fields_annotate_doc",
+										"fields_annotate_comment",
+										"struct_annotate_doc",
+										"struct_annotate_comment",
 										"name_lexicographical_ascending",
 										"name_lexicographical_descending",
 										"type_lexicographical_ascending",
@@ -266,7 +270,7 @@
 							"name": "cache",
 							"walker": "ast_go",
 							"strategies": [
-								"cache_rounding_cpu_l1"
+								"cache_rounding_cpu_l1_discrete"
 							]
 						},
 						{
@@ -275,8 +279,8 @@
 							"strategies": [
 								"filter_pads",
 								"memory_pack",
-								"explicit_padings_type_natural",
-								"cache_rounding_cpu_l1"
+								"explicit_paddings_type_natural",
+								"cache_rounding_cpu_l1_discrete"
 							]
 						},
 						{
@@ -293,9 +297,9 @@
 							"strategies": [
 								"filter_pads",
 								"memory_pack",
-								"explicit_padings_type_natural",
-								"comment_fields_annotate",
-								"comment_struct_annotate",
+								"explicit_paddings_type_natural",
+								"fields_annotate_comment",
+								"struct_annotate_comment",
 								"add_tag_group_soft"
 							]
 						},
@@ -304,10 +308,10 @@
 							"walker": "ast_go",
 							"strategies": [
 								"filter_pads",
-								"explicit_padings_type_natural",
-								"cache_rounding_cpu_l1",
-								"comment_fields_annotate",
-								"comment_struct_annotate",
+								"explicit_paddings_type_natural",
+								"cache_rounding_cpu_l1_discrete",
+								"fields_annotate_comment",
+								"struct_annotate_comment",
 								"add_tag_group_soft"
 							]
 						}

@@ -21,8 +21,8 @@ var (
 // for each structure field
 // and aggregated size annotation for structure
 type note struct {
-	doc   bool `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1,comment_struct_annotate,add_tag_group_force"`
-	field bool `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1,comment_struct_annotate,add_tag_group_force"`
+	doc   bool `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1_discrete,struct_annotate_comment,add_tag_group_force"`
+	field bool `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1_discrete,struct_annotate_comment,add_tag_group_force"`
 } // struct size: 2 bytes; struct align: 1 bytes; struct aligned size: 2 bytes; - 🌺 gopium @1pkg
 
 // Apply note implementation

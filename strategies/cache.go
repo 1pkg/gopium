@@ -9,23 +9,32 @@ import (
 
 // list of cache presets
 var (
-	cachel1  = cache{line: 1, div: true}
-	cachel2  = cache{line: 2, div: true}
-	cachel3  = cache{line: 3, div: true}
-	fcachel1 = cache{line: 1, div: false}
-	fcachel2 = cache{line: 2, div: false}
-	fcachel3 = cache{line: 3, div: false}
+	cachel1d = cache{line: 1, div: true}
+	cachel2d = cache{line: 2, div: true}
+	cachel3d = cache{line: 3, div: true}
+	cachebd  = cache{div: true}
+	cachel1f = cache{line: 1, div: false}
+	cachel2f = cache{line: 2, div: false}
+	cachel3f = cache{line: 3, div: false}
+	cachebf  = cache{div: false}
 )
 
 // cache defines strategy implementation
 // that fits structure into cpu cache line
 // by adding bottom rounding cpu cache padding
 type cache struct {
-	curator gopium.Curator `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1,comment_struct_annotate,add_tag_group_force"`
-	line    uint           `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1,comment_struct_annotate,add_tag_group_force"`
-	div     bool           `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1,comment_struct_annotate,add_tag_group_force"`
-	_       [7]byte        `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1,comment_struct_annotate,add_tag_group_force"`
-} // struct size: 32 bytes; struct align: 8 bytes; struct aligned size: 32 bytes; - 🌺 gopium @1pkg
+	curator gopium.Curator `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1_discrete,struct_annotate_comment,add_tag_group_force"`
+	line    uint           `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1_discrete,struct_annotate_comment,add_tag_group_force"`
+	bytes   uint           `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1_discrete,struct_annotate_comment,add_tag_group_force"`
+	div     bool           `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1_discrete,struct_annotate_comment,add_tag_group_force"`
+	_       [31]byte       `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1_discrete,struct_annotate_comment,add_tag_group_force"`
+} // struct size: 64 bytes; struct align: 8 bytes; struct aligned size: 64 bytes; - 🌺 gopium @1pkg
+
+// Bytes erich cache strategy with custom bytes
+func (stg cache) Bytes(bytes uint) cache {
+	stg.bytes = bytes
+	return stg
+}
 
 // Curator erich cache strategy with curator instance
 func (stg cache) Curator(curator gopium.Curator) cache {
@@ -51,8 +60,11 @@ func (stg cache) Apply(ctx context.Context, o gopium.Struct) (gopium.Struct, err
 			alsize += f.Size
 		}
 	})
-	// check if cache line size is valid
-	if cachel := stg.curator.SysCache(stg.line); cachel > 0 {
+	// check if cache line size or bytes are valid
+	if cachel := stg.curator.SysCache(stg.line); cachel > 0 || stg.bytes > 0 {
+		if stg.line == 0 {
+			cachel = int64(stg.bytes)
+		}
 		// if fractional cache line is allowed
 		if stg.div {
 			// find smallest size of fraction for cache line
