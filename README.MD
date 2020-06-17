@@ -24,7 +24,7 @@ Gopium is the tool that was designed to automate and simplify common structs per
 gopium walker package strategy_1 strategy_2 strategy_3 ...
 ```
 
-- All Gopium transformations results and artifacts could be differently formatted and routed to multiple outputs, among which are: direct overwriting or copying to go (code) ast, multiple options for code formatting and printing, comparison tables for results, common textual data serialization formats, (`ast_go`, `ast_go_tree`, `ast_gopium`, `size_align_md_table_file`, [and more](cmd/gopium/README.MD#walkers-and-formatters)).
+- All Gopium transformations results and artifacts could be differently formatted and routed to multiple outputs, among which are: direct overwriting or copying to go (code) ast, multiple options for code formatting and printing, comparison tables for results, common textual data serialization formats, (`ast_go`, `ast_go_tree`, `ast_gopium`, `size_align_file_md_table`, [and more](cmd/gopium/README.MD#walkers-and-formatters)).
 - Gopium has rich vscode extension to provide better experience for usage and simplify interactions with tool, [see more](cmd/vscode/README.MD).
   ![](vscode.gif)
 - Gopium supports target configs variety, in case if you need optimizations for specific platform or hardware, such as: target compiler, target architecture, target cpu cache lines sizes, [and more](cmd/gopium/README.MD#options-and-flags).
