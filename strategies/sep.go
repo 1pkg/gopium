@@ -59,7 +59,7 @@ func (stg sep) Apply(ctx context.Context, o gopium.Struct) (gopium.Struct, error
 	}
 	// if struct has feilds and separator size or bytes are valid
 	if flen := len(r.Fields); flen > 0 && (sep > 0 || stg.bytes > 0) {
-		if sep == 0 {
+		if !stg.sys && stg.line == 0 {
 			sep = int64(stg.bytes)
 		}
 		// add field before or after

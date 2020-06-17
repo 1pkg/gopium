@@ -62,7 +62,7 @@ func (stg cache) Apply(ctx context.Context, o gopium.Struct) (gopium.Struct, err
 	})
 	// check if cache line size or bytes are valid
 	if cachel := stg.curator.SysCache(stg.line); cachel > 0 || stg.bytes > 0 {
-		if cachel == 0 {
+		if stg.line == 0 {
 			cachel = int64(stg.bytes)
 		}
 		// if fractional cache line is allowed

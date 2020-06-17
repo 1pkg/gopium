@@ -44,7 +44,7 @@ func (stg fshare) Apply(ctx context.Context, o gopium.Struct) (gopium.Struct, er
 	// check that struct has fields
 	// and cache line size or bytes are valid
 	if flen, cachel := len(r.Fields), stg.curator.SysCache(stg.line); flen > 0 && (cachel > 0 || stg.bytes > 0) {
-		if cachel == 0 {
+		if stg.line == 0 {
 			cachel = int64(stg.bytes)
 		}
 		// setup resulted fields slice
