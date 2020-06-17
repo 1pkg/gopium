@@ -236,7 +236,7 @@
 										"add_tag_group_soft",
 										"add_tag_group_force",
 										"add_tag_group_discrete",
-										"add_tag_group_force_discrete",
+										"add_tag_group_combination_force_discrete",
 										"remove_tag_group",
 										"fields_annotate_doc",
 										"fields_annotate_comment",

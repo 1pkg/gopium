@@ -123,7 +123,7 @@ func TestBuilder(t *testing.T) {
 			names: []gopium.StrategyName{AddTagSD},
 			stg:   pipe([]gopium.Strategy{tagsd.Names(AddTagSD)}),
 		},
-		"`add_tag_group_force_discrete` name should return expected strategy": {
+		"`add_tag_group_combination_force_discrete` name should return expected strategy": {
 			names: []gopium.StrategyName{AddTagFD},
 			stg:   pipe([]gopium.Strategy{tagfd.Names(AddTagFD)}),
 		},

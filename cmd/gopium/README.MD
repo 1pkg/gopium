@@ -129,7 +129,7 @@ Gopium provides next strategies:
 - add_tag_group_soft (adds gopium fields tags annotation if no previous annotation found)
 - add_tag_group_force (adds gopium fields tags annotation if previous annotation found overwrites it)
 - add_tag_group_discrete (discretely adds gopium fields tags annotation if no previous annotation found)
-- add_tag_group_force_discrete (discretely adds gopium fields tags annotation if previous annotation found overwrites it)
+- add_tag_group_combination_force_discrete (discretely adds gopium fields tags annotation if previous annotation found overwrites it)
 - remove_tag_group (removes gopium fields tags annotation)
 - fields_annotate_doc (adds align and size doc annotation for each structure field)
 - fields_annotate_comment adds align and size comment annotation for each structure field)
