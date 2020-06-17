@@ -9,11 +9,11 @@ import (
 
 // transaction defines business transaction
 type transaction struct {
-	amount   float64 `gopium:"memory_pack,comment_struct_annotate,add_tag_group_force"`
-	serial   uint64  `gopium:"memory_pack,comment_struct_annotate,add_tag_group_force"`
-	discount float64 `gopium:"memory_pack,comment_struct_annotate,add_tag_group_force"`
-	void     bool    `gopium:"memory_pack,comment_struct_annotate,add_tag_group_force"`
-	skip     bool    `gopium:"memory_pack,comment_struct_annotate,add_tag_group_force"`
+	amount   float64 `gopium:"memory_pack,struct_annotate_comment,add_tag_group_force"`
+	serial   uint64  `gopium:"memory_pack,struct_annotate_comment,add_tag_group_force"`
+	discount float64 `gopium:"memory_pack,struct_annotate_comment,add_tag_group_force"`
+	void     bool    `gopium:"memory_pack,struct_annotate_comment,add_tag_group_force"`
+	skip     bool    `gopium:"memory_pack,struct_annotate_comment,add_tag_group_force"`
 } // struct size: 26 bytes; struct align: 8 bytes; struct aligned size: 32 bytes; - 🌺 gopium @1pkg
 
 // aggregate defines compressed set of transactions

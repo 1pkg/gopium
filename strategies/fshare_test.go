@@ -76,6 +76,77 @@ func TestFshare(t *testing.T) {
 			},
 			err: context.Canceled,
 		},
+		"non empty struct should be applied to expected aligned struct custom bytes": {
+			fshare: fshareb.Bytes(20),
+			c:      mocks.Maven{SCache: []int64{16, 16, 16}},
+			ctx:    context.Background(),
+			o: gopium.Struct{
+				Name: "test",
+				Fields: []gopium.Field{
+					{
+						Name: "test",
+						Size: 8,
+					},
+				},
+			},
+			r: gopium.Struct{
+				Name: "test",
+				Fields: []gopium.Field{
+					{
+						Name: "test",
+						Size: 8,
+					},
+					collections.PadField(12),
+				},
+			},
+		},
+		"non empty struct should be applied to expected aligned struct custom bytes and cache line": {
+			fshare: fsharel2.Bytes(20),
+			c:      mocks.Maven{SCache: []int64{16, 16, 16}},
+			ctx:    context.Background(),
+			o: gopium.Struct{
+				Name: "test",
+				Fields: []gopium.Field{
+					{
+						Name: "test",
+						Size: 8,
+					},
+				},
+			},
+			r: gopium.Struct{
+				Name: "test",
+				Fields: []gopium.Field{
+					{
+						Name: "test",
+						Size: 8,
+					},
+					collections.PadField(8),
+				},
+			},
+		},
+		"non empty struct should be applied to expected aligned struct empty custom bytes and empty line": {
+			fshare: fshareb,
+			c:      mocks.Maven{SCache: []int64{16, 16, 16}},
+			ctx:    context.Background(),
+			o: gopium.Struct{
+				Name: "test",
+				Fields: []gopium.Field{
+					{
+						Name: "test",
+						Size: 8,
+					},
+				},
+			},
+			r: gopium.Struct{
+				Name: "test",
+				Fields: []gopium.Field{
+					{
+						Name: "test",
+						Size: 8,
+					},
+				},
+			},
+		},
 		"mixed struct should be applied to expected aligned struct": {
 			fshare: fsharel3,
 			c:      mocks.Maven{SCache: []int64{16, 32, 64}},
@@ -124,6 +195,57 @@ func TestFshare(t *testing.T) {
 						Size: 3,
 					},
 					collections.PadField(61),
+				},
+			},
+		},
+		"mixed struct should be applied to expected aligned struct custom bytes": {
+			fshare: fshareb.Bytes(5),
+			c:      mocks.Maven{SCache: []int64{16, 32, 64}},
+			ctx:    context.Background(),
+			o: gopium.Struct{
+				Name: "test",
+				Fields: []gopium.Field{
+					{
+						Name: "test1",
+						Size: 32,
+					},
+					{
+						Name: "test2",
+						Size: 8,
+					},
+					{
+						Name: "test3",
+						Size: 8,
+					},
+					{
+						Name: "test4",
+						Size: 3,
+					},
+				},
+			},
+			r: gopium.Struct{
+				Name: "test",
+				Fields: []gopium.Field{
+					{
+						Name: "test1",
+						Size: 32,
+					},
+					collections.PadField(3),
+					{
+						Name: "test2",
+						Size: 8,
+					},
+					collections.PadField(2),
+					{
+						Name: "test3",
+						Size: 8,
+					},
+					collections.PadField(2),
+					{
+						Name: "test4",
+						Size: 3,
+					},
+					collections.PadField(2),
 				},
 			},
 		},

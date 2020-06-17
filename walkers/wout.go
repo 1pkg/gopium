@@ -12,19 +12,19 @@ import (
 
 // list of wout presets
 var (
-	jsonfile = wout{
+	filejson = wout{
 		fmt:    fmtio.Jsonb,
 		writer: fmtio.File{Name: gopium.NAME, Ext: fmtio.JSON},
 	}
-	xmlfile = wout{
+	filexml = wout{
 		fmt:    fmtio.Xmlb,
 		writer: fmtio.File{Name: gopium.NAME, Ext: fmtio.XML},
 	}
-	csvfile = wout{
+	filecsv = wout{
 		fmt:    fmtio.Csvb(fmtio.Buffer()),
 		writer: fmtio.File{Name: gopium.NAME, Ext: fmtio.CSV},
 	}
-	mdtfile = wout{
+	filemdt = wout{
 		fmt:    fmtio.Mdtb,
 		writer: fmtio.File{Name: gopium.NAME, Ext: fmtio.MD},
 	}
@@ -32,13 +32,13 @@ var (
 
 // wout defines packages walker out implementation
 type wout struct {
-	writer  gopium.Writer     `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1,comment_struct_annotate,add_tag_group_force"`
-	parser  gopium.TypeParser `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1,comment_struct_annotate,add_tag_group_force"`
-	exposer gopium.Exposer    `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1,comment_struct_annotate,add_tag_group_force"`
-	fmt     gopium.Bytes      `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1,comment_struct_annotate,add_tag_group_force"`
-	deep    bool              `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1,comment_struct_annotate,add_tag_group_force"`
-	bref    bool              `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1,comment_struct_annotate,add_tag_group_force"`
-	_       [6]byte           `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1,comment_struct_annotate,add_tag_group_force"`
+	writer  gopium.Writer     `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1_discrete,struct_annotate_comment,add_tag_group_force"`
+	parser  gopium.TypeParser `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1_discrete,struct_annotate_comment,add_tag_group_force"`
+	exposer gopium.Exposer    `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1_discrete,struct_annotate_comment,add_tag_group_force"`
+	fmt     gopium.Bytes      `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1_discrete,struct_annotate_comment,add_tag_group_force"`
+	deep    bool              `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1_discrete,struct_annotate_comment,add_tag_group_force"`
+	bref    bool              `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1_discrete,struct_annotate_comment,add_tag_group_force"`
+	_       [6]byte           `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1_discrete,struct_annotate_comment,add_tag_group_force"`
 } // struct size: 64 bytes; struct align: 8 bytes; struct aligned size: 64 bytes; - 🌺 gopium @1pkg
 
 // With erich wast walker with external visiting parameters

@@ -64,36 +64,36 @@ func TestBuilder(t *testing.T) {
 			),
 		},
 		// wout walkers
-		"`json_file` name should return expected walker": {
-			name: JsonbFile,
-			w: jsonfile.With(
+		"`file_json` name should return expected walker": {
+			name: FileJsonb,
+			w: filejson.With(
 				b.Parser,
 				b.Exposer,
 				b.Deep,
 				b.Bref,
 			),
 		},
-		"`xml_file` name should return expected walker": {
-			name: XmlbFile,
-			w: xmlfile.With(
+		"`file_xml` name should return expected walker": {
+			name: FileXmlb,
+			w: filexml.With(
 				b.Parser,
 				b.Exposer,
 				b.Deep,
 				b.Bref,
 			),
 		},
-		"`csv_file` name should return expected walker": {
-			name: CsvbFile,
-			w: csvfile.With(
+		"`file_csv` name should return expected walker": {
+			name: FileCsvb,
+			w: filecsv.With(
 				b.Parser,
 				b.Exposer,
 				b.Deep,
 				b.Bref,
 			),
 		},
-		"`mdt_file` name should return expected walker": {
-			name: MdtFile,
-			w: mdtfile.With(
+		"`file_md_table` name should return expected walker": {
+			name: FileMdt,
+			w: filemdt.With(
 				b.Parser,
 				b.Exposer,
 				b.Deep,
@@ -101,18 +101,18 @@ func TestBuilder(t *testing.T) {
 			),
 		},
 		// wdiff walkers
-		"`size_align_md_table_file` name should return expected walker": {
-			name: SizeAlignMdtFile,
-			w: samdtfile.With(
+		"`size_align_file_md_table` name should return expected walker": {
+			name: SizeAlignFileMdt,
+			w: safilemdt.With(
 				b.Parser,
 				b.Exposer,
 				b.Deep,
 				b.Bref,
 			),
 		},
-		"`fields_html_table_file` name should return expected walker": {
-			name: FieldsHtmltFile,
-			w: fhtmltfile.With(
+		"`fields_file_html_table` name should return expected walker": {
+			name: FieldsFileHtmlt,
+			w: ffilehtml.With(
 				b.Parser,
 				b.Exposer,
 				b.Deep,

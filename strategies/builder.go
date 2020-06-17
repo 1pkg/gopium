@@ -2,50 +2,57 @@ package strategies
 
 import (
 	"fmt"
+	"regexp"
+	"strings"
 
 	"github.com/1pkg/gopium/gopium"
 )
 
-// list of registered types strategies
+// list of registered strategies names
 const (
 	// pack/unpack mem util
 	Pack   gopium.StrategyName = "memory_pack"
 	Unpack gopium.StrategyName = "memory_unpack"
 	// explicit sys/type pads
-	PadSys  gopium.StrategyName = "explicit_padings_system_alignment"
-	PadTnat gopium.StrategyName = "explicit_padings_type_natural"
+	PadSys  gopium.StrategyName = "explicit_paddings_system_alignment"
+	PadTnat gopium.StrategyName = "explicit_paddings_type_natural"
 	// false sharing guards
 	FShareL1 gopium.StrategyName = "false_sharing_cpu_l1"
 	FShareL2 gopium.StrategyName = "false_sharing_cpu_l2"
 	FShareL3 gopium.StrategyName = "false_sharing_cpu_l3"
+	FShareB  gopium.StrategyName = "false_sharing_bytes_%d"
 	// cache line pad roundings
-	CacheL1  gopium.StrategyName = "cache_rounding_cpu_l1"
-	CacheL2  gopium.StrategyName = "cache_rounding_cpu_l2"
-	CacheL3  gopium.StrategyName = "cache_rounding_cpu_l3"
-	FcacheL1 gopium.StrategyName = "full_cache_rounding_cpu_l1"
-	FcacheL2 gopium.StrategyName = "full_cache_rounding_cpu_l2"
-	FcacheL3 gopium.StrategyName = "full_cache_rounding_cpu_l3"
+	CacheL1D gopium.StrategyName = "cache_rounding_cpu_l1_discrete"
+	CacheL2D gopium.StrategyName = "cache_rounding_cpu_l2_discrete"
+	CacheL3D gopium.StrategyName = "cache_rounding_cpu_l3_discrete"
+	CacheBD  gopium.StrategyName = "cache_rounding_bytes_%d_discrete"
+	CacheL1F gopium.StrategyName = "cache_rounding_cpu_l1_full"
+	CacheL2F gopium.StrategyName = "cache_rounding_cpu_l2_full"
+	CacheL3F gopium.StrategyName = "cache_rounding_cpu_l3_full"
+	CacheBF  gopium.StrategyName = "cache_rounding_bytes_%d_full"
 	// top, bottom separate pads
 	SepSysT gopium.StrategyName = "separate_padding_system_alignment_top"
+	SepSysB gopium.StrategyName = "separate_padding_system_alignment_bottom"
 	SepL1T  gopium.StrategyName = "separate_padding_cpu_l1_top"
 	SepL2T  gopium.StrategyName = "separate_padding_cpu_l2_top"
 	SepL3T  gopium.StrategyName = "separate_padding_cpu_l3_top"
-	SepSysB gopium.StrategyName = "separate_padding_system_alignment_bottom"
+	SepBT   gopium.StrategyName = "separate_padding_bytes_%d_top"
 	SepL1B  gopium.StrategyName = "separate_padding_cpu_l1_bottom"
 	SepL2B  gopium.StrategyName = "separate_padding_cpu_l2_bottom"
 	SepL3B  gopium.StrategyName = "separate_padding_cpu_l3_bottom"
+	SepBB   gopium.StrategyName = "separate_padding_bytes_%d_bottom"
 	// tag processors and modifiers
-	PTGrp    gopium.StrategyName = "process_tag_group"
+	ProcTag  gopium.StrategyName = "process_tag_group"
 	AddTagS  gopium.StrategyName = "add_tag_group_soft"
 	AddTagF  gopium.StrategyName = "add_tag_group_force"
 	AddTagSD gopium.StrategyName = "add_tag_group_discrete"
 	AddTagFD gopium.StrategyName = "add_tag_group_force_discrete"
 	RmTagF   gopium.StrategyName = "remove_tag_group"
 	// doc and comment annotations
-	FNoteDoc  gopium.StrategyName = "doc_fields_annotate"
-	FNoteCom  gopium.StrategyName = "comment_fields_annotate"
-	StNoteDoc gopium.StrategyName = "doc_struct_annotate"
-	StNoteCom gopium.StrategyName = "comment_struct_annotate"
+	FNoteDoc  gopium.StrategyName = "fields_annotate_doc"
+	FNoteCom  gopium.StrategyName = "fields_annotate_comment"
+	StNoteDoc gopium.StrategyName = "struct_annotate_doc"
+	StNoteCom gopium.StrategyName = "struct_annotate_comment"
 	// lexicographical, length, embedded, exported sorts
 	NLexAsc  gopium.StrategyName = "name_lexicographical_ascending"
 	NLexDesc gopium.StrategyName = "name_lexicographical_descending"
@@ -59,7 +66,7 @@ const (
 // Builder defines types gopium.StrategyBuilder implementation
 // that uses gopium.Curator as an exposer and related strategies
 type Builder struct {
-	Curator gopium.Curator `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1,comment_struct_annotate,add_tag_group_force"`
+	Curator gopium.Curator `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1_discrete,struct_annotate_comment,add_tag_group_force"`
 } // struct size: 16 bytes; struct align: 8 bytes; struct aligned size: 16 bytes; - 🌺 gopium @1pkg
 
 // Build Builder implementation
@@ -69,89 +76,119 @@ func (b Builder) Build(names ...gopium.StrategyName) (gopium.Strategy, error) {
 	for _, name := range names {
 		var stg gopium.Strategy
 		// build strategy by name
-		switch name {
+		switch {
 		// pack/unpack mem util
-		case Pack:
+		case b.marchp(name, Pack):
 			stg = pck
-		case Unpack:
+		case b.marchp(name, Unpack):
 			stg = unpck
 		// explicit sys/type pads
-		case PadSys:
+		case b.marchp(name, PadSys):
 			stg = padsys.Curator(b.Curator)
-		case PadTnat:
+		case b.marchp(name, PadTnat):
 			stg = padtnat.Curator(b.Curator)
 		// false sharing guards
-		case FShareL1:
+		case b.marchp(name, FShareL1):
 			stg = fsharel1.Curator(b.Curator)
-		case FShareL2:
+		case b.marchp(name, FShareL2):
 			stg = fsharel2.Curator(b.Curator)
-		case FShareL3:
+		case b.marchp(name, FShareL3):
 			stg = fsharel3.Curator(b.Curator)
+		case b.marchp(name, FShareB):
+			var bytes uint
+			if err := b.scanp(name, FShareB, &bytes); err != nil {
+				return nil, err
+			}
+			stg = fshareb.Bytes(bytes).Curator(b.Curator)
 		// cache line pad roundings
-		case CacheL1:
-			stg = cachel1.Curator(b.Curator)
-		case CacheL2:
-			stg = cachel2.Curator(b.Curator)
-		case CacheL3:
-			stg = cachel3.Curator(b.Curator)
-		case FcacheL1:
-			stg = fcachel1.Curator(b.Curator)
-		case FcacheL2:
-			stg = fcachel2.Curator(b.Curator)
-		case FcacheL3:
-			stg = fcachel3.Curator(b.Curator)
+		case b.marchp(name, CacheL1D):
+			stg = cachel1d.Curator(b.Curator)
+		case b.marchp(name, CacheL2D):
+			stg = cachel2d.Curator(b.Curator)
+		case b.marchp(name, CacheL3D):
+			stg = cachel3d.Curator(b.Curator)
+		case b.marchp(name, CacheBD):
+			var bytes uint
+			if err := b.scanp(name, CacheBD, &bytes); err != nil {
+				return nil, err
+			}
+			stg = cachebd.Bytes(bytes).Curator(b.Curator)
+		case b.marchp(name, CacheL1F):
+			stg = cachel1f.Curator(b.Curator)
+		case b.marchp(name, CacheL2F):
+			stg = cachel2f.Curator(b.Curator)
+		case b.marchp(name, CacheL3F):
+			stg = cachel3f.Curator(b.Curator)
+		case b.marchp(name, CacheBF):
+			var bytes uint
+			if err := b.scanp(name, CacheBF, &bytes); err != nil {
+				return nil, err
+			}
+			stg = cachebf.Bytes(bytes).Curator(b.Curator)
 		// top, bottom separate pads
-		case SepSysT:
+		case b.marchp(name, SepSysT):
 			stg = sepsyst.Curator(b.Curator)
-		case SepL1T:
-			stg = sepl1t.Curator(b.Curator)
-		case SepL2T:
-			stg = sepl2t.Curator(b.Curator)
-		case SepL3T:
-			stg = sepl3t.Curator(b.Curator)
-		case SepSysB:
+		case b.marchp(name, SepSysB):
 			stg = sepsysb.Curator(b.Curator)
-		case SepL1B:
+		case b.marchp(name, SepL1T):
+			stg = sepl1t.Curator(b.Curator)
+		case b.marchp(name, SepL2T):
+			stg = sepl2t.Curator(b.Curator)
+		case b.marchp(name, SepL3T):
+			stg = sepl3t.Curator(b.Curator)
+		case b.marchp(name, SepBT):
+			var bytes uint
+			if err := b.scanp(name, SepBT, &bytes); err != nil {
+				return nil, err
+			}
+			stg = sepbt.Bytes(bytes).Curator(b.Curator)
+		case b.marchp(name, SepL1B):
 			stg = sepl1b.Curator(b.Curator)
-		case SepL2B:
+		case b.marchp(name, SepL2B):
 			stg = sepl2b.Curator(b.Curator)
-		case SepL3B:
+		case b.marchp(name, SepL3B):
 			stg = sepl3b.Curator(b.Curator)
+		case b.marchp(name, SepBB):
+			var bytes uint
+			if err := b.scanp(name, SepBB, &bytes); err != nil {
+				return nil, err
+			}
+			stg = sepbb.Bytes(bytes).Curator(b.Curator)
 		// tag processors and modifiers
-		case PTGrp:
-			stg = ptgrp.Builder(b)
-		case AddTagS:
+		case b.marchp(name, ProcTag):
+			stg = ptag.Builder(b)
+		case b.marchp(name, AddTagS):
 			stg = tags.Names(names...)
-		case AddTagF:
+		case b.marchp(name, AddTagF):
 			stg = tagf.Names(names...)
-		case AddTagSD:
+		case b.marchp(name, AddTagSD):
 			stg = tagsd.Names(names...)
-		case AddTagFD:
+		case b.marchp(name, AddTagFD):
 			stg = tagfd.Names(names...)
-		case RmTagF:
+		case b.marchp(name, RmTagF):
 			stg = tagf
 		// doc and comment annotations
-		case FNoteDoc:
+		case b.marchp(name, FNoteDoc):
 			stg = fnotedoc
-		case FNoteCom:
+		case b.marchp(name, FNoteCom):
 			stg = fnotecom
-		case StNoteDoc:
+		case b.marchp(name, StNoteDoc):
 			stg = stnotedoc
-		case StNoteCom:
+		case b.marchp(name, StNoteCom):
 			stg = stnotecom
 		// lexicographical, length, embedded, exported sorts
-		case NLexAsc:
+		case b.marchp(name, NLexAsc):
 			stg = nlexasc
-		case NLexDesc:
+		case b.marchp(name, NLexDesc):
 			stg = nlexdesc
-		case TLexAsc:
+		case b.marchp(name, TLexAsc):
 			stg = tlexasc
-		case TLexDesc:
+		case b.marchp(name, TLexDesc):
 			stg = tlexdesc
 		// filters and others
-		case FPad:
+		case b.marchp(name, FPad):
 			stg = fpad
-		case Ignore:
+		case b.marchp(name, Ignore):
 			stg = ignr
 		default:
 			return nil, fmt.Errorf("strategy %q wasn't found", name)
@@ -160,4 +197,30 @@ func (b Builder) Build(names ...gopium.StrategyName) (gopium.Strategy, error) {
 		p = append(p, stg)
 	}
 	return p, nil
+}
+
+// marchp checks if strahtegy name matches pattern
+func (b Builder) marchp(name gopium.StrategyName, pattern gopium.StrategyName) bool {
+	// for matching we need to use regex
+	// note only: %d %f %s formatters are used
+	p := string(pattern)
+	p = strings.ReplaceAll(p, "%d", ".*?")
+	p = strings.ReplaceAll(p, "%f", ".*?")
+	p = strings.ReplaceAll(p, "%s", ".*?")
+	p = fmt.Sprintf("^%s$", p)
+	// try to compile artificial regex
+	regex, err := regexp.Compile(p)
+	return err == nil && regex.MatchString(string(name))
+}
+
+// scanp scans name with provided pattern to variable list
+func (b Builder) scanp(name gopium.StrategyName, pattern gopium.StrategyName, vars ...interface{}) error {
+	// prepare strings to be scanned
+	p := strings.ReplaceAll(string(pattern), "_", " ")
+	n := strings.ReplaceAll(string(name), "_", " ")
+	// perform the scan and handle errors
+	if _, err := fmt.Sscanf(n, p, vars...); err != nil {
+		return fmt.Errorf("pattern %q can't be scanned for strategy %q %v", pattern, name, err)
+	}
+	return nil
 }
