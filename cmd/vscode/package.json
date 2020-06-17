@@ -197,12 +197,12 @@
 									"ast_go_tree",
 									"ast_std",
 									"ast_gopium",
-									"json_file",
-									"xml_file",
-									"csv_file",
-									"md_table_file",
-									"size_align_md_table_file",
-									"fields_html_table_file"
+									"file_json",
+									"file_xml",
+									"file_csv",
+									"file_md_table",
+									"size_align_file_md_table",
+									"fields_file_html_table"
 								],
 								"description": "Gopium walker for single action preset."
 							},

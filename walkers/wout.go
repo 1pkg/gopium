@@ -12,19 +12,19 @@ import (
 
 // list of wout presets
 var (
-	jsonfile = wout{
+	filejson = wout{
 		fmt:    fmtio.Jsonb,
 		writer: fmtio.File{Name: gopium.NAME, Ext: fmtio.JSON},
 	}
-	xmlfile = wout{
+	filexml = wout{
 		fmt:    fmtio.Xmlb,
 		writer: fmtio.File{Name: gopium.NAME, Ext: fmtio.XML},
 	}
-	csvfile = wout{
+	filecsv = wout{
 		fmt:    fmtio.Csvb(fmtio.Buffer()),
 		writer: fmtio.File{Name: gopium.NAME, Ext: fmtio.CSV},
 	}
-	mdtfile = wout{
+	filemdt = wout{
 		fmt:    fmtio.Mdtb,
 		writer: fmtio.File{Name: gopium.NAME, Ext: fmtio.MD},
 	}

@@ -14,13 +14,13 @@ const (
 	AstGoTree gopium.WalkerName = "ast_go_tree"
 	AstGopium gopium.WalkerName = "ast_gopium"
 	// wout walkers
-	JsonbFile gopium.WalkerName = "json_file"
-	XmlbFile  gopium.WalkerName = "xml_file"
-	CsvbFile  gopium.WalkerName = "csv_file"
-	MdtFile   gopium.WalkerName = "md_table_file"
+	FileJsonb gopium.WalkerName = "file_json"
+	FileXmlb  gopium.WalkerName = "file_xml"
+	FileCsvb  gopium.WalkerName = "file_csv"
+	FileMdt   gopium.WalkerName = "file_md_table"
 	// wdiff walkers
-	SizeAlignMdtFile gopium.WalkerName = "size_align_md_table_file"
-	FieldsHtmltFile  gopium.WalkerName = "fields_html_table_file"
+	SizeAlignFileMdt gopium.WalkerName = "size_align_file_md_table"
+	FieldsFileHtmlt  gopium.WalkerName = "fields_file_html_table"
 )
 
 // Builder defines types gopium.WalkerBuilder implementation
@@ -71,44 +71,44 @@ func (b Builder) Build(name gopium.WalkerName) (gopium.Walker, error) {
 			b.Bref,
 		), nil
 	// wout walkers
-	case JsonbFile:
-		return jsonfile.With(
+	case FileJsonb:
+		return filejson.With(
 			b.Parser,
 			b.Exposer,
 			b.Deep,
 			b.Bref,
 		), nil
-	case XmlbFile:
-		return xmlfile.With(
+	case FileXmlb:
+		return filexml.With(
 			b.Parser,
 			b.Exposer,
 			b.Deep,
 			b.Bref,
 		), nil
-	case CsvbFile:
-		return csvfile.With(
+	case FileCsvb:
+		return filecsv.With(
 			b.Parser,
 			b.Exposer,
 			b.Deep,
 			b.Bref,
 		), nil
-	case MdtFile:
-		return mdtfile.With(
+	case FileMdt:
+		return filemdt.With(
 			b.Parser,
 			b.Exposer,
 			b.Deep,
 			b.Bref,
 		), nil
 	// wdiff walkers
-	case SizeAlignMdtFile:
-		return samdtfile.With(
+	case SizeAlignFileMdt:
+		return safilemdt.With(
 			b.Parser,
 			b.Exposer,
 			b.Deep,
 			b.Bref,
 		), nil
-	case FieldsHtmltFile:
-		return fhtmltfile.With(
+	case FieldsFileHtmlt:
+		return ffilehtml.With(
 			b.Parser,
 			b.Exposer,
 			b.Deep,

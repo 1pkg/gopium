@@ -93,12 +93,12 @@ Gopium provides next walkers:
 - ast_go_tree (directly syncs result as go code to copy package)
 - ast_std (prints result as go code to stdout)
 - ast_gopium (directly syncs result as go code to copy gopium files)
-- json_file (prints json encoded results to single file inside package directory)
-- xml_file (prints xml encoded results to single file inside package directory)
-- csv_file (prints csv encoded results to single file inside package directory)
-- md_table_file (prints markdown table encoded results to single file inside package directory)
-- size_align_md_table_file (prints markdown encoded table of sizes and aligns difference for results to single file inside package directory)
-- fields_html_table_file (prints html encoded table of fields difference for results to single file inside package directory)
+- file_json (prints json encoded results to single file inside package directory)
+- file_xml (prints xml encoded results to single file inside package directory)
+- file_csv (prints csv encoded results to single file inside package directory)
+- file_md_table (prints markdown table encoded results to single file inside package directory)
+- size_align_file_md_table (prints markdown encoded table of sizes and aligns difference for results to single file inside package directory)
+- fields_file_html_table (prints html encoded table of fields difference for results to single file inside package directory)
 
 ## Strategies and Transformations
 
