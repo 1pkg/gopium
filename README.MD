@@ -142,7 +142,7 @@ gopium -l 64 -l 64 -l 64 ast_go_tree transaction filter_pads explicit_padings_sy
 ## Examples Benchmarks and Docs
 
 ```bash
-# goversion: go1.13.10
+# goversion: go1.13
 # goos: darwin
 # goarch: amd64
 ```
