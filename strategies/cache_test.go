@@ -23,12 +23,82 @@ func TestCache(t *testing.T) {
 		err   error
 	}{
 		"empty struct should be applied to empty struct": {
-			cache: cachel1,
+			cache: cachel1d,
 			c:     mocks.Maven{SCache: []int64{32}},
 			ctx:   context.Background(),
 		},
 		"non empty struct should be applied to expected aligned struct": {
-			cache: cachel2,
+			cache: cachel2d,
+			c:     mocks.Maven{SCache: []int64{16, 16, 16}},
+			ctx:   context.Background(),
+			o: gopium.Struct{
+				Name: "test",
+				Fields: []gopium.Field{
+					{
+						Name: "test",
+						Size: 8,
+					},
+				},
+			},
+			r: gopium.Struct{
+				Name: "test",
+				Fields: []gopium.Field{
+					{
+						Name: "test",
+						Size: 8,
+					},
+				},
+			},
+		},
+		"non empty struct should be applied to expected aligned struct custom bytes": {
+			cache: cachebd.Bytes(20),
+			c:     mocks.Maven{SCache: []int64{16, 16, 16}},
+			ctx:   context.Background(),
+			o: gopium.Struct{
+				Name: "test",
+				Fields: []gopium.Field{
+					{
+						Name: "test",
+						Size: 8,
+					},
+				},
+			},
+			r: gopium.Struct{
+				Name: "test",
+				Fields: []gopium.Field{
+					{
+						Name: "test",
+						Size: 8,
+					},
+					collections.PadField(2),
+				},
+			},
+		},
+		"non empty struct should be applied to expected aligned struct custom bytes and cache line": {
+			cache: cachel2d.Bytes(20),
+			c:     mocks.Maven{SCache: []int64{16, 16, 16}},
+			ctx:   context.Background(),
+			o: gopium.Struct{
+				Name: "test",
+				Fields: []gopium.Field{
+					{
+						Name: "test",
+						Size: 8,
+					},
+				},
+			},
+			r: gopium.Struct{
+				Name: "test",
+				Fields: []gopium.Field{
+					{
+						Name: "test",
+						Size: 8,
+					},
+				},
+			},
+		},
+		"non empty struct should be applied to expected aligned struct empty custom bytes and empty line": {
+			cache: cachebd,
 			c:     mocks.Maven{SCache: []int64{16, 16, 16}},
 			ctx:   context.Background(),
 			o: gopium.Struct{
@@ -51,7 +121,7 @@ func TestCache(t *testing.T) {
 			},
 		},
 		"non empty struct should be applied to expected aligned struct with full cahce": {
-			cache: fcachel2,
+			cache: cachel2f,
 			c:     mocks.Maven{SCache: []int64{16, 16, 16}},
 			ctx:   context.Background(),
 			o: gopium.Struct{
@@ -75,7 +145,7 @@ func TestCache(t *testing.T) {
 			},
 		},
 		"non empty struct should be applied to expected aligned struct on canceled context": {
-			cache: fcachel3,
+			cache: cachel3f,
 			c:     mocks.Maven{SCache: []int64{16, 16, 16}},
 			ctx:   cctx,
 			o: gopium.Struct{
@@ -100,7 +170,7 @@ func TestCache(t *testing.T) {
 			err: context.Canceled,
 		},
 		"mixed struct should be applied to expected aligned struct": {
-			cache: cachel3,
+			cache: cachel3d,
 			c:     mocks.Maven{SCache: []int64{16, 32, 64}},
 			ctx:   context.Background(),
 			o: gopium.Struct{
@@ -148,7 +218,7 @@ func TestCache(t *testing.T) {
 			},
 		},
 		"mixed prealigned struct should be applied to itself": {
-			cache: cachel2,
+			cache: cachel2d,
 			c:     mocks.Maven{SCache: []int64{16, 32, 64}},
 			ctx:   context.Background(),
 			o: gopium.Struct{
@@ -187,7 +257,7 @@ func TestCache(t *testing.T) {
 			},
 		},
 		"struct with pads should be applied to expected aligned struct": {
-			cache: cachel2,
+			cache: cachel2d,
 			c:     mocks.Maven{SCache: []int64{16, 32, 64}},
 			ctx:   context.Background(),
 			o: gopium.Struct{
@@ -233,7 +303,7 @@ func TestCache(t *testing.T) {
 			},
 		},
 		"struct with explicit pads should be applied to expected aligned struct": {
-			cache: cachel2,
+			cache: cachel2d,
 			c:     mocks.Maven{SCache: []int64{16, 32, 64}},
 			ctx:   context.Background(),
 			o: gopium.Struct{
@@ -283,7 +353,7 @@ func TestCache(t *testing.T) {
 			},
 		},
 		"struct with pads should be applied to expected aligned struct div cache line": {
-			cache: cachel2,
+			cache: cachel2d,
 			c:     mocks.Maven{SCache: []int64{16, 32, 64}},
 			ctx:   context.Background(),
 			o: gopium.Struct{
@@ -319,7 +389,7 @@ func TestCache(t *testing.T) {
 			},
 		},
 		"struct with pads should be applied to expected aligned struct full cache line": {
-			cache: fcachel2,
+			cache: cachel2f,
 			c:     mocks.Maven{SCache: []int64{16, 32, 64}},
 			ctx:   context.Background(),
 			o: gopium.Struct{
@@ -351,6 +421,42 @@ func TestCache(t *testing.T) {
 						Align: 6,
 					},
 					collections.PadField(18),
+				},
+			},
+		},
+		"struct with pads should be applied to expected aligned struct full cache line custom bytes": {
+			cache: cachebf.Bytes(20),
+			c:     mocks.Maven{SCache: []int64{16, 32, 64}},
+			ctx:   context.Background(),
+			o: gopium.Struct{
+				Name: "test",
+				Fields: []gopium.Field{
+					{
+						Name:  "test1",
+						Size:  3,
+						Align: 1,
+					},
+					{
+						Name:  "test2",
+						Size:  8,
+						Align: 6,
+					},
+				},
+			},
+			r: gopium.Struct{
+				Name: "test",
+				Fields: []gopium.Field{
+					{
+						Name:  "test1",
+						Size:  3,
+						Align: 1,
+					},
+					{
+						Name:  "test2",
+						Size:  8,
+						Align: 6,
+					},
+					collections.PadField(6),
 				},
 			},
 		},

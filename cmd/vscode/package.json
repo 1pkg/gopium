@@ -214,12 +214,12 @@
 										"process_tag_group",
 										"memory_pack",
 										"memory_unpack",
-										"cache_rounding_cpu_l1",
-										"cache_rounding_cpu_l2",
-										"cache_rounding_cpu_l3",
-										"full_cache_rounding_cpu_l1",
-										"full_cache_rounding_cpu_l2",
-										"full_cache_rounding_cpu_l3",
+										"cache_rounding_cpu_l1_discrete",
+										"cache_rounding_cpu_l2_discrete",
+										"cache_rounding_cpu_l3_discrete",
+										"cache_rounding_cpu_l1_full",
+										"cache_rounding_cpu_l2_full",
+										"cache_rounding_cpu_l3_full",
 										"false_sharing_cpu_l1",
 										"false_sharing_cpu_l2",
 										"false_sharing_cpu_l3",
@@ -266,7 +266,7 @@
 							"name": "cache",
 							"walker": "ast_go",
 							"strategies": [
-								"cache_rounding_cpu_l1"
+								"cache_rounding_cpu_l1_discrete"
 							]
 						},
 						{
@@ -276,7 +276,7 @@
 								"filter_pads",
 								"memory_pack",
 								"explicit_paddings_type_natural",
-								"cache_rounding_cpu_l1"
+								"cache_rounding_cpu_l1_discrete"
 							]
 						},
 						{
@@ -305,7 +305,7 @@
 							"strategies": [
 								"filter_pads",
 								"explicit_paddings_type_natural",
-								"cache_rounding_cpu_l1",
+								"cache_rounding_cpu_l1_discrete",
 								"fields_annotate_comment",
 								"struct_annotate_comment",
 								"add_tag_group_soft"

@@ -8,9 +8,9 @@ import (
 // MavenGoTypes defines maven default "go/types" implementation
 // that uses types.Sizes Sizeof in order to get type info
 type MavenGoTypes struct {
-	sizes  types.Sizes    `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1,struct_annotate_comment,add_tag_group_force"`
-	caches map[uint]int64 `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1,struct_annotate_comment,add_tag_group_force"`
-	_      [8]byte        `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1,struct_annotate_comment,add_tag_group_force"`
+	sizes  types.Sizes    `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1_discrete,struct_annotate_comment,add_tag_group_force"`
+	caches map[uint]int64 `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1_discrete,struct_annotate_comment,add_tag_group_force"`
+	_      [8]byte        `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1_discrete,struct_annotate_comment,add_tag_group_force"`
 } // struct size: 32 bytes; struct align: 8 bytes; struct aligned size: 32 bytes; - 🌺 gopium @1pkg
 
 // NewMavenGoTypes creates instance of MavenGoTypes

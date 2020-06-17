@@ -49,29 +49,29 @@ func TestBuilder(t *testing.T) {
 			stg:   pipe([]gopium.Strategy{fsharel3.Curator(b.Curator)}),
 		},
 		// cache line pad roundings
-		"`cache_rounding_cpu_l1` name should return expected strategy": {
-			names: []gopium.StrategyName{CacheL1},
-			stg:   pipe([]gopium.Strategy{cachel1.Curator(b.Curator)}),
+		"`cache_rounding_cpu_l1_discrete` name should return expected strategy": {
+			names: []gopium.StrategyName{CacheL1D},
+			stg:   pipe([]gopium.Strategy{cachel1d.Curator(b.Curator)}),
 		},
-		"`cache_rounding_cpu_l2` name should return expected strategy": {
-			names: []gopium.StrategyName{CacheL2},
-			stg:   pipe([]gopium.Strategy{cachel2.Curator(b.Curator)}),
+		"`cache_rounding_cpu_l2_discrete` name should return expected strategy": {
+			names: []gopium.StrategyName{CacheL2D},
+			stg:   pipe([]gopium.Strategy{cachel2d.Curator(b.Curator)}),
 		},
-		"`cache_rounding_cpu_l3` name should return expected strategy": {
-			names: []gopium.StrategyName{CacheL3},
-			stg:   pipe([]gopium.Strategy{cachel3.Curator(b.Curator)}),
+		"`cache_rounding_cpu_l3_discrete` name should return expected strategy": {
+			names: []gopium.StrategyName{CacheL3D},
+			stg:   pipe([]gopium.Strategy{cachel3d.Curator(b.Curator)}),
 		},
-		"`full_cache_rounding_cpu_l1` name should return expected strategy": {
-			names: []gopium.StrategyName{FcacheL1},
-			stg:   pipe([]gopium.Strategy{fcachel1.Curator(b.Curator)}),
+		"`cache_rounding_cpu_l1_full` name should return expected strategy": {
+			names: []gopium.StrategyName{CacheL1F},
+			stg:   pipe([]gopium.Strategy{cachel1f.Curator(b.Curator)}),
 		},
-		"`full_cache_rounding_cpu_l2` name should return expected strategy": {
-			names: []gopium.StrategyName{FcacheL2},
-			stg:   pipe([]gopium.Strategy{fcachel2.Curator(b.Curator)}),
+		"`cache_rounding_cpu_l2_full` name should return expected strategy": {
+			names: []gopium.StrategyName{CacheL2F},
+			stg:   pipe([]gopium.Strategy{cachel2f.Curator(b.Curator)}),
 		},
-		"`full_cache_rounding_cpu_l3` name should return expected strategy": {
-			names: []gopium.StrategyName{FcacheL3},
-			stg:   pipe([]gopium.Strategy{fcachel3.Curator(b.Curator)}),
+		"`cache_rounding_cpu_l3_full` name should return expected strategy": {
+			names: []gopium.StrategyName{CacheL3F},
+			stg:   pipe([]gopium.Strategy{cachel3f.Curator(b.Curator)}),
 		},
 		// top, bottom separate pads
 		"`separate_padding_system_alignment_top` name should return expected strategy": {

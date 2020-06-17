@@ -51,6 +51,54 @@ func TestSep(t *testing.T) {
 				},
 			},
 		},
+		"non empty struct should be applied to expected aligned struct custom bytes": {
+			sep: sepbb.Bytes(12),
+			c:   mocks.Maven{SCache: []int64{16, 16, 16}},
+			ctx: context.Background(),
+			o: gopium.Struct{
+				Name: "test",
+				Fields: []gopium.Field{
+					{
+						Name: "test",
+						Size: 8,
+					},
+				},
+			},
+			r: gopium.Struct{
+				Name: "test",
+				Fields: []gopium.Field{
+					{
+						Name: "test",
+						Size: 8,
+					},
+					collections.PadField(12),
+				},
+			},
+		},
+		"non empty struct should be applied to expected aligned struct custom bytes and cache line": {
+			sep: sepl2b.Bytes(12),
+			c:   mocks.Maven{SCache: []int64{16, 16, 16}},
+			ctx: context.Background(),
+			o: gopium.Struct{
+				Name: "test",
+				Fields: []gopium.Field{
+					{
+						Name: "test",
+						Size: 8,
+					},
+				},
+			},
+			r: gopium.Struct{
+				Name: "test",
+				Fields: []gopium.Field{
+					{
+						Name: "test",
+						Size: 8,
+					},
+					collections.PadField(16),
+				},
+			},
+		},
 		"non empty struct should be applied to expected aligned struct on canceled context": {
 			sep: sepl3b,
 			c:   mocks.Maven{SCache: []int64{16, 16, 16}},
@@ -78,6 +126,54 @@ func TestSep(t *testing.T) {
 		},
 		"mixed struct should be applied to expected aligned struct with sys top": {
 			sep: sepsyst,
+			c:   mocks.Maven{SAlign: 24, SCache: []int64{16, 32, 64}},
+			ctx: context.Background(),
+			o: gopium.Struct{
+				Name: "test",
+				Fields: []gopium.Field{
+					{
+						Name: "test1",
+						Size: 32,
+					},
+					{
+						Name: "test2",
+						Size: 8,
+					},
+					{
+						Name: "test3",
+						Size: 8,
+					},
+					{
+						Name: "test4",
+						Size: 3,
+					},
+				},
+			},
+			r: gopium.Struct{
+				Name: "test",
+				Fields: []gopium.Field{
+					collections.PadField(24),
+					{
+						Name: "test1",
+						Size: 32,
+					},
+					{
+						Name: "test2",
+						Size: 8,
+					},
+					{
+						Name: "test3",
+						Size: 8,
+					},
+					{
+						Name: "test4",
+						Size: 3,
+					},
+				},
+			},
+		},
+		"mixed struct should be applied to expected aligned struct with sys top cutom bytes": {
+			sep: sepsyst.Bytes(100),
 			c:   mocks.Maven{SAlign: 24, SCache: []int64{16, 32, 64}},
 			ctx: context.Background(),
 			o: gopium.Struct{

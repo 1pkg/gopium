@@ -17,7 +17,7 @@ Gopium is the tool that was designed to automate and simplify common structs per
 
 ## Features
 
-- Gopium provides numbers of common transformations for structs, such as: cpu cache alignment, memory packing, false sharing guarding, (`cache_rounding_cpu_l1`, `memory_pack`, `false_sharing_cpu_l1`, [and more](cmd/gopium/README.MD#strategies-and-transformations)).
+- Gopium provides numbers of common transformations for structs, such as: cpu cache alignment, memory packing, false sharing guarding, (`cache_rounding_cpu_l1_discrete`, `memory_pack`, `false_sharing_cpu_l1`, [and more](cmd/gopium/README.MD#strategies-and-transformations)).
 - All Gopium transformations could be combined together to build optimal actions for your specific code and needs.
 
 ```bash
@@ -136,7 +136,7 @@ gopium ast_go_tree transaction filter_pads false_sharing_cpu_l1 add_tag_group_fo
 #
 # -l -l -l defines cache lines #1 #2 #3 sizes that are used for transformations
 ###
-gopium -l 64 -l 64 -l 64 ast_go_tree transaction filter_pads explicit_paddings_system_alignment cache_rounding_cpu_l1 struct_annotate_comment add_tag_group_force -p /Users/1pkg/proj/src/1pkg/gopium/examples/transaction
+gopium -l 64 -l 64 -l 64 ast_go_tree transaction filter_pads explicit_paddings_system_alignment cache_rounding_cpu_l1_discrete struct_annotate_comment add_tag_group_force -p /Users/1pkg/proj/src/1pkg/gopium/examples/transaction
 ```
 
 ## Examples Benchmarks and Docs
@@ -214,28 +214,28 @@ type aggregate struct {
 } // struct size: 64 bytes; struct align: 8 bytes; struct aligned size: 64 bytes; - 🌺 gopium @1pkg
 ```
 
-**simple business transaction aggregator (`gopium ast_go_tree 1pkg/gopium/examples/transaction filter_pads explicit_paddings_system_alignment cache_rounding_cpu_l1`)**
+**simple business transaction aggregator (`gopium ast_go_tree 1pkg/gopium/examples/transaction filter_pads explicit_paddings_system_alignment cache_rounding_cpu_l1_discrete`)**
 
 ```go
-// pkg: 1pkg/gopium/examples/cache_rounding_cpu_l1/transaction
+// pkg: 1pkg/gopium/examples/cache_rounding_cpu_l1_discrete/transaction
 // BenchmarkCompress-8 13 130450557 ns/op 209 B/op 3 allocs/op
 // 32.1% ns/op slower | 10.5% B/op lower
 
 // transaction defines business transaction
 type transaction struct {
-	void     bool     `gopium:"filter_pads,explicit_paddings_system_alignment,cache_rounding_cpu_l1,struct_annotate_comment,add_tag_group_force"`
-	_        [7]byte  `gopium:"filter_pads,explicit_paddings_system_alignment,cache_rounding_cpu_l1,struct_annotate_comment,add_tag_group_force"`
-	amount   float64  `gopium:"filter_pads,explicit_paddings_system_alignment,cache_rounding_cpu_l1,struct_annotate_comment,add_tag_group_force"`
-	serial   uint64   `gopium:"filter_pads,explicit_paddings_system_alignment,cache_rounding_cpu_l1,struct_annotate_comment,add_tag_group_force"`
-	skip     bool     `gopium:"filter_pads,explicit_paddings_system_alignment,cache_rounding_cpu_l1,struct_annotate_comment,add_tag_group_force"`
-	_        [7]byte  `gopium:"filter_pads,explicit_paddings_system_alignment,cache_rounding_cpu_l1,struct_annotate_comment,add_tag_group_force"`
-	discount float64  `gopium:"filter_pads,explicit_paddings_system_alignment,cache_rounding_cpu_l1,struct_annotate_comment,add_tag_group_force"`
-	_        [24]byte `gopium:"filter_pads,explicit_paddings_system_alignment,cache_rounding_cpu_l1,struct_annotate_comment,add_tag_group_force"`
+	void     bool     `gopium:"filter_pads,explicit_paddings_system_alignment,cache_rounding_cpu_l1_discrete,struct_annotate_comment,add_tag_group_force"`
+	_        [7]byte  `gopium:"filter_pads,explicit_paddings_system_alignment,cache_rounding_cpu_l1_discrete,struct_annotate_comment,add_tag_group_force"`
+	amount   float64  `gopium:"filter_pads,explicit_paddings_system_alignment,cache_rounding_cpu_l1_discrete,struct_annotate_comment,add_tag_group_force"`
+	serial   uint64   `gopium:"filter_pads,explicit_paddings_system_alignment,cache_rounding_cpu_l1_discrete,struct_annotate_comment,add_tag_group_force"`
+	skip     bool     `gopium:"filter_pads,explicit_paddings_system_alignment,cache_rounding_cpu_l1_discrete,struct_annotate_comment,add_tag_group_force"`
+	_        [7]byte  `gopium:"filter_pads,explicit_paddings_system_alignment,cache_rounding_cpu_l1_discrete,struct_annotate_comment,add_tag_group_force"`
+	discount float64  `gopium:"filter_pads,explicit_paddings_system_alignment,cache_rounding_cpu_l1_discrete,struct_annotate_comment,add_tag_group_force"`
+	_        [24]byte `gopium:"filter_pads,explicit_paddings_system_alignment,cache_rounding_cpu_l1_discrete,struct_annotate_comment,add_tag_group_force"`
 } // struct size: 64 bytes; struct align: 8 bytes; struct aligned size: 64 bytes; - 🌺 gopium @1pkg
 
 // aggregate defines compressed set of transactions
 type aggregate struct {
-	total float64 `gopium:"filter_pads,explicit_paddings_system_alignment,cache_rounding_cpu_l1,struct_annotate_comment,add_tag_group_force"`
+	total float64 `gopium:"filter_pads,explicit_paddings_system_alignment,cache_rounding_cpu_l1_discrete,struct_annotate_comment,add_tag_group_force"`
 } // struct size: 8 bytes; struct align: 8 bytes; struct aligned size: 8 bytes; - 🌺 gopium @1pkg
 ```
 

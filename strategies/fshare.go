@@ -12,6 +12,7 @@ var (
 	fsharel1 = fshare{line: 1}
 	fsharel2 = fshare{line: 2}
 	fsharel3 = fshare{line: 3}
+	fshareb  = fshare{}
 )
 
 // fshare defines strategy implementation
@@ -19,10 +20,16 @@ var (
 // by adding extra cpu cache line paddings
 // for each structure field
 type fshare struct {
-	curator gopium.Curator `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1,struct_annotate_comment,add_tag_group_force"`
-	line    uint           `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1,struct_annotate_comment,add_tag_group_force"`
-	_       [8]byte        `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1,struct_annotate_comment,add_tag_group_force"`
+	curator gopium.Curator `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1_discrete,struct_annotate_comment,add_tag_group_force"`
+	line    uint           `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1_discrete,struct_annotate_comment,add_tag_group_force"`
+	bytes   uint           `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1_discrete,struct_annotate_comment,add_tag_group_force"`
 } // struct size: 32 bytes; struct align: 8 bytes; struct aligned size: 32 bytes; - 🌺 gopium @1pkg
+
+// Bytes erich fshare strategy with custom bytes
+func (stg fshare) Bytes(bytes uint) fshare {
+	stg.bytes = bytes
+	return stg
+}
 
 // Curator erich fshare strategy with curator instance
 func (stg fshare) Curator(curator gopium.Curator) fshare {
@@ -35,8 +42,11 @@ func (stg fshare) Apply(ctx context.Context, o gopium.Struct) (gopium.Struct, er
 	// copy original structure to result
 	r := collections.CopyStruct(o)
 	// check that struct has fields
-	// and cache line size is valid
-	if flen, cachel := len(r.Fields), stg.curator.SysCache(stg.line); flen > 0 && cachel > 0 {
+	// and cache line size or bytes are valid
+	if flen, cachel := len(r.Fields), stg.curator.SysCache(stg.line); flen > 0 && (cachel > 0 || stg.bytes > 0) {
+		if cachel == 0 {
+			cachel = int64(stg.bytes)
+		}
 		// setup resulted fields slice
 		fields := make([]gopium.Field, 0, flen)
 		// go through all fields
