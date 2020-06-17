@@ -41,7 +41,7 @@ Real Gopium CLI commands examples that have been used to create [examples](../ex
 # -p defines full path to package `1pkg/gopium/examples/transaction`
 # it could be omitted if full package name would be used instead `gopium ast_go_tree 1pkg/gopium/examples/transaction memory_pack ...`
 ###
-gopium ast_go_tree transaction memory_pack comment_struct_annotate add_tag_group_force -p /Users/1pkg/proj/src/1pkg/gopium/examples/transaction
+gopium ast_go_tree transaction memory_pack struct_annotate_comment add_tag_group_force -p /Users/1pkg/proj/src/1pkg/gopium/examples/transaction
 ```
 
 ```bash
@@ -80,7 +80,7 @@ gopium ast_go_tree transaction filter_pads false_sharing_cpu_l1 add_tag_group_fo
 #
 # -l -l -l defines cache lines #1 #2 #3 sizes that are used for transformations
 ###
-gopium -l 64 -l 64 -l 64 ast_go_tree transaction filter_pads explicit_padings_system_alignment cache_rounding_cpu_l1 comment_struct_annotate add_tag_group_force -p /Users/1pkg/proj/src/1pkg/gopium/examples/transaction
+gopium -l 64 -l 64 -l 64 ast_go_tree transaction filter_pads explicit_paddings_system_alignment cache_rounding_cpu_l1 struct_annotate_comment add_tag_group_force -p /Users/1pkg/proj/src/1pkg/gopium/examples/transaction
 ```
 
 Gopium also has rich vscode extension to provide better experience for usage and simplify interactions with cli tool, [see more](../vscode/README.MD).
@@ -124,17 +124,17 @@ Gopium provides next strategies:
 - separate_padding_cpu_l1_bottom (separates structure with extra cpu cache line #1 padding by adding the padding at the bottom)
 - separate_padding_cpu_l2_bottom (separates structure with extra cpu cache line #2 padding by adding the padding at the bottom)
 - separate_padding_cpu_l3_bottom (separates structure with extra cpu cache line #3 padding by adding the padding at the bottom)
-- explicit_padings_system_alignment (explicitly aligns each structure field to system alignment padding by adding missing paddings for each field)
-- explicit_padings_type_natural (explicitly aligns each structure field to max type alignment padding by adding missing paddings for each field)
+- explicit_paddings_system_alignment (explicitly aligns each structure field to system alignment padding by adding missing paddings for each field)
+- explicit_paddings_type_natural (explicitly aligns each structure field to max type alignment padding by adding missing paddings for each field)
 - add_tag_group_soft (adds gopium fields tags annotation if no previous annotation found)
 - add_tag_group_force (adds gopium fields tags annotation if previous annotation found overwrites it)
 - add_tag_group_discrete (discretely adds gopium fields tags annotation if no previous annotation found)
 - add_tag_group_force_discrete (discretely adds gopium fields tags annotation if previous annotation found overwrites it)
 - remove_tag_group (removes gopium fields tags annotation)
-- doc_fields_annotate (adds align and size doc annotation for each structure field)
-- comment_fields_annotate adds align and size comment annotation for each structure field)
-- doc_struct_annotate (adds aggregated align and size doc annotation for structure)
-- comment_struct_annotate (adds aggregated align and size comment annotation for structure)
+- fields_annotate_doc (adds align and size doc annotation for each structure field)
+- fields_annotate_comment adds align and size comment annotation for each structure field)
+- struct_annotate_doc (adds aggregated align and size doc annotation for structure)
+- struct_annotate_comment (adds aggregated align and size comment annotation for structure)
 - name_lexicographical_ascending (sorts fields accordingly to their names in ascending order)
 - name_lexicographical_descending (sorts fields accordingly to their names descending order)
 - type_lexicographical_ascending (sorts fields accordingly to their types in ascending order)

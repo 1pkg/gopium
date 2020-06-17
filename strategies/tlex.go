@@ -18,8 +18,8 @@ var (
 // that sorts fields accordingly to their types
 // in ascending or descending order
 type tlex struct {
-	asc bool    `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1,comment_struct_annotate,add_tag_group_force"`
-	_   [1]byte `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1,comment_struct_annotate,add_tag_group_force"`
+	asc bool    `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1,struct_annotate_comment,add_tag_group_force"`
+	_   [1]byte `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1,struct_annotate_comment,add_tag_group_force"`
 } // struct size: 2 bytes; struct align: 1 bytes; struct aligned size: 2 bytes; - 🌺 gopium @1pkg
 
 // Apply tlex implementation

@@ -27,11 +27,11 @@ func TestBuilder(t *testing.T) {
 			stg:   pipe([]gopium.Strategy{unpck}),
 		},
 		// explicit sys/type pads
-		"`explicit_padings_system_alignment` name should return expected strategy": {
+		"`explicit_paddings_system_alignment` name should return expected strategy": {
 			names: []gopium.StrategyName{PadSys},
 			stg:   pipe([]gopium.Strategy{padsys.Curator(b.Curator)}),
 		},
-		"`explicit_padings_type_natural` name should return expected strategy": {
+		"`explicit_paddings_type_natural` name should return expected strategy": {
 			names: []gopium.StrategyName{PadTnat},
 			stg:   pipe([]gopium.Strategy{padtnat.Curator(b.Curator)}),
 		},
@@ -78,6 +78,10 @@ func TestBuilder(t *testing.T) {
 			names: []gopium.StrategyName{SepSysT},
 			stg:   pipe([]gopium.Strategy{sepsyst.Curator(b.Curator)}),
 		},
+		"`separate_padding_system_alignment_bottom` name should return expected strategy": {
+			names: []gopium.StrategyName{SepSysB},
+			stg:   pipe([]gopium.Strategy{sepsysb.Curator(b.Curator)}),
+		},
 		"`separate_padding_cpu_l1_top` name should return expected strategy": {
 			names: []gopium.StrategyName{SepL1T},
 			stg:   pipe([]gopium.Strategy{sepl1t.Curator(b.Curator)}),
@@ -89,10 +93,6 @@ func TestBuilder(t *testing.T) {
 		"`separate_padding_cpu_l3_top` name should return expected strategy": {
 			names: []gopium.StrategyName{SepL3T},
 			stg:   pipe([]gopium.Strategy{sepl3t.Curator(b.Curator)}),
-		},
-		"`separate_padding_system_alignment_bottom` name should return expected strategy": {
-			names: []gopium.StrategyName{SepSysB},
-			stg:   pipe([]gopium.Strategy{sepsysb.Curator(b.Curator)}),
 		},
 		"`separate_padding_cpu_l1_bottom` name should return expected strategy": {
 			names: []gopium.StrategyName{SepL1B},
@@ -108,8 +108,8 @@ func TestBuilder(t *testing.T) {
 		},
 		// tag processors and modifiers
 		"`process_tag_group` name should return expected strategy": {
-			names: []gopium.StrategyName{PTGrp},
-			stg:   pipe([]gopium.Strategy{ptgrp.Builder(b)}),
+			names: []gopium.StrategyName{ProcTag},
+			stg:   pipe([]gopium.Strategy{ptag.Builder(b)}),
 		},
 		"`add_tag_group_soft` name should return expected strategy": {
 			names: []gopium.StrategyName{AddTagS},
@@ -132,19 +132,19 @@ func TestBuilder(t *testing.T) {
 			stg:   pipe([]gopium.Strategy{tagf}),
 		},
 		// doc and comment annotations
-		"`doc_fields_annotate` name should return expected strategy": {
+		"`fields_annotate_doc` name should return expected strategy": {
 			names: []gopium.StrategyName{FNoteDoc},
 			stg:   pipe([]gopium.Strategy{fnotedoc}),
 		},
-		"`comment_fields_annotate` name should return expected strategy": {
+		"`fields_annotate_comment` name should return expected strategy": {
 			names: []gopium.StrategyName{FNoteCom},
 			stg:   pipe([]gopium.Strategy{fnotecom}),
 		},
-		"`doc_struct_annotate` name should return expected strategy": {
+		"`struct_annotate_doc` name should return expected strategy": {
 			names: []gopium.StrategyName{StNoteDoc},
 			stg:   pipe([]gopium.Strategy{stnotedoc}),
 		},
-		"`comment_struct_annotate` name should return expected strategy": {
+		"`struct_annotate_comment` name should return expected strategy": {
 			names: []gopium.StrategyName{StNoteCom},
 			stg:   pipe([]gopium.Strategy{stnotecom}),
 		},

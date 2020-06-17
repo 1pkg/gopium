@@ -231,17 +231,17 @@
 										"separate_padding_cpu_l1_bottom",
 										"separate_padding_cpu_l2_bottom",
 										"separate_padding_cpu_l3_bottom",
-										"explicit_padings_system_alignment",
-										"explicit_padings_type_natural",
+										"explicit_paddings_system_alignment",
+										"explicit_paddings_type_natural",
 										"add_tag_group_soft",
 										"add_tag_group_force",
 										"add_tag_group_discrete",
 										"add_tag_group_force_discrete",
 										"remove_tag_group",
-										"doc_fields_annotate",
-										"comment_fields_annotate",
-										"doc_struct_annotate",
-										"comment_struct_annotate",
+										"fields_annotate_doc",
+										"fields_annotate_comment",
+										"struct_annotate_doc",
+										"struct_annotate_comment",
 										"name_lexicographical_ascending",
 										"name_lexicographical_descending",
 										"type_lexicographical_ascending",
@@ -275,7 +275,7 @@
 							"strategies": [
 								"filter_pads",
 								"memory_pack",
-								"explicit_padings_type_natural",
+								"explicit_paddings_type_natural",
 								"cache_rounding_cpu_l1"
 							]
 						},
@@ -293,9 +293,9 @@
 							"strategies": [
 								"filter_pads",
 								"memory_pack",
-								"explicit_padings_type_natural",
-								"comment_fields_annotate",
-								"comment_struct_annotate",
+								"explicit_paddings_type_natural",
+								"fields_annotate_comment",
+								"struct_annotate_comment",
 								"add_tag_group_soft"
 							]
 						},
@@ -304,10 +304,10 @@
 							"walker": "ast_go",
 							"strategies": [
 								"filter_pads",
-								"explicit_padings_type_natural",
+								"explicit_paddings_type_natural",
 								"cache_rounding_cpu_l1",
-								"comment_fields_annotate",
-								"comment_struct_annotate",
+								"fields_annotate_comment",
+								"struct_annotate_comment",
 								"add_tag_group_soft"
 							]
 						}

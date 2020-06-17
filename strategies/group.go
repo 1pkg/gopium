@@ -15,7 +15,7 @@ import (
 
 // list of group presets
 var (
-	ptgrp = group{}
+	ptag = group{}
 )
 
 // group defines strategy implementation
@@ -29,16 +29,16 @@ var (
 // `gopium:"stg,stg,stg"` processed as `default` group
 // `gopium:"group:def;stg,stg,stg"` processed as named group
 type group struct {
-	builder Builder `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1,comment_struct_annotate,add_tag_group_force"`
+	builder Builder `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1,struct_annotate_comment,add_tag_group_force"`
 } // struct size: 16 bytes; struct align: 8 bytes; struct aligned size: 16 bytes; - 🌺 gopium @1pkg
 
 // container carries sing group data
 type container struct {
-	o   gopium.Struct   `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1,comment_struct_annotate,add_tag_group_force"`
-	r   gopium.Struct   `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1,comment_struct_annotate,add_tag_group_force"`
-	grp string          `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1,comment_struct_annotate,add_tag_group_force"`
-	stg gopium.Strategy `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1,comment_struct_annotate,add_tag_group_force"`
-	_   [48]byte        `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1,comment_struct_annotate,add_tag_group_force"`
+	o   gopium.Struct   `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1,struct_annotate_comment,add_tag_group_force"`
+	r   gopium.Struct   `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1,struct_annotate_comment,add_tag_group_force"`
+	grp string          `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1,struct_annotate_comment,add_tag_group_force"`
+	stg gopium.Strategy `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1,struct_annotate_comment,add_tag_group_force"`
+	_   [48]byte        `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1,struct_annotate_comment,add_tag_group_force"`
 } // struct size: 256 bytes; struct align: 8 bytes; struct aligned size: 256 bytes; - 🌺 gopium @1pkg
 
 // Curator erich group strategy with builder instance

@@ -12,8 +12,8 @@ const (
 	Pack   gopium.StrategyName = "memory_pack"
 	Unpack gopium.StrategyName = "memory_unpack"
 	// explicit sys/type pads
-	PadSys  gopium.StrategyName = "explicit_padings_system_alignment"
-	PadTnat gopium.StrategyName = "explicit_padings_type_natural"
+	PadSys  gopium.StrategyName = "explicit_paddings_system_alignment"
+	PadTnat gopium.StrategyName = "explicit_paddings_type_natural"
 	// false sharing guards
 	FShareL1 gopium.StrategyName = "false_sharing_cpu_l1"
 	FShareL2 gopium.StrategyName = "false_sharing_cpu_l2"
@@ -27,25 +27,25 @@ const (
 	FcacheL3 gopium.StrategyName = "full_cache_rounding_cpu_l3"
 	// top, bottom separate pads
 	SepSysT gopium.StrategyName = "separate_padding_system_alignment_top"
+	SepSysB gopium.StrategyName = "separate_padding_system_alignment_bottom"
 	SepL1T  gopium.StrategyName = "separate_padding_cpu_l1_top"
 	SepL2T  gopium.StrategyName = "separate_padding_cpu_l2_top"
 	SepL3T  gopium.StrategyName = "separate_padding_cpu_l3_top"
-	SepSysB gopium.StrategyName = "separate_padding_system_alignment_bottom"
 	SepL1B  gopium.StrategyName = "separate_padding_cpu_l1_bottom"
 	SepL2B  gopium.StrategyName = "separate_padding_cpu_l2_bottom"
 	SepL3B  gopium.StrategyName = "separate_padding_cpu_l3_bottom"
 	// tag processors and modifiers
-	PTGrp    gopium.StrategyName = "process_tag_group"
+	ProcTag  gopium.StrategyName = "process_tag_group"
 	AddTagS  gopium.StrategyName = "add_tag_group_soft"
 	AddTagF  gopium.StrategyName = "add_tag_group_force"
 	AddTagSD gopium.StrategyName = "add_tag_group_discrete"
 	AddTagFD gopium.StrategyName = "add_tag_group_force_discrete"
 	RmTagF   gopium.StrategyName = "remove_tag_group"
 	// doc and comment annotations
-	FNoteDoc  gopium.StrategyName = "doc_fields_annotate"
-	FNoteCom  gopium.StrategyName = "comment_fields_annotate"
-	StNoteDoc gopium.StrategyName = "doc_struct_annotate"
-	StNoteCom gopium.StrategyName = "comment_struct_annotate"
+	FNoteDoc  gopium.StrategyName = "fields_annotate_doc"
+	FNoteCom  gopium.StrategyName = "fields_annotate_comment"
+	StNoteDoc gopium.StrategyName = "struct_annotate_doc"
+	StNoteCom gopium.StrategyName = "struct_annotate_comment"
 	// lexicographical, length, embedded, exported sorts
 	NLexAsc  gopium.StrategyName = "name_lexicographical_ascending"
 	NLexDesc gopium.StrategyName = "name_lexicographical_descending"
@@ -59,7 +59,7 @@ const (
 // Builder defines types gopium.StrategyBuilder implementation
 // that uses gopium.Curator as an exposer and related strategies
 type Builder struct {
-	Curator gopium.Curator `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1,comment_struct_annotate,add_tag_group_force"`
+	Curator gopium.Curator `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1,struct_annotate_comment,add_tag_group_force"`
 } // struct size: 16 bytes; struct align: 8 bytes; struct aligned size: 16 bytes; - 🌺 gopium @1pkg
 
 // Build Builder implementation
@@ -103,14 +103,14 @@ func (b Builder) Build(names ...gopium.StrategyName) (gopium.Strategy, error) {
 		// top, bottom separate pads
 		case SepSysT:
 			stg = sepsyst.Curator(b.Curator)
+		case SepSysB:
+			stg = sepsysb.Curator(b.Curator)
 		case SepL1T:
 			stg = sepl1t.Curator(b.Curator)
 		case SepL2T:
 			stg = sepl2t.Curator(b.Curator)
 		case SepL3T:
 			stg = sepl3t.Curator(b.Curator)
-		case SepSysB:
-			stg = sepsysb.Curator(b.Curator)
 		case SepL1B:
 			stg = sepl1b.Curator(b.Curator)
 		case SepL2B:
@@ -118,8 +118,8 @@ func (b Builder) Build(names ...gopium.StrategyName) (gopium.Strategy, error) {
 		case SepL3B:
 			stg = sepl3b.Curator(b.Curator)
 		// tag processors and modifiers
-		case PTGrp:
-			stg = ptgrp.Builder(b)
+		case ProcTag:
+			stg = ptag.Builder(b)
 		case AddTagS:
 			stg = tags.Names(names...)
 		case AddTagF:
