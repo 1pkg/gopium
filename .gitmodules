@@ -1,3 +1,3 @@
 [submodule "cmd/vscode/vscode-go"]
 	path = cmd/vscode/src/vscode-go
-	url = https://github.com/microsoft/vscode-go.git
+	url = https://github.com/1pkg/vscode-go.git
