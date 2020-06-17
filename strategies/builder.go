@@ -2,11 +2,12 @@ package strategies
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/1pkg/gopium/gopium"
 )
 
-// list of registered types strategies
+// list of registered strategies names
 const (
 	// pack/unpack mem util
 	Pack   gopium.StrategyName = "memory_pack"
@@ -39,7 +40,7 @@ const (
 	AddTagS  gopium.StrategyName = "add_tag_group_soft"
 	AddTagF  gopium.StrategyName = "add_tag_group_force"
 	AddTagSD gopium.StrategyName = "add_tag_group_discrete"
-	AddTagFD gopium.StrategyName = "add_tag_group_force_discrete"
+	AddTagFD gopium.StrategyName = "add_tag_group_combination_force_discrete"
 	RmTagF   gopium.StrategyName = "remove_tag_group"
 	// doc and comment annotations
 	FNoteDoc  gopium.StrategyName = "fields_annotate_doc"
@@ -69,89 +70,89 @@ func (b Builder) Build(names ...gopium.StrategyName) (gopium.Strategy, error) {
 	for _, name := range names {
 		var stg gopium.Strategy
 		// build strategy by name
-		switch name {
+		switch {
 		// pack/unpack mem util
-		case Pack:
+		case b.marchp(name, Pack):
 			stg = pck
-		case Unpack:
+		case b.marchp(name, Unpack):
 			stg = unpck
 		// explicit sys/type pads
-		case PadSys:
+		case b.marchp(name, PadSys):
 			stg = padsys.Curator(b.Curator)
-		case PadTnat:
+		case b.marchp(name, PadTnat):
 			stg = padtnat.Curator(b.Curator)
 		// false sharing guards
-		case FShareL1:
+		case b.marchp(name, FShareL1):
 			stg = fsharel1.Curator(b.Curator)
-		case FShareL2:
+		case b.marchp(name, FShareL2):
 			stg = fsharel2.Curator(b.Curator)
-		case FShareL3:
+		case b.marchp(name, FShareL3):
 			stg = fsharel3.Curator(b.Curator)
 		// cache line pad roundings
-		case CacheL1:
+		case b.marchp(name, CacheL1):
 			stg = cachel1.Curator(b.Curator)
-		case CacheL2:
+		case b.marchp(name, CacheL2):
 			stg = cachel2.Curator(b.Curator)
-		case CacheL3:
+		case b.marchp(name, CacheL3):
 			stg = cachel3.Curator(b.Curator)
-		case FcacheL1:
+		case b.marchp(name, FcacheL1):
 			stg = fcachel1.Curator(b.Curator)
-		case FcacheL2:
+		case b.marchp(name, FcacheL2):
 			stg = fcachel2.Curator(b.Curator)
-		case FcacheL3:
+		case b.marchp(name, FcacheL3):
 			stg = fcachel3.Curator(b.Curator)
 		// top, bottom separate pads
-		case SepSysT:
+		case b.marchp(name, SepSysT):
 			stg = sepsyst.Curator(b.Curator)
-		case SepSysB:
+		case b.marchp(name, SepSysB):
 			stg = sepsysb.Curator(b.Curator)
-		case SepL1T:
+		case b.marchp(name, SepL1T):
 			stg = sepl1t.Curator(b.Curator)
-		case SepL2T:
+		case b.marchp(name, SepL2T):
 			stg = sepl2t.Curator(b.Curator)
-		case SepL3T:
+		case b.marchp(name, SepL3T):
 			stg = sepl3t.Curator(b.Curator)
-		case SepL1B:
+		case b.marchp(name, SepL1B):
 			stg = sepl1b.Curator(b.Curator)
-		case SepL2B:
+		case b.marchp(name, SepL2B):
 			stg = sepl2b.Curator(b.Curator)
-		case SepL3B:
+		case b.marchp(name, SepL3B):
 			stg = sepl3b.Curator(b.Curator)
 		// tag processors and modifiers
-		case ProcTag:
+		case b.marchp(name, ProcTag):
 			stg = ptag.Builder(b)
-		case AddTagS:
+		case b.marchp(name, AddTagS):
 			stg = tags.Names(names...)
-		case AddTagF:
+		case b.marchp(name, AddTagF):
 			stg = tagf.Names(names...)
-		case AddTagSD:
+		case b.marchp(name, AddTagSD):
 			stg = tagsd.Names(names...)
-		case AddTagFD:
+		case b.marchp(name, AddTagFD):
 			stg = tagfd.Names(names...)
-		case RmTagF:
+		case b.marchp(name, RmTagF):
 			stg = tagf
 		// doc and comment annotations
-		case FNoteDoc:
+		case b.marchp(name, FNoteDoc):
 			stg = fnotedoc
-		case FNoteCom:
+		case b.marchp(name, FNoteCom):
 			stg = fnotecom
-		case StNoteDoc:
+		case b.marchp(name, StNoteDoc):
 			stg = stnotedoc
-		case StNoteCom:
+		case b.marchp(name, StNoteCom):
 			stg = stnotecom
 		// lexicographical, length, embedded, exported sorts
-		case NLexAsc:
+		case b.marchp(name, NLexAsc):
 			stg = nlexasc
-		case NLexDesc:
+		case b.marchp(name, NLexDesc):
 			stg = nlexdesc
-		case TLexAsc:
+		case b.marchp(name, TLexAsc):
 			stg = tlexasc
-		case TLexDesc:
+		case b.marchp(name, TLexDesc):
 			stg = tlexdesc
 		// filters and others
-		case FPad:
+		case b.marchp(name, FPad):
 			stg = fpad
-		case Ignore:
+		case b.marchp(name, Ignore):
 			stg = ignr
 		default:
 			return nil, fmt.Errorf("strategy %q wasn't found", name)
@@ -160,4 +161,25 @@ func (b Builder) Build(names ...gopium.StrategyName) (gopium.Strategy, error) {
 		p = append(p, stg)
 	}
 	return p, nil
+}
+
+// marchp checks if strahtegy name matches pattern
+func (b Builder) marchp(name gopium.StrategyName, pattern gopium.StrategyName) bool {
+	// prefix is everything up to first param
+	prefix := strings.Split(string(pattern), "%")[0]
+	return strings.HasPrefix(string(name), prefix)
+}
+
+// scanp scans name with provided pattern to variable list
+func (b Builder) scanp(name gopium.StrategyName, pattern gopium.StrategyName, vars ...interface{}) error {
+	// prefix is everything up to first param
+	prefix := strings.Split(string(pattern), "%")[0]
+	// prepare strings to be scanned
+	p := strings.ReplaceAll(strings.TrimPrefix(string(pattern), prefix), "_", "")
+	n := strings.ReplaceAll(strings.TrimPrefix(string(name), prefix), "_", "")
+	// perform the scan and handle errors
+	if _, err := fmt.Sscanf(n, p, vars...); err != nil {
+		return fmt.Errorf("pattern %q can't be scanned for strategy %q %v", pattern, name, err)
+	}
+	return nil
 }
