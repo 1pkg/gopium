@@ -80,7 +80,7 @@ gopium ast_go_tree transaction filter_pads false_sharing_cpu_l1 add_tag_group_fo
 #
 # -l -l -l defines cache lines #1 #2 #3 sizes that are used for transformations
 ###
-gopium -l 64 -l 64 -l 64 ast_go_tree transaction filter_pads explicit_paddings_system_alignment cache_rounding_cpu_l1 struct_annotate_comment add_tag_group_force -p /Users/1pkg/proj/src/1pkg/gopium/examples/transaction
+gopium -l 64 -l 64 -l 64 ast_go_tree transaction filter_pads explicit_paddings_system_alignment cache_rounding_cpu_l1_discrete struct_annotate_comment add_tag_group_force -p /Users/1pkg/proj/src/1pkg/gopium/examples/transaction
 ```
 
 Gopium also has rich vscode extension to provide better experience for usage and simplify interactions with cli tool, [see more](../vscode/README.MD).
@@ -107,12 +107,12 @@ Gopium provides next strategies:
 - process_tag_group (uses gopium fields tags annotation in order to process different set of strategies on different groups and then combine results in single struct result)
 - memory_pack (rearranges structure fields to obtain optimal memory utilization)
 - memory_unpack (rearranges structure field list to obtain inflated memory utilization)
-- cache_rounding_cpu_l1 (fits structure into cpu cache line #1 by adding bottom partial rounding cpu cache padding)
-- cache_rounding_cpu_l2 (fits structure into cpu cache line #2 by adding bottom partial rounding cpu cache padding)
-- cache_rounding_cpu_l3 (fits structure into cpu cache line #3 by adding bottom partial rounding cpu cache padding)
-- full_cache_rounding_cpu_l1 (fits structure into full cpu cache line #1 by adding bottom rounding cpu cache padding)
-- full_cache_rounding_cpu_l2 (fits structure into full cpu cache line #2 by adding bottom rounding cpu cache padding)
-- full_cache_rounding_cpu_l3 (fits structure into full cpu cache line #3 by adding bottom rounding cpu cache padding)
+- cache_rounding_cpu_l1_discrete (fits structure into cpu cache line #1 by adding bottom partial rounding cpu cache padding)
+- cache_rounding_cpu_l2_discrete (fits structure into cpu cache line #2 by adding bottom partial rounding cpu cache padding)
+- cache_rounding_cpu_l3_discrete (fits structure into cpu cache line #3 by adding bottom partial rounding cpu cache padding)
+- cache_rounding_cpu_l1_full (fits structure into full cpu cache line #1 by adding bottom rounding cpu cache padding)
+- cache_rounding_cpu_l2_full (fits structure into full cpu cache line #2 by adding bottom rounding cpu cache padding)
+- cache_rounding_cpu_l3_full (fits structure into full cpu cache line #3 by adding bottom rounding cpu cache padding)
 - false_sharing_cpu_l1 (guards structure from false sharing by adding extra cpu cache line #1 paddings for each structure field)
 - false_sharing_cpu_l2 (guards structure from false sharing by adding extra cpu cache line #1 paddings for each structure field)
 - false_sharing_cpu_l3 (guards structure from false sharing by adding extra cpu cache line #1 paddings for each structure field)

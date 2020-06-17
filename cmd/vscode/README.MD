@@ -42,12 +42,12 @@ which are defined by next settings in vscode:
 		{
 			"name": "cache",
 			"walker": "ast_go",
-			"strategies": ["cache_rounding_cpu_l1"]
+			"strategies": ["cache_rounding_cpu_l1_discrete"]
 		},
 		{
 			"name": "pack cache",
 			"walker": "ast_go",
-			"strategies": ["filter_pads", "memory_pack", "explicit_paddings_type_natural", "cache_rounding_cpu_l1"]
+			"strategies": ["filter_pads", "memory_pack", "explicit_paddings_type_natural", "cache_rounding_cpu_l1_discrete"]
 		},
 		{
 			"name": "false sharing",
@@ -72,7 +72,7 @@ which are defined by next settings in vscode:
 			"strategies": [
 				"filter_pads",
 				"explicit_paddings_type_natural",
-				"cache_rounding_cpu_l1",
+				"cache_rounding_cpu_l1_discrete",
 				"fields_annotate_comment",
 				"struct_annotate_comment",
 				"add_tag_group_soft"

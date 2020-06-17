@@ -19,22 +19,27 @@ const (
 	FShareL1 gopium.StrategyName = "false_sharing_cpu_l1"
 	FShareL2 gopium.StrategyName = "false_sharing_cpu_l2"
 	FShareL3 gopium.StrategyName = "false_sharing_cpu_l3"
+	FShareB  gopium.StrategyName = "false_sharing_bytes_%d"
 	// cache line pad roundings
-	CacheL1  gopium.StrategyName = "cache_rounding_cpu_l1"
-	CacheL2  gopium.StrategyName = "cache_rounding_cpu_l2"
-	CacheL3  gopium.StrategyName = "cache_rounding_cpu_l3"
-	FcacheL1 gopium.StrategyName = "full_cache_rounding_cpu_l1"
-	FcacheL2 gopium.StrategyName = "full_cache_rounding_cpu_l2"
-	FcacheL3 gopium.StrategyName = "full_cache_rounding_cpu_l3"
+	CacheL1D gopium.StrategyName = "cache_rounding_cpu_l1_discrete"
+	CacheL2D gopium.StrategyName = "cache_rounding_cpu_l2_discrete"
+	CacheL3D gopium.StrategyName = "cache_rounding_cpu_l3_discrete"
+	CacheBD  gopium.StrategyName = "cache_rounding_bytes_%d_discrete"
+	CacheL1F gopium.StrategyName = "cache_rounding_cpu_l1_full"
+	CacheL2F gopium.StrategyName = "cache_rounding_cpu_l2_full"
+	CacheL3F gopium.StrategyName = "cache_rounding_cpu_l3_full"
+	CacheBF  gopium.StrategyName = "cache_rounding_bytes_%d_full"
 	// top, bottom separate pads
 	SepSysT gopium.StrategyName = "separate_padding_system_alignment_top"
 	SepSysB gopium.StrategyName = "separate_padding_system_alignment_bottom"
 	SepL1T  gopium.StrategyName = "separate_padding_cpu_l1_top"
 	SepL2T  gopium.StrategyName = "separate_padding_cpu_l2_top"
 	SepL3T  gopium.StrategyName = "separate_padding_cpu_l3_top"
+	SepBT   gopium.StrategyName = "separate_padding_bytes_%d_top"
 	SepL1B  gopium.StrategyName = "separate_padding_cpu_l1_bottom"
 	SepL2B  gopium.StrategyName = "separate_padding_cpu_l2_bottom"
 	SepL3B  gopium.StrategyName = "separate_padding_cpu_l3_bottom"
+	SepBB   gopium.StrategyName = "separate_padding_bytes_%d_bottom"
 	// tag processors and modifiers
 	ProcTag  gopium.StrategyName = "process_tag_group"
 	AddTagS  gopium.StrategyName = "add_tag_group_soft"
@@ -60,7 +65,7 @@ const (
 // Builder defines types gopium.StrategyBuilder implementation
 // that uses gopium.Curator as an exposer and related strategies
 type Builder struct {
-	Curator gopium.Curator `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1,struct_annotate_comment,add_tag_group_force"`
+	Curator gopium.Curator `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1_discrete,struct_annotate_comment,add_tag_group_force"`
 } // struct size: 16 bytes; struct align: 8 bytes; struct aligned size: 16 bytes; - 🌺 gopium @1pkg
 
 // Build Builder implementation
@@ -89,18 +94,18 @@ func (b Builder) Build(names ...gopium.StrategyName) (gopium.Strategy, error) {
 		case b.marchp(name, FShareL3):
 			stg = fsharel3.Curator(b.Curator)
 		// cache line pad roundings
-		case b.marchp(name, CacheL1):
-			stg = cachel1.Curator(b.Curator)
-		case b.marchp(name, CacheL2):
-			stg = cachel2.Curator(b.Curator)
-		case b.marchp(name, CacheL3):
-			stg = cachel3.Curator(b.Curator)
-		case b.marchp(name, FcacheL1):
-			stg = fcachel1.Curator(b.Curator)
-		case b.marchp(name, FcacheL2):
-			stg = fcachel2.Curator(b.Curator)
-		case b.marchp(name, FcacheL3):
-			stg = fcachel3.Curator(b.Curator)
+		case b.marchp(name, CacheL1D):
+			stg = cachel1d.Curator(b.Curator)
+		case b.marchp(name, CacheL2D):
+			stg = cachel2d.Curator(b.Curator)
+		case b.marchp(name, CacheL3D):
+			stg = cachel3d.Curator(b.Curator)
+		case b.marchp(name, CacheL1F):
+			stg = cachel1f.Curator(b.Curator)
+		case b.marchp(name, CacheL2F):
+			stg = cachel2f.Curator(b.Curator)
+		case b.marchp(name, CacheL3F):
+			stg = cachel3f.Curator(b.Curator)
 		// top, bottom separate pads
 		case b.marchp(name, SepSysT):
 			stg = sepsyst.Curator(b.Curator)
