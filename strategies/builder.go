@@ -2,6 +2,7 @@ package strategies
 
 import (
 	"fmt"
+	"regexp"
 	"strings"
 
 	"github.com/1pkg/gopium/gopium"
@@ -45,7 +46,7 @@ const (
 	AddTagS  gopium.StrategyName = "add_tag_group_soft"
 	AddTagF  gopium.StrategyName = "add_tag_group_force"
 	AddTagSD gopium.StrategyName = "add_tag_group_discrete"
-	AddTagFD gopium.StrategyName = "add_tag_group_combination_force_discrete"
+	AddTagFD gopium.StrategyName = "add_tag_group_force_discrete"
 	RmTagF   gopium.StrategyName = "remove_tag_group"
 	// doc and comment annotations
 	FNoteDoc  gopium.StrategyName = "fields_annotate_doc"
@@ -93,6 +94,12 @@ func (b Builder) Build(names ...gopium.StrategyName) (gopium.Strategy, error) {
 			stg = fsharel2.Curator(b.Curator)
 		case b.marchp(name, FShareL3):
 			stg = fsharel3.Curator(b.Curator)
+		case b.marchp(name, FShareB):
+			var bytes uint
+			if err := b.scanp(name, FShareB, &bytes); err != nil {
+				return nil, err
+			}
+			stg = fshareb.Bytes(bytes).Curator(b.Curator)
 		// cache line pad roundings
 		case b.marchp(name, CacheL1D):
 			stg = cachel1d.Curator(b.Curator)
@@ -100,12 +107,24 @@ func (b Builder) Build(names ...gopium.StrategyName) (gopium.Strategy, error) {
 			stg = cachel2d.Curator(b.Curator)
 		case b.marchp(name, CacheL3D):
 			stg = cachel3d.Curator(b.Curator)
+		case b.marchp(name, CacheBD):
+			var bytes uint
+			if err := b.scanp(name, CacheBD, &bytes); err != nil {
+				return nil, err
+			}
+			stg = cachebd.Bytes(bytes).Curator(b.Curator)
 		case b.marchp(name, CacheL1F):
 			stg = cachel1f.Curator(b.Curator)
 		case b.marchp(name, CacheL2F):
 			stg = cachel2f.Curator(b.Curator)
 		case b.marchp(name, CacheL3F):
 			stg = cachel3f.Curator(b.Curator)
+		case b.marchp(name, CacheBF):
+			var bytes uint
+			if err := b.scanp(name, CacheBF, &bytes); err != nil {
+				return nil, err
+			}
+			stg = cachebf.Bytes(bytes).Curator(b.Curator)
 		// top, bottom separate pads
 		case b.marchp(name, SepSysT):
 			stg = sepsyst.Curator(b.Curator)
@@ -117,12 +136,24 @@ func (b Builder) Build(names ...gopium.StrategyName) (gopium.Strategy, error) {
 			stg = sepl2t.Curator(b.Curator)
 		case b.marchp(name, SepL3T):
 			stg = sepl3t.Curator(b.Curator)
+		case b.marchp(name, SepBT):
+			var bytes uint
+			if err := b.scanp(name, SepBT, &bytes); err != nil {
+				return nil, err
+			}
+			stg = sepbt.Bytes(bytes).Curator(b.Curator)
 		case b.marchp(name, SepL1B):
 			stg = sepl1b.Curator(b.Curator)
 		case b.marchp(name, SepL2B):
 			stg = sepl2b.Curator(b.Curator)
 		case b.marchp(name, SepL3B):
 			stg = sepl3b.Curator(b.Curator)
+		case b.marchp(name, SepBB):
+			var bytes uint
+			if err := b.scanp(name, SepBB, &bytes); err != nil {
+				return nil, err
+			}
+			stg = sepbb.Bytes(bytes).Curator(b.Curator)
 		// tag processors and modifiers
 		case b.marchp(name, ProcTag):
 			stg = ptag.Builder(b)
@@ -170,18 +201,23 @@ func (b Builder) Build(names ...gopium.StrategyName) (gopium.Strategy, error) {
 
 // marchp checks if strahtegy name matches pattern
 func (b Builder) marchp(name gopium.StrategyName, pattern gopium.StrategyName) bool {
-	// prefix is everything up to first param
-	prefix := strings.Split(string(pattern), "%")[0]
-	return strings.HasPrefix(string(name), prefix)
+	// for matching we need to use regex
+	// note only: %d %f %s formatters are used
+	p := string(pattern)
+	p = strings.ReplaceAll(p, "%d", ".*?")
+	p = strings.ReplaceAll(p, "%f", ".*?")
+	p = strings.ReplaceAll(p, "%s", ".*?")
+	p = fmt.Sprintf("^%s$", p)
+	// try to compile artificial regex
+	regex, err := regexp.Compile(p)
+	return err == nil && regex.MatchString(string(name))
 }
 
 // scanp scans name with provided pattern to variable list
 func (b Builder) scanp(name gopium.StrategyName, pattern gopium.StrategyName, vars ...interface{}) error {
-	// prefix is everything up to first param
-	prefix := strings.Split(string(pattern), "%")[0]
 	// prepare strings to be scanned
-	p := strings.ReplaceAll(strings.TrimPrefix(string(pattern), prefix), "_", "")
-	n := strings.ReplaceAll(strings.TrimPrefix(string(name), prefix), "_", "")
+	p := strings.ReplaceAll(string(pattern), "_", " ")
+	n := strings.ReplaceAll(string(name), "_", " ")
 	// perform the scan and handle errors
 	if _, err := fmt.Sscanf(n, p, vars...); err != nil {
 		return fmt.Errorf("pattern %q can't be scanned for strategy %q %v", pattern, name, err)

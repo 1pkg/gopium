@@ -1,7 +1,7 @@
 package strategies
 
 import (
-	"fmt"
+	"errors"
 	"reflect"
 	"testing"
 
@@ -48,6 +48,18 @@ func TestBuilder(t *testing.T) {
 			names: []gopium.StrategyName{FShareL3},
 			stg:   pipe([]gopium.Strategy{fsharel3.Curator(b.Curator)}),
 		},
+		"`false_sharing_bytes_12` name should return expected strategy": {
+			names: []gopium.StrategyName{"false_sharing_bytes_12"},
+			stg:   pipe([]gopium.Strategy{fshareb.Bytes(12).Curator(b.Curator)}),
+		},
+		"`false_sharing_bytes_-10` name should return expected error": {
+			names: []gopium.StrategyName{"false_sharing_bytes_-10"},
+			err:   errors.New(`pattern "false_sharing_bytes_%d" can't be scanned for strategy "false_sharing_bytes_-10" expected integer`),
+		},
+		"`false_sharing_bytes_err` name should return expected error": {
+			names: []gopium.StrategyName{"false_sharing_bytes_err"},
+			err:   errors.New(`pattern "false_sharing_bytes_%d" can't be scanned for strategy "false_sharing_bytes_err" expected integer`),
+		},
 		// cache line pad roundings
 		"`cache_rounding_cpu_l1_discrete` name should return expected strategy": {
 			names: []gopium.StrategyName{CacheL1D},
@@ -61,6 +73,14 @@ func TestBuilder(t *testing.T) {
 			names: []gopium.StrategyName{CacheL3D},
 			stg:   pipe([]gopium.Strategy{cachel3d.Curator(b.Curator)}),
 		},
+		"`cache_rounding_bytes_10_discrete` name should return expected strategy": {
+			names: []gopium.StrategyName{"cache_rounding_bytes_10_discrete"},
+			stg:   pipe([]gopium.Strategy{cachebd.Bytes(10).Curator(b.Curator)}),
+		},
+		"`cache_rounding_bytes_err_discrete` name should return expected error": {
+			names: []gopium.StrategyName{"cache_rounding_bytes_err_discrete"},
+			err:   errors.New(`pattern "cache_rounding_bytes_%d_discrete" can't be scanned for strategy "cache_rounding_bytes_err_discrete" expected integer`),
+		},
 		"`cache_rounding_cpu_l1_full` name should return expected strategy": {
 			names: []gopium.StrategyName{CacheL1F},
 			stg:   pipe([]gopium.Strategy{cachel1f.Curator(b.Curator)}),
@@ -72,6 +92,14 @@ func TestBuilder(t *testing.T) {
 		"`cache_rounding_cpu_l3_full` name should return expected strategy": {
 			names: []gopium.StrategyName{CacheL3F},
 			stg:   pipe([]gopium.Strategy{cachel3f.Curator(b.Curator)}),
+		},
+		"`cache_rounding_bytes_10_full` name should return expected strategy": {
+			names: []gopium.StrategyName{"cache_rounding_bytes_10_full"},
+			stg:   pipe([]gopium.Strategy{cachebf.Bytes(10).Curator(b.Curator)}),
+		},
+		"`cache_rounding_bytes_err_full` name should return expected error": {
+			names: []gopium.StrategyName{"cache_rounding_bytes_err_full"},
+			err:   errors.New(`pattern "cache_rounding_bytes_%d_full" can't be scanned for strategy "cache_rounding_bytes_err_full" expected integer`),
 		},
 		// top, bottom separate pads
 		"`separate_padding_system_alignment_top` name should return expected strategy": {
@@ -94,6 +122,14 @@ func TestBuilder(t *testing.T) {
 			names: []gopium.StrategyName{SepL3T},
 			stg:   pipe([]gopium.Strategy{sepl3t.Curator(b.Curator)}),
 		},
+		"`separate_padding_bytes_15_top` name should return expected strategy": {
+			names: []gopium.StrategyName{"separate_padding_bytes_15_top"},
+			stg:   pipe([]gopium.Strategy{sepbt.Bytes(15).Curator(b.Curator)}),
+		},
+		"`separate_padding_bytes_err_top` name should return expected error": {
+			names: []gopium.StrategyName{"separate_padding_bytes_err_top"},
+			err:   errors.New(`pattern "separate_padding_bytes_%d_top" can't be scanned for strategy "separate_padding_bytes_err_top" expected integer`),
+		},
 		"`separate_padding_cpu_l1_bottom` name should return expected strategy": {
 			names: []gopium.StrategyName{SepL1B},
 			stg:   pipe([]gopium.Strategy{sepl1b.Curator(b.Curator)}),
@@ -105,6 +141,14 @@ func TestBuilder(t *testing.T) {
 		"`separate_padding_cpu_l3_bottom` name should return expected strategy": {
 			names: []gopium.StrategyName{SepL3B},
 			stg:   pipe([]gopium.Strategy{sepl3b.Curator(b.Curator)}),
+		},
+		"`separate_padding_bytes_15_bottom` name should return expected strategy": {
+			names: []gopium.StrategyName{"separate_padding_bytes_15_bottom"},
+			stg:   pipe([]gopium.Strategy{sepbb.Bytes(15).Curator(b.Curator)}),
+		},
+		"`separate_padding_bytes_err_bottom` name should return expected error": {
+			names: []gopium.StrategyName{"separate_padding_bytes_err_bottom"},
+			err:   errors.New(`pattern "separate_padding_bytes_%d_bottom" can't be scanned for strategy "separate_padding_bytes_err_bottom" expected integer`),
 		},
 		// tag processors and modifiers
 		"`process_tag_group` name should return expected strategy": {
@@ -123,7 +167,7 @@ func TestBuilder(t *testing.T) {
 			names: []gopium.StrategyName{AddTagSD},
 			stg:   pipe([]gopium.Strategy{tagsd.Names(AddTagSD)}),
 		},
-		"`add_tag_group_combination_force_discrete` name should return expected strategy": {
+		"`add_tag_group_force_discrete` name should return expected strategy": {
 			names: []gopium.StrategyName{AddTagFD},
 			stg:   pipe([]gopium.Strategy{tagfd.Names(AddTagFD)}),
 		},
@@ -179,7 +223,7 @@ func TestBuilder(t *testing.T) {
 		},
 		"invalid name should return builder error": {
 			names: []gopium.StrategyName{"test"},
-			err:   fmt.Errorf(`strategy "test" wasn't found`),
+			err:   errors.New(`strategy "test" wasn't found`),
 		},
 		"complex name should return expected strategy": {
 			names: []gopium.StrategyName{Ignore, AddTagS},
@@ -187,7 +231,7 @@ func TestBuilder(t *testing.T) {
 		},
 		"invalid name inside complex name should return builder error": {
 			names: []gopium.StrategyName{Ignore, "test", AddTagS},
-			err:   fmt.Errorf(`strategy "test" wasn't found`),
+			err:   errors.New(`strategy "test" wasn't found`),
 		},
 	}
 	for name, tcase := range table {
