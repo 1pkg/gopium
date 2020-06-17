@@ -110,19 +110,19 @@ Gopium provides next strategies:
 	the padding at the bottom)
  - separate_padding_cpu_l3_bottom (separates structure with extra cpu cache line #3 padding by adding
 	the padding at the bottom)
- - explicit_padings_system_alignment (explicitly aligns each structure field to system alignment padding by adding
+ - explicit_paddings_system_alignment (explicitly aligns each structure field to system alignment padding by adding
 	missing paddings for each field)
- - explicit_padings_type_natural (explicitly aligns each structure field to max type alignment padding by adding
+ - explicit_paddings_type_natural (explicitly aligns each structure field to max type alignment padding by adding
 	missing paddings for each field)
  - add_tag_group_soft (adds gopium fields tags annotation if no previous annotation found)
  - add_tag_group_force (adds gopium fields tags annotation if previous annotation found overwrites it)
  - add_tag_group_discrete (discretely adds gopium fields tags annotation if no previous annotation found)
  - add_tag_group_force_discrete (discretely adds gopium fields tags annotation if previous annotation found overwrites it)
  - remove_tag_group (removes gopium fields tags annotation)
- - doc_fields_annotate (adds align and size doc annotation for each structure field)
- - comment_fields_annotate adds align and size comment annotation for each structure field)
- - doc_struct_annotate (adds aggregated align and size doc annotation for structure)
- - comment_struct_annotate (adds aggregated align and size comment annotation for structure)
+ - fields_annotate_doc (adds align and size doc annotation for each structure field)
+ - fields_annotate_comment adds align and size comment annotation for each structure field)
+ - struct_annotate_doc (adds aggregated align and size doc annotation for structure)
+ - struct_annotate_comment (adds aggregated align and size comment annotation for structure)
  - name_lexicographical_ascending (sorts fields accordingly to their names in ascending order)
  - name_lexicographical_descending (sorts fields accordingly to their names descending order)
  - type_lexicographical_ascending (sorts fields accordingly to their types in ascending order)
