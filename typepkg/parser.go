@@ -81,7 +81,7 @@ func (p *ParserXToolPackagesAst) ParseTypes(ctx context.Context, _ ...byte) (*ty
 	// - or 3 (pkg contains tests)
 	// see go packages config test description
 	if plen := len(pkgs); plen >= 1 &&
-		(pkgs[0].String() == p.Pattern || pkgs[0].String() == path) {
+		(pkgs[0].String() == p.Pattern || strings.HasPrefix(pkgs[0].String(), path)) {
 		switch plen {
 		case 1:
 			return pkgs[0].Types, NewLocator(fset), nil
