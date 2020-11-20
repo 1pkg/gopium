@@ -73,15 +73,11 @@ func (p *ParserXToolPackagesAst) ParseTypes(ctx context.Context, _ ...byte) (*ty
 		path = strings.ReplaceAll(path, string(os.PathSeparator), "/")
 	}
 	// check parse results
-	// it should be equal to
-	// package pattern or
-	// relative path
 	// note: len of pkgs should be equal to
 	// - either 1 (pkg contains no tests)
 	// - or 3 (pkg contains tests)
 	// see go packages config test description
-	if plen := len(pkgs); plen >= 1 &&
-		(pkgs[0].String() == p.Pattern || strings.HasPrefix(pkgs[0].String(), path)) {
+	if plen := len(pkgs); plen >= 1 && validPackage(pkgs[0].String(), p.Pattern, path) {
 		switch plen {
 		case 1:
 			return pkgs[0].Types, NewLocator(fset), nil
@@ -89,7 +85,7 @@ func (p *ParserXToolPackagesAst) ParseTypes(ctx context.Context, _ ...byte) (*ty
 			return pkgs[1].Types, NewLocator(fset), nil
 		}
 	}
-	return nil, nil, fmt.Errorf("package %q wasn't found at %q", p.Pattern, dir)
+	return nil, nil, fmt.Errorf("types package %q wasn't found at %q", p.Pattern, dir)
 }
 
 // ParseAst ParserXToolPackagesAst implementation
@@ -138,16 +134,37 @@ func (p *ParserXToolPackagesAst) ParseAst(ctx context.Context, src ...byte) (*as
 		return nil, nil, err
 	}
 	// check parse results
-	// it should be equal to
-	// package pattern or
-	// last component of path
-	// note: len of pkgs should aways be equal to 1
-	if pkg, ok := pkgs[p.Pattern]; len(pkgs) >= 1 && ok {
-		return pkg, NewLocator(fset), nil
+	// note: ast requires only last element of the path
+	path := filepath.Base(p.Path)
+	for pckgn, pckg := range pkgs {
+		if validPackage(pckgn, p.Pattern, path) {
+			return pckg, NewLocator(fset), nil
+		}
 	}
-	pkg := filepath.Base(p.Path)
-	if pkg, ok := pkgs[pkg]; len(pkgs) >= 1 && ok {
-		return pkg, NewLocator(fset), nil
+	return nil, nil, fmt.Errorf("ast package %q wasn't found at %q", p.Pattern, dir)
+}
+
+// validPackage checks package name against provided package pattern and path.
+// It preformns shallow sanity package name check to be able to validate
+// packages outside of gopath and versioned packages.
+func validPackage(pckg string, pattern string, path string) bool {
+	// first check package name directly
+	if direct := strings.HasSuffix(pckg, pattern) ||
+		strings.HasPrefix(pckg, path); direct {
+		return true
 	}
-	return nil, nil, fmt.Errorf("package %q wasn't found at %q", p.Pattern, dir)
+	// then filter out package version
+	parts := strings.Split(pckg, "/")
+	fparts := make([]string, 0, len(parts))
+	for _, part := range parts {
+		var version int64
+		if _, err := fmt.Sscanf(part, "v%d", &version); err == nil {
+			continue
+		}
+		fparts = append(fparts, part)
+	}
+	pckg = strings.Join(fparts, "/")
+	// and try to recheck again
+	return strings.HasSuffix(pckg, pattern) ||
+		strings.HasPrefix(pckg, path)
 }
