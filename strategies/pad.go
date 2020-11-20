@@ -48,9 +48,7 @@ func (stg pad) Apply(ctx context.Context, o gopium.Struct) (gopium.Struct, error
 				rfields = append(rfields, collections.PadField(pad))
 			}
 			// append field to fields
-			for _, f := range fields {
-				rfields = append(rfields, f)
-			}
+			rfields = append(rfields, fields...)
 		})
 		// update resulted fields
 		r.Fields = rfields

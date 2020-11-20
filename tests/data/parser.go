@@ -39,8 +39,9 @@ type Parser struct {
 // NewParser creates parser for single tests data
 func NewParser(pkg string) gopium.Parser {
 	p := &typepkg.ParserXToolPackagesAst{
-		Pattern:    fmt.Sprintf("github.com/1pkg/gopium/tests/data/%s", pkg),
-		Path:       filepath.Join(tests.Gopium, "tests", "data", pkg),
+		Pattern: fmt.Sprintf("github.com/1pkg/gopium/tests/data/%s", pkg),
+		Path:    filepath.Join(tests.Gopium, "tests", "data", pkg),
+		//nolint
 		ModeTypes:  packages.LoadAllSyntax,
 		ModeAst:    parser.ParseComments | parser.AllErrors,
 		BuildFlags: []string{"-tags=tests_data"},

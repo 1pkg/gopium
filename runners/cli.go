@@ -76,9 +76,10 @@ func NewCli(
 	}
 	// set up parser
 	xp := &typepkg.ParserXToolPackagesAst{
-		Pattern:    pkg,
-		Root:       root,
-		Path:       path,
+		Pattern: pkg,
+		Root:    root,
+		Path:    path,
+		//nolint
 		ModeTypes:  packages.LoadAllSyntax,
 		ModeAst:    parser.ParseComments | parser.AllErrors,
 		BuildEnv:   benvs,

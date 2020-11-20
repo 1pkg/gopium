@@ -42,12 +42,12 @@ func combine(funcs ...gopium.Apply) gopium.Apply {
 		pkg *ast.Package,
 		loc gopium.Locator,
 		c gopium.Categorized,
-	) (*ast.Package, error) {
+	) (rpkg *ast.Package, err error) {
 		// filters all files that
 		// could be skipped
 		// we could skip err check here
 		// as cat alway returns nil
-		pkg, err := cat(ctx, pkg, loc, c)
+		pkg, _ = cat(ctx, pkg, loc, c)
 		// go through all provided funcs
 		for _, fun := range funcs {
 			// manage context actions
@@ -237,7 +237,7 @@ func note(w gopium.Walk, xp gopium.AstParser, p gopium.Printer) gopium.Apply {
 					return err
 				}
 				// get collection for cat
-				// empty cat should be skiped
+				// empty cat should be skipped
 				// before in cat
 				catsts, _ := c.Cat(name)
 				// go through file structs
