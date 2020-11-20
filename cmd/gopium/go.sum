@@ -1,6 +1,4 @@
 cloud.google.com/go v0.26.0/go.mod h1:aQUYkXzVsufM+DwF1aE+0xfcU+56JwCaLick0ClmMTw=
-github.com/1pkg/gopium v1.1.0 h1:SiDaHVZdlO4rS/L94SR2jas6HctohIp/nJXkXJ3WD3A=
-github.com/1pkg/gopium v1.1.0/go.mod h1:ujkk7c4PNCrD6mqpYfsoOhK9Mo0F+qDP5gRXywVAds8=
 github.com/1pkg/gopium v1.1.1 h1:vVTCOt6K9PCJVWBH+yOxccHYEwolk+cIgCgX5aO9ZGg=
 github.com/1pkg/gopium v1.1.1/go.mod h1:ujkk7c4PNCrD6mqpYfsoOhK9Mo0F+qDP5gRXywVAds8=
 github.com/BurntSushi/toml v0.3.1/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03qcyfWMU=
