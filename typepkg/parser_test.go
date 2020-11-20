@@ -44,8 +44,9 @@ func TestParserXToolPackagesAstTypes(t *testing.T) {
 	}{
 		"invalid folder should return parser error": {
 			p: ParserXToolPackagesAst{
-				Pattern:   "test",
-				Path:      "test",
+				Pattern: "test",
+				Path:    "test",
+				//nolint
 				ModeTypes: packages.LoadAllSyntax,
 			},
 			ctx: context.Background(),
@@ -57,21 +58,23 @@ func TestParserXToolPackagesAstTypes(t *testing.T) {
 		},
 		"invalid pattern with relative path should return parser error": {
 			p: ParserXToolPackagesAst{
-				Pattern:   "test",
-				Path:      path.Join("..", "gopium"),
+				Pattern: "test",
+				Path:    path.Join("..", "gopium"),
+				//nolint
 				ModeTypes: packages.LoadAllSyntax,
 			},
 			ctx: context.Background(),
 			err: tests.OnOS(
 				"windows",
-				fmt.Errorf("%s", `package "test" wasn't found at "..\\gopium"`),
-				fmt.Errorf("%s", `package "test" wasn't found at "../gopium"`),
+				fmt.Errorf("%s", `types package "test" wasn't found at "..\\gopium"`),
+				fmt.Errorf("%s", `types package "test" wasn't found at "../gopium"`),
 			).(error),
 		},
 		"invalid pattern with abs path should return expected parser package": {
 			p: ParserXToolPackagesAst{
-				Pattern:   "github.com/1pkg/gopium/gopium",
-				Path:      pdir,
+				Pattern: "github.com/1pkg/gopium/gopium",
+				Path:    pdir,
+				//nolint
 				ModeTypes: packages.LoadAllSyntax,
 			},
 			ctx: context.Background(),
@@ -88,8 +91,9 @@ func TestParserXToolPackagesAstTypes(t *testing.T) {
 		},
 		"valid pattern and path and mode should return expected parser package": {
 			p: ParserXToolPackagesAst{
-				Pattern:   "github.com/1pkg/gopium/gopium",
-				Path:      path.Join("..", "gopium"),
+				Pattern: "github.com/1pkg/gopium/gopium",
+				Path:    path.Join("..", "gopium"),
+				//nolint
 				ModeTypes: packages.LoadAllSyntax,
 			},
 			ctx: context.Background(),
@@ -98,8 +102,9 @@ func TestParserXToolPackagesAstTypes(t *testing.T) {
 		},
 		"valid pattern and path and mode should return expected parser package on abs path": {
 			p: ParserXToolPackagesAst{
-				Pattern:   "github.com/1pkg/gopium/gopium",
-				Path:      pdir,
+				Pattern: "github.com/1pkg/gopium/gopium",
+				Path:    pdir,
+				//nolint
 				ModeTypes: packages.LoadAllSyntax,
 			},
 			ctx: context.Background(),
@@ -108,8 +113,9 @@ func TestParserXToolPackagesAstTypes(t *testing.T) {
 		},
 		"valid pattern and path and mode should return expected parser package with tests": {
 			p: ParserXToolPackagesAst{
-				Pattern:   "github.com/1pkg/gopium/typepkg",
-				Path:      sdir,
+				Pattern: "github.com/1pkg/gopium/typepkg",
+				Path:    sdir,
+				//nolint
 				ModeTypes: packages.LoadAllSyntax,
 			},
 			ctx: context.Background(),
@@ -118,8 +124,9 @@ func TestParserXToolPackagesAstTypes(t *testing.T) {
 		},
 		"valid pattern and path and mode should return expected parser package skip src": {
 			p: ParserXToolPackagesAst{
-				Pattern:   "github.com/1pkg/gopium/gopium",
-				Path:      path.Join("..", "gopium"),
+				Pattern: "github.com/1pkg/gopium/gopium",
+				Path:    path.Join("..", "gopium"),
+				//nolint
 				ModeTypes: packages.LoadAllSyntax,
 			},
 			ctx: context.Background(),
@@ -139,8 +146,9 @@ type Single struct {
 		},
 		"valid pattern and path and mode should return parser error on canceled context": {
 			p: ParserXToolPackagesAst{
-				Pattern:   "github.com/1pkg/gopium/gopium",
-				Path:      path.Join("..", "gopium"),
+				Pattern: "github.com/1pkg/gopium/gopium",
+				Path:    path.Join("..", "gopium"),
+				//nolint
 				ModeTypes: packages.LoadAllSyntax,
 			},
 			ctx: cctx,
@@ -224,7 +232,7 @@ func TestParserXToolPackagesAstAst(t *testing.T) {
 				ModeAst: parser.ParseComments | parser.AllErrors,
 			},
 			ctx: context.Background(),
-			err: errors.New(`package "github.com/1pkg/gopium/gopium" wasn't found at "."`),
+			err: errors.New(`ast package "github.com/1pkg/gopium/gopium" wasn't found at "."`),
 		},
 		"valid pattern with root path should return expected parser ast": {
 			p: ParserXToolPackagesAst{

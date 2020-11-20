@@ -498,7 +498,7 @@ func TestWout(t *testing.T) {
 							t.Errorf("actual %v doesn't equal to expected %v", err, nil)
 						}
 						// format actual and expected identically
-						actual := strings.Trim(string(buf.Bytes()), "\n")
+						actual := strings.Trim(buf.String(), "\n")
 						expected := strings.Trim(string(st), "\n")
 						if !reflect.DeepEqual(actual, expected) {
 							t.Errorf("id %v actual %v doesn't equal to expected %v", id, actual, expected)

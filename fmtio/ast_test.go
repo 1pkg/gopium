@@ -359,7 +359,7 @@ test struct {// random
 				t.Errorf("actual %v doesn't equal to expected %v", err, tcase.err)
 			}
 			// format actual and expected identically
-			actual := strings.Trim(string(buf.Bytes()), "\n")
+			actual := strings.Trim(buf.String(), "\n")
 			expected := strings.ReplaceAll(strings.Trim(string(tcase.r), "\n"), "'", "`")
 			if err == nil && !reflect.DeepEqual(actual, expected) {
 				t.Errorf("actual %v doesn't equal to expected %v", actual, expected)

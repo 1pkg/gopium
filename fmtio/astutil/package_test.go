@@ -226,7 +226,7 @@ type (
 							t.Errorf("actual %v doesn't equal to expected %v", err, nil)
 						}
 						// format actual and expected identically
-						actual := strings.Trim(string(buf.Bytes()), "\n")
+						actual := strings.Trim(buf.String(), "\n")
 						expected := strings.Trim(string(st), "\n")
 						if !reflect.DeepEqual(actual, expected) {
 							t.Errorf("name %v actual %v doesn't equal to expected %v", name, actual, expected)

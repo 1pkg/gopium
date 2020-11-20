@@ -4,7 +4,7 @@ jobs:
   test:
     strategy:
       matrix:
-        go-version: [1.14.x]
+        go-version: [1.15.x]
         platform: [ubuntu-latest, macos-latest, windows-latest]
     runs-on: ${{ matrix.platform }}
     steps:
@@ -15,4 +15,8 @@ jobs:
       - name: checkout
         uses: actions/checkout@v2
       - name: test
-        run: go test -v -race -count=1 -coverprofile test.cover ./...
+        uses: nick-invision/retry@v1
+        with:
+          max_attempts: 3
+          timeout_minutes: 10
+          command: go test -v -race -count=1 -coverprofile test.cover ./...
