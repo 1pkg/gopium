@@ -84,9 +84,10 @@ func TestNewCli(t *testing.T) {
 				},
 				wb: walkers.Builder{
 					Parser: &typepkg.ParserXToolPackagesAst{
-						Pattern:    "test-pkg",
-						Root:       build.Default.GOPATH,
-						Path:       "test-path",
+						Pattern: "test-pkg",
+						Root:    build.Default.GOPATH,
+						Path:    "test-path",
+						//nolint
 						ModeTypes:  packages.LoadAllSyntax,
 						ModeAst:    parser.ParseComments | parser.AllErrors,
 						BuildEnv:   []string{},
@@ -133,9 +134,10 @@ func TestNewCli(t *testing.T) {
 				},
 				wb: walkers.Builder{
 					Parser: &typepkg.ParserXToolPackagesAst{
-						Pattern:    "test-pkg",
-						Root:       build.Default.GOPATH,
-						Path:       "test-path",
+						Pattern: "test-pkg",
+						Root:    build.Default.GOPATH,
+						Path:    "test-path",
+						//nolint
 						ModeTypes:  packages.LoadAllSyntax,
 						ModeAst:    parser.ParseComments | parser.AllErrors,
 						BuildEnv:   []string{},
@@ -181,8 +183,9 @@ func TestNewCli(t *testing.T) {
 				},
 				wb: walkers.Builder{
 					Parser: &typepkg.ParserXToolPackagesAst{
-						Pattern:    "test-pkg",
-						Path:       tests.OnOS("windows", "c:\\test-path", "/test-path").(string),
+						Pattern: "test-pkg",
+						Path:    tests.OnOS("windows", "c:\\test-path", "/test-path").(string),
+						//nolint
 						ModeTypes:  packages.LoadAllSyntax,
 						ModeAst:    parser.ParseComments | parser.AllErrors,
 						BuildEnv:   []string{},
