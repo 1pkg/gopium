@@ -42,7 +42,7 @@ function patchgo() {
 		return [
 			{
 				name: 'gopium',
-				importPath: 'github.com/1pkg/gopium/cmd/gopium',
+				importPath: 'github.com/1pkg/gopium',
 				isImportant: true,
 				description: '',
 			},
@@ -60,7 +60,7 @@ function patchgo() {
 			case 'gopium':
 				return {
 					name: 'gopium',
-					importPath: 'github.com/1pkg/gopium/cmd/gopium',
+					importPath: 'github.com/1pkg/gopium',
 					isImportant: true,
 					description: '',
 				}
