@@ -64,8 +64,8 @@ func TestParserXToolPackagesAstTypes(t *testing.T) {
 			ctx: context.Background(),
 			err: tests.OnOS(
 				"windows",
-				fmt.Errorf("%s", `package "test" wasn't found at "..\\gopium"`),
-				fmt.Errorf("%s", `package "test" wasn't found at "../gopium"`),
+				fmt.Errorf("%s", `types package "test" wasn't found at "..\\gopium"`),
+				fmt.Errorf("%s", `types package "test" wasn't found at "../gopium"`),
 			).(error),
 		},
 		"invalid pattern with abs path should return expected parser package": {
@@ -224,7 +224,7 @@ func TestParserXToolPackagesAstAst(t *testing.T) {
 				ModeAst: parser.ParseComments | parser.AllErrors,
 			},
 			ctx: context.Background(),
-			err: errors.New(`package "github.com/1pkg/gopium/gopium" wasn't found at "."`),
+			err: errors.New(`ast package "github.com/1pkg/gopium/gopium" wasn't found at "."`),
 		},
 		"valid pattern with root path should return expected parser ast": {
 			p: ParserXToolPackagesAst{
