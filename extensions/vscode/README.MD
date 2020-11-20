@@ -90,4 +90,5 @@ Nevertheless it's impossible to just seamlessly reuse another extension to build
 
 ## Licence
 
-Gopium is licensed under the MIT License.
+Gopium is licensed under the MIT License.  
+See [LICENSE](LICENSE) for the full license text.
