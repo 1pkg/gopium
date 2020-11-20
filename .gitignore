@@ -1,6 +1,5 @@
-cmd/gopium/gopium
-cmd/vscode/out
-cmd/vscode/*.vsix
+extensions/vscode/out
+extensions/vscode/*.vsix
  # don't vendor vscode ext node modules 
  # as it uses npm package-lock way already
-cmd/vscode/node_modules
+extensions/vscode/node_modules

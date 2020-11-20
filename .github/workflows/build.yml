@@ -15,6 +15,4 @@ jobs:
       - name: checkout
         uses: actions/checkout@v2
       - name: build
-        run: |
-          cd cmd/gopium
-          go build ./...
+        run: go build ./...
