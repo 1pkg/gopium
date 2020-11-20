@@ -13,7 +13,7 @@ Extension automatically tries to install required tools if they have been not de
 To install and update gopium cli use:
 
 ```bash
-go get -u github.com/1pkg/gopium
+GOPROXY=direct go get -u github.com/1pkg/gopium
 ```
 
 To install and update goutline use:
@@ -84,10 +84,11 @@ which are defined by next settings in vscode:
 
 ## Origin and Decisions
 
-Extension is based on and heavily using [vscode-go](https://github.com/microsoft/vscode-go) extension functionality and keeps it as [submodule](src/vscode-go). Such decision to vendor extension was made in favor to simplify origin Gopium VSCode Extension development by reusing common components like: goutline codelens, tools installation, etc.
+Extension is based on and heavily using [vscode-go](https://github.com/microsoft/vscode-go) extension functionality and keeps it as [submodule](https://github.com/1pkg/vscode-go). Such decision to vendor extension was made in favor to simplify origin Gopium VSCode Extension development by reusing common components like: goutline codelens, tools installation, etc.
 
 Nevertheless it's impossible to just seamlessly reuse another extension to build your own, so a lot of functionality has been patched and changed, most noticeable: vscode-go telemetry is disabled, vscode-go extension entrypoits are removed, [go-outline](https://github.com/ramya-rao-a/go-outline) is replaced with [go-outline](https://github.com/1pkg/goutline), etc.
 
 ## Licence
 
-Gopium is licensed under the MIT License.
+Gopium is licensed under the MIT License.  
+See [LICENSE](LICENSE) for the full license text.
