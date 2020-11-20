@@ -7,7 +7,7 @@
 		"name": "Kostiantyn Masliuk - github.com/1pkg"
 	},
 	"license": "MIT",
-	"version": "1.1.1",
+	"version": "1.2.1",
 	"categories": [
 		"Programming Languages",
 		"Formatters",
@@ -31,6 +31,7 @@
 	},
 	"extensionDependencies": [],
 	"dependencies": {
+		"deep-equal": "^2.0.2",
 		"diff": "^4.0.2",
 		"json-rpc2": "^1.0.2",
 		"moment": "^2.24.0",
@@ -40,10 +41,10 @@
 		"vscode-debugprotocol": "^1.40.0",
 		"vscode-extension-telemetry": "^0.1.2",
 		"vscode-languageclient": "6.1.0",
-		"web-request": "^1.0.7",
-		"deep-equal": "^2.0.2"
+		"web-request": "^1.0.7"
 	},
 	"devDependencies": {
+		"@types/deep-equal": "^1.0.1",
 		"@types/fs-extra": "^8.1.0",
 		"@types/glob": "^7.1.1",
 		"@types/node": "^13.11.1",
@@ -55,8 +56,7 @@
 		"prettier": "^2.0.4",
 		"sinon": "^9.0.2",
 		"tslint": "^6.1.1",
-		"typescript": "^3.8.3",
-		"@types/deep-equal": "^1.0.1"
+		"typescript": "^3.8.3"
 	},
 	"engines": {
 		"vscode": "^1.41.0"
