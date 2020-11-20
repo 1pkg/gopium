@@ -102,7 +102,7 @@ struct {
 				t.Errorf("actual %v doesn't equal to expected %v", err, tcase.err)
 			}
 			// format actual and expected identically
-			actual := strings.Trim(string(buf.Bytes()), "\n")
+			actual := strings.Trim(buf.String(), "\n")
 			expected := strings.Trim(string(tcase.r), "\n")
 			if !reflect.DeepEqual(actual, expected) {
 				t.Errorf("name %v actual %v doesn't equal to expected %v", name, actual, expected)

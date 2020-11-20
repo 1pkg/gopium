@@ -24,7 +24,7 @@ go get -u github.com/1pkg/goutline
 
 ## Transformations Customization
 
-You can easily adjust list of Gopium transformations to your needs by updating `gopium.actions` settings in vscode, see also Gopium avaliable [transformations](https://github.com/1pkg/gopium/tree/master/cmd/gopium#strategies-and-transformations) and [walkers](https://github.com/1pkg/gopium/tree/master/cmd/gopium#walkers-and-formatters).
+You can easily adjust list of Gopium transformations to your needs by updating `gopium.actions` settings in vscode, see also Gopium available [transformations](https://github.com/1pkg/gopium/tree/master/cmd/gopium#strategies-and-transformations) and [walkers](https://github.com/1pkg/gopium/tree/master/cmd/gopium#walkers-and-formatters).
 By default extension uses next transformations presets:
 
 `gopium pack | gopium cache | gopium pack cache | gopium false sharing | gopium pack verbose | gopium cache verbose`

@@ -4,7 +4,7 @@ jobs:
   lint:
     strategy:
       matrix:
-        go-version: [1.14.x]
+        go-version: [1.15.x]
         platform: [ubuntu-latest, macos-latest, windows-latest]
     runs-on: ${{ matrix.platform }}
     steps:
@@ -12,12 +12,9 @@ jobs:
         uses: actions/setup-go@v2
         with:
           go-version: ${{ matrix.go-version }}
-      - name: checkout
-        uses: actions/checkout@v2
-      - name: lint
-        run: |
-          go get -u golang.org/x/lint/golint
-          go get -u github.com/client9/misspell/cmd/misspell
-          go vet -v ./...
-          golint -set_exit_status $(go list ./...)
-          misspell -error ./**/*.go
+      - uses: actions/checkout@v2
+      - name: golangci-lint
+        uses: golangci/golangci-lint-action@v2
+        with:
+          version: v1.31
+          args: -E misspell -E golint
