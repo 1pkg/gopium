@@ -89,6 +89,7 @@ function patchgo() {
 	// to replace out chan with gopium chan
 	let pstatus = gostatus as any
 	pstatus.outputChannel = out
+	process.env['GOPROXY'] = 'direct'
 }
 // activate root extension registration hook
 export async function activate(context: vscode.ExtensionContext) {
