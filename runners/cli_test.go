@@ -3,8 +3,10 @@ package runners
 import (
 	"context"
 	"errors"
+	"fmt"
 	"go/build"
 	"go/parser"
+	"os"
 	"reflect"
 	"regexp"
 	"testing"
@@ -88,9 +90,12 @@ func TestNewCli(t *testing.T) {
 						Root:    build.Default.GOPATH,
 						Path:    "test-path",
 						//nolint
-						ModeTypes:  packages.LoadAllSyntax,
-						ModeAst:    parser.ParseComments | parser.AllErrors,
-						BuildEnv:   []string{},
+						ModeTypes: packages.LoadAllSyntax,
+						ModeAst:   parser.ParseComments | parser.AllErrors,
+						BuildEnv: []string{
+							fmt.Sprintf("GOPATH=%s", os.Getenv("GOPATH")),
+							fmt.Sprintf("GOCACHE=%s", os.Getenv("GOCACHE")),
+						},
 						BuildFlags: []string{},
 					},
 					Exposer: m,
@@ -138,9 +143,12 @@ func TestNewCli(t *testing.T) {
 						Root:    build.Default.GOPATH,
 						Path:    "test-path",
 						//nolint
-						ModeTypes:  packages.LoadAllSyntax,
-						ModeAst:    parser.ParseComments | parser.AllErrors,
-						BuildEnv:   []string{},
+						ModeTypes: packages.LoadAllSyntax,
+						ModeAst:   parser.ParseComments | parser.AllErrors,
+						BuildEnv: []string{
+							fmt.Sprintf("GOPATH=%s", os.Getenv("GOPATH")),
+							fmt.Sprintf("GOCACHE=%s", os.Getenv("GOCACHE")),
+						},
 						BuildFlags: []string{},
 					},
 					Exposer: m,
@@ -161,7 +169,7 @@ func TestNewCli(t *testing.T) {
 			// package parser vars
 			pkg:    "test-pkg",
 			path:   tests.OnOS("windows", "c:\\test-path", "/test-path").(string),
-			benvs:  []string{},
+			benvs:  []string{"env"},
 			bflags: []string{},
 			// walker vars
 			walker:  "test-w",
@@ -188,7 +196,7 @@ func TestNewCli(t *testing.T) {
 						//nolint
 						ModeTypes:  packages.LoadAllSyntax,
 						ModeAst:    parser.ParseComments | parser.AllErrors,
-						BuildEnv:   []string{},
+						BuildEnv:   []string{"env"},
 						BuildFlags: []string{},
 					},
 					Exposer: m,
