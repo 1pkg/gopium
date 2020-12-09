@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"go/build"
 	"go/parser"
-	"os"
+	"path/filepath"
 	"reflect"
 	"regexp"
 	"testing"
@@ -93,8 +93,8 @@ func TestNewCli(t *testing.T) {
 						ModeTypes: packages.LoadAllSyntax,
 						ModeAst:   parser.ParseComments | parser.AllErrors,
 						BuildEnv: []string{
-							fmt.Sprintf("GOPATH=%s", os.Getenv("GOPATH")),
-							fmt.Sprintf("GOCACHE=%s", os.Getenv("GOCACHE")),
+							fmt.Sprintf("GOPATH=%s", build.Default.GOPATH),
+							fmt.Sprintf("GOCACHE=%s", filepath.Join(build.Default.GOPATH, ".cache")),
 						},
 						BuildFlags: []string{},
 					},
@@ -146,8 +146,8 @@ func TestNewCli(t *testing.T) {
 						ModeTypes: packages.LoadAllSyntax,
 						ModeAst:   parser.ParseComments | parser.AllErrors,
 						BuildEnv: []string{
-							fmt.Sprintf("GOPATH=%s", os.Getenv("GOPATH")),
-							fmt.Sprintf("GOCACHE=%s", os.Getenv("GOCACHE")),
+							fmt.Sprintf("GOPATH=%s", build.Default.GOPATH),
+							fmt.Sprintf("GOCACHE=%s", filepath.Join(build.Default.GOPATH, ".cache")),
 						},
 						BuildFlags: []string{},
 					},

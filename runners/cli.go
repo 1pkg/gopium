@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"go/build"
 	"go/parser"
-	"os"
 	"path/filepath"
 	"regexp"
 	"strings"
@@ -78,8 +77,8 @@ func NewCli(
 	// https://github.com/1pkg/gopium/issues/18
 	if len(benvs) == 0 {
 		benvs = []string{
-			fmt.Sprintf("GOPATH=%s", os.Getenv("GOPATH")),
-			fmt.Sprintf("GOCACHE=%s", os.Getenv("GOCACHE")),
+			fmt.Sprintf("GOPATH=%s", build.Default.GOPATH),
+			fmt.Sprintf("GOCACHE=%s", filepath.Join(build.Default.GOPATH, ".cache")),
 		}
 	}
 	// set up parser
