@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"go/build"
 	"go/parser"
+	"os"
 	"path/filepath"
 	"regexp"
 	"strings"
@@ -73,6 +74,13 @@ func NewCli(
 	var root string
 	if !filepath.IsAbs(path) {
 		root = build.Default.GOPATH
+	}
+	// https://github.com/1pkg/gopium/issues/18
+	if len(benvs) == 0 {
+		benvs = []string{
+			fmt.Sprintf("GOPATH=%s", os.Getenv("GOPATH")),
+			fmt.Sprintf("GOCACHE=%s", os.Getenv("GOCACHE")),
+		}
 	}
 	// set up parser
 	xp := &typepkg.ParserXToolPackagesAst{
