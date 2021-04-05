@@ -2,6 +2,7 @@ package strategies
 
 import (
 	"context"
+	"errors"
 	"reflect"
 	"regexp"
 	"testing"
@@ -160,7 +161,7 @@ func TestFilter(t *testing.T) {
 			if !reflect.DeepEqual(r, tcase.r) {
 				t.Errorf("actual %v doesn't equal to expected %v", r, tcase.r)
 			}
-			if !reflect.DeepEqual(err, tcase.err) {
+			if !errors.Is(err, tcase.err) {
 				t.Errorf("actual %v doesn't equal to expected %v", err, tcase.err)
 			}
 		})
