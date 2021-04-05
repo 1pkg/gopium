@@ -347,6 +347,45 @@ type (
 `),
 			},
 		},
+		"embedded structs pkg should visit all expected levels structs without deep": {
+			ctx:  context.Background(),
+			r:    regexp.MustCompile(`.*`),
+			p:    data.NewParser("embedded"),
+			a:    astutil.UFFN,
+			sp:   astutil.Package{},
+			w:    data.Writer{Writer: &mocks.Writer{}},
+			stg:  pck,
+			bref: true,
+			sts: map[string][]byte{
+				"tests_data_embedded_file.go": []byte(`
+//+build tests_data
+
+package embedded
+
+import "time"
+
+type MetaLabaratory struct {
+}
+
+type Person struct {
+	Birtday time.Time 'json:"birthday" db:"birthday"'
+	Weight  float64   'json:"weight" db:"weight"'
+	Height  float64   'json:"height" db:"height"'
+}
+
+type PatientObject struct {
+	Person
+	ID           string  'json:"id" db:"id"'
+	Gender       string  'json:"gender" db:"gender"'
+	PhoneNumber  *string 'json:"phone_number" db:"phone_number"'
+	Email        *string 'json:"email" db:"email"'
+	AddressTitle *string 'json:"address_title" db:"address_title"'
+	Enrolled     bool    'json:"enrolled" db:"enrolled"'
+	MetaLabaratory
+}
+`),
+			},
+		},
 	}
 	for name, tcase := range table {
 		t.Run(name, func(t *testing.T) {
@@ -377,7 +416,7 @@ type (
 						}
 						// format actual and expected identically
 						actual := strings.Trim(buf.String(), "\n")
-						expected := strings.Trim(string(st), "\n")
+						expected := strings.ReplaceAll(strings.Trim(string(st), "\n"), "'", "`")
 						if !reflect.DeepEqual(actual, expected) {
 							t.Errorf("id %v actual %v doesn't equal to expected %v", id, actual, expected)
 						}
