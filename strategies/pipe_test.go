@@ -14,6 +14,7 @@ func TestPipe(t *testing.T) {
 	// prepare
 	cctx, cancel := context.WithCancel(context.Background())
 	cancel()
+	terr := errors.New("test error")
 	table := map[string]struct {
 		pipe pipe
 		ctx  context.Context
@@ -117,7 +118,7 @@ func TestPipe(t *testing.T) {
 		"non empty struct should be applied to expected result on pipe error": {
 			pipe: pipe([]gopium.Strategy{
 				fnotecom,
-				&mocks.Strategy{Err: errors.New("test error")},
+				&mocks.Strategy{Err: terr},
 				fnotedoc,
 			}),
 			ctx: context.Background(),
@@ -140,7 +141,7 @@ func TestPipe(t *testing.T) {
 					},
 				},
 			},
-			err: errors.New("test error"),
+			err: terr,
 		},
 	}
 	for name, tcase := range table {
@@ -151,7 +152,7 @@ func TestPipe(t *testing.T) {
 			if !reflect.DeepEqual(r, tcase.r) {
 				t.Errorf("actual %v doesn't equal to expected %v", r, tcase.r)
 			}
-			if !reflect.DeepEqual(err, tcase.err) {
+			if !errors.Is(err, tcase.err) {
 				t.Errorf("actual %v doesn't equal to expected %v", err, tcase.err)
 			}
 		})
