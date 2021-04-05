@@ -114,6 +114,11 @@ func TestAst(t *testing.T) {
 									Value: "embedded",
 								},
 							},
+							{
+								Type: &ast.Ident{
+									Name: "int64",
+								},
+							},
 						},
 					},
 				},
@@ -145,6 +150,10 @@ func TestAst(t *testing.T) {
 						Type: "int64",
 					},
 					{
+						Type:     "int64",
+						Embedded: true,
+					},
+					{
 						Type:     "float32",
 						Embedded: true,
 					},
@@ -158,6 +167,7 @@ test struct {
 	test-4 int64
 	test-5 int64// random
 	// random
+	int64
 	float32 embedded
 }
 `),
