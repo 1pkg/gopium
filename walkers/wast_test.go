@@ -243,10 +243,10 @@ type ze interface {
 }
 
 type Zeze struct {
-	ze
-	D
 	AZ
+	D
 	AWA D
+	ze
 }
 
 // test comment
@@ -332,10 +332,10 @@ type ze interface {
 }
 
 type Zeze struct {
-	ze
-	D
 	AZ
+	D
 	AWA D
+	ze
 }
 
 // test comment

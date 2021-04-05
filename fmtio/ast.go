@@ -119,17 +119,18 @@ func fpadfilter(ts *ast.TypeSpec, st gopium.Struct) error {
 }
 
 // shuffle helps to sort fields list
-// for ast type spec accordingly to result struct,
-//
-// note shuffle works properly on structs with
-// one or less embedded fields
+// for ast type spec accordingly to result struct
 func shuffle(ts *ast.TypeSpec, st gopium.Struct) error {
 	// collect fields indexes
 	tts := ts.Type.(*ast.StructType)
 	fields := make(map[string]int, len(st.Fields))
-	// in case struct have two or more embedded fields
-	// this solution will not work as expected
+	// in case of embedded fields
+	// use types to uniquely discern them
 	for i, f := range st.Fields {
+		if f.Name == "" {
+			fields[f.Type] = i
+			continue
+		}
 		fields[f.Name] = i
 	}
 	// shuffle fields list
@@ -138,13 +139,21 @@ func shuffle(ts *ast.TypeSpec, st gopium.Struct) error {
 		// for flat structure non embedded
 		// ast's i-th and j-th fields
 		// in case fields are embedded
-		// use empty name by default
+		// use type instead if possible
 		var ni, nj string
 		if fni := tts.Fields.List[i]; len(fni.Names) == 1 {
 			ni = fni.Names[0].Name
+		} else if len(fni.Names) == 0 {
+			if it, ok := fni.Type.(*ast.Ident); ok {
+				ni = it.Name
+			}
 		}
 		if fnj := tts.Fields.List[j]; len(fnj.Names) == 1 {
 			nj = fnj.Names[0].Name
+		} else if len(fnj.Names) == 0 {
+			if it, ok := fnj.Type.(*ast.Ident); ok {
+				nj = it.Name
+			}
 		}
 		// prepare comparison indexes
 		// and search for them in resulted structure
