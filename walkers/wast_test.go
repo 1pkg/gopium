@@ -69,7 +69,7 @@ func TestWast(t *testing.T) {
 			stg: np,
 			sts: map[string][]byte{
 				"tests_data_single_file.go": []byte(`
-//+build tests_data
+//go:build tests_data
 
 package single
 
@@ -180,7 +180,7 @@ type Single struct {
 			deep: true,
 			sts: map[string][]byte{
 				"tests_data_multi_file-1.go": []byte(`
-//+build tests_data
+//go:build tests_data
 
 package multi
 
@@ -216,7 +216,7 @@ func scope() {
 }
 `),
 				"tests_data_multi_file-3.go": []byte(`
-//+build tests_data
+//go:build tests_data
 
 package multi
 
@@ -269,7 +269,7 @@ type (
 			bref: true,
 			sts: map[string][]byte{
 				"tests_data_multi_file-1.go": []byte(`
-//+build tests_data
+//go:build tests_data
 
 package multi
 
@@ -305,7 +305,7 @@ func scope() {
 }
 `),
 				"tests_data_multi_file-3.go": []byte(`
-//+build tests_data
+//go:build tests_data
 
 package multi
 
@@ -358,7 +358,7 @@ type (
 			bref: true,
 			sts: map[string][]byte{
 				"tests_data_embedded_file.go": []byte(`
-//+build tests_data
+//go:build tests_data
 
 package embedded
 

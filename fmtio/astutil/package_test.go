@@ -33,7 +33,7 @@ func TestPackage(t *testing.T) {
 			w:   data.Writer{Writer: &mocks.Writer{}},
 			r: map[string][]byte{
 				"tests_data_empty_file.go": []byte(`
-//+build tests_data
+//go:build tests_data
 
 package empty
 `),
@@ -46,7 +46,7 @@ package empty
 			w:   data.Writer{Writer: &mocks.Writer{}},
 			r: map[string][]byte{
 				"tests_data_single_file.go": []byte(`
-//+build tests_data
+//go:build tests_data
 
 package single
 
@@ -101,7 +101,7 @@ type Single struct {
 			w:   data.Writer{Writer: &mocks.Writer{}},
 			r: map[string][]byte{
 				"tests_data_multi_file-1.go": []byte(`
-//+build tests_data
+//go:build tests_data
 
 package multi
 
@@ -137,7 +137,7 @@ func scope() {
 }
 `),
 				"tests_data_multi_file-2.go": []byte(`
-//+build tests_data
+//go:build tests_data
 
 package multi
 
@@ -156,7 +156,7 @@ func scope1() error {
 }
 `),
 				"tests_data_multi_file-3.go": []byte(`
-//+build tests_data
+//go:build tests_data
 
 package multi
 

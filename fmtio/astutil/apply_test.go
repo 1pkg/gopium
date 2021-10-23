@@ -118,7 +118,7 @@ func TestApply(t *testing.T) {
 			h:   lh,
 			r: map[string][]byte{
 				"tests_data_note_file-1.go": []byte(`
-//+build tests_data
+//go:build tests_data
 
 package note
 
@@ -135,7 +135,7 @@ type Note struct {
 // last comment
 `),
 				"tests_data_note_file-2.go": []byte(`
-//+build tests_data
+//go:build tests_data
 
 package note
 
@@ -152,7 +152,7 @@ type DocCom struct {
 			h:   ldc,
 			r: map[string][]byte{
 				"tests_data_note_file-1.go": []byte(`
-//+build tests_data
+//go:build tests_data
 
 package note
 
@@ -166,7 +166,7 @@ type Note struct {
 // last comment
 `),
 				"tests_data_note_file-2.go": []byte(`
-//+build tests_data
+//go:build tests_data
 
 package note
 
@@ -177,7 +177,7 @@ type DocCom struct {
 } // doc com
 `),
 				"tests_data_note_file-3.go": []byte(`
-//+build tests_data
+//go:build tests_data
 
 package note
 

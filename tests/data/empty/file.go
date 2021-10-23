@@ -1,3 +1,3 @@
-//+build tests_data
+//go:build tests_data
 
 package empty
