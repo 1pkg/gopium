@@ -13,13 +13,13 @@ Extension automatically tries to install required tools if they have been not de
 To install and update gopium cli use:
 
 ```bash
-GOPROXY=direct go get -u github.com/1pkg/gopium
+go install github.com/1pkg/gopium@latest
 ```
 
 To install and update goutline use:
 
 ```bash
-go get -u github.com/1pkg/goutline
+go install github.com/1pkg/goutline@latest
 ```
 
 ## Transformations Customization
