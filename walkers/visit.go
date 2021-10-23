@@ -184,6 +184,7 @@ func vscope(ctx context.Context, s *types.Scope, r *regexp.Regexp, stg gopium.St
 			// if underlying type is struct
 			if st, ok := tn.Type().Underlying().(*types.Struct); ok {
 				// structure's name, id and loc
+				//nolint
 				var name, id, loc string = name, "", ""
 				// in case id of structure
 				// has been already visited
