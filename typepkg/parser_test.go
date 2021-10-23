@@ -117,7 +117,7 @@ func TestParserXToolPackagesAstTypes(t *testing.T) {
 			},
 			ctx: context.Background(),
 			src: []byte(`
-//+build tests_data
+//go:build tests_data
 
 package single
 
@@ -267,7 +267,7 @@ func TestParserXToolPackagesAstAst(t *testing.T) {
 			},
 			ctx: context.Background(),
 			src: []byte(`
-//+build tests_data
+//go:build tests_data
 
 package single
 
@@ -315,7 +315,7 @@ invalid gocode
 			},
 			ctx: context.Background(),
 			src: []byte(`
-//+build tests_data
+//go:build tests_data
 
 package single
 
