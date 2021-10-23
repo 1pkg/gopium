@@ -56,20 +56,6 @@ func TestParserXToolPackagesAstTypes(t *testing.T) {
 				fmt.Errorf("%s", "couldn't run 'go': chdir test: no such file or directory"),
 			).(error),
 		},
-		"invalid pattern with relative path should return parser error": {
-			p: ParserXToolPackagesAst{
-				Pattern: "test",
-				Path:    path.Join("..", "gopium"),
-				//nolint
-				ModeTypes: packages.LoadAllSyntax,
-			},
-			ctx: context.Background(),
-			err: tests.OnOS(
-				"windows",
-				fmt.Errorf("%s", `types package "test" wasn't found at "..\\gopium"`),
-				fmt.Errorf("%s", `types package "test" wasn't found at "../gopium"`),
-			).(error),
-		},
 		"invalid pattern with abs path should return expected parser package": {
 			p: ParserXToolPackagesAst{
 				Pattern: "github.com/1pkg/gopium/gopium",

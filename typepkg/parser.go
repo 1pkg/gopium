@@ -148,9 +148,11 @@ func (p *ParserXToolPackagesAst) ParseAst(ctx context.Context, src ...byte) (*as
 // It preformns shallow sanity package name check to be able to validate
 // packages outside of gopath and versioned packages.
 func validPackage(pckg string, pattern string, path string) bool {
+	// to be extra sure take last component of the path.
+	path = filepath.Base(path)
 	// first check package name directly
 	if direct := strings.HasSuffix(pckg, pattern) ||
-		strings.HasPrefix(pckg, path); direct {
+		strings.HasSuffix(pckg, path); direct {
 		return true
 	}
 	// then filter out package version
@@ -166,5 +168,5 @@ func validPackage(pckg string, pattern string, path string) bool {
 	pckg = strings.Join(fparts, "/")
 	// and try to recheck again
 	return strings.HasSuffix(pckg, pattern) ||
-		strings.HasPrefix(pckg, path)
+		strings.HasSuffix(pckg, path)
 }
