@@ -36,7 +36,7 @@ func TestNewMavenGoTypes(t *testing.T) {
 			arch:     "amd64",
 			caches:   []int64{2, 4, 8, 16, 32},
 			maven: MavenGoTypes{
-				sizes: types.SizesFor("gc", "amd64"),
+				sizes: stdsizes{types.SizesFor("gc", "amd64").(*types.StdSizes)},
 				caches: map[uint]int64{
 					1: 2,
 					2: 4,
@@ -115,30 +115,35 @@ func TestMavenGoTypesExposer(t *testing.T) {
 		name  string
 		size  int64
 		align int64
+		ptr   int64
 	}{
 		"int64 type should return expected resultss": {
 			tp:    types.Typ[types.Int64],
 			name:  "int64",
 			size:  8,
 			align: 8,
+			ptr:   0,
 		},
 		"string type should return expected results": {
 			tp:    types.Typ[types.String],
 			name:  "string",
 			size:  16,
 			align: 8,
+			ptr:   8,
 		},
 		"string slice type should return expected results": {
 			tp:    types.NewSlice(types.Typ[types.String]),
 			name:  "[]string",
 			size:  24,
 			align: 8,
+			ptr:   8,
 		},
 		"float32 arr type should return expected results": {
 			tp:    types.NewArray(types.Typ[types.Float32], 8),
 			name:  "[8]float32",
 			size:  32,
 			align: 4,
+			ptr:   0,
 		},
 		"struct type should return expected results": {
 			tp: types.NewStruct(
@@ -153,6 +158,7 @@ func TestMavenGoTypesExposer(t *testing.T) {
 			name:  "struct{a int64; b []int64; c complex128; d [16]uint8}",
 			size:  64,
 			align: 8,
+			ptr:   16,
 		},
 	}
 	for name, tcase := range table {
@@ -161,6 +167,7 @@ func TestMavenGoTypesExposer(t *testing.T) {
 			name := maven.Name(tcase.tp)
 			size := maven.Size(tcase.tp)
 			align := maven.Align(tcase.tp)
+			ptr := maven.Ptr(tcase.tp)
 			// check
 			if !reflect.DeepEqual(name, tcase.name) {
 				t.Errorf("actual %v doesn't equal to %v", name, tcase.name)
@@ -170,6 +177,9 @@ func TestMavenGoTypesExposer(t *testing.T) {
 			}
 			if !reflect.DeepEqual(align, tcase.align) {
 				t.Errorf("actual %v doesn't equal to %v", align, tcase.align)
+			}
+			if !reflect.DeepEqual(ptr, tcase.ptr) {
+				t.Errorf("actual %v doesn't equal to %v", ptr, tcase.ptr)
 			}
 		})
 	}
