@@ -135,27 +135,31 @@ func SizeAlignMdt(o gopium.Categorized, r gopium.Categorized) ([]byte, error) {
 	// no error should be
 	// checked as it uses
 	// buffered writer
-	_, _ = buf.WriteString("| Struct Name | Original Size with Pad | Current Size with Pad | Absolute Difference | Relative Difference |\n")
+	_, _ = buf.WriteString("| Struct Name | Original Size with Pad | Current Size with Pad | Absolute Size Difference | Relative Size Difference | Original Ptr Size with Pad | Current Ptr Size with Pad | Absolute Ptr Size Difference | Relative Ptr Size Difference |\n")
 	_, _ = buf.WriteString("| :---: | :---: | :---: | :---: | :---: |\n")
 	for id, sto := range fo {
 		// if both collections contains
 		// struct, compare them
 		if stf, ok := fr[id]; ok {
 			// get aligned size and align
-			sizeo, _ := collections.SizeAlign(sto)
-			sizer, _ := collections.SizeAlign(stf)
+			sizeo, _, ptro := collections.SizeAlignPtr(sto)
+			sizer, _, ptrr := collections.SizeAlignPtr(stf)
 			// write diff info
 			// no error should be
 			// checked as it uses
 			// buffered writer
 			_, _ = buf.WriteString(
 				fmt.Sprintf(
-					"| %s | %d bytes | %d bytes | %+d bytes | %+.2f%% |\n",
+					"| %s | %d bytes | %d bytes | %+d bytes | %+.2f%% | %d bytes | %d bytes | %+d bytes | %+.2f%% |\n",
 					sto.Name,
 					sizeo,
 					sizer,
 					sizer-sizeo,
 					float64(sizer-sizeo)/float64(sizeo)*100.0,
+					ptro,
+					ptrr,
+					ptrr-ptro,
+					float64(ptrr-ptro)/float64(ptro)*100.0,
 				),
 			)
 			// increment total sizes

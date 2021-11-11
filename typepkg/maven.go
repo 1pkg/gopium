@@ -67,3 +67,8 @@ func (m MavenGoTypes) Size(t types.Type) int64 {
 func (m MavenGoTypes) Align(t types.Type) int64 {
 	return m.sizes.Alignof(t)
 }
+
+// Ptr MavenGoTypes implementation
+func (m MavenGoTypes) Ptr(t types.Type) int64 {
+	return m.sizes.Alignof(t)
+}

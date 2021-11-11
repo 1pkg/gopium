@@ -8,6 +8,7 @@ type Type struct {
 	Name  string `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1_discrete,struct_annotate_comment,add_tag_group_force"`
 	Size  int64  `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1_discrete,struct_annotate_comment,add_tag_group_force"`
 	Align int64  `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1_discrete,struct_annotate_comment,add_tag_group_force"`
+	Ptr   int64
 } // struct size: 32 bytes; struct align: 8 bytes; struct aligned size: 32 bytes; - 🌺 gopium @1pkg
 
 // Maven defines mock maven implementation
@@ -66,6 +67,16 @@ func (m Maven) Align(t types.Type) int64 {
 	// check if we have it in vals
 	if t, ok := m.Types[t.String()]; ok {
 		return t.Align
+	}
+	// otherwise return default val
+	return 0
+}
+
+// Ptr mock implementation
+func (m Maven) Ptr(t types.Type) int64 {
+	// check if we have it in vals
+	if t, ok := m.Types[t.String()]; ok {
+		return t.Ptr
 	}
 	// otherwise return default val
 	return 0
