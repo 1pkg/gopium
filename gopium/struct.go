@@ -3,10 +3,11 @@ package gopium
 // Field defines single structure field
 // data transfer object abstraction
 type Field struct {
-	Name     string   `gopium:"filter_pads,struct_annotate_comment,add_tag_group_force"`
-	Type     string   `gopium:"filter_pads,struct_annotate_comment,add_tag_group_force"`
-	Size     int64    `gopium:"filter_pads,struct_annotate_comment,add_tag_group_force"`
-	Align    int64    `gopium:"filter_pads,struct_annotate_comment,add_tag_group_force"`
+	Name     string `gopium:"filter_pads,struct_annotate_comment,add_tag_group_force"`
+	Type     string `gopium:"filter_pads,struct_annotate_comment,add_tag_group_force"`
+	Size     int64  `gopium:"filter_pads,struct_annotate_comment,add_tag_group_force"`
+	Align    int64  `gopium:"filter_pads,struct_annotate_comment,add_tag_group_force"`
+	Ptr      int64
 	Tag      string   `gopium:"filter_pads,struct_annotate_comment,add_tag_group_force"`
 	Exported bool     `gopium:"filter_pads,struct_annotate_comment,add_tag_group_force"`
 	Embedded bool     `gopium:"filter_pads,struct_annotate_comment,add_tag_group_force"`

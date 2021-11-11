@@ -54,16 +54,22 @@ func WalkStruct(st gopium.Struct, sysalign int64, onpad OnPadFields) {
 	}
 }
 
-// SizeAlign calculates sturct aligned size and size
+// SizeAlignPtr calculates sturct aligned size, size and ptr size
 // by using walk struct helper
-func SizeAlign(st gopium.Struct) (int64, int64) {
+func SizeAlignPtr(st gopium.Struct) (int64, int64, int64) {
 	// preset defaults
-	var alsize, align int64 = 0, 1
+	var alsize, align, ptrsize int64 = 0, 1, 0
 	WalkStruct(st, 0, func(pad int64, fields ...gopium.Field) {
 		// add pad to aligned size
 		alsize += pad
 		// go through fields
 		for _, f := range fields {
+			// in case filed has pointer data
+			// move pts size to last aligned size
+			// + this field ptr data size
+			if f.Ptr > 0 {
+				ptrsize = alsize + f.Ptr
+			}
 			// add field size aligned sizes
 			alsize += f.Size
 			// update struct align size
@@ -73,7 +79,7 @@ func SizeAlign(st gopium.Struct) (int64, int64) {
 			}
 		}
 	})
-	return alsize, align
+	return alsize, align, ptrsize
 }
 
 // PadField defines helper that
