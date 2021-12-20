@@ -12,10 +12,10 @@ type sizes interface {
 	Ptr(t types.Type) int64
 }
 
-// stdsizes implements sizes interace using types std sizes
+// stdsizes implements sizes interface using types std sizes
 type stdsizes struct {
-	*types.StdSizes
-}
+	*types.StdSizes `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1_discrete,struct_annotate_comment,add_tag_group_force"`
+} // struct size: 8 bytes; struct align: 8 bytes; struct aligned size: 8 bytes; - 🌺 gopium @1pkg
 
 // Ptr implementation is vendored from
 // https://cs.opensource.google/go/x/tools/+/refs/tags/v0.1.7:go/analysis/passes/fieldalignment/fieldalignment.go;l=324
