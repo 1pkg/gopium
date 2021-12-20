@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"errors"
+	"fmt"
 	"reflect"
 	"regexp"
 	"strings"
@@ -243,10 +244,11 @@ type ze interface {
 }
 
 type Zeze struct {
+	ze
+
 	AZ
 	D
 	AWA D
-	ze
 }
 
 // test comment
@@ -332,10 +334,11 @@ type ze interface {
 }
 
 type Zeze struct {
+	ze
+
 	AZ
 	D
 	AWA D
-	ze
 }
 
 // test comment
@@ -374,14 +377,14 @@ type Person struct {
 }
 
 type PatientObject struct {
-	Person
-	ID           string  'json:"id" db:"id"'
-	Gender       string  'json:"gender" db:"gender"'
+	MetaLabaratory
 	PhoneNumber  *string 'json:"phone_number" db:"phone_number"'
 	Email        *string 'json:"email" db:"email"'
 	AddressTitle *string 'json:"address_title" db:"address_title"'
-	Enrolled     bool    'json:"enrolled" db:"enrolled"'
-	MetaLabaratory
+	ID           string  'json:"id" db:"id"'
+	Gender       string  'json:"gender" db:"gender"'
+	Person
+	Enrolled bool 'json:"enrolled" db:"enrolled"'
 }
 `),
 			},
@@ -398,7 +401,7 @@ type PatientObject struct {
 			// exec
 			err := wast.Visit(tcase.ctx, tcase.r, tcase.stg)
 			// check
-			if !reflect.DeepEqual(err, tcase.err) {
+			if fmt.Sprintf("%v", err) != fmt.Sprintf("%v", tcase.err) {
 				t.Errorf("actual %v doesn't equal to expected %v", err, tcase.err)
 			}
 			// process checks only on success

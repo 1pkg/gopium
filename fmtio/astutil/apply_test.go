@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"errors"
+	"fmt"
 	"go/parser"
 	"path/filepath"
 	"reflect"
@@ -301,7 +302,7 @@ type tt gopium.Struct
 			}
 			// exec
 			pkg, err = tcase.a(tcase.ctx, pkg, loc, tcase.h)
-			if !reflect.DeepEqual(err, tcase.err) {
+			if fmt.Sprintf("%v", err) != fmt.Sprintf("%v", tcase.err) {
 				t.Errorf("actual %v doesn't equal to expected %v", err, tcase.err)
 			}
 			// prepare

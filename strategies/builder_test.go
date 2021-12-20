@@ -2,6 +2,7 @@ package strategies
 
 import (
 	"errors"
+	"fmt"
 	"reflect"
 	"testing"
 
@@ -242,7 +243,7 @@ func TestBuilder(t *testing.T) {
 			if !reflect.DeepEqual(stg, tcase.stg) {
 				t.Errorf("actual %v doesn't equal to expected %v", stg, tcase.stg)
 			}
-			if !reflect.DeepEqual(err, tcase.err) {
+			if fmt.Sprintf("%v", err) != fmt.Sprintf("%v", tcase.err) {
 				t.Errorf("actual %v doesn't equal to expected %v", err, tcase.err)
 			}
 		})

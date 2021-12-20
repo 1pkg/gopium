@@ -2,6 +2,7 @@ package walkers
 
 import (
 	"context"
+	"fmt"
 	"go/types"
 	"reflect"
 	"regexp"
@@ -137,6 +138,7 @@ func TestVscope(t *testing.T) {
 							Type:     "string",
 							Size:     16,
 							Align:    8,
+							Ptr:      8,
 							Exported: true,
 						},
 						{
@@ -144,6 +146,7 @@ func TestVscope(t *testing.T) {
 							Type:     "string",
 							Size:     16,
 							Align:    8,
+							Ptr:      8,
 							Exported: true,
 						},
 						{
@@ -151,6 +154,7 @@ func TestVscope(t *testing.T) {
 							Type:     "string",
 							Size:     16,
 							Align:    8,
+							Ptr:      8,
 							Exported: true,
 						},
 					},
@@ -220,6 +224,7 @@ func TestVscope(t *testing.T) {
 							Type:  "[]string",
 							Size:  24,
 							Align: 8,
+							Ptr:   8,
 						},
 						{
 							Name:     "A",
@@ -238,6 +243,7 @@ func TestVscope(t *testing.T) {
 							Type:  "[]string",
 							Size:  24,
 							Align: 8,
+							Ptr:   8,
 						},
 						{
 							Name:     "A",
@@ -395,6 +401,7 @@ func TestVscope(t *testing.T) {
 							Type:  "[]string",
 							Size:  24,
 							Align: 8,
+							Ptr:   8,
 						},
 						{
 							Name:     "A",
@@ -419,6 +426,7 @@ func TestVscope(t *testing.T) {
 							Type:     "github.com/1pkg/gopium/tests/data/nested.C",
 							Size:     48,
 							Align:    8,
+							Ptr:      8,
 							Exported: true,
 						},
 						{
@@ -477,6 +485,14 @@ func TestVscope(t *testing.T) {
 					Name: "Zeze",
 					Fields: []gopium.Field{
 						{
+							Name:     "ze",
+							Type:     "github.com/1pkg/gopium/tests/data/multi.ze",
+							Size:     16,
+							Align:    8,
+							Ptr:      16,
+							Embedded: true,
+						},
+						{
 							Name:     "AZ",
 							Type:     "github.com/1pkg/gopium/tests/data/multi.AZ",
 							Size:     32,
@@ -498,13 +514,6 @@ func TestVscope(t *testing.T) {
 							Size:     24,
 							Align:    8,
 							Exported: true,
-						},
-						{
-							Name:     "ze",
-							Type:     "github.com/1pkg/gopium/tests/data/multi.ze",
-							Size:     16,
-							Align:    8,
-							Embedded: true,
 						},
 					},
 				},
@@ -531,7 +540,7 @@ func TestVscope(t *testing.T) {
 			for applied := range ch {
 				// if error occurred skip
 				if applied.Err != nil {
-					if !reflect.DeepEqual(applied.Err, tcase.err) {
+					if fmt.Sprintf("%v", applied.Err) != fmt.Sprintf("%v", tcase.err) {
 						t.Errorf("actual %v doesn't equal to expected %v", applied.Err, tcase.err)
 					}
 					continue
@@ -605,6 +614,7 @@ func TestVdeep(t *testing.T) {
 							Type:     "string",
 							Size:     16,
 							Align:    8,
+							Ptr:      8,
 							Exported: true,
 						},
 						{
@@ -612,6 +622,7 @@ func TestVdeep(t *testing.T) {
 							Type:     "string",
 							Size:     16,
 							Align:    8,
+							Ptr:      8,
 							Exported: true,
 						},
 						{
@@ -619,6 +630,7 @@ func TestVdeep(t *testing.T) {
 							Type:     "string",
 							Size:     16,
 							Align:    8,
+							Ptr:      8,
 							Exported: true,
 						},
 					},
@@ -688,6 +700,7 @@ func TestVdeep(t *testing.T) {
 							Type:  "[]string",
 							Size:  24,
 							Align: 8,
+							Ptr:   8,
 						},
 						{
 							Name:     "A",
@@ -706,6 +719,7 @@ func TestVdeep(t *testing.T) {
 							Type:  "[]string",
 							Size:  24,
 							Align: 8,
+							Ptr:   8,
 						},
 						{
 							Name:     "A",
@@ -863,6 +877,7 @@ func TestVdeep(t *testing.T) {
 							Type:  "[]string",
 							Size:  24,
 							Align: 8,
+							Ptr:   8,
 						},
 						{
 							Name:     "A",
@@ -923,6 +938,7 @@ func TestVdeep(t *testing.T) {
 							Type:  "interface{}",
 							Size:  16,
 							Align: 8,
+							Ptr:   16,
 						},
 					},
 				},
@@ -951,6 +967,7 @@ func TestVdeep(t *testing.T) {
 							Type:     "github.com/1pkg/gopium/tests/data/nested.C",
 							Size:     48,
 							Align:    8,
+							Ptr:      8,
 							Exported: true,
 						},
 						{
@@ -1009,6 +1026,14 @@ func TestVdeep(t *testing.T) {
 					Name: "Zeze",
 					Fields: []gopium.Field{
 						{
+							Name:     "ze",
+							Type:     "github.com/1pkg/gopium/tests/data/multi.ze",
+							Size:     16,
+							Align:    8,
+							Ptr:      16,
+							Embedded: true,
+						},
+						{
 							Name:     "AZ",
 							Type:     "github.com/1pkg/gopium/tests/data/multi.AZ",
 							Size:     32,
@@ -1030,13 +1055,6 @@ func TestVdeep(t *testing.T) {
 							Size:     24,
 							Align:    8,
 							Exported: true,
-						},
-						{
-							Name:     "ze",
-							Type:     "github.com/1pkg/gopium/tests/data/multi.ze",
-							Size:     16,
-							Align:    8,
-							Embedded: true,
 						},
 					},
 				},
@@ -1087,7 +1105,7 @@ func TestVdeep(t *testing.T) {
 			for applied := range ch {
 				// if error occurred skip
 				if applied.Err != nil {
-					if !reflect.DeepEqual(applied.Err, tcase.err) {
+					if fmt.Sprintf("%v", applied.Err) != fmt.Sprintf("%v", tcase.err) {
 						t.Errorf("actual %v doesn't equal to expected %v", applied.Err, tcase.err)
 					}
 					continue

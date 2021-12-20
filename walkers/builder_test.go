@@ -138,7 +138,7 @@ func TestBuilder(t *testing.T) {
 			if tcase.w == nil && !reflect.DeepEqual(w, nil) {
 				t.Errorf("actual %v doesn't equal to expected not %v", w, tcase.w)
 			}
-			if !reflect.DeepEqual(err, tcase.err) {
+			if fmt.Sprintf("%v", err) != fmt.Sprintf("%v", tcase.err) {
 				t.Errorf("actual %v doesn't equal to expected %v", err, tcase.err)
 			}
 		})
