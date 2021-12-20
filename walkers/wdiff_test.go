@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"errors"
+	"fmt"
 	"reflect"
 	"regexp"
 	"strings"
@@ -835,7 +836,7 @@ func TestWdiff(t *testing.T) {
 			// exec
 			err := wdiff.Visit(tcase.ctx, tcase.r, tcase.stg)
 			// check
-			if !reflect.DeepEqual(err, tcase.err) {
+			if fmt.Sprintf("%v", err) != fmt.Sprintf("%v", tcase.err) {
 				t.Errorf("actual %v doesn't equal to expected %v", err, tcase.err)
 			}
 			// process checks only on success

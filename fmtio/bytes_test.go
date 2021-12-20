@@ -2,6 +2,7 @@ package fmtio
 
 import (
 	"errors"
+	"fmt"
 	"reflect"
 	"strings"
 	"testing"
@@ -416,7 +417,7 @@ Test,doctest,comtest,test-2,test_type,12,4,4,,false,false,,
 			// exec
 			r, err := tcase.fmt(tcase.f.Sorted())
 			// check
-			if !reflect.DeepEqual(err, tcase.err) {
+			if fmt.Sprintf("%v", err) != fmt.Sprintf("%v", tcase.err) {
 				t.Errorf("actual %v doesn't equal to expected %v", err, tcase.err)
 			}
 			// format actual and expected identically

@@ -3,6 +3,7 @@ package fmtio
 import (
 	"bytes"
 	"context"
+	"fmt"
 	"go/ast"
 	"go/token"
 	"reflect"
@@ -121,7 +122,7 @@ struct {
 			p := NewGoprinter(tcase.indent, tcase.tabwidth, tcase.usespace)
 			err := p.Print(tcase.ctx, &buf, token.NewFileSet(), node)
 			// check
-			if !reflect.DeepEqual(err, tcase.err) {
+			if fmt.Sprintf("%v", err) != fmt.Sprintf("%v", tcase.err) {
 				t.Errorf("actual %v doesn't equal to expected %v", err, tcase.err)
 			}
 			// format actual and expected identically

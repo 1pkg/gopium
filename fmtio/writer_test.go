@@ -71,7 +71,7 @@ func TestWriter(t *testing.T) {
 			n, werr := wc.Write([]byte(``))
 			cerr := wc.Close()
 			// check
-			if !reflect.DeepEqual(err, tcase.err) {
+			if fmt.Sprintf("%v", err) != fmt.Sprintf("%v", tcase.err) {
 				t.Errorf("actual %v doesn't equal to expected %v", err, tcase.err)
 			}
 			if err == nil && reflect.DeepEqual(wc, nil) {
@@ -84,13 +84,13 @@ func TestWriter(t *testing.T) {
 					t.Errorf("actual %v doesn't equal to expected %v", err, nil)
 				}
 			}
-			if !reflect.DeepEqual(werr, tcase.werr) {
+			if fmt.Sprintf("%v", werr) != fmt.Sprintf("%v", tcase.werr) {
 				t.Errorf("actual %v doesn't equal to expected %v", werr, tcase.werr)
 			}
 			if !reflect.DeepEqual(n, 0) {
 				t.Errorf("actual %v doesn't equal to expected %v", n, 0)
 			}
-			if !reflect.DeepEqual(cerr, tcase.cerr) {
+			if fmt.Sprintf("%v", cerr) != fmt.Sprintf("%v", tcase.cerr) {
 				t.Errorf("actual %v doesn't equal to expected %v", werr, tcase.werr)
 			}
 		})
@@ -135,7 +135,7 @@ func TestCategoryWriter(t *testing.T) {
 			n, werr := wc.Write([]byte(``))
 			cerr := wc.Close()
 			// check
-			if !reflect.DeepEqual(err, tcase.err) {
+			if fmt.Sprintf("%v", err) != fmt.Sprintf("%v", tcase.err) {
 				t.Errorf("actual %v doesn't equal to expected %v", err, tcase.err)
 			}
 			if err == nil && reflect.DeepEqual(wc, nil) {

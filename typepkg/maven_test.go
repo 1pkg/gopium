@@ -2,6 +2,7 @@ package typepkg
 
 import (
 	"errors"
+	"fmt"
 	"go/token"
 	"go/types"
 	"reflect"
@@ -52,7 +53,7 @@ func TestNewMavenGoTypes(t *testing.T) {
 			// exec
 			maven, err := NewMavenGoTypes(tcase.compiler, tcase.arch, tcase.caches...)
 			// check
-			if !reflect.DeepEqual(err, tcase.err) {
+			if fmt.Sprintf("%v", err) != fmt.Sprintf("%v", tcase.err) {
 				t.Errorf("actual %v doesn't equal to expected %v", err, tcase.err)
 			}
 			if !reflect.DeepEqual(maven, tcase.maven) {
