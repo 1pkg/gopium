@@ -61,5 +61,5 @@ func (s stdsizes) Ptr(t types.Type) int64 {
 		}
 		return p
 	}
-	panic("impossible")
+	return 0
 }
