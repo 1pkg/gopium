@@ -139,17 +139,17 @@ func TestPack(t *testing.T) {
 					},
 					{
 						Name:  "test",
-						Type:  "test-3",
-						Size:  24,
-						Align: 16,
-						Ptr:   8,
-					},
-					{
-						Name:  "test",
 						Type:  "test-2",
 						Size:  16,
 						Align: 16,
 						Ptr:   4,
+					},
+					{
+						Name:  "test",
+						Type:  "test-3",
+						Size:  24,
+						Align: 16,
+						Ptr:   8,
 					},
 					{
 						Name:  "test",

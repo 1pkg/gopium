@@ -51,7 +51,7 @@ func (stg pack) Apply(ctx context.Context, o gopium.Struct) (gopium.Struct, erro
 			// non-pointer bytes at the end of the pointerful section
 			traili, trailj := r.Fields[i].Size-r.Fields[i].Ptr, r.Fields[j].Size-r.Fields[j].Ptr
 			if traili != trailj {
-				return traili > trailj
+				return traili < trailj
 			}
 		}
 
