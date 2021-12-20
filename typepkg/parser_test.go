@@ -167,7 +167,7 @@ type Single struct {
 				if !reflect.DeepEqual(loc, tcase.loc) {
 					t.Errorf("actual %v doesn't equal to expected %v", loc, tcase.loc)
 				}
-				if !reflect.DeepEqual(err, tcase.err) {
+				if fmt.Sprintf("%v", err) != fmt.Sprintf("%v", tcase.err) {
 					// skip the case when error messages are equal
 					if (err != nil && tcase.err != nil) &&
 						(reflect.DeepEqual(err.Error(), tcase.err.Error())) {
@@ -362,7 +362,7 @@ type Single struct {
 			if !reflect.DeepEqual(loc, tcase.loc) {
 				t.Errorf("actual %v doesn't equal to expected %v", loc, tcase.loc)
 			}
-			if !reflect.DeepEqual(err, tcase.err) {
+			if fmt.Sprintf("%v", err) != fmt.Sprintf("%v", tcase.err) {
 				// skip the case when error messages are equal
 				if (err != nil && tcase.err != nil) &&
 					(reflect.DeepEqual(err.Error(), tcase.err.Error())) {

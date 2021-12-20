@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"errors"
+	"fmt"
 	"go/ast"
 	"go/token"
 	"reflect"
@@ -365,7 +366,7 @@ test struct {// random
 			if !reflect.DeepEqual(perr, nil) {
 				t.Errorf("actual %v doesn't equal to expected %v", perr, nil)
 			}
-			if !reflect.DeepEqual(err, tcase.err) {
+			if fmt.Sprintf("%v", err) != fmt.Sprintf("%v", tcase.err) {
 				t.Errorf("actual %v doesn't equal to expected %v", err, tcase.err)
 			}
 			// format actual and expected identically

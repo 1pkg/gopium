@@ -2,6 +2,7 @@ package walkers
 
 import (
 	"context"
+	"fmt"
 	"go/types"
 	"reflect"
 	"regexp"
@@ -539,7 +540,7 @@ func TestVscope(t *testing.T) {
 			for applied := range ch {
 				// if error occurred skip
 				if applied.Err != nil {
-					if !reflect.DeepEqual(applied.Err, tcase.err) {
+					if fmt.Sprintf("%v", applied.Err) != fmt.Sprintf("%v", tcase.err) {
 						t.Errorf("actual %v doesn't equal to expected %v", applied.Err, tcase.err)
 					}
 					continue
@@ -1104,7 +1105,7 @@ func TestVdeep(t *testing.T) {
 			for applied := range ch {
 				// if error occurred skip
 				if applied.Err != nil {
-					if !reflect.DeepEqual(applied.Err, tcase.err) {
+					if fmt.Sprintf("%v", applied.Err) != fmt.Sprintf("%v", tcase.err) {
 						t.Errorf("actual %v doesn't equal to expected %v", applied.Err, tcase.err)
 					}
 					continue

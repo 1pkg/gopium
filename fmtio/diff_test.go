@@ -1,6 +1,7 @@
 package fmtio
 
 import (
+	"fmt"
 	"reflect"
 	"strings"
 	"testing"
@@ -424,7 +425,7 @@ func TestDiff(t *testing.T) {
 			// exec
 			b, err := tcase.fmt(tcase.o, tcase.r)
 			// check
-			if !reflect.DeepEqual(err, tcase.err) {
+			if fmt.Sprintf("%v", err) != fmt.Sprintf("%v", tcase.err) {
 				t.Errorf("actual %v doesn't equal to expected %v", err, tcase.err)
 			}
 			// format actual and expected identically
