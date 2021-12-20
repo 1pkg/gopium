@@ -378,13 +378,13 @@ type Person struct {
 
 type PatientObject struct {
 	MetaLabaratory
-	Person
-	ID           string  'json:"id" db:"id"'
-	Gender       string  'json:"gender" db:"gender"'
 	PhoneNumber  *string 'json:"phone_number" db:"phone_number"'
 	Email        *string 'json:"email" db:"email"'
 	AddressTitle *string 'json:"address_title" db:"address_title"'
-	Enrolled     bool    'json:"enrolled" db:"enrolled"'
+	ID           string  'json:"id" db:"id"'
+	Gender       string  'json:"gender" db:"gender"'
+	Person
+	Enrolled bool 'json:"enrolled" db:"enrolled"'
 }
 `),
 			},
