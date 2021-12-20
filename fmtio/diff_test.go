@@ -21,17 +21,20 @@ func TestDiff(t *testing.T) {
 				Name:  "test1",
 				Size:  3,
 				Align: 1,
+				Ptr:   1,
 			},
 			{
 				Name:  "test2",
 				Type:  "float64",
 				Size:  8,
 				Align: 8,
+				Ptr:   6,
 			},
 			{
 				Name:  "test3",
 				Size:  3,
 				Align: 1,
+				Ptr:   1,
 			},
 		},
 	})
@@ -43,16 +46,19 @@ func TestDiff(t *testing.T) {
 				Type:  "float64",
 				Size:  8,
 				Align: 8,
+				Ptr:   6,
 			},
 			{
 				Name:  "test1",
 				Size:  3,
 				Align: 1,
+				Ptr:   1,
 			},
 			{
 				Name:  "test3",
 				Size:  3,
 				Align: 1,
+				Ptr:   1,
 			},
 		},
 	})
@@ -64,24 +70,28 @@ func TestDiff(t *testing.T) {
 				Type:  "float64",
 				Size:  8,
 				Align: 8,
+				Ptr:   6,
 			},
 			{
 				Name:  "test2",
 				Type:  "float64",
 				Size:  8,
 				Align: 8,
+				Ptr:   6,
 			},
 			{
 				Name:  "test2",
 				Type:  "float64",
 				Size:  8,
 				Align: 8,
+				Ptr:   6,
 			},
 			{
 				Name:  "test2",
 				Type:  "float64",
 				Size:  8,
 				Align: 8,
+				Ptr:   6,
 			},
 		},
 	})
@@ -93,6 +103,7 @@ func TestDiff(t *testing.T) {
 				Type:  "float64",
 				Size:  8,
 				Align: 8,
+				Ptr:   6,
 			},
 		},
 	})
@@ -108,8 +119,8 @@ func TestDiff(t *testing.T) {
 			o:   collections.NewHierarchic(""),
 			r:   collections.NewHierarchic(""),
 			b: []byte(`
-| Struct Name | Original Size with Pad | Current Size with Pad | Absolute Difference | Relative Difference |
-| :---: | :---: | :---: | :---: | :---: |
+| Struct Name | Original Size with Pad | Current Size with Pad | Absolute Size Difference | Relative Size Difference | Original Ptr Size with Pad | Current Ptr Size with Pad | Absolute Ptr Size Difference | Relative Ptr Size Difference |
+| :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
 `),
 		},
 		"size align md table should return expected result for non empty collections": {
@@ -117,10 +128,10 @@ func TestDiff(t *testing.T) {
 			o:   oh,
 			r:   rh,
 			b: []byte(`
-| Struct Name | Original Size with Pad | Current Size with Pad | Absolute Difference | Relative Difference |
-| :---: | :---: | :---: | :---: | :---: |
-| test | 24 bytes | 16 bytes | -8 bytes | -33.33% |
-| Total | 24 bytes | 16 bytes | -8 bytes | -33.33% |
+| Struct Name | Original Size with Pad | Current Size with Pad | Absolute Size Difference | Relative Size Difference | Original Ptr Size with Pad | Current Ptr Size with Pad | Absolute Ptr Size Difference | Relative Ptr Size Difference |
+| :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+| test | 24 bytes | 16 bytes | -8 bytes | -33.33% | 17 bytes | 12 bytes | -5 bytes | -29.41% |
+| Total | 24 bytes | 16 bytes | -8 bytes | -33.33% | 17 bytes | 12 bytes | -5 bytes | -29.41% |
 `),
 		},
 		"size align md table should return expected result for non empty overlapping collections": {
@@ -128,10 +139,10 @@ func TestDiff(t *testing.T) {
 			o:   oh,
 			r:   rhb,
 			b: []byte(`
-| Struct Name | Original Size with Pad | Current Size with Pad | Absolute Difference | Relative Difference |
-| :---: | :---: | :---: | :---: | :---: |
-| test | 24 bytes | 32 bytes | +8 bytes | +33.33% |
-| Total | 24 bytes | 32 bytes | +8 bytes | +33.33% |
+| Struct Name | Original Size with Pad | Current Size with Pad | Absolute Size Difference | Relative Size Difference | Original Ptr Size with Pad | Current Ptr Size with Pad | Absolute Ptr Size Difference | Relative Ptr Size Difference |
+| :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+| test | 24 bytes | 32 bytes | +8 bytes | +33.33% | 17 bytes | 30 bytes | +13 bytes | +76.47% |
+| Total | 24 bytes | 32 bytes | +8 bytes | +33.33% | 17 bytes | 30 bytes | +13 bytes | +76.47% |
 `),
 		},
 		"fields html table should return expected result for empty collections": {
@@ -225,6 +236,7 @@ func TestDiff(t *testing.T) {
 							<th scope="col">Type</th>
 							<th scope="col">Size</th>
 							<th scope="col">Align</th>
+							<th scope="col">Ptr</th>
 							<th scope="col">Tag</th>
 							<th scope="col">Exported</th>
 							<th scope="col">Embedded</th>
@@ -239,6 +251,7 @@ func TestDiff(t *testing.T) {
 							<td> -> float64</td>
 							<td>3 -> 8</td>
 							<td>1 -> 8</td>
+							<td>1 -> 6</td>
 							<td>"" -> ""</td>
 							<td>false -> false</td>
 							<td>false -> false</td>
@@ -251,6 +264,7 @@ func TestDiff(t *testing.T) {
 							<td>float64 -> </td>
 							<td>8 -> 3</td>
 							<td>8 -> 1</td>
+							<td>6 -> 1</td>
 							<td>"" -> ""</td>
 							<td>false -> false</td>
 							<td>false -> false</td>
@@ -262,6 +276,7 @@ func TestDiff(t *testing.T) {
 							<td>test3 -> test3</td>
 							<td> -> </td>
 							<td>3 -> 3</td>
+							<td>1 -> 1</td>
 							<td>1 -> 1</td>
 							<td>"" -> ""</td>
 							<td>false -> false</td>
@@ -333,6 +348,7 @@ func TestDiff(t *testing.T) {
 							<th scope="col">Type</th>
 							<th scope="col">Size</th>
 							<th scope="col">Align</th>
+							<th scope="col">Ptr</th>
 							<th scope="col">Tag</th>
 							<th scope="col">Exported</th>
 							<th scope="col">Embedded</th>
@@ -347,6 +363,7 @@ func TestDiff(t *testing.T) {
 							<td> -> float64</td>
 							<td>3 -> 8</td>
 							<td>1 -> 8</td>
+							<td>1 -> 6</td>
 							<td>"" -> ""</td>
 							<td>false -> false</td>
 							<td>false -> false</td>
@@ -359,6 +376,7 @@ func TestDiff(t *testing.T) {
 							<td>float64 -> float64</td>
 							<td>8 -> 8</td>
 							<td>8 -> 8</td>
+							<td>6 -> 6</td>
 							<td>"" -> ""</td>
 							<td>false -> false</td>
 							<td>false -> false</td>
@@ -371,6 +389,7 @@ func TestDiff(t *testing.T) {
 							<td> -> float64</td>
 							<td>3 -> 8</td>
 							<td>1 -> 8</td>
+							<td>1 -> 6</td>
 							<td>"" -> ""</td>
 							<td>false -> false</td>
 							<td>false -> false</td>
@@ -383,6 +402,7 @@ func TestDiff(t *testing.T) {
 							<td>float64</td>
 							<td>8</td>
 							<td>8</td>
+							<td>6</td>
 							<td>""</td>
 							<td>false</td>
 							<td>false</td>

@@ -49,6 +49,7 @@ func Csvb(rw io.ReadWriter) gopium.Bytes {
 			"Field Type",
 			"Field Size",
 			"Field Align",
+			"Field Ptr",
 			"Field Tag",
 			"Field Exported",
 			"Field Embedded",
@@ -70,6 +71,7 @@ func Csvb(rw io.ReadWriter) gopium.Bytes {
 					f.Type,
 					strconv.Itoa(int(f.Size)),
 					strconv.Itoa(int(f.Align)),
+					strconv.Itoa(int(f.Ptr)),
 					f.Tag,
 					strconv.FormatBool(f.Exported),
 					strconv.FormatBool(f.Embedded),
@@ -100,8 +102,8 @@ func Mdtb(sts []gopium.Struct) ([]byte, error) {
 		// no error should be
 		// checked as it uses
 		// buffered writer
-		_, _ = buf.WriteString("| Struct Name | Struct Doc | Struct Comment | Field Name | Field Type | Field Size | Field Align | Field Tag | Field Exported | Field Embedded | Field Doc | Field Comment |\n")
-		_, _ = buf.WriteString("| :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |\n")
+		_, _ = buf.WriteString("| Struct Name | Struct Doc | Struct Comment | Field Name | Field Type | Field Size | Field Align | Field Ptr | Field Tag | Field Exported | Field Embedded | Field Doc | Field Comment |\n")
+		_, _ = buf.WriteString("| :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |\n")
 		for _, st := range sts {
 			// go through all fields
 			// and write then one by one
@@ -110,7 +112,7 @@ func Mdtb(sts []gopium.Struct) ([]byte, error) {
 				// checked as it uses
 				// buffered writer
 				_, _ = buf.WriteString(
-					fmt.Sprintf("| %s | %s | %s | %s | %s | %d | %d | %s | %s | %s | %s | %s |\n",
+					fmt.Sprintf("| %s | %s | %s | %s | %s | %d | %d | %d | %s | %s | %s | %s | %s |\n",
 						st.Name,
 						strings.Join(st.Doc, " "),
 						strings.Join(st.Comment, " "),
@@ -118,6 +120,7 @@ func Mdtb(sts []gopium.Struct) ([]byte, error) {
 						f.Type,
 						f.Size,
 						f.Align,
+						f.Ptr,
 						f.Tag,
 						strconv.FormatBool(f.Exported),
 						strconv.FormatBool(f.Embedded),
