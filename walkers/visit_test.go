@@ -137,6 +137,7 @@ func TestVscope(t *testing.T) {
 							Type:     "string",
 							Size:     16,
 							Align:    8,
+							Ptr:      8,
 							Exported: true,
 						},
 						{
@@ -144,6 +145,7 @@ func TestVscope(t *testing.T) {
 							Type:     "string",
 							Size:     16,
 							Align:    8,
+							Ptr:      8,
 							Exported: true,
 						},
 						{
@@ -151,6 +153,7 @@ func TestVscope(t *testing.T) {
 							Type:     "string",
 							Size:     16,
 							Align:    8,
+							Ptr:      8,
 							Exported: true,
 						},
 					},
@@ -220,6 +223,7 @@ func TestVscope(t *testing.T) {
 							Type:  "[]string",
 							Size:  24,
 							Align: 8,
+							Ptr:   8,
 						},
 						{
 							Name:     "A",
@@ -238,6 +242,7 @@ func TestVscope(t *testing.T) {
 							Type:  "[]string",
 							Size:  24,
 							Align: 8,
+							Ptr:   8,
 						},
 						{
 							Name:     "A",
@@ -395,6 +400,7 @@ func TestVscope(t *testing.T) {
 							Type:  "[]string",
 							Size:  24,
 							Align: 8,
+							Ptr:   8,
 						},
 						{
 							Name:     "A",
@@ -419,6 +425,7 @@ func TestVscope(t *testing.T) {
 							Type:     "github.com/1pkg/gopium/tests/data/nested.C",
 							Size:     48,
 							Align:    8,
+							Ptr:      8,
 							Exported: true,
 						},
 						{
@@ -477,6 +484,14 @@ func TestVscope(t *testing.T) {
 					Name: "Zeze",
 					Fields: []gopium.Field{
 						{
+							Name:     "ze",
+							Type:     "github.com/1pkg/gopium/tests/data/multi.ze",
+							Size:     16,
+							Align:    8,
+							Ptr:      16,
+							Embedded: true,
+						},
+						{
 							Name:     "AZ",
 							Type:     "github.com/1pkg/gopium/tests/data/multi.AZ",
 							Size:     32,
@@ -498,13 +513,6 @@ func TestVscope(t *testing.T) {
 							Size:     24,
 							Align:    8,
 							Exported: true,
-						},
-						{
-							Name:     "ze",
-							Type:     "github.com/1pkg/gopium/tests/data/multi.ze",
-							Size:     16,
-							Align:    8,
-							Embedded: true,
 						},
 					},
 				},
@@ -605,6 +613,7 @@ func TestVdeep(t *testing.T) {
 							Type:     "string",
 							Size:     16,
 							Align:    8,
+							Ptr:      8,
 							Exported: true,
 						},
 						{
@@ -612,6 +621,7 @@ func TestVdeep(t *testing.T) {
 							Type:     "string",
 							Size:     16,
 							Align:    8,
+							Ptr:      8,
 							Exported: true,
 						},
 						{
@@ -619,6 +629,7 @@ func TestVdeep(t *testing.T) {
 							Type:     "string",
 							Size:     16,
 							Align:    8,
+							Ptr:      8,
 							Exported: true,
 						},
 					},
@@ -688,6 +699,7 @@ func TestVdeep(t *testing.T) {
 							Type:  "[]string",
 							Size:  24,
 							Align: 8,
+							Ptr:   8,
 						},
 						{
 							Name:     "A",
@@ -706,6 +718,7 @@ func TestVdeep(t *testing.T) {
 							Type:  "[]string",
 							Size:  24,
 							Align: 8,
+							Ptr:   8,
 						},
 						{
 							Name:     "A",
@@ -863,6 +876,7 @@ func TestVdeep(t *testing.T) {
 							Type:  "[]string",
 							Size:  24,
 							Align: 8,
+							Ptr:   8,
 						},
 						{
 							Name:     "A",
@@ -923,6 +937,7 @@ func TestVdeep(t *testing.T) {
 							Type:  "interface{}",
 							Size:  16,
 							Align: 8,
+							Ptr:   16,
 						},
 					},
 				},
@@ -951,6 +966,7 @@ func TestVdeep(t *testing.T) {
 							Type:     "github.com/1pkg/gopium/tests/data/nested.C",
 							Size:     48,
 							Align:    8,
+							Ptr:      8,
 							Exported: true,
 						},
 						{
@@ -1009,6 +1025,14 @@ func TestVdeep(t *testing.T) {
 					Name: "Zeze",
 					Fields: []gopium.Field{
 						{
+							Name:     "ze",
+							Type:     "github.com/1pkg/gopium/tests/data/multi.ze",
+							Size:     16,
+							Align:    8,
+							Ptr:      16,
+							Embedded: true,
+						},
+						{
 							Name:     "AZ",
 							Type:     "github.com/1pkg/gopium/tests/data/multi.AZ",
 							Size:     32,
@@ -1030,13 +1054,6 @@ func TestVdeep(t *testing.T) {
 							Size:     24,
 							Align:    8,
 							Exported: true,
-						},
-						{
-							Name:     "ze",
-							Type:     "github.com/1pkg/gopium/tests/data/multi.ze",
-							Size:     16,
-							Align:    8,
-							Embedded: true,
 						},
 					},
 				},
