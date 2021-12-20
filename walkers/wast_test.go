@@ -243,10 +243,11 @@ type ze interface {
 }
 
 type Zeze struct {
+	ze
+
 	AZ
 	D
 	AWA D
-	ze
 }
 
 // test comment
@@ -332,10 +333,11 @@ type ze interface {
 }
 
 type Zeze struct {
+	ze
+
 	AZ
 	D
 	AWA D
-	ze
 }
 
 // test comment
@@ -374,6 +376,7 @@ type Person struct {
 }
 
 type PatientObject struct {
+	MetaLabaratory
 	Person
 	ID           string  'json:"id" db:"id"'
 	Gender       string  'json:"gender" db:"gender"'
@@ -381,7 +384,6 @@ type PatientObject struct {
 	Email        *string 'json:"email" db:"email"'
 	AddressTitle *string 'json:"address_title" db:"address_title"'
 	Enrolled     bool    'json:"enrolled" db:"enrolled"'
-	MetaLabaratory
 }
 `),
 			},
