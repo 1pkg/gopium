@@ -16,6 +16,7 @@ type Exposer interface {
 	Name(types.Type) string
 	Size(types.Type) int64
 	Align(types.Type) int64
+	Ptr(types.Type) int64
 }
 
 // Maven defines abstraction that

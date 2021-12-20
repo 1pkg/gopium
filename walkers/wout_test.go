@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"errors"
+	"fmt"
 	"reflect"
 	"regexp"
 	"strings"
@@ -74,6 +75,7 @@ func TestWout(t *testing.T) {
 				"Type": "string",
 				"Size": 16,
 				"Align": 8,
+				"Ptr": 8,
 				"Tag": "",
 				"Exported": true,
 				"Embedded": false,
@@ -85,6 +87,7 @@ func TestWout(t *testing.T) {
 				"Type": "string",
 				"Size": 16,
 				"Align": 8,
+				"Ptr": 8,
 				"Tag": "",
 				"Exported": true,
 				"Embedded": false,
@@ -96,6 +99,7 @@ func TestWout(t *testing.T) {
 				"Type": "string",
 				"Size": 16,
 				"Align": 8,
+				"Ptr": 8,
 				"Tag": "",
 				"Exported": true,
 				"Embedded": false,
@@ -203,6 +207,7 @@ func TestWout(t *testing.T) {
 				"Type": "int64",
 				"Size": 8,
 				"Align": 8,
+				"Ptr": 0,
 				"Tag": "",
 				"Exported": false,
 				"Embedded": false,
@@ -221,6 +226,7 @@ func TestWout(t *testing.T) {
 				"Type": "github.com/1pkg/gopium/tests/data/multi.D",
 				"Size": 24,
 				"Align": 8,
+				"Ptr": 0,
 				"Tag": "",
 				"Exported": true,
 				"Embedded": false,
@@ -232,6 +238,7 @@ func TestWout(t *testing.T) {
 				"Type": "bool",
 				"Size": 1,
 				"Align": 1,
+				"Ptr": 0,
 				"Tag": "",
 				"Exported": false,
 				"Embedded": false,
@@ -243,6 +250,7 @@ func TestWout(t *testing.T) {
 				"Type": "bool",
 				"Size": 1,
 				"Align": 1,
+				"Ptr": 0,
 				"Tag": "",
 				"Exported": false,
 				"Embedded": false,
@@ -257,10 +265,23 @@ func TestWout(t *testing.T) {
 		"Comment": null,
 		"Fields": [
 			{
+				"Name": "ze",
+				"Type": "github.com/1pkg/gopium/tests/data/multi.ze",
+				"Size": 16,
+				"Align": 8,
+				"Ptr": 16,
+				"Tag": "",
+				"Exported": false,
+				"Embedded": true,
+				"Doc": null,
+				"Comment": null
+			},
+			{
 				"Name": "AZ",
 				"Type": "github.com/1pkg/gopium/tests/data/multi.AZ",
 				"Size": 33,
 				"Align": 8,
+				"Ptr": 0,
 				"Tag": "",
 				"Exported": true,
 				"Embedded": true,
@@ -272,6 +293,7 @@ func TestWout(t *testing.T) {
 				"Type": "github.com/1pkg/gopium/tests/data/multi.D",
 				"Size": 24,
 				"Align": 8,
+				"Ptr": 0,
 				"Tag": "",
 				"Exported": true,
 				"Embedded": true,
@@ -283,20 +305,10 @@ func TestWout(t *testing.T) {
 				"Type": "github.com/1pkg/gopium/tests/data/multi.D",
 				"Size": 24,
 				"Align": 8,
+				"Ptr": 0,
 				"Tag": "",
 				"Exported": true,
 				"Embedded": false,
-				"Doc": null,
-				"Comment": null
-			},
-			{
-				"Name": "ze",
-				"Type": "github.com/1pkg/gopium/tests/data/multi.ze",
-				"Size": 16,
-				"Align": 8,
-				"Tag": "",
-				"Exported": false,
-				"Embedded": true,
 				"Doc": null,
 				"Comment": null
 			}
@@ -312,6 +324,7 @@ func TestWout(t *testing.T) {
 				"Type": "github.com/1pkg/gopium/tests/data/multi.A",
 				"Size": 8,
 				"Align": 8,
+				"Ptr": 0,
 				"Tag": "",
 				"Exported": true,
 				"Embedded": false,
@@ -323,6 +336,7 @@ func TestWout(t *testing.T) {
 				"Type": "bool",
 				"Size": 1,
 				"Align": 1,
+				"Ptr": 0,
 				"Tag": "",
 				"Exported": false,
 				"Embedded": false,
@@ -334,6 +348,7 @@ func TestWout(t *testing.T) {
 				"Type": "bool",
 				"Size": 1,
 				"Align": 1,
+				"Ptr": 0,
 				"Tag": "",
 				"Exported": false,
 				"Embedded": false,
@@ -367,6 +382,7 @@ func TestWout(t *testing.T) {
 				"Type": "int64",
 				"Size": 8,
 				"Align": 8,
+				"Ptr": 0,
 				"Tag": "",
 				"Exported": false,
 				"Embedded": false,
@@ -385,6 +401,7 @@ func TestWout(t *testing.T) {
 				"Type": "github.com/1pkg/gopium/tests/data/multi.D",
 				"Size": 24,
 				"Align": 8,
+				"Ptr": 0,
 				"Tag": "",
 				"Exported": true,
 				"Embedded": false,
@@ -396,6 +413,7 @@ func TestWout(t *testing.T) {
 				"Type": "bool",
 				"Size": 1,
 				"Align": 1,
+				"Ptr": 0,
 				"Tag": "",
 				"Exported": false,
 				"Embedded": false,
@@ -407,6 +425,7 @@ func TestWout(t *testing.T) {
 				"Type": "bool",
 				"Size": 1,
 				"Align": 1,
+				"Ptr": 0,
 				"Tag": "",
 				"Exported": false,
 				"Embedded": false,
@@ -421,10 +440,23 @@ func TestWout(t *testing.T) {
 		"Comment": null,
 		"Fields": [
 			{
+				"Name": "ze",
+				"Type": "github.com/1pkg/gopium/tests/data/multi.ze",
+				"Size": 16,
+				"Align": 8,
+				"Ptr": 16,
+				"Tag": "",
+				"Exported": false,
+				"Embedded": true,
+				"Doc": null,
+				"Comment": null
+			},
+			{
 				"Name": "AZ",
 				"Type": "github.com/1pkg/gopium/tests/data/multi.AZ",
 				"Size": 32,
 				"Align": 8,
+				"Ptr": 0,
 				"Tag": "",
 				"Exported": true,
 				"Embedded": true,
@@ -436,6 +468,7 @@ func TestWout(t *testing.T) {
 				"Type": "github.com/1pkg/gopium/tests/data/multi.D",
 				"Size": 24,
 				"Align": 8,
+				"Ptr": 0,
 				"Tag": "",
 				"Exported": true,
 				"Embedded": true,
@@ -447,20 +480,10 @@ func TestWout(t *testing.T) {
 				"Type": "github.com/1pkg/gopium/tests/data/multi.D",
 				"Size": 24,
 				"Align": 8,
+				"Ptr": 0,
 				"Tag": "",
 				"Exported": true,
 				"Embedded": false,
-				"Doc": null,
-				"Comment": null
-			},
-			{
-				"Name": "ze",
-				"Type": "github.com/1pkg/gopium/tests/data/multi.ze",
-				"Size": 16,
-				"Align": 8,
-				"Tag": "",
-				"Exported": false,
-				"Embedded": true,
 				"Doc": null,
 				"Comment": null
 			}
@@ -481,7 +504,7 @@ func TestWout(t *testing.T) {
 			// exec
 			err := wout.Visit(tcase.ctx, tcase.r, tcase.stg)
 			// check
-			if !reflect.DeepEqual(err, tcase.err) {
+			if fmt.Sprintf("%v", err) != fmt.Sprintf("%v", tcase.err) {
 				t.Errorf("actual %v doesn't equal to expected %v", err, tcase.err)
 			}
 			// process checks only on success

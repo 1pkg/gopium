@@ -18,8 +18,8 @@ type applied struct {
 	ID  string        `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1_discrete,struct_annotate_comment,add_tag_group_force"`
 	Loc string        `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1_discrete,struct_annotate_comment,add_tag_group_force"`
 	Err error         `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1_discrete,struct_annotate_comment,add_tag_group_force"`
-	_   [32]byte      `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1_discrete,struct_annotate_comment,add_tag_group_force"`
-} // struct size: 256 bytes; struct align: 8 bytes; struct aligned size: 256 bytes; - 🌺 gopium @1pkg
+	_   [16]byte      `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1_discrete,struct_annotate_comment,add_tag_group_force"`
+} // struct size: 320 bytes; struct align: 8 bytes; struct aligned size: 320 bytes; - 🌺 gopium @1pkg
 
 // appliedCh defines abstraction that helps
 // keep applied stream results

@@ -68,6 +68,7 @@ const (
 							<th scope="col">Type</th>
 							<th scope="col">Size</th>
 							<th scope="col">Align</th>
+							<th scope="col">Ptr</th>
 							<th scope="col">Tag</th>
 							<th scope="col">Exported</th>
 							<th scope="col">Embedded</th>
@@ -84,6 +85,7 @@ const (
 							<td>{{.OldType}} -> {{.NewType}}</td>
 							<td>{{.OldSize}} -> {{.NewSize}}</td>
 							<td>{{.OldAlign}} -> {{.NewAlign}}</td>
+							<td>{{.OldPtr}} -> {{.NewPtr}}</td>
 							<td>{{.OldTag}} -> {{.NewTag}}</td>
 							<td>{{.OldExported}} -> {{.NewExported}}</td>
 							<td>{{.OldEmbedded}} -> {{.NewEmbedded}}</td>
@@ -94,6 +96,7 @@ const (
 							<td>{{.NewType}}</td>
 							<td>{{.NewSize}}</td>
 							<td>{{.NewAlign}}</td>
+							<td>{{.NewPtr}}</td>
 							<td>{{.NewTag}}</td>
 							<td>{{.NewExported}}</td>
 							<td>{{.NewEmbedded}}</td>
@@ -104,6 +107,7 @@ const (
 							<td>{{.OldType}}</td>
 							<td>{{.OldSize}}</td>
 							<td>{{.OldAlign}}</td>
+							<td>{{.OldPtr}}</td>
 							<td>{{.OldTag}}</td>
 							<td>{{.OldExported}}</td>
 							<td>{{.OldEmbedded}}</td>
@@ -130,37 +134,44 @@ func SizeAlignMdt(o gopium.Categorized, r gopium.Categorized) ([]byte, error) {
 	// prepare buffer and collections
 	var buf bytes.Buffer
 	var tsizeo, tsizer int64
+	var tptro, tptrr int64
 	fo, fr := o.Full(), r.Full()
 	// write header
 	// no error should be
 	// checked as it uses
 	// buffered writer
-	_, _ = buf.WriteString("| Struct Name | Original Size with Pad | Current Size with Pad | Absolute Difference | Relative Difference |\n")
-	_, _ = buf.WriteString("| :---: | :---: | :---: | :---: | :---: |\n")
+	_, _ = buf.WriteString("| Struct Name | Original Size with Pad | Current Size with Pad | Absolute Size Difference | Relative Size Difference | Original Ptr Size with Pad | Current Ptr Size with Pad | Absolute Ptr Size Difference | Relative Ptr Size Difference |\n")
+	_, _ = buf.WriteString("| :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |\n")
 	for id, sto := range fo {
 		// if both collections contains
 		// struct, compare them
 		if stf, ok := fr[id]; ok {
 			// get aligned size and align
-			sizeo, _ := collections.SizeAlign(sto)
-			sizer, _ := collections.SizeAlign(stf)
+			sizeo, _, ptro := collections.SizeAlignPtr(sto)
+			sizer, _, ptrr := collections.SizeAlignPtr(stf)
 			// write diff info
 			// no error should be
 			// checked as it uses
 			// buffered writer
 			_, _ = buf.WriteString(
 				fmt.Sprintf(
-					"| %s | %d bytes | %d bytes | %+d bytes | %+.2f%% |\n",
+					"| %s | %d bytes | %d bytes | %+d bytes | %+.2f%% | %d bytes | %d bytes | %+d bytes | %+.2f%% |\n",
 					sto.Name,
 					sizeo,
 					sizer,
 					sizer-sizeo,
 					float64(sizer-sizeo)/float64(sizeo)*100.0,
+					ptro,
+					ptrr,
+					ptrr-ptro,
+					float64(ptrr-ptro)/float64(ptro)*100.0,
 				),
 			)
 			// increment total sizes
 			tsizeo += sizeo
 			tsizer += sizer
+			tptro += ptro
+			tptrr += ptrr
 		}
 	}
 	// zero divide guard
@@ -171,12 +182,16 @@ func SizeAlignMdt(o gopium.Categorized, r gopium.Categorized) ([]byte, error) {
 		// buffered writer
 		_, _ = buf.WriteString(
 			fmt.Sprintf(
-				"| %s | %d bytes | %d bytes | %+d bytes | %+.2f%% |\n",
+				"| %s | %d bytes | %d bytes | %+d bytes | %+.2f%% | %d bytes | %d bytes | %+d bytes | %+.2f%% |\n",
 				"Total",
 				tsizeo,
 				tsizer,
 				tsizer-tsizeo,
 				float64(tsizer-tsizeo)/float64(tsizeo)*100.0,
+				tptro,
+				tptrr,
+				tptrr-tptro,
+				float64(tptrr-tptro)/float64(tptro)*100.0,
 			),
 		)
 	}
@@ -231,6 +246,7 @@ func FieldsHtmlt(o gopium.Categorized, r gopium.Categorized) ([]byte, error) {
 					OldType     string
 					OldSize     int64
 					OldAlign    int64
+					OldPtr      int64
 					OldTag      string
 					OldExported bool
 					OldEmbedded bool
@@ -240,6 +256,7 @@ func FieldsHtmlt(o gopium.Categorized, r gopium.Categorized) ([]byte, error) {
 					NewType     string
 					NewSize     int64
 					NewAlign    int64
+					NewPtr      int64
 					NewTag      string
 					NewExported bool
 					NewEmbedded bool
@@ -252,6 +269,7 @@ func FieldsHtmlt(o gopium.Categorized, r gopium.Categorized) ([]byte, error) {
 					OldType:     fo.Type,
 					OldSize:     fo.Size,
 					OldAlign:    fo.Align,
+					OldPtr:      fo.Ptr,
 					OldTag:      fmt.Sprintf("%q", fo.Tag),
 					OldExported: fo.Exported,
 					OldEmbedded: fo.Exported,
@@ -261,6 +279,7 @@ func FieldsHtmlt(o gopium.Categorized, r gopium.Categorized) ([]byte, error) {
 					NewType:     fr.Type,
 					NewSize:     fr.Size,
 					NewAlign:    fr.Align,
+					NewPtr:      fr.Ptr,
 					NewTag:      fmt.Sprintf("%q", fr.Tag),
 					NewExported: fr.Exported,
 					NewEmbedded: fr.Exported,

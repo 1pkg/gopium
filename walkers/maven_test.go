@@ -80,7 +80,7 @@ func TestMavenEnum(t *testing.T) {
 	// prepare
 	ref := collections.NewReference(true)
 	ref.Alloc("test")
-	ref.Set("test", sizealign{size: 32, align: 32})
+	ref.Set("test", ptrsizealign{ptr: 32, size: 32, align: 32})
 	m := maven{
 		exp: mocks.Maven{
 			Types: map[string]mocks.Type{
@@ -88,16 +88,19 @@ func TestMavenEnum(t *testing.T) {
 					Name:  "string",
 					Size:  16,
 					Align: 8,
+					Ptr:   16,
 				},
 				"test": {
 					Name:  "test",
 					Size:  24,
 					Align: 20,
+					Ptr:   16,
 				},
 				"[10]test": {
 					Name:  "test",
 					Size:  240,
 					Align: 20,
+					Ptr:   240,
 				},
 			},
 		},
@@ -136,18 +139,21 @@ func TestMavenEnum(t *testing.T) {
 						Type:  "string",
 						Size:  16,
 						Align: 8,
+						Ptr:   16,
 					},
 					{
 						Name:  "b",
 						Type:  "string",
 						Size:  16,
 						Align: 8,
+						Ptr:   16,
 					},
 					{
 						Name:  "c",
 						Type:  "string",
 						Size:  16,
 						Align: 8,
+						Ptr:   16,
 					},
 				},
 			},
@@ -163,6 +169,7 @@ func TestMavenEnum(t *testing.T) {
 						Type:  "test",
 						Size:  32,
 						Align: 32,
+						Ptr:   32,
 					},
 				},
 			},
@@ -184,7 +191,7 @@ func TestMavenRefsa(t *testing.T) {
 	// prepare
 	ref := collections.NewReference(true)
 	ref.Alloc("test")
-	ref.Set("test", sizealign{size: 32, align: 32})
+	ref.Set("test", ptrsizealign{ptr: 32, size: 32, align: 32})
 	m := maven{
 		exp: mocks.Maven{
 			Types: map[string]mocks.Type{
@@ -192,16 +199,19 @@ func TestMavenRefsa(t *testing.T) {
 					Name:  "string",
 					Size:  16,
 					Align: 8,
+					Ptr:   16,
 				},
 				"test": {
 					Name:  "test",
 					Size:  24,
 					Align: 20,
+					Ptr:   16,
 				},
 				"[10]test": {
 					Name:  "test",
 					Size:  240,
 					Align: 20,
+					Ptr:   240,
 				},
 			},
 		},
@@ -218,34 +228,34 @@ func TestMavenRefsa(t *testing.T) {
 	tp := types.NewNamed(types.NewTypeName(token.Pos(0), nil, "test", st), st, nil)
 	table := map[string]struct {
 		t   types.Type
-		sa  sizealign
+		sa  ptrsizealign
 		ref *collections.Reference
 	}{
 		"primitive type should return expected size and align without backref": {
 			t:  types.Typ[types.String],
-			sa: sizealign{size: 16, align: 8},
+			sa: ptrsizealign{size: 16, align: 8, ptr: 16},
 		},
 		"custom type should return expected size and align without backref": {
 			t:  tp,
-			sa: sizealign{size: 24, align: 20},
+			sa: ptrsizealign{size: 24, align: 20, ptr: 16},
 		},
 		"custom arr type should return expected size and align without backref": {
 			t:  types.NewArray(tp, 10),
-			sa: sizealign{size: 240, align: 20},
+			sa: ptrsizealign{size: 240, align: 20, ptr: 240},
 		},
 		"primitive type should return expected size and align with backref": {
 			t:   types.Typ[types.String],
-			sa:  sizealign{size: 16, align: 8},
+			sa:  ptrsizealign{size: 16, align: 8, ptr: 16},
 			ref: ref,
 		},
 		"custom type should return expected size and align with backref": {
 			t:   tp,
-			sa:  sizealign{size: 32, align: 32},
+			sa:  ptrsizealign{size: 32, align: 32, ptr: 32},
 			ref: ref,
 		},
 		"custom arr type should return expected size and align with backref": {
 			t:   types.NewArray(tp, 10),
-			sa:  sizealign{size: 320, align: 32},
+			sa:  ptrsizealign{size: 320, align: 32, ptr: 320},
 			ref: ref,
 		},
 		"custom non struct type should return expected size and align with backref": {
@@ -254,12 +264,12 @@ func TestMavenRefsa(t *testing.T) {
 				types.Typ[types.Int64],
 				nil,
 			),
-			sa:  sizealign{size: 24, align: 20},
+			sa:  ptrsizealign{size: 24, align: 20, ptr: 16},
 			ref: ref,
 		},
 		"custom empty arr type should return expected size and align with backref": {
 			t:   types.NewArray(tp, 0),
-			sa:  sizealign{},
+			sa:  ptrsizealign{},
 			ref: ref,
 		},
 	}
@@ -269,7 +279,7 @@ func TestMavenRefsa(t *testing.T) {
 			ml := maven{exp: m.exp, loc: m.loc}
 			ml.ref = tcase.ref
 			// exec
-			sa := ml.refsa(tcase.t)
+			sa := ml.refpsa(tcase.t)
 			// check
 			if !reflect.DeepEqual(sa, tcase.sa) {
 				t.Errorf("actual %v doesn't equal to expected %v", sa, tcase.sa)
@@ -284,41 +294,41 @@ func TestMavenRefst(t *testing.T) {
 	f1, f2, f3 := m.refst("test-1"), m.refst("test-2"), m.refst("test-3")
 	f2(gopium.Struct{
 		Fields: []gopium.Field{
-			{Size: 4, Align: 4},
-			{Size: 6, Align: 6},
-			{Size: 2, Align: 2},
+			{Size: 4, Align: 4, Ptr: 4},
+			{Size: 6, Align: 6, Ptr: 6},
+			{Size: 2, Align: 2, Ptr: 2},
 		},
 	})
 	go func() {
 		f1(gopium.Struct{
 			Fields: []gopium.Field{
-				{Size: 8, Align: 8},
+				{Size: 8, Align: 8, Ptr: 8},
 			},
 		})
 		go func() {
 			f3(gopium.Struct{
 				Fields: []gopium.Field{
-					{Size: 4, Align: 4},
-					{Size: 6, Align: 4},
+					{Size: 4, Align: 4, Ptr: 4},
+					{Size: 6, Align: 4, Ptr: 1},
 				},
 			})
 		}()
 	}()
 	table := map[string]struct {
 		key string
-		sa  sizealign
+		sa  ptrsizealign
 	}{
 		"test-1 key should return expected result": {
 			key: "test-1",
-			sa:  sizealign{size: 8, align: 8},
+			sa:  ptrsizealign{ptr: 8, size: 8, align: 8},
 		},
 		"test-2 key should return expected result": {
 			key: "test-2",
-			sa:  sizealign{size: 18, align: 6},
+			sa:  ptrsizealign{ptr: 14, size: 18, align: 6},
 		},
 		"test-3 key should return expected result": {
 			key: "test-3",
-			sa:  sizealign{size: 12, align: 4},
+			sa:  ptrsizealign{ptr: 5, size: 12, align: 4},
 		},
 	}
 	for name, tcase := range table {

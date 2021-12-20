@@ -286,7 +286,7 @@ func TestNewCli(t *testing.T) {
 			if !reflect.DeepEqual(cli, tcase.cli) {
 				t.Errorf("actual %v doesn't equal to expected %v", cli, tcase.cli)
 			}
-			if !reflect.DeepEqual(err, tcase.err) {
+			if fmt.Sprintf("%v", err) != fmt.Sprintf("%v", tcase.err) {
 				t.Errorf("actual %v doesn't equal to expected %v", err, tcase.err)
 			}
 		})
@@ -343,7 +343,7 @@ func TestCliRun(t *testing.T) {
 			// exec
 			err := tcase.cli.Run(context.Background())
 			// check
-			if !reflect.DeepEqual(err, tcase.err) {
+			if fmt.Sprintf("%v", err) != fmt.Sprintf("%v", tcase.err) {
 				t.Errorf("actual %v doesn't equal to expected %v", err, tcase.err)
 			}
 		})

@@ -8,7 +8,7 @@ import (
 // MavenGoTypes defines maven default "go/types" implementation
 // that uses types.Sizes Sizeof in order to get type info
 type MavenGoTypes struct {
-	sizes  types.Sizes    `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1_discrete,struct_annotate_comment,add_tag_group_force"`
+	sizes  sizes          `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1_discrete,struct_annotate_comment,add_tag_group_force"`
 	caches map[uint]int64 `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1_discrete,struct_annotate_comment,add_tag_group_force"`
 	_      [8]byte        `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1_discrete,struct_annotate_comment,add_tag_group_force"`
 } // struct size: 32 bytes; struct align: 8 bytes; struct aligned size: 32 bytes; - 🌺 gopium @1pkg
@@ -25,7 +25,7 @@ func NewMavenGoTypes(compiler, arch string, caches ...int64) (MavenGoTypes, erro
 	// try to get size for compiler and arch
 	if sizes := types.SizesFor(compiler, arch); sizes != nil {
 		return MavenGoTypes{
-			sizes:  sizes,
+			sizes:  stdsizes{sizes.(*types.StdSizes)},
 			caches: cm,
 		}, nil
 	}
@@ -34,12 +34,12 @@ func NewMavenGoTypes(compiler, arch string, caches ...int64) (MavenGoTypes, erro
 
 // SysWord MavenGoTypes implementation
 func (m MavenGoTypes) SysWord() int64 {
-	return m.sizes.(*types.StdSizes).WordSize
+	return m.sizes.(stdsizes).WordSize
 }
 
 // SysAlign MavenGoTypes implementation
 func (m MavenGoTypes) SysAlign() int64 {
-	return m.sizes.(*types.StdSizes).MaxAlign
+	return m.sizes.(stdsizes).MaxAlign
 }
 
 // SysCache MavenGoTypes implementation
@@ -66,4 +66,9 @@ func (m MavenGoTypes) Size(t types.Type) int64 {
 // Align MavenGoTypes implementation
 func (m MavenGoTypes) Align(t types.Type) int64 {
 	return m.sizes.Alignof(t)
+}
+
+// Ptr MavenGoTypes implementation
+func (m MavenGoTypes) Ptr(t types.Type) int64 {
+	return m.sizes.Ptr(t)
 }
