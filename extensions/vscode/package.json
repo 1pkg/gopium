@@ -7,7 +7,7 @@
 		"name": "Kostiantyn Masliuk - github.com/1pkg"
 	},
 	"license": "MIT",
-	"version": "1.6.0",
+	"version": "1.6.1",
 	"categories": [
 		"Programming Languages",
 		"Formatters",
@@ -107,6 +107,12 @@
 			"type": "object",
 			"title": "Gopium",
 			"properties": {
+				"gopium.showConsole": {
+					"type": "boolean",
+					"default": false,
+					"description": "Show gopium command and the output to console.",
+					"scope": "resource"
+				},
 				"gopium.targetCompiler": {
 					"type": "string",
 					"enum": [
