@@ -391,6 +391,7 @@ namespace gopiumcli {
 		proc.stdout.on('data', (chunk) => out.append(chunk.toString()))
 		proc.stderr.on('data', (chunk) => out.append(chunk.toString()))
 		proc.on('error', (err) => out.appendLine(err.message))
+		proc.on('exit', () => out.appendLine('DONE'))
 		return true
 	}
 }
