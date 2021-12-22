@@ -268,11 +268,15 @@ namespace settings {
 		readonly presets: { [key: string]: Arguments }
 		// flags defines vscode workspace configs flags list
 		readonly flags: Flags
+		// showConsole defines vscode workspace configs option to show executed gopium cli
+		readonly showConsole: boolean; 
 		// constructor acquires workspace configs
 		public constructor() {
 			// grab root and actions presets workspace configs
 			let root = vscode.workspace.getConfiguration('gopium')
 			let actions = root.get<any[]>('actions', [])
+			// set show command from workspace configs
+			this.showConsole = root.get<boolean>('showConsole', false);
 			// fill presets map from workspace configs
 			this.presets = {}
 			for (const action of actions) {
@@ -379,7 +383,7 @@ namespace gopiumcli {
 		let args = settings.Build(preset, path, pkg, regex.source)
 		// refresh out channel
 		out.clear()
-		out.show(true)
+		if (settings.showConsole) out.show(true)
 		out.appendLine(`gopium 🌺: ${gopium} ${args.join(' ')}`)
 		// start gopium process
 		// and subscribe to all outs
