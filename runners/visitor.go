@@ -18,7 +18,7 @@ import (
 type visitor struct {
 	regex   *regexp.Regexp `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1_discrete,struct_annotate_comment,add_tag_group_force"`
 	timeout time.Duration  `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1_discrete,struct_annotate_comment,add_tag_group_force"`
-} // struct size: 16 bytes; struct align: 8 bytes; struct aligned size: 16 bytes; - 🌺 gopium @1pkg
+} // struct size: 16 bytes; struct align: 8 bytes; struct aligned size: 16 bytes; struct ptr scan size: 8 bytes; - 🌺 gopium @1pkg
 
 // strategy builds strategy instance
 // by using builder and strategies names
