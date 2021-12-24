@@ -12,7 +12,7 @@ import (
 
 // Stdout defines writer implementation
 // which only returns os stdout all the time
-type Stdout struct{} // struct size: 0 bytes; struct align: 1 bytes; struct aligned size: 0 bytes; - 🌺 gopium @1pkg
+type Stdout struct{} // struct size: 0 bytes; struct align: 1 bytes; struct aligned size: 0 bytes; struct ptr scan size: 0 bytes; - 🌺 gopium @1pkg
 
 // Generate stdout implementation
 func (Stdout) Generate(string) (io.WriteCloser, error) {
@@ -25,7 +25,7 @@ func (Stdout) Generate(string) (io.WriteCloser, error) {
 type File struct {
 	Name string `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1_discrete,struct_annotate_comment,add_tag_group_force"`
 	Ext  string `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1_discrete,struct_annotate_comment,add_tag_group_force"`
-} // struct size: 32 bytes; struct align: 8 bytes; struct aligned size: 32 bytes; - 🌺 gopium @1pkg
+} // struct size: 32 bytes; struct align: 8 bytes; struct aligned size: 32 bytes; struct ptr scan size: 24 bytes; - 🌺 gopium @1pkg
 
 // Generate file implementation
 func (f File) Generate(loc string) (io.WriteCloser, error) {
@@ -38,7 +38,7 @@ func (f File) Generate(loc string) (io.WriteCloser, error) {
 // with provided ext on provided loc
 type Files struct {
 	Ext string `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1_discrete,struct_annotate_comment,add_tag_group_force"`
-} // struct size: 16 bytes; struct align: 8 bytes; struct aligned size: 16 bytes; - 🌺 gopium @1pkg
+} // struct size: 16 bytes; struct align: 8 bytes; struct aligned size: 16 bytes; struct ptr scan size: 8 bytes; - 🌺 gopium @1pkg
 
 // Generate files implementation
 func (f Files) Generate(loc string) (io.WriteCloser, error) {
@@ -50,7 +50,7 @@ func (f Files) Generate(loc string) (io.WriteCloser, error) {
 // which simply uses underlying writter
 type Origin struct {
 	Writter gopium.Writer `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1_discrete,struct_annotate_comment,add_tag_group_force"`
-} // struct size: 16 bytes; struct align: 8 bytes; struct aligned size: 16 bytes; - 🌺 gopium @1pkg
+} // struct size: 16 bytes; struct align: 8 bytes; struct aligned size: 16 bytes; struct ptr scan size: 16 bytes; - 🌺 gopium @1pkg
 
 // Category origin implementation
 func (o Origin) Category(cat string) error {
@@ -66,11 +66,11 @@ func (o Origin) Generate(loc string) (io.WriteCloser, error) {
 // which replaces category for writer
 // with provided suffixed category
 type Suffix struct {
+	Writter gopium.Writer `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1_discrete,struct_annotate_comment,add_tag_group_force"`
 	Suffix  string        `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1_discrete,struct_annotate_comment,add_tag_group_force"`
 	oldcat  string        `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1_discrete,struct_annotate_comment,add_tag_group_force"`
 	newcat  string        `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1_discrete,struct_annotate_comment,add_tag_group_force"`
-	Writter gopium.Writer `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1_discrete,struct_annotate_comment,add_tag_group_force"`
-} // struct size: 64 bytes; struct align: 8 bytes; struct aligned size: 64 bytes; - 🌺 gopium @1pkg
+} // struct size: 64 bytes; struct align: 8 bytes; struct aligned size: 64 bytes; struct ptr scan size: 56 bytes; - 🌺 gopium @1pkg
 
 // Category suffix implementation
 func (s *Suffix) Category(cat string) error {

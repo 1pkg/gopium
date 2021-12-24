@@ -10,7 +10,7 @@ import (
 
 // Gofmt implements printer by
 // using canonical ast go fmt printer
-type Gofmt struct{} // struct size: 0 bytes; struct align: 1 bytes; struct aligned size: 0 bytes; - 🌺 gopium @1pkg
+type Gofmt struct{} // struct size: 0 bytes; struct align: 1 bytes; struct aligned size: 0 bytes; struct ptr scan size: 0 bytes; - 🌺 gopium @1pkg
 
 // Print gofmt implementation
 func (p Gofmt) Print(ctx context.Context, w io.Writer, fset *token.FileSet, node ast.Node) error {

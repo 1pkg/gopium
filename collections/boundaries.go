@@ -6,7 +6,7 @@ import "go/token"
 type Boundary struct {
 	First token.Pos `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1_discrete,struct_annotate_comment,add_tag_group_force"`
 	Last  token.Pos `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1_discrete,struct_annotate_comment,add_tag_group_force"`
-} // struct size: 16 bytes; struct align: 8 bytes; struct aligned size: 16 bytes; - 🌺 gopium @1pkg
+} // struct size: 16 bytes; struct align: 8 bytes; struct aligned size: 16 bytes; struct ptr scan size: 0 bytes; - 🌺 gopium @1pkg
 
 // Less checks if pos strictly less then boundary
 func (b Boundary) Less(p token.Pos) bool {
