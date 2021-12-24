@@ -12,7 +12,7 @@ import (
 // using ast go printer printer
 type Goprinter struct {
 	cfg *printer.Config `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1_discrete,struct_annotate_comment,add_tag_group_force"`
-} // struct size: 8 bytes; struct align: 8 bytes; struct aligned size: 8 bytes; - 🌺 gopium @1pkg
+} // struct size: 8 bytes; struct align: 8 bytes; struct aligned size: 8 bytes; struct ptr scan size: 8 bytes; - 🌺 gopium @1pkg
 
 // NewGoprinter creates instances of goprinter with configs
 func NewGoprinter(indent int, tabwidth int, usespace bool) Goprinter {

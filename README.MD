@@ -161,12 +161,12 @@ type transaction struct {
 	serial   uint64
 	skip     bool
 	discount float64
-} // struct size: 26 bytes; struct align: 8 bytes; struct aligned size: 40 bytes; - 🌺 gopium @1pkg
+} // struct size: 26 bytes; struct align: 8 bytes; struct aligned size: 40 bytes; struct ptr scan size: 0 bytes; - 🌺 gopium @1pkg
 
 // aggregate defines compressed set of transactions
 type aggregate struct {
 	total float64
-} // struct size: 8 bytes; struct align: 8 bytes; struct aligned size: 8 bytes; - 🌺 gopium @1pkg
+} // struct size: 8 bytes; struct align: 8 bytes; struct aligned size: 8 bytes; struct ptr scan size: 0 bytes; - 🌺 gopium @1pkg
 ```
 
 **simple business transaction aggregator (`gopium -r transaction ast_go_tree 1pkg/gopium/examples/transaction memory_pack`)**
@@ -183,12 +183,12 @@ type transaction struct {
 	discount float64 `gopium:"memory_pack,struct_annotate_comment,add_tag_group_force"`
 	void     bool    `gopium:"memory_pack,struct_annotate_comment,add_tag_group_force"`
 	skip     bool    `gopium:"memory_pack,struct_annotate_comment,add_tag_group_force"`
-} // struct size: 26 bytes; struct align: 8 bytes; struct aligned size: 32 bytes; - 🌺 gopium @1pkg
+} // struct size: 26 bytes; struct align: 8 bytes; struct aligned size: 32 bytes; struct ptr scan size: 0 bytes; - 🌺 gopium @1pkg
 
 // aggregate defines compressed set of transactions
 type aggregate struct {
 	total float64
-} // struct size: 8 bytes; struct align: 8 bytes; struct aligned size: 8 bytes; - 🌺 gopium @1pkg
+} // struct size: 8 bytes; struct align: 8 bytes; struct aligned size: 8 bytes; struct ptr scan size: 0 bytes; - 🌺 gopium @1pkg
 ```
 
 **simple business transaction aggregator (`gopium -r aggregate ast_go_tree 1pkg/gopium/examples/transaction filter_pads false_sharing_cpu_l1`)**
@@ -205,13 +205,13 @@ type transaction struct {
 	serial   uint64
 	skip     bool
 	discount float64
-} // struct size: 26 bytes; struct align: 8 bytes; struct aligned size: 40 bytes; - 🌺 gopium @1pkg
+} // struct size: 26 bytes; struct align: 8 bytes; struct aligned size: 40 bytes; struct ptr scan size: 0 bytes; - 🌺 gopium @1pkg
 
 // aggregate defines compressed set of transactions
 type aggregate struct {
 	total float64  `gopium:"filter_pads,false_sharing_cpu_l1,struct_annotate_comment,add_tag_group_force"`
 	_     [56]byte `gopium:"filter_pads,false_sharing_cpu_l1,struct_annotate_comment,add_tag_group_force"`
-} // struct size: 64 bytes; struct align: 8 bytes; struct aligned size: 64 bytes; - 🌺 gopium @1pkg
+} // struct size: 64 bytes; struct align: 8 bytes; struct aligned size: 64 bytes; struct ptr scan size: 0 bytes; - 🌺 gopium @1pkg
 ```
 
 **simple business transaction aggregator (`gopium ast_go_tree 1pkg/gopium/examples/transaction filter_pads explicit_paddings_system_alignment cache_rounding_cpu_l1_discrete`)**
@@ -231,12 +231,12 @@ type transaction struct {
 	_        [7]byte  `gopium:"filter_pads,explicit_paddings_system_alignment,cache_rounding_cpu_l1_discrete,struct_annotate_comment,add_tag_group_force"`
 	discount float64  `gopium:"filter_pads,explicit_paddings_system_alignment,cache_rounding_cpu_l1_discrete,struct_annotate_comment,add_tag_group_force"`
 	_        [24]byte `gopium:"filter_pads,explicit_paddings_system_alignment,cache_rounding_cpu_l1_discrete,struct_annotate_comment,add_tag_group_force"`
-} // struct size: 64 bytes; struct align: 8 bytes; struct aligned size: 64 bytes; - 🌺 gopium @1pkg
+} // struct size: 64 bytes; struct align: 8 bytes; struct aligned size: 64 bytes; struct ptr scan size: 0 bytes; - 🌺 gopium @1pkg
 
 // aggregate defines compressed set of transactions
 type aggregate struct {
 	total float64 `gopium:"filter_pads,explicit_paddings_system_alignment,cache_rounding_cpu_l1_discrete,struct_annotate_comment,add_tag_group_force"`
-} // struct size: 8 bytes; struct align: 8 bytes; struct aligned size: 8 bytes; - 🌺 gopium @1pkg
+} // struct size: 8 bytes; struct align: 8 bytes; struct aligned size: 8 bytes; struct ptr scan size: 0 bytes; - 🌺 gopium @1pkg
 ```
 
 See [examples](examples) and [godoc](https://pkg.go.dev/github.com/1pkg/gopium?tab=doc) for more examples, benchmarks details and godoc.  
@@ -380,10 +380,10 @@ Gopium provides next strategies:
 - add_tag_group_discrete (discretely adds gopium fields tags annotation if no previous annotation found)
 - add_tag_group_force_discrete (discretely adds gopium fields tags annotation if previous annotation found overwrites it)
 - remove_tag_group (removes gopium fields tags annotation)
-- fields_annotate_doc (adds align and size doc annotation for each structure field)
-- fields_annotate_comment adds align and size comment annotation for each structure field)
-- struct_annotate_doc (adds aggregated align and size doc annotation for structure)
-- struct_annotate_comment (adds aggregated align and size comment annotation for structure)
+- fields_annotate_doc (adds align, size and ptr size doc annotation for each structure field)
+- fields_annotate_comment (adds align, size and ptr size comment annotation for each structure field)
+- struct_annotate_doc (adds aggregated align, size and ptr scan size doc annotation for structure)
+- struct_annotate_comment (adds aggregated align, size and ptr scan size comment annotation for structure)
 - name_lexicographical_ascending (sorts fields accordingly to their names in ascending order)
 - name_lexicographical_descending (sorts fields accordingly to their names descending order)
 - type_lexicographical_ascending (sorts fields accordingly to their types in ascending order)

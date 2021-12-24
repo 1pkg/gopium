@@ -30,16 +30,16 @@ var (
 // `gopium:"group:def;stg,stg,stg"` processed as named group
 type group struct {
 	builder Builder `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1_discrete,struct_annotate_comment,add_tag_group_force"`
-} // struct size: 16 bytes; struct align: 8 bytes; struct aligned size: 16 bytes; - 🌺 gopium @1pkg
+} // struct size: 16 bytes; struct align: 8 bytes; struct aligned size: 16 bytes; struct ptr scan size: 16 bytes; - 🌺 gopium @1pkg
 
 // container carries sing group data
 type container struct {
+	stg gopium.Strategy `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1_discrete,struct_annotate_comment,add_tag_group_force"`
+	grp string          `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1_discrete,struct_annotate_comment,add_tag_group_force"`
 	o   gopium.Struct   `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1_discrete,struct_annotate_comment,add_tag_group_force"`
 	r   gopium.Struct   `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1_discrete,struct_annotate_comment,add_tag_group_force"`
-	grp string          `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1_discrete,struct_annotate_comment,add_tag_group_force"`
-	stg gopium.Strategy `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1_discrete,struct_annotate_comment,add_tag_group_force"`
-	_   [32]byte        `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1_discrete,struct_annotate_comment,add_tag_group_force"`
-} // struct size: 320 bytes; struct align: 8 bytes; struct aligned size: 320 bytes; - 🌺 gopium @1pkg
+	_   [48]byte        `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1_discrete,struct_annotate_comment,add_tag_group_force"`
+} // struct size: 256 bytes; struct align: 8 bytes; struct aligned size: 256 bytes; struct ptr scan size: 192 bytes; - 🌺 gopium @1pkg
 
 // Curator erich group strategy with builder instance
 func (stg group) Builder(builder Builder) group {

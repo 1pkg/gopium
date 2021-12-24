@@ -18,7 +18,7 @@ var (
 // to obtain optimal memory utilization
 // by sorting fields accordingly
 // to their aligns and sizes in some order
-type pack struct{} // struct size: 0 bytes; struct align: 1 bytes; struct aligned size: 0 bytes; - 🌺 gopium @1pkg
+type pack struct{} // struct size: 0 bytes; struct align: 1 bytes; struct aligned size: 0 bytes; struct ptr scan size: 0 bytes; - 🌺 gopium @1pkg
 
 // Apply pack implementation
 func (stg pack) Apply(ctx context.Context, o gopium.Struct) (gopium.Struct, error) {

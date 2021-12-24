@@ -83,7 +83,7 @@ func (fmt fmtast) Visit(ts *ast.TypeSpec, st gopium.Struct) error {
 type bcollect struct {
 	bs collections.Boundaries `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1_discrete,struct_annotate_comment,add_tag_group_force"`
 	_  [8]byte                `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1_discrete,struct_annotate_comment,add_tag_group_force"`
-} // struct size: 32 bytes; struct align: 8 bytes; struct aligned size: 32 bytes; - 🌺 gopium @1pkg
+} // struct size: 32 bytes; struct align: 8 bytes; struct aligned size: 32 bytes; struct ptr scan size: 8 bytes; - 🌺 gopium @1pkg
 
 // Visit bcollect implementation
 func (b *bcollect) Visit(ts *ast.TypeSpec, st gopium.Struct) error {
@@ -166,7 +166,7 @@ type flatid struct {
 	loc gopium.Locator   `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1_discrete,struct_annotate_comment,add_tag_group_force"`
 	sts collections.Flat `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1_discrete,struct_annotate_comment,add_tag_group_force"`
 	_   [8]byte          `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1_discrete,struct_annotate_comment,add_tag_group_force"`
-} // struct size: 32 bytes; struct align: 8 bytes; struct aligned size: 32 bytes; - 🌺 gopium @1pkg
+} // struct size: 32 bytes; struct align: 8 bytes; struct aligned size: 32 bytes; struct ptr scan size: 24 bytes; - 🌺 gopium @1pkg
 
 // Check flatid implementation
 func (cmp flatid) Check(ts *ast.TypeSpec) (gopium.Struct, bool) {
@@ -183,7 +183,7 @@ func (cmp flatid) Check(ts *ast.TypeSpec) (gopium.Struct, bool) {
 type sorted struct {
 	sts []gopium.Struct `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1_discrete,struct_annotate_comment,add_tag_group_force"`
 	_   [8]byte         `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1_discrete,struct_annotate_comment,add_tag_group_force"`
-} // struct size: 32 bytes; struct align: 8 bytes; struct aligned size: 32 bytes; - 🌺 gopium @1pkg
+} // struct size: 32 bytes; struct align: 8 bytes; struct aligned size: 32 bytes; struct ptr scan size: 8 bytes; - 🌺 gopium @1pkg
 
 // newsorted creates sorted
 // comparator from structs map
@@ -213,7 +213,7 @@ func (cmp *sorted) Check(ts *ast.TypeSpec) (gopium.Struct, bool) {
 // field has any notes attached to them
 type hasnote struct {
 	cmp gopium.Comparator `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1_discrete,struct_annotate_comment,add_tag_group_force"`
-} // struct size: 16 bytes; struct align: 8 bytes; struct aligned size: 16 bytes; - 🌺 gopium @1pkg
+} // struct size: 16 bytes; struct align: 8 bytes; struct aligned size: 16 bytes; struct ptr scan size: 16 bytes; - 🌺 gopium @1pkg
 
 // Check hasnote implementation
 func (cmp hasnote) Check(ts *ast.TypeSpec) (gopium.Struct, bool) {
