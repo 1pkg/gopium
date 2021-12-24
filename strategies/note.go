@@ -23,14 +23,14 @@ var (
 type note struct {
 	doc   bool `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1_discrete,struct_annotate_comment,add_tag_group_force"`
 	field bool `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1_discrete,struct_annotate_comment,add_tag_group_force"`
-} // struct size: 2 bytes; struct align: 1 bytes; struct aligned size: 2 bytes; - 🌺 gopium @1pkg
+} // struct size: 2 bytes; struct align: 1 bytes; struct aligned size: 2 bytes; struct ptr scan size: 0 bytes; - 🌺 gopium @1pkg
 
 // Apply note implementation
 func (stg note) Apply(ctx context.Context, o gopium.Struct) (gopium.Struct, error) {
 	// copy original structure to result
 	r := collections.CopyStruct(o)
 	// preset defaults
-	var size, alsize, align int64 = 0, 0, 1
+	var size, alsize, align, aptr, prevptr int64 = 0, 0, 1, 0, 0
 	// prepare fields slice
 	if flen := len(r.Fields); flen > 0 {
 		// note each field with size comment
@@ -43,9 +43,10 @@ func (stg note) Apply(ctx context.Context, o gopium.Struct) (gopium.Struct, erro
 				if stg.field {
 					// create note comment
 					note := fmt.Sprintf(
-						"// field size: %d bytes; field align: %d bytes; - %s",
+						"// field size: %d bytes; field align: %d bytes; field ptr: %d bytes; - %s",
 						f.Size,
 						f.Align,
+						f.Ptr,
 						gopium.STAMP,
 					)
 					if stg.doc {
@@ -57,6 +58,16 @@ func (stg note) Apply(ctx context.Context, o gopium.Struct) (gopium.Struct, erro
 				// add field size to both sizes
 				size += f.Size
 				alsize += f.Size
+				// for pointer data track prev fields
+				// if current field has pointer data
+				// then add prev fields size + ptr size
+				// otherwise track prev fields further
+				if f.Ptr > 0 {
+					aptr += prevptr + f.Ptr
+					prevptr = f.Size - f.Ptr
+				} else {
+					prevptr += f.Size
+				}
 				// update struct align size
 				// if field align size is bigger
 				if f.Align > align {
@@ -74,10 +85,11 @@ func (stg note) Apply(ctx context.Context, o gopium.Struct) (gopium.Struct, erro
 	if !stg.field {
 		// create note comment
 		note := fmt.Sprintf(
-			"// struct size: %d bytes; struct align: %d bytes; struct aligned size: %d bytes; - %s",
+			"// struct size: %d bytes; struct align: %d bytes; struct aligned size: %d bytes; struct ptr scan size: %d bytes; - %s",
 			size,
 			align,
 			alsize,
+			aptr,
 			gopium.STAMP,
 		)
 		if stg.doc {

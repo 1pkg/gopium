@@ -14,13 +14,13 @@ type transaction struct {
 	serial   uint64
 	skip     bool
 	discount float64
-} // struct size: 26 bytes; struct align: 8 bytes; struct aligned size: 40 bytes; - 🌺 gopium @1pkg
+} // struct size: 26 bytes; struct align: 8 bytes; struct aligned size: 40 bytes; struct ptr scan size: 0 bytes; - 🌺 gopium @1pkg
 
 // aggregate defines compressed set of transactions
 type aggregate struct {
 	total float64  `gopium:"filter_pads,false_sharing_cpu_l1,struct_annotate_comment,add_tag_group_force"`
 	_     [56]byte `gopium:"filter_pads,false_sharing_cpu_l1,struct_annotate_comment,add_tag_group_force"`
-} // struct size: 64 bytes; struct align: 8 bytes; struct aligned size: 64 bytes; - 🌺 gopium @1pkg
+} // struct size: 64 bytes; struct align: 8 bytes; struct aligned size: 64 bytes; struct ptr scan size: 0 bytes; - 🌺 gopium @1pkg
 
 // generate creates n pseudo random transactions
 func generate(number uint) []transaction {
