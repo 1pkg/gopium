@@ -7,7 +7,6 @@ import (
 	"encoding/xml"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"strconv"
 	"strings"
 
@@ -87,7 +86,7 @@ func Csvb(rw io.ReadWriter) gopium.Bytes {
 			}
 		}
 		// and return buf result
-		return ioutil.ReadAll(rw)
+		return io.ReadAll(rw)
 	}
 }
 

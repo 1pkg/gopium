@@ -16,5 +16,5 @@ jobs:
       - name: golangci-lint
         uses: golangci/golangci-lint-action@v2
         with:
-          version: v1.42
-          args: -E misspell -E golint
+          version: v1.50
+          args: -E misspell
