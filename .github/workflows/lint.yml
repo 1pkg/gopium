@@ -4,8 +4,8 @@ jobs:
   lint:
     strategy:
       matrix:
-        go-version: [1.17.x]
-        platform: [ubuntu-latest, macos-latest, windows-latest]
+        go-version: [1.19.x]
+        platform: [ubuntu-latest]
     runs-on: ${{ matrix.platform }}
     steps:
       - name: setup
@@ -16,5 +16,5 @@ jobs:
       - name: golangci-lint
         uses: golangci/golangci-lint-action@v2
         with:
-          version: v1.42
-          args: -E misspell -E golint
+          version: v1.50
+          args: -E misspell
