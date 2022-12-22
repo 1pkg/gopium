@@ -2,11 +2,14 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"os"
+	"os/exec"
 	"os/signal"
 	"path/filepath"
 	"runtime"
+	"strings"
 
 	"github.com/1pkg/gopium/gopium"
 	"github.com/1pkg/gopium/runners"
@@ -161,7 +164,7 @@ Notes:
 				// package parser vars
 				args[1], // package name
 				ppath,
-				pbenvs,
+				defenv(cmd.Context(), pbenvs, "GOPATH", "GOCACHE", "GOTMPDIR"),
 				pbflags,
 				// gopium walker vars
 				args[0], // single walker
@@ -315,6 +318,23 @@ By default it is used and overrides other printer formatting parameters.
 		0,
 		"Gopium global timeout of cli command in seconds, considered only if value greater than 0.",
 	)
+}
+
+// defenv appends requested env variable from `go env`, if no custom variable provided
+func defenv(ctx context.Context, envs []string, vars ...string) []string {
+loop:
+	for _, v := range vars {
+		for _, env := range envs {
+			if strings.HasPrefix(env, v) {
+				continue loop
+			}
+		}
+		ebytes, err := exec.CommandContext(ctx, "go", "env", v).CombinedOutput()
+		if err == nil {
+			envs = append(envs, fmt.Sprintf("%s=%s", v, strings.TrimSpace(string(ebytes))))
+		}
+	}
+	return envs
 }
 
 // main gopium cli entry point
