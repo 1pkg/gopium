@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"go/build"
 	"go/parser"
-	"path/filepath"
 	"reflect"
 	"regexp"
 	"testing"
@@ -90,12 +89,9 @@ func TestNewCli(t *testing.T) {
 						Root:    build.Default.GOPATH,
 						Path:    "test-path",
 						//nolint
-						ModeTypes: packages.LoadAllSyntax,
-						ModeAst:   parser.ParseComments | parser.AllErrors,
-						BuildEnv: []string{
-							fmt.Sprintf("GOPATH=%s", build.Default.GOPATH),
-							fmt.Sprintf("GOCACHE=%s", filepath.Join(build.Default.GOPATH, ".cache")),
-						},
+						ModeTypes:  packages.LoadAllSyntax,
+						ModeAst:    parser.ParseComments | parser.AllErrors,
+						BuildEnv:   []string{},
 						BuildFlags: []string{},
 					},
 					Exposer: m,
@@ -143,12 +139,9 @@ func TestNewCli(t *testing.T) {
 						Root:    build.Default.GOPATH,
 						Path:    "test-path",
 						//nolint
-						ModeTypes: packages.LoadAllSyntax,
-						ModeAst:   parser.ParseComments | parser.AllErrors,
-						BuildEnv: []string{
-							fmt.Sprintf("GOPATH=%s", build.Default.GOPATH),
-							fmt.Sprintf("GOCACHE=%s", filepath.Join(build.Default.GOPATH, ".cache")),
-						},
+						ModeTypes:  packages.LoadAllSyntax,
+						ModeAst:    parser.ParseComments | parser.AllErrors,
+						BuildEnv:   []string{},
 						BuildFlags: []string{},
 					},
 					Exposer: m,

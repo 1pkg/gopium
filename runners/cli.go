@@ -74,13 +74,6 @@ func NewCli(
 	if !filepath.IsAbs(path) {
 		root = build.Default.GOPATH
 	}
-	// https://github.com/1pkg/gopium/issues/18
-	if len(benvs) == 0 {
-		benvs = []string{
-			fmt.Sprintf("GOPATH=%s", build.Default.GOPATH),
-			fmt.Sprintf("GOCACHE=%s", filepath.Join(build.Default.GOPATH, ".cache")),
-		}
-	}
 	// set up parser
 	xp := &typepkg.ParserXToolPackagesAst{
 		Pattern: pkg,
