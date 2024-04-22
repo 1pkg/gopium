@@ -88,6 +88,8 @@ Extension is based on and heavily using [vscode-go](https://github.com/microsoft
 
 Nevertheless it's impossible to just seamlessly reuse another extension to build your own, so a lot of functionality has been patched and changed, most noticeable: vscode-go telemetry is disabled, vscode-go extension entrypoits are removed, [go-outline](https://github.com/ramya-rao-a/go-outline) is replaced with [go-outline](https://github.com/1pkg/goutline), etc.
 
+To publish the extension use [guide](https://code.visualstudio.com/api/working-with-extensions/publishing-extension).
+
 ## Licence
 
 Gopium is licensed under the MIT License.  

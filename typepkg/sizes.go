@@ -20,7 +20,7 @@ func (t stubtype) String() string {
 // stdsizes implements sizes interface using types std sizes
 type stdsizes struct {
 	types.Sizes `gopium:"filter_pads,memory_pack,cache_rounding_cpu_l1_discrete,struct_annotate_comment,add_tag_group_force"`
-} // struct size: 8 bytes; struct align: 8 bytes; struct aligned size: 8 bytes; struct ptr scan size: 8 bytes; - 🌺 gopium @1pkg
+} // struct size: 16 bytes; struct align: 8 bytes; struct aligned size: 16 bytes; struct ptr scan size: 16 bytes; - 🌺 gopium @1pkg
 
 func (s stdsizes) WordSize() int64 {
 	// This should work for both gc and gccgo types as default case returning proper WordSize.

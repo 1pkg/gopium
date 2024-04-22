@@ -52,11 +52,11 @@ func TestParserXToolPackagesAstTypes(t *testing.T) {
 			ctx: context.Background(),
 			err: tests.OnOS(
 				"windows",
-				fmt.Errorf("%s", "couldn't run 'go': chdir test: The system cannot find the file specified."),
+				fmt.Errorf("%s", "err: chdir test: The system cannot find the file specified.: stderr: "),
 				fmt.Errorf("%s", "err: chdir test: no such file or directory: stderr: "),
 			).(error),
 		},
-		"invalid pattern with abs path should return parser error": {
+		"invalid pattern with abs path should return expected parser package": {
 			p: ParserXToolPackagesAst{
 				Pattern: "github.com/1pkg/gopium/gopium",
 				Path:    pdir,
