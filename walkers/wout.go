@@ -95,7 +95,7 @@ func (w wout) Visit(ctx context.Context, regex *regexp.Regexp, stg gopium.Strate
 // write wout helps to apply formatter
 // to format strategies result and writer
 // to write result to output
-func (w wout) write(ctx context.Context, h collections.Hierarchic) error {
+func (w wout) write(_ context.Context, h collections.Hierarchic) error {
 	// skip empty writes
 	f := h.Flat()
 	if len(f) == 0 {

@@ -88,7 +88,7 @@ func (w wdiff) Visit(ctx context.Context, regex *regexp.Regexp, stg gopium.Strat
 // write wast helps to apply formatter
 // to format strategies results and writer
 // to write result to output
-func (w wdiff) write(ctx context.Context, ho collections.Hierarchic, hr collections.Hierarchic) error {
+func (w wdiff) write(_ context.Context, ho collections.Hierarchic, hr collections.Hierarchic) error {
 	// skip empty writes
 	if ho.Len() == 0 || hr.Len() == 0 {
 		return nil

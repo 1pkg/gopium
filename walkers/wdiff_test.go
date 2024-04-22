@@ -339,7 +339,7 @@ func TestWdiff(t *testing.T) {
 				{
 					"Name": "AZ",
 					"Type": "github.com/1pkg/gopium/tests/data/multi.AZ",
-					"Size": 33,
+					"Size": 40,
 					"Align": 8,
 					"Ptr": 0,
 					"Tag": "",
@@ -489,7 +489,7 @@ func TestWdiff(t *testing.T) {
 				{
 					"Name": "AZ",
 					"Type": "github.com/1pkg/gopium/tests/data/multi.AZ",
-					"Size": 33,
+					"Size": 40,
 					"Align": 8,
 					"Ptr": 0,
 					"Tag": "",

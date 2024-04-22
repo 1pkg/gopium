@@ -37,7 +37,7 @@ func TestNewMavenGoTypes(t *testing.T) {
 			arch:     "amd64",
 			caches:   []int64{2, 4, 8, 16, 32},
 			maven: MavenGoTypes{
-				sizes: stdsizes{types.SizesFor("gc", "amd64").(*types.StdSizes)},
+				sizes: stdsizes{types.SizesFor("gc", "amd64")},
 				caches: map[uint]int64{
 					1: 2,
 					2: 4,
